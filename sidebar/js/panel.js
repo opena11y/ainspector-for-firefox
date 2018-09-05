@@ -61,7 +61,7 @@ function changePanelElements(evaluationResult) {
 
     case 'rule':
       show('rule_panel');
-      if (evaluationResult.groupType = 'rc') {
+      if (evaluationResult.groupType === 'rc') {
         updateTitle(evaluationResult.ruleResult.category);
       }
       else {

@@ -54,7 +54,7 @@ var Menu = function (domNode, controllerObj) {
 */
 Menu.prototype.init = function () {
 
-  var childElement, menuElement, firstChildElement, menuItem, textContent, numItems, label;
+  var childElement, menuElements, menuElement, firstChildElement, menuItem, textContent, numItems, label;
 
   // Configure the domNode itself
   this.domNode.tabIndex = -1;
