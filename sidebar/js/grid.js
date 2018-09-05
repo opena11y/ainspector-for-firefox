@@ -481,4 +481,4 @@ groupGrid.init();
 var ruleGrid = new Grid(document.getElementById('rule_grid'));
 ruleGrid.init();
 
-// alert(rcGrid + '\n' + glGrid + '\n' + glGrid + '\n' + ruleGrid);
+// alert(rcGrid + '\n' + glGrid + '\n' + groupGrid + '\n' + ruleGrid);
