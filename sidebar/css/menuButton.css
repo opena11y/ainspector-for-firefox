@@ -1,0 +1,48 @@
+
+button[aria-expanded="true"] {
+  background-color: #FFF;
+}
+
+ul[role="menu"] {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  font-size: 100%;
+  list-style: none;
+  background-color: #FFF;
+  display: none;
+  border: 1px solid #888;
+  width: 9em;
+}
+
+ul[role="menu"] li[role="menuitem"]{
+  display: block;
+  padding: 0.25em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  background-color: #FFF;
+  width: 100%;
+  z-index: 10;
+}
+
+/* focus and hover styling */
+
+button:focus,
+button:hover,
+input:focus,
+input:hover {
+  outline: 2px solid black;
+}
+
+input:focus,
+input:hover {
+  background-color: #EEEEEE;
+}
+
+ul[role="menu"] li[role="menuitem"]:focus,
+ul[role="menu"] li[role="menuitem"].focus,
+ul[role="menu"] li[role="menuitem"]:hover{
+  background-color: black;
+  color: white;
+}
+

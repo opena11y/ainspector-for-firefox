@@ -1,0 +1,33 @@
+ul[role='tablist'] {
+  margin: 0;
+  padding: 0;
+  margin-top: 2em;
+  list-style: none;
+}
+
+ul[role='tablist'] li {
+  margin: 0;
+  padding: 0;
+  float: left;
+  padding: 0.5em 1em 0.5em 1em;
+  background-color: #CCC;
+  border: thin solid #444;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-size: 110%;
+  z-index: 10;
+  position: relative;
+  top: 1px;
+  outline: none;
+}
+
+ul[role='tablist'] li:focus {
+  border-color: black;
+  text-decoration: underline;
+}
+
+ul[role='tablist'] li[aria-selected='true'] {
+  background-color: white;
+  border-bottom-color: white;
+}
+

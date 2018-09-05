@@ -1,0 +1,403 @@
+body {
+    margin: 0.5em;
+    color: black;
+}
+
+header h1 {
+  display: inline;
+}
+
+header button {
+  position: relative;
+  top: 5px;
+}
+
+footer {
+    position: absolute;
+    bottom: 10px;
+}
+
+footer .info {
+  margin-bottom: 0.5em;
+}
+
+.right {
+  float: right;
+  margin-right: 0.25em;
+}
+
+.selected_group,
+.selected_rule {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.selected_rule h2 {
+  padding: 0;
+  margin: 0;
+  padding-left: 2px;
+  font-size: 120%;
+  display: inline-block;
+}
+
+.selected_rule button {
+  position: relative;
+  top: -5px;
+  z-index: 0;
+}
+
+button {
+  font-size: 1em;
+  border: 1px solid #888;
+  border-radius: 5px;
+  background-color: #eee;
+  padding: 2px 12px 2px 12px;
+  outline: none;
+}
+
+button:focus {
+  border-width: 2px;
+  padding: 1px 11px 1px 11px;
+  outline: none;
+}
+
+
+table {
+  margin-top: 2.5em;
+  clear: both;
+}
+
+table.summary {
+  margin: auto;
+  border-collapse: separate;
+  border-spacing: 10px;
+}
+
+table.summary th,
+table.summary td,
+#rule_panel_result {
+  padding: 0.5em;
+  text-align: center;
+  width: 50px;
+}
+
+#rule_panel_summary {
+  float: left;
+  width: 320px;
+  font-size: 1.20em;
+  font-weight: bold;
+}
+
+#rule_panel_rule {
+  padding-top: 1em;
+  padding-bottom: 2em;
+}
+
+#summary_violations,
+#group_violations,
+table.grid tbody td.v,
+#rule_panel_result.v {
+  background-color: #FFAEAE;
+}
+
+#summary_warnings,
+#group_warnings,
+table.grid tbody td.w ,
+#rule_panel_result.w {
+  background-color: #FFEC94;
+}
+
+#summary_manual_checks,
+#group_manual_checks,
+table.grid tbody td.mc,
+#rule_panel_result.mc  {
+  background-color: #B4D8E7;
+}
+
+#summary_passed,
+#group_passed,
+table.grid tbody td.p,
+#rule_panel_result.p {
+  background-color: #B0E57C;
+}
+
+
+
+table.grid {
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+  border: 1px solid #444;
+}
+
+/*
+table.grid th,
+table.grid td {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+*/
+
+
+table.grid thead th {
+  padding: 0.25em;
+  padding-top: 0.5em;
+  padding-right: 1em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid #AAA;
+}
+
+table.grid th.num,
+table.grid td.num {
+  text-align: right;
+  padding-right: 0.25em;
+}
+
+table.grid th.value,
+table.grid td.value {
+  text-align: center;
+}
+
+table.grid th.text,
+table.grid td.text {
+  text-align: left;
+}
+
+table.grid tbody tr:nth-child(even) {
+  background: #EEE;
+}
+
+table.grid tbody tr:nth-child(odd) {
+  background: #FFF;
+}
+
+table.grid tbody th,
+table.grid tbody td {
+  padding: 0.25em;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.grid td code {
+  font-family: monospace;
+  color: #c7254e;
+  background-color: #f9f2f4;
+}
+
+table.grid tr:focus {
+  outline: none;
+}
+
+table.grid thead tr th:first-child,
+table.grid tbody tr th:first-child {
+  padding-left: 1em;
+}
+
+table.grid thead tr[aria-selected="true"] th,
+table.grid tbody tr[aria-selected="true"] th {
+  background-image:  url(grid-row-selected.svg);
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+
+table.grid thead tr:focus th,
+table.grid tbody tr:focus th,
+table.grid tbody tr:focus td {
+  background-color: #333;
+  color: #FFF;
+}
+
+table.categories {
+  width: 400px;
+  table-layout: fixed;
+}
+
+table.categories thead,
+table.categories tbody {
+   display: block;
+   width: 100%;
+}
+
+table.categories thead th.category,
+table.categories tbody th.category {
+  width: 200px;
+  max-width: 200px;
+}
+
+table.categories tbody th.category {
+  font-weight: normal;
+}
+
+table.categories thead th.result,
+table.categories tbody td.result {
+  width: 50px;
+  max-width: 50px;
+  padding-right:25px;
+}
+
+table.categories tbody tr:last-child th,
+table.categories tbody tr:last-child td {
+  border-top: 1px solid #AAA;
+  font-weight: bold;
+}
+
+table.rules {
+  width: 400px;
+  table-layout: fixed;
+}
+
+table.rules thead {
+   display: block;
+   width: 100%;
+}
+
+table.rules tbody {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  height: 250px;
+}
+
+table.rules thead th.rule {
+  width: 225px;
+  max-width: 225px;
+}
+
+table.rules tbody th.rule {
+  width: 235px;
+  max-width: 235px;
+}
+
+table.rules thead th.result {
+  width: 50px;
+  max-width: 50px;
+}
+
+table.rules tbody td.result {
+  width: 45px;
+  max-width: 45px;
+}
+
+table.rules thead th.sc,
+table.rules tbody td.sc {
+  width: 45px;
+  max-width: 45px;
+}
+
+table.rules thead th.level,
+table.rules tbody td.level {
+  width: 45px;
+  max-width: 45px;
+}
+
+table.rules thead th.required,
+table.rules tbody td.required {
+  width: 45px;
+  max-width: 45px;
+  text-align: center;
+}
+
+table.elements {
+  width: 200px;
+  table-layout: fixed;
+}
+
+table.elements thead {
+   display: block;
+   width: 100%;
+}
+
+table.elements tbody {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  height: 400px;
+}
+
+
+table.elements thead th.element {
+  width: 125px;
+  max-width: 125px;
+}
+
+table.elements tbody th.element {
+  width: 125px;
+  max-width: 125px;
+  font-weight: normal;
+}
+
+table.elements thead th.result {
+  width: 50px;
+  max-width: 50px;
+}
+
+table.elements tbody td.result {
+  width: 50px;
+  max-width: 50px;
+}
+
+table.elements thead th.position {
+  width: 40px;
+  max-width: 40px;
+  padding-right: 0.5em;
+}
+
+table.elements tbody td.position {
+  width: 40px;
+  max-width: 40px;
+  padding-right: 0.5em;
+}
+
+table.elements thead th.action {
+  width: 180px;
+  max-width: 180px;
+}
+
+table.elements tbody td.action {
+  width: 180px;
+  max-width: 180px;
+}
+
+
+.details_action {
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  display: block;
+  width: 100%;
+  overflow: auto;
+  height: 150px;
+}
+
+.details_action h3 {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 0.125em;
+  font-size: 100%;
+}
+
+.details_action p {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1em;
+}
+
+.details_action ul {
+  margin: 0;
+  padding-left: 1.25em;
+  margin-bottom: 1em;
+}
+
+.details_action ul li {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 0.25em;
+}
+
+div#da_tabpanel  {
+  padding-top: 1em;
+}
+
+div#da_tabpanel .details_action {
+  height: 400px;
+}

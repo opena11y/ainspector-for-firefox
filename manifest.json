@@ -1,0 +1,31 @@
+{
+
+    "manifest_version": 2,
+    "name": "AInspector Sidebar",
+    "description": "Inspects web pages for features and issues related to WCAG 2.0 level A and AA requirements.",
+    "version": "0.5",
+
+    "sidebar_action": {
+      "default_icon": "icons/star.png",
+      "default_title" : "AInspector Sidebar",
+      "default_panel": "sidebar/panel.html"
+    },
+
+    "permissions": ["storage", "activeTab", "tabs", "contextMenus"],
+
+    "commands": {
+      "_execute_sidebar_action": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+Y"
+        }
+      }
+    },
+
+    "content_scripts": [
+        {
+          "matches": ["<all_urls>"],
+          "js": ["pageContext.js", "scripts/oaa_a11y_evaluation.js", "scripts/oaa_a11y_rules.js", "scripts/oaa_a11y_rulesets.js"]
+        }
+    ]
+
+}
