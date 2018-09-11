@@ -86,7 +86,7 @@
 
     </div>
 
-    <div id="group_panel">
+    <div id="group_panel" style="display: none">
 
       <table class="summary">
         <tr>
@@ -160,7 +160,7 @@
 
     </div>
 
-    <div id="rule_panel">
+    <div id="rule_panel" style="display: none">
 
       <div id="rule_panel_rule">
         <div id="rule_panel_summary">No summary</div>
@@ -218,14 +218,13 @@
         </table>
 
         <div class="selected_group">
-            <button id="dom_inspector" disabled>Inspect Element</button>
           <div class="right">
             <label for="highlight">Highlight</label>
             <select id="highlight">
-              <option id="none">None</option>
-              <option id="selected">Selected</option>
-              <option id="vw">V/W</option>
-              <option if="all">All</option>
+              <option value="none">None</option>
+              <option value="selected">Selected</option>
+              <option value="vw">V/W</option>
+              <option value="all">All</option>
             </select>
           </div>
         </div>

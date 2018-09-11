@@ -4,7 +4,7 @@
 *
 *   File:   ViewMenuButton.js
 *
-*   Desc:   ViewMenuButton widget that implements ARIA Authoring Practices
+*   Desc:   ViewMenuButton widget for selecting a rule results view
 */
 
 /*

@@ -106,28 +106,33 @@ function updateRulePanel(evaluationResult) {
     addElementResultRow(er.element, er.result, er.position, er.actionMessage);
   }
 
-/*
-  for (let i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener('click', function (event) {var pos = parseInt(event.currentTarget.id); handleGetRule(ruleId, pos);});
-  }
-*/
 };
 
-function handleRuleGridAction(type, positionId) {
+function handleRuleGridAction(type, position) {
+
+  messageArgs.position = position;
 
   switch (type) {
     case 'activate':
-      handleGetRule(messageArgs.ruleId, positionId);
+      handleGetRule(messageArgs.ruleId, position);
       break;
 
     case 'click':
       break;
 
     case 'doubleClick':
-      handleGetRule(messageArgs.ruleId, positionId);
+      handleGetRule(messageArgs.ruleId, position);
       break;
 
     case 'focus':
+
+      messageArgs.option = 'highlight';
+
+      browser.tabs.query({
+          currentWindow: true,
+          active: true
+      }).then(sendMessageToTabs).catch(onError);
+
       break;
 
   }

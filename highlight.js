@@ -9,10 +9,6 @@
  * @external OpenAjax.a11y.VISIBILITY
  */
 
-
-
-
-
 /* ---------------------------------------------------------------- */
 /*                      Highlight Module                            */
 /* ---------------------------------------------------------------- */
@@ -25,25 +21,34 @@ var highlightModule = {
    * @desc Initialize helper objects
    */
   initHighlight: function (properties) {
-    var stringBundle = window.document.getElementById(properties.stringBundleId);
-    this.highlightDivClass = properties.highlightDivClass;
-    this.offScreenDivClass = properties.offScreenDivClass;
-    this.offScreenDivId    = properties.offScreenDivId;
+
+    if (typeof properties !== 'object') {
+      this.highlightDivClass = 'ainspector_highlight';
+      this.offScreenDivClass = 'ainspector_offscreen';
+      this.offScreenDivId    = 'ainspector_offscreen_id';
+    }
+    else {
+      this.highlightDivClass = properties.highlightDivClass;
+      this.offScreenDivClass = properties.offScreenDivClass;
+      this.offScreenDivId    = properties.offScreenDivId;
+    }
 
     this.show_element_manual_check = true;
     this.show_page_manual_check    = true;
     this.show_pass                 = true;
     this.show_hidden               = true;
 
+    // TODO: this code needs to be updated to support multiple languages
+
     this.STRINGS = {
-      violations:   stringBundle.getString('violations'),
-      warnings:     stringBundle.getString('warnings'),
-      manualChecks: stringBundle.getString('manualChecks'),
-      passes:       stringBundle.getString('passes'),
-      hidden:       stringBundle.getString('hidden'),
-      offScreen:    stringBundle.getString('offScreen'),
-      notVisible:   stringBundle.getString('notVisible'),
-      noResults:    stringBundle.getString('noResults')
+      violations:   'Violation;Violations',
+      warnings:     'Warning:Warnings',
+      manualChecks: 'Manual Check;Manual Checks',
+      passes:       'Pass;Passes',
+      hidden:       'Hidden',
+      offScreen:    'Off Screen',
+      notVisible:   'Not Visible',
+      noResults:    'No Result;No Results'
     };
 
     this.STYLES = {
@@ -188,84 +193,89 @@ var highlightModule = {
 
     for (var i = 0; i < element_results_len; i++) {
 
-      var element_result = element_results[i];
-      var dom_element = element_result.getDOMElement();
-      var computed_style = dom_element.computed_style;
-      var tag_name = dom_element.tag_name;
+      try {
+        var element_result = element_results[i];
+        var dom_element    = element_result.getDOMElement();
+        var computed_style = dom_element.computed_style;
+        var tag_name       = dom_element.tag_name;
 
-      // The node property of DOMElement is a reference to the DOM node in
-      // the actual DOM of the current web page.
-      var node = dom_element.node;
+        // The node property of DOMElement is a reference to the DOM node in
+        // the actual DOM of the current web page.
+        var node = dom_element.node;
 
-      if (node) {
+        if (node) {
 
-        // check if the node is off-screen or hidden from assistive technologies
-        if (computed_style.is_visible_onscreen === VISIBILITY.HIDDEN) {
+          // check if the node is off-screen or hidden from assistive technologies
+          if (computed_style.is_visible_onscreen === VISIBILITY.HIDDEN) {
 
-          // always do this...
-          off_screen_elements.push(element_result);
+            // always do this...
+            off_screen_elements.push(element_result);
 
-          // then increment corresponding counter
-          switch (element_result.getResultValue()) {
-          case RESULT_VALUE.VIOLATION:
-            v += 1;
-            break;
+            // then increment corresponding counter
+            switch (element_result.getResultValue()) {
+            case RESULT_VALUE.VIOLATION:
+              v += 1;
+              break;
 
-          case RESULT_VALUE.WARNING:
-            w += 1;
-            break;
+            case RESULT_VALUE.WARNING:
+              w += 1;
+              break;
 
-          case RESULT_VALUE.MANUAL_CHECK:
-            if (this.show_page_manual_check) m += 1;
-            break;
+            case RESULT_VALUE.MANUAL_CHECK:
+              if (this.show_page_manual_check) m += 1;
+              break;
 
-          case RESULT_VALUE.PASS:
-            if (this.show_pass) p += 1;
-            break;
+            case RESULT_VALUE.PASS:
+              if (this.show_pass) p += 1;
+              break;
 
-          case RESULT_VALUE.HIDDEN:
-            if (this.show_hidden) h += 1;
-            break;
+            case RESULT_VALUE.HIDDEN:
+              if (this.show_hidden) h += 1;
+              break;
 
-          default:
-            break;
+            default:
+              break;
+            }
+          }
+          else {
+            // store reference to first visible node
+            if (first_visible_node === null) first_visible_node = node;
+
+            switch (element_result.getResultValue()) {
+            case RESULT_VALUE.VIOLATION:
+              this.insertDIV(document, node, tag_name, this.STYLES.violations, 1, 0, 0, 0, 0);
+              break;
+
+            case RESULT_VALUE.WARNING:
+              this.insertDIV(document, node, tag_name, this.STYLES.warnings, 0, 1, 0, 0, 0);
+              break;
+
+            case RESULT_VALUE.MANUAL_CHECK:
+              if (this.isElementScopeRule(element_result) && !this.show_element_manual_check)
+                continue;
+              if (this.isPageScopeRule(element_result) && !this.show_page_manual_check)
+                continue;
+              this.insertDIV(document, node, tag_name, this.STYLES.manualChecks, 0, 0, 1, 0, 0);
+              break;
+
+            case RESULT_VALUE.PASS:
+              if (this.show_pass)
+                this.insertDIV(document, node, tag_name, this.STYLES.passes, 0, 0, 0, 1, 0);
+              break;
+
+            case RESULT_VALUE.HIDDEN:
+              if (this.show_hidden)
+                this.insertDIV(document, node, tag_name, this.STYLES.hidden, 0, 0, 0, 0, 1);
+              break;
+
+            default:
+              break;
+            }
           }
         }
-        else {
-          // store reference to first visible node
-          if (first_visible_node === null) first_visible_node = node;
-
-          switch (element_result.getResultValue()) {
-          case RESULT_VALUE.VIOLATION:
-            this.insertDIV(document, node, tag_name, this.STYLES.violations, 1, 0, 0, 0, 0);
-            break;
-
-          case RESULT_VALUE.WARNING:
-            this.insertDIV(document, node, tag_name, this.STYLES.warnings, 0, 1, 0, 0, 0);
-            break;
-
-          case RESULT_VALUE.MANUAL_CHECK:
-            if (this.isElementScopeRule(element_result) && !this.show_element_manual_check)
-              continue;
-            if (this.isPageScopeRule(element_result) && !this.show_page_manual_check)
-              continue;
-            this.insertDIV(document, node, tag_name, this.STYLES.manualChecks, 0, 0, 1, 0, 0);
-            break;
-
-          case RESULT_VALUE.PASS:
-            if (this.show_pass)
-              this.insertDIV(document, node, tag_name, this.STYLES.passes, 0, 0, 0, 1, 0);
-            break;
-
-          case RESULT_VALUE.HIDDEN:
-            if (this.show_hidden)
-              this.insertDIV(document, node, tag_name, this.STYLES.hidden, 0, 0, 0, 0, 1);
-            break;
-
-          default:
-            break;
-          }
-        }
+      }
+      catch (error) {
+        console.log('[highlightElementResults][catch]: ' + error)
       }
     } //end for
 
@@ -281,22 +291,32 @@ var highlightModule = {
       }
     }
 
-    if (off_screen_elements.length > 0)
+    if (off_screen_elements.length > 0) {
       this.showOffScreenElementResults(document, off_screen_elements, v, w, m, p, h);
+    }
+
   },
 
   /**
    * @function pluralForm
    *
-   * @desc
+   * @desc  Return the singular or plural form a string
    *
-   * @param {value}  value  -
-   * @param {String}  stringId  -
+   * @param {value}   value     - number to test
+   * @param {String}  stringId  - Reference to the strings with singular and plural forms
    */
-  pluralForm: function (value, stringId) {
+  pluralForm: function (value, stringRef) {
 
+    var parts = stringRef.split(';');
 
-  }
+    if (parts.length === 2) {
+      if (value !== 1) {
+        return parts[1];
+      }
+    }
+
+    return parts[0];
+  },
 
   /**
    * @function removeHighlight
@@ -331,8 +351,13 @@ var highlightModule = {
       var iframes = document.getElementsByTagName( "iframe" );
 
       for (var i = 0; i < iframes.length; i++) {
-        var doc = iframes[i].contentDocument;
-        if (doc) removeFromDocument(doc);
+        try {
+          var doc = iframes[i].contentDocument;
+          if (doc) removeFromDocument(doc);
+        }
+        catch (error) {
+          console.log('[removeFromDocument][catch]: ' + error);
+        }
       }
 
     }
@@ -342,9 +367,14 @@ var highlightModule = {
       if (typeof frames !== 'object' || typeof frames.length !== 'number') return;
 
       for (var i=0; i < frames.length; i++) {
-        var frame = frames[i];
-        if (frame.document) removeFromDocument(frame.document);
-        removeFromFrames(frame.frames);
+        try {
+          var frame = frames[i];
+          if (frame.document) removeFromDocument(frame.document);
+          removeFromFrames(frame.frames);
+        }
+        catch (error) {
+          console.log('[removeFromFrames][catch]: ' + error);
+        }
       }
     }
 
@@ -357,9 +387,13 @@ var highlightModule = {
 
     for (var j = 0; j < off_screen_elements.length; j++) {
       if (off_screen_elements[j])
-        document.body.removeChild(off_screen_elements[j]);
+        try {
+          document.body.removeChild(off_screen_elements[j]);
+        }
+        catch (error) {
+          console.log('[offScreen][catch]: ' + error);
+        }
     }
-
   },
 
   /**
@@ -380,7 +414,7 @@ var highlightModule = {
   showOffScreenElementResults: function (document, element_results, v, w, m, p, h) {
 
     var element_results_plural =
-      this.pluralForm.get(element_results.length, this.STRINGS.offScreen);
+      this.pluralForm(element_results.length, this.STRINGS.offScreen);
     var str = element_results.length + ' ' + element_results_plural;
     var style = this.STYLES.offScreen + ' ';
 
@@ -390,11 +424,11 @@ var highlightModule = {
     else if (p > 0) style += this.STYLES.passes;
     else if (h > 0) style += this.STYLES.hidden;
 
-    if (v > 0) str +=  ': ' + v + ' ' + this.pluralForm.get(v, this.STRINGS.violations);
-    if (w > 0) str +=  ': ' + w + ' ' + this.pluralForm.get(w, this.STRINGS.warnings);
-    if (m > 0) str +=  ': ' + m + ' ' + this.pluralForm.get(m, this.STRINGS.manualChecks);
-    if (p > 0) str +=  ': ' + p + ' ' + this.pluralForm.get(p, this.STRINGS.passes);
-    if (h > 0) str +=  ': ' + h + ' ' + this.pluralForm.get(h, this.STRINGS.hidden);
+    if (v > 0) str +=  ': ' + v + ' ' + this.pluralForm(v, this.STRINGS.violations);
+    if (w > 0) str +=  ': ' + w + ' ' + this.pluralForm(w, this.STRINGS.warnings);
+    if (m > 0) str +=  ': ' + m + ' ' + this.pluralForm(m, this.STRINGS.manualChecks);
+    if (p > 0) str +=  ': ' + p + ' ' + this.pluralForm(p, this.STRINGS.passes);
+    if (h > 0) str +=  ': ' + h + ' ' + this.pluralForm(h, this.STRINGS.hidden);
 
     this.positionDIV(document, style, str);
   },
@@ -445,7 +479,6 @@ var highlightModule = {
    * @param {Number} h - hidden
    */
   insertDIV: function (document, node, tagName, style, v, w, m, p, h) {
-
     var parentNode = null;
     var title = this.getResultValueMessage(v, w, m, p, h);
     var divStyle = this.STYLES.visibleDiv + ' ';
@@ -472,25 +505,29 @@ var highlightModule = {
     // Determine method of inserting div based on tagName
     var index = this.elementsWithoutContent.indexOf(tagName);
 
-    if (index != -1) { // node is a member of elementsWithoutContent...
-      // In this method, the div becomes a container for the node itself;
-      // insert the div just before the node and then move the node
-      // into the div.
-      parentNode = node.parentNode;
-      parentNode.insertBefore(divElement, node);
-      divElement.appendChild(node);
-    }
-    else { // node may have content...
-      // In this method, the div becomes the container for all child elements
-      // of the node; move all of the node's children into the div and then
-      // insert the div as a child of the node.
-      while (node.firstChild) {
-        divElement.appendChild(node.firstChild);
+    try {
+      if (index != -1) { // node is a member of elementsWithoutContent...
+        // In this method, the div becomes a container for the node itself;
+        // insert the div just before the node and then move the node
+        // into the div.
+        parentNode = node.parentNode;
+        parentNode.insertBefore(divElement, node);
+        divElement.appendChild(node);
       }
-      node.appendChild(divElement);
+      else { // node may have content...
+        // In this method, the div becomes the container for all child elements
+        // of the node; move all of the node's children into the div and then
+        // insert the div as a child of the node.
+        while (node.firstChild) {
+          divElement.appendChild(node.firstChild);
+        }
+        node.appendChild(divElement);
+      }
+      divElement.appendChild(iconImage);
     }
-    divElement.appendChild(iconImage);
-
+    catch (error) {
+      console.log('[insertDIV][catch]: ' + error);
+    }
   },
 
   /**
@@ -540,15 +577,15 @@ var highlightModule = {
     var title = '';
 
     if (v_count > 0)
-      title += v_count + ' ' + this.pluralForm.get(v_count, this.STRINGS.violations) + ' ';
+      title += v_count + ' ' + this.pluralForm(v_count, this.STRINGS.violations) + ' ';
     if (m_count > 0)
-      title += m_count + ' ' + this.pluralForm.get(m_count, this.STRINGS.manualChecks) + ' ';
+      title += m_count + ' ' + this.pluralForm(m_count, this.STRINGS.manualChecks) + ' ';
     if (w_count > 0)
-      title += w_count + ' ' + this.pluralForm.get(w_count, this.STRINGS.warnings) + ' ';
+      title += w_count + ' ' + this.pluralForm(w_count, this.STRINGS.warnings) + ' ';
     if (p_count > 0)
-      title += p_count + ' ' + this.pluralForm.get(p_count, this.STRINGS.passes) + ' ';
+      title += p_count + ' ' + this.pluralForm(p_count, this.STRINGS.passes) + ' ';
     if (h_count > 0)
-      title += h_count + ' ' + this.pluralForm.get(h_count, this.STRINGS.hidden) + ' ';
+      title += h_count + ' ' + this.pluralForm(h_count, this.STRINGS.hidden) + ' ';
 
     if (title.length === 0)
       title = this.STRINGS.noResults;

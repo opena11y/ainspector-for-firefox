@@ -27,59 +27,72 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 
 function changePanelElements(evaluationResult) {
 
-  // Hide all view options
-
-  hide('summary_panel');
-  hide('group_panel');
-  hide('rule_panel');
-
-  document.getElementById("ruleset").innerHTML = evaluationResult.ruleset;
-
-  var url = evaluationResult.url;
-  if (evaluationResult.url.length > 50) {
-    url = evaluationResult.url.substring(0, 48) + '...';
+  if (evaluationResult.option === 'highlight') {
+    alert('highlight');
   }
-  document.getElementById("location").innerHTML = url;
-  if (url !== evaluationResult.url) {
-    document.getElementById("location").setAttribute('title', evaluationResult.url);
-  }
+  else {
+    if (evaluationResult.option === 'update') {
+      handleUpdateEvaluation()
+    }
+    else {
 
-  switch(evaluationResult.option) {
-    case 'summary':
-      show('summary_panel');
-      updateTitle("Summary");
-      updateSummaryPanel(evaluationResult);
-      setSummaryPanelFocus();
-      break;
+      // Hide all view options
 
-    case 'group':
-      show('group_panel');
-      updateTitle(evaluationResult.groupLabel);
-      updateGroupPanel(evaluationResult);
-      setGroupPanelFocus();
-      break;
+      hide('summary_panel');
+      hide('group_panel');
+      hide('rule_panel');
 
-    case 'rule':
-      show('rule_panel');
-      if (evaluationResult.groupType === 'rc') {
-        updateTitle(evaluationResult.ruleResult.category);
+      document.getElementById("ruleset").innerHTML = evaluationResult.ruleset;
+
+      var url = evaluationResult.url;
+      if (evaluationResult.url.length > 50) {
+        url = evaluationResult.url.substring(0, 48) + '...';
       }
-      else {
-        updateTitle(evaluationResult.ruleResult.guideline);
+      document.getElementById("location").innerHTML = url;
+      if (url !== evaluationResult.url) {
+        document.getElementById("location").setAttribute('title', evaluationResult.url);
       }
-      updateRulePanel(evaluationResult);
-      break;
 
-    default:
-      break;
+      switch(evaluationResult.option) {
+        case 'summary':
+          show('summary_panel');
+          updateTitle("Summary");
+          updateSummaryPanel(evaluationResult);
+          setSummaryPanelFocus();
+          break;
 
+        case 'group':
+          show('group_panel');
+          updateTitle(evaluationResult.groupLabel);
+          updateGroupPanel(evaluationResult);
+          setGroupPanelFocus();
+          break;
+
+        case 'rule':
+          show('rule_panel');
+          if (evaluationResult.groupType === 'rc') {
+            updateTitle(evaluationResult.ruleResult.category);
+          }
+          else {
+            updateTitle(evaluationResult.ruleResult.guideline);
+          }
+          updateRulePanel(evaluationResult);
+          break;
+
+        default:
+          break;
+      }
+    }
   }
-
-}
+};
 
 // Group events and messages
 
 function handleUpdateEvaluation() {
+
+  if (messageArgs.option === 'highlight') {
+    messageArgs.option = 'rule';
+  }
 
   browser.tabs.query({
       currentWindow: true,
@@ -138,9 +151,12 @@ function handleGetRule(ruleId, position) {
 // Add event handlers
 
 function sendMessageToTabs(tabs) {
-  clearSummaryPanel();
-  clearGroupPanel();
-  clearRulePanel();
+
+  if (messageArgs.option !== 'highlight') {
+    clearSummaryPanel();
+    clearGroupPanel();
+    clearRulePanel();
+  }
 
   for (let tab of tabs) {
     browser.tabs.sendMessage(
@@ -157,7 +173,19 @@ var evaluateButton = document.getElementById('evaluate');
 evaluateButton.addEventListener("click", handleUpdateEvaluation);
 
 window.addEventListener("load", function(){
+    messageArgs.option    = 'summary';
+
     browser.tabs.query({
+        currentWindow: true,
+        active: true
+    }).then(sendMessageToTabs).catch(onError);
+});
+
+window.addEventListener("unload", function(){
+      alert('unload');
+      messageArgs.option    = 'unload';
+
+      browser.tabs.query({
         currentWindow: true,
         active: true
     }).then(sendMessageToTabs).catch(onError);
@@ -178,6 +206,7 @@ function handleBack(event) {
       break;
 
     case 'rule':
+    case 'highlight':
       messageArgs.option = 'group';
       update = true;
       showGroupPanel();
@@ -199,6 +228,30 @@ function handleBack(event) {
 var backButton = document.getElementById('back');
 backButton.addEventListener('click', handleBack);
 
+// Highlight button
+
+function handleHighlight(event) {
+  var value = event.target.value;
+
+  messageArgs.option    = 'highlight';
+
+  if (value) {
+    messageArgs.highlight = value;
+  }
+  else {
+    messageArgs.highlight = 'none';
+  }
+
+  browser.tabs.query({
+      currentWindow: true,
+      active: true
+  }).then(sendMessageToTabs).catch(onError);
+};
+
+var highlightOptions = document.getElementById('highlight');
+highlightOptions.addEventListener('change', handleHighlight);
+
+
 var messageArgs = {
   option: 'summary',
   ruleset: 'ARIA_STRICT',
@@ -206,7 +259,8 @@ var messageArgs = {
   groupId: 1,
   rule: '',
   position: -1,
-  highight: 'none'  // other options 'selected', 'v/w', 'mc' and 'all'
+  highlight: 'none',  // other options 'selected', 'v/w', 'mc' and 'all'
+  position: 0       // position of element to highlight
 };
 
 // Initialize panel

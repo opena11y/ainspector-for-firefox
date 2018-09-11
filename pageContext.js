@@ -7,7 +7,8 @@ function handleError(error) {
 window.onload = function notifyPanel() {
 
   // to be run when the window finishes loading
-  var aiResponse = summary();
+  var aiResponse = {};
+  aiResponse.option = 'update';
 
   var sending = browser.runtime.sendMessage({
     messageForPanel: aiResponse
@@ -16,7 +17,6 @@ window.onload = function notifyPanel() {
 }
 
 function evaluateRules(ruleset) {
-//  console.log('[evaluateRules][Start]: ' + ruleset);
 
   if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
     ruleset = 'ARIA_STRICT';
@@ -31,22 +31,17 @@ function evaluateRules(ruleset) {
   evaluator_factory.setFeature('groups', 7);
   var evaluator = evaluator_factory.newEvaluator();
   var evaluationResult = evaluator.evaluate(doc, doc.title, doc.location.href);
-//  console.log('[evaluateRules][End]: ' + evaluationResult);
   return evaluationResult;
 }
 
 function getCommonData(evaluationResult) {
-//  console.log('[getCommonData][Start]');
-  // gets required data from evaluation object to return to panel
   var aiResponse = new Object();
   aiResponse.url = evaluationResult.getURL();
   aiResponse.ruleset = evaluationResult.getRuleset().getId();
-//  console.log('[getCommonData][End]: ' + aiResponse);
   return aiResponse;
 }
 
 function addSummaryData(aiResponse, evaluationResult) {
-//  console.log('[getSummaryData][Start]');
   var ruleGroupResult = evaluationResult.getRuleResultsAll();
   var ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
 
@@ -55,17 +50,14 @@ function addSummaryData(aiResponse, evaluationResult) {
   aiResponse.manual_checks = ruleSummaryResult.manual_checks;
   aiResponse.passed        = ruleSummaryResult.passed;
 
-//  console.log('[getSummaryData][End]');
 }
 
 function addRuleCategoryData(aiResponse, evaluationResult) {
-  console.log('[addRuleCategoryData][Start]');
 
 
   function addItem(ruleCategoryId, label) {
 
     var summary = evaluationResult.getRuleResultsByCategory(ruleCategoryId).getRuleResultsSummary();
-//    console.log('[addRuleCategoryData][addItem][summary]: ' + summary);
 
     var item = { 'id'             : ruleCategoryId,
                  'label'          : label,
@@ -94,18 +86,14 @@ function addRuleCategoryData(aiResponse, evaluationResult) {
   addItem(OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT, 'Keyboard');
   addItem(OpenAjax.a11y.RULE_CATEGORIES.TIMING, 'Timing');
   addItem(OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION, 'Site Navigation');
-
-  console.log('[addRuleCategoryData][End]');
 }
 
 function addGuidelineData(aiResponse, evaluationResult) {
-  console.log('[addRuleCategoryData][Start]');
 
 
   function addItem(guidelineId, label) {
 
     var summary = evaluationResult.getRuleResultsByGuideline(guidelineId).getRuleResultsSummary();
-//    console.log('[addRuleCategoryData][addItem][summary]: ' + summary);
 
     var item = { 'id'             : guidelineId,
                  'label'          : label,
@@ -134,12 +122,9 @@ function addGuidelineData(aiResponse, evaluationResult) {
   addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2, '3.2 Predictable');
   addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3, '3.3 Input Assistance');
   addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1, '4.1 Compatible');
-
-  console.log('[addRuleCategoryData][End]');
 }
 
 function summary(ruleset) {
-//  console.log('[summary][Start]');
   var evaluationResult = evaluateRules(ruleset);
   var aiResponse = getCommonData(evaluationResult);
   addSummaryData(aiResponse, evaluationResult);
@@ -147,16 +132,12 @@ function summary(ruleset) {
   addGuidelineData(aiResponse, evaluationResult);
   aiResponse.option = 'summary';
 
-  console.log('[summary][URL]: '     + aiResponse.url);
-  console.log('[summary][Ruleset]: ' + aiResponse.ruleset);
-//  console.log('[summary][End]: '     + aiResponse);
   return aiResponse;
 }
 
 function addGroupSummaryData(aiResponse, evaluationResult, groupType, groupId) {
 
   function getRuleResult(ruleResult) {
-//    console.log('[addGroupSummaryData][addRuleResult: ' + ruleResult);
 
     var ruleId = ruleResult.getRule().getId();
 
@@ -204,7 +185,6 @@ function addGroupSummaryData(aiResponse, evaluationResult, groupType, groupId) {
     aiResponse.ruleResults.push(getRuleResult(ruleResults[i]));
   }
 
-//  console.log('[getSummaryData][End]');
 }
 
 function group(ruleset, groupType, groupId) {
@@ -213,9 +193,6 @@ function group(ruleset, groupType, groupId) {
   addGroupSummaryData(aiResponse, evaluationResult, groupType, groupId);
   aiResponse.option = 'group'
 
-  console.log('[group][URL]:     ' + aiResponse.url);
-  console.log('[group][Ruleset]: ' + aiResponse.ruleset);
-  console.log('[group][End]:     ' + aiResponse.groupLabel);
   return aiResponse;
 }
 
@@ -279,8 +256,6 @@ function getElementResults(evaluationResult, ruleId) {
 
   }
 
-  console.log('[addRuleResultData][Start]: ' + ruleId);
-
   var elementResults = [];
   var ruleResult     = evaluationResult.getRuleResult(ruleId);
 
@@ -294,11 +269,13 @@ function getElementResults(evaluationResult, ruleId) {
   return elementResults;
 };
 
+var ainspectorSidebarRuleResult;
+
 function getRuleResult(evaluationResult, ruleId) {
-  console.log("[getRuleResult][start]");
 
   var ruleResult = evaluationResult.getRuleResult(ruleId);
-  console.log("[getRuleResult][ruleResult]: " + ruleResult);
+  // save rule result for use in updating highlighting
+  ainspectorSidebarRuleResult = ruleResult;
 
   var ruleId = ruleResult.getRule().getId();
   var rule   = ruleResult.getRule()
@@ -316,13 +293,10 @@ function getRuleResult(evaluationResult, ruleId) {
                'detailsAction' : getDetailsAction(evaluationResult, ruleId)
              };
 
-  console.log("[getRuleResult][end]");
   return item;
-
 }
 
-function rule(ruleset, ruleId) {
-  console.log("[rule][start]");
+function rule(ruleset, ruleId, highlight, position) {
 
   var evaluationResult = evaluateRules(ruleset);
   var aiResponse  = getCommonData(evaluationResult);
@@ -332,11 +306,63 @@ function rule(ruleset, ruleId) {
   aiResponse.ruleResult     = getRuleResult(evaluationResult, ruleId);
   aiResponse.elementResults = getElementResults(evaluationResult, ruleId);
 
-  console.log("[rule][end]");
+  highlightModule.initHighlight();
+
+  switch(highlight) {
+    case 'all':
+      highlightModule.highlightElementResults(document, evaluationResult.getRuleResult(ruleId).getElementResultsArray());
+      break;
+
+    case 'vw':
+      highlightModule.setHighlightPreferences(false, false, false, false);
+      highlightModule.highlightElementResults(document, evaluationResult.getRuleResult(ruleId).getElementResultsArray());
+      break;
+
+    case 'selected':
+      highlightModule.setHighlightPreferences();
+      highlightModule.highlightElementResults(document, evaluationResult.getRuleResult(ruleId).getElementResultsArray());
+      break;
+
+    default:
+      break;
+  }
 
   return aiResponse;
 }
 
+function highlight(highlight, position) {
+
+  aiResponse.option = 'highlight'
+
+  if (ainspectorSidebarRuleResult) {
+    var elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+
+    if (elementResults) {
+      highlightModule.initHighlight();
+
+      switch(highlight) {
+        case 'all':
+          highlightModule.highlightElementResults(document, elementResults);
+          break;
+
+        case 'vw':
+          highlightModule.setHighlightPreferences(false, false, false, false);
+          highlightModule.highlightElementResults(document, elementResults);
+          break;
+
+        case 'selected':
+          if (elementResults[position]) {
+            highlightModule.highlightElementResults(document, [elementResults[position]]);
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+  return aiResponse;
+}
 
 browser.runtime.onMessage.addListener(request => {
   // to be executed on receiving messages from the panel
@@ -355,7 +381,9 @@ browser.runtime.onMessage.addListener(request => {
 
   console.log("[onMessage][start]");
   console.log('[onMessage][option]:    ' + option);
-  console.log('[onMessage][ruleset]:   ' + ruleset);
+
+  highlightModule.initHighlight();
+  highlightModule.removeHighlight(document);
 
   switch (option) {
     case 'summary':
@@ -364,13 +392,20 @@ browser.runtime.onMessage.addListener(request => {
 
     case 'group':
       console.log('[onMessage][groupType]: ' + request.groupType);
-      console.log('[onMessage][groupId]:   ' + request.groupId);
+      console.log('[onMessage]  [groupId]:   ' + request.groupId);
       aiResponse = group(ruleset, request.groupType, request.groupId);
       break;
 
     case 'rule':
-      console.log('[onMessage][rule]: ' + request.ruleId);
-      aiResponse = rule(ruleset, request.ruleId);
+      console.log('[onMessage]     [rule]: ' + request.ruleId);
+      console.log('[onMessage][highlight]: ' + request.highlight);
+      aiResponse = rule(ruleset, request.ruleId, request.highlight, request.position);
+      break;
+
+    case 'highlight':
+      console.log('[onMessage] [highlight]: ' + request.highlight);
+      console.log('[onMessage]  [position]: ' + request.position);
+      aiResponse = highlight(request.highlight, request.position);
       break;
 
     default:
