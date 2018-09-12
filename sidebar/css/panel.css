@@ -97,31 +97,29 @@ table.summary td,
 #group_violations,
 table.grid tbody td.v,
 #rule_panel_result.v {
-  background-color: #FFAEAE;
+  background-color: hsl(0, 100%, 84%);
 }
 
 #summary_warnings,
 #group_warnings,
 table.grid tbody td.w ,
 #rule_panel_result.w {
-  background-color: #FFEC94;
+  background-color: hsl(49, 100%, 79%);
 }
 
 #summary_manual_checks,
 #group_manual_checks,
 table.grid tbody td.mc,
 #rule_panel_result.mc  {
-  background-color: #B4D8E7;
+  background-color: hsl(198, 52%, 81%);
 }
 
 #summary_passed,
 #group_passed,
 table.grid tbody td.p,
 #rule_panel_result.p {
-  background-color: #B0E57C;
+  background-color: hsl(90, 67%, 69%);
 }
-
-
 
 table.grid {
   margin: 0;
@@ -176,6 +174,8 @@ table.grid tbody td {
   padding: 0.25em;
   text-align: left;
   vertical-align: top;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
 }
 
 table.grid td code {
@@ -203,8 +203,28 @@ table.grid tbody tr[aria-selected="true"] th {
 table.grid thead tr:focus th,
 table.grid tbody tr:focus th,
 table.grid tbody tr:focus td {
-  background-color: #333;
-  color: #FFF;
+  background-color: hsl(216, 94%, 90%);
+  border-color: hsl(216, 94%, 90%);
+}
+
+table.grid tbody tr:focus td.v {
+  background-color: hsl(0, 100%, 90%);
+  border-color: hsl(216, 94%, 90%);
+}
+
+table.grid tbody tr:focus td.w {
+  background-color: hsl(49, 100%, 90%);
+  border-color: hsl(216, 94%, 90%);
+}
+
+table.grid tbody tr:focus td.mc {
+  background-color: hsl(198, 52%, 90%);
+  border-color: hsl(216, 94%, 90%);
+}
+
+table.grid tbody tr:focus td.p {
+  background-color: hsl(90, 67%, 90%);
+  border-color: hsl(216, 94%, 90%);
 }
 
 table.categories {
@@ -360,7 +380,8 @@ table.elements tbody td.action {
 
 .details_action {
   margin: 0;
-  padding: 0;
+  padding: 0.25em;
+  padding-left: 0.5em;
   border: 1px solid black;
   display: block;
   width: 100%;
