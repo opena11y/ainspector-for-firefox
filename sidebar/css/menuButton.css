@@ -12,7 +12,9 @@ ul[role="menu"] {
   background-color: #FFF;
   display: none;
   border: 1px solid #888;
-  width: 9em;
+  width: 11em;
+  height: 20em;
+  overflow: auto;
 }
 
 ul[role="menu"] li[role="menuitem"]{

@@ -358,11 +358,10 @@ table.elements tbody td.action {
   max-width: 180px;
 }
 
-
 .details_action {
   margin: 0;
   padding: 0;
-  border: 1px solid #ccc;
+  border: 1px solid black;
   display: block;
   width: 100%;
   overflow: auto;
@@ -394,10 +393,17 @@ table.elements tbody td.action {
   padding-bottom: 0.25em;
 }
 
-div#da_tabpanel  {
+div#da_tabpanel,
+div#er_tabpanel  {
   padding-top: 1em;
 }
 
 div#da_tabpanel .details_action {
+  height: 428.5px;
+}
+
+div#er_tabpanel .elements {
   height: 400px;
 }
+
+

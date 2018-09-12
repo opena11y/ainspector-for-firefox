@@ -4,6 +4,40 @@ function onError(error) {
 //  console.error(`Error: ${error}`);
 }
 
+var messageArgs = {
+  option: 'summary',
+  ruleset: 'ARIA_STRICT',
+  groupType: 'rc',
+  groupId: 1,
+  rule: '',
+  position: -1,
+  highlight: 'none',  // other options 'selected', 'v/w', 'mc' and 'all'
+  position: 0       // position of element to highlight
+};
+
+// Setup storage
+
+var storedValue = browser.storage.local.get("ainspectorSidebarPrefs").then(getAInspectorPreferences, onError);
+
+function getAInspectorPreferences(item) {
+  var prefs = item.ainspectorSidebarPrefs;
+
+  if (typeof prefs != 'undefined'){
+    messageArgs = prefs;
+  }
+  else {
+    setAInspectorPreferences();
+  }
+}
+
+function setAInspectorPreferences() {
+
+  var getAInspectorPreferences = messageArgs;
+
+  browser.storage.local.set({getAInspectorPreferences})
+
+}
+
 browser.runtime.onMessage.addListener(notify);
 
 function notify(message) {
@@ -251,16 +285,7 @@ var highlightOptions = document.getElementById('highlight');
 highlightOptions.addEventListener('change', handleHighlight);
 
 
-var messageArgs = {
-  option: 'summary',
-  ruleset: 'ARIA_STRICT',
-  groupType: 'rc',
-  groupId: 1,
-  rule: '',
-  position: -1,
-  highlight: 'none',  // other options 'selected', 'v/w', 'mc' and 'all'
-  position: 0       // position of element to highlight
-};
+
 
 // Initialize panel
 

@@ -14,7 +14,6 @@ var Tablist = function (domNode) {
 
   this.firstTab = null;
   this.lastTab = null;
-  this.currentDomNode = null;
   this.currentTab = null;
   this.pauseButton = null;
 
@@ -35,14 +34,22 @@ Tablist.prototype.init = function () {
     this.tabs.push(tab);
 
     if (!this.firstTab) {
+      this.currentTab = tab;
       this.firstTab = tab;
-      this.currentDomNode = tab.domNode;
+    }
+    if (tab.domNode.getAttribute('aria-selected').toLowerCase() === 'true') {
+      if (this.currentTab) {
+        this.currentTab.hideTabPanel();
+      }
+      this.currentTab = tab;
+    }
+    else {
+      tab.hideTabPanel();
     }
     this.lastTab = tab;
   }
-  this.firstTab.domNode.tabIndex = 0;
+  this.currentTab.showTabPanel();
 
-  this.currentTab = this.firstTab;
 };
 
 Tablist.prototype.getSelectedTabId = function () {

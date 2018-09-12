@@ -252,7 +252,7 @@ function getElementResults(evaluationResult, ruleId) {
                  'actionMessage' : elementResult.getResultMessage()
                };
 
-    // Adjust sort order for AInspector Sidebar
+    // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
     }
@@ -359,6 +359,8 @@ function highlight(highlight, position) {
 
   }
 
+  var domNode = false;
+
   var aiResponse = {};
 
   aiResponse.option = 'highlight';
@@ -374,11 +376,13 @@ function highlight(highlight, position) {
       switch(highlight) {
         case 'all':
           highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
           break;
 
         case 'vw':
           highlightModule.setHighlightPreferences(false, false, false, false);
           highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
           break;
 
         case 'selected':
@@ -386,16 +390,20 @@ function highlight(highlight, position) {
           for (let i = 0; i < elementResults.length; i++) {
             if (elementResults[i].getOrdinalPosition() === position) {
               highlightModule.highlightElementResults(document, [elementResults[i]]);
-              console.log('[highlight][elementResult]: ' + elementResults[i]);
+              domNode = elementResults[i].getDOMElement();
               break;
             }
           }
-          console.log('[highlight][elementResult]: none');
           break;
 
         default:
           break;
       }
+
+      if (domNode && domNode.scrollIntoView) {
+        domNode.scrollIntoView();
+      }
+
     }
   }
 

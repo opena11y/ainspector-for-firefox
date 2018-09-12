@@ -49,7 +49,8 @@ Grid.prototype.init = function () {
       var thNodes = trNode.querySelectorAll('th');
 
       for(let i = 0; i < thNodes.length; i++) {
-        var gridCell = new GridCell(thNodes[i], true);
+        var gridCell = new GridCell(thNodes[i], gridRow, true);
+        gridCell.init();
         gridRow.addGridCell(gridCell);
       }
 
@@ -280,9 +281,7 @@ GridRow.prototype.addCell = function (content, type, sort, header) {
     node.setAttribute('data-sort', sort);
   }
 
-
   var gridCell = new GridCell(node, this, header);
-
   gridCell.init();
   this.cells.push(gridCell);
 
@@ -399,10 +398,10 @@ var GridCell = function (domNode, gridRow, header) {
     header = false;
   }
 
-  this.domNode = domNode;
-  this.gridRow = gridRow;
+  this.domNode  = domNode;
+  this.gridRow  = gridRow;
   this.isHeader = header;
-
+  this.column   = gridRow.cells.length + 1;
 
   this.keyCode = Object.freeze({
     'RETURN': 13,
@@ -424,6 +423,7 @@ GridCell.prototype.init = function () {
   this.domNode.addEventListener('click', this.handleClick.bind(this));
   this.domNode.addEventListener('focus', this.handleFocus.bind(this));
   this.domNode.addEventListener('blur', this.handleBlur.bind(this));
+
 };
 
 
