@@ -252,6 +252,16 @@ function getElementResults(evaluationResult, ruleId) {
                  'actionMessage' : elementResult.getResultMessage()
                };
 
+    // Adjust sort order for AInspector Sidebar
+    if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
+      item.resultValue = 1;
+    }
+    else {
+      if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.PASS) {
+        item.resultValue = 2;
+      }
+    }
+
     elementResults.push(item);
 
   }
@@ -293,6 +303,8 @@ function getRuleResult(evaluationResult, ruleId) {
                'detailsAction' : getDetailsAction(evaluationResult, ruleId)
              };
 
+
+
   return item;
 }
 
@@ -332,13 +344,32 @@ function rule(ruleset, ruleId, highlight, position) {
 
 function highlight(highlight, position) {
 
-  aiResponse.option = 'highlight'
+  function getElementResultByPosition() {
+    if (ainspectorSidebarRuleResult) {
+      var elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+
+      for (let i = 0; i < elementResults.length; i++) {
+        if (elementResults[i].getOrdinalPosition() === position) {
+          return elementResults[i];
+        }
+      }
+    }
+
+    return false;
+
+  }
+
+  var aiResponse = {};
+
+  aiResponse.option = 'highlight';
 
   if (ainspectorSidebarRuleResult) {
     var elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
 
     if (elementResults) {
       highlightModule.initHighlight();
+      console.log('[highlight]: ' + highlight);
+      console.log('[highlight][position]: ' + position);
 
       switch(highlight) {
         case 'all':
@@ -351,9 +382,15 @@ function highlight(highlight, position) {
           break;
 
         case 'selected':
-          if (elementResults[position]) {
-            highlightModule.highlightElementResults(document, [elementResults[position]]);
+
+          for (let i = 0; i < elementResults.length; i++) {
+            if (elementResults[i].getOrdinalPosition() === position) {
+              highlightModule.highlightElementResults(document, [elementResults[i]]);
+              console.log('[highlight][elementResult]: ' + elementResults[i]);
+              break;
+            }
           }
+          console.log('[highlight][elementResult]: none');
           break;
 
         default:
@@ -361,6 +398,7 @@ function highlight(highlight, position) {
       }
     }
   }
+
   return aiResponse;
 }
 
@@ -409,7 +447,6 @@ browser.runtime.onMessage.addListener(request => {
       break;
 
     default:
-      aiResponse = summary(ruleset);
       break;
 
   }

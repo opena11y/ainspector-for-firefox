@@ -27,62 +27,61 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 
 function changePanelElements(evaluationResult) {
 
-  if (evaluationResult.option === 'highlight') {
-    alert('highlight');
+  function updateResults () {
+    hide('summary_panel');
+    hide('group_panel');
+    hide('rule_panel');
+
+    document.getElementById("ruleset").innerHTML = evaluationResult.ruleset;
+
+    var url = evaluationResult.url;
+    if (evaluationResult.url.length > 50) {
+      url = evaluationResult.url.substring(0, 48) + '...';
+    }
+    document.getElementById("location").innerHTML = url;
+    if (url !== evaluationResult.url) {
+      document.getElementById("location").setAttribute('title', evaluationResult.url);
+    }
   }
-  else {
-    if (evaluationResult.option === 'update') {
-      handleUpdateEvaluation()
-    }
-    else {
 
-      // Hide all view options
+  switch(evaluationResult.option) {
+    case 'update':
+      handleUpdateEvaluation();
+      break;
 
-      hide('summary_panel');
-      hide('group_panel');
-      hide('rule_panel');
+    case 'summary':
+      updateResults();
+      show('summary_panel');
+      updateTitle("Summary");
+      updateSummaryPanel(evaluationResult);
+      setSummaryPanelFocus();
+      break;
 
-      document.getElementById("ruleset").innerHTML = evaluationResult.ruleset;
+    case 'group':
+      updateResults();
+      show('group_panel');
+      updateTitle(evaluationResult.groupLabel);
+      updateGroupPanel(evaluationResult);
+      setGroupPanelFocus();
+      break;
 
-      var url = evaluationResult.url;
-      if (evaluationResult.url.length > 50) {
-        url = evaluationResult.url.substring(0, 48) + '...';
+    case 'rule':
+      updateResults();
+      show('rule_panel');
+      if (evaluationResult.groupType === 'rc') {
+        updateTitle(evaluationResult.ruleResult.category);
       }
-      document.getElementById("location").innerHTML = url;
-      if (url !== evaluationResult.url) {
-        document.getElementById("location").setAttribute('title', evaluationResult.url);
+      else {
+        updateTitle(evaluationResult.ruleResult.guideline);
       }
+      updateRulePanel(evaluationResult);
+      break;
 
-      switch(evaluationResult.option) {
-        case 'summary':
-          show('summary_panel');
-          updateTitle("Summary");
-          updateSummaryPanel(evaluationResult);
-          setSummaryPanelFocus();
-          break;
+    case 'highlight':
+      break;
 
-        case 'group':
-          show('group_panel');
-          updateTitle(evaluationResult.groupLabel);
-          updateGroupPanel(evaluationResult);
-          setGroupPanelFocus();
-          break;
-
-        case 'rule':
-          show('rule_panel');
-          if (evaluationResult.groupType === 'rc') {
-            updateTitle(evaluationResult.ruleResult.category);
-          }
-          else {
-            updateTitle(evaluationResult.ruleResult.guideline);
-          }
-          updateRulePanel(evaluationResult);
-          break;
-
-        default:
-          break;
-      }
-    }
+    default:
+      break;
   }
 };
 
