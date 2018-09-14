@@ -225,6 +225,8 @@ Menu.prototype.getIndexFirstChars = function (startIndex, char) {
 /* MENU DISPLAY METHODS */
 
 Menu.prototype.open = function () {
+  updateViewMenu();
+
   // set aria-expanded attribute
   this.domNode.style.display = 'block';
 

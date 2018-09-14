@@ -12,22 +12,26 @@ function addElementResultRow(element, result, position, actionMessage) {
 
   var row = ruleGrid.addRow(position, handleRuleGridAction);
 
+  // Trim element length if too long
+  if (element.length > 50) {
+    element = element.substring(0, 47) + '...';
+  }
+
   row.addCell(element, 'text element', '', true);
   row.addCell(result, 'value result ' + result.toLowerCase());
   row.addCell(position, 'num position');
   row.addCell(actionMessage, 'text action');
 
+  return row;
+
 };
 
 function clearRulePanel() {
-
-  var html = '';
   var cells = document.querySelectorAll('tbody#element_results tr > *');
 
   for (let i = 0; i < cells.length; i++) {
     cells[i].innerHTML = '-';
   }
-
 }
 
 function updateDetailsAction(id, detailsAction) {
@@ -89,6 +93,8 @@ function updateRulePanelSummaryResult(evaluationResult) {
 
 function updateRulePanel(evaluationResult) {
 
+  var firstRow = false;
+
   updateDetailsAction('da', evaluationResult.detailsAction);
 
   updateRulePanelSummaryResult(evaluationResult);
@@ -101,11 +107,22 @@ function updateRulePanel(evaluationResult) {
     return b.resultValue - a.resultValue;
   });
 
-  for (let i = 0; i < elementResults.length; i++) {
-    var er = elementResults[i];
-    addElementResultRow(er.element, er.result, er.position, er.actionMessage);
-  }
+  if (elementResults.length) {
+    for (let i = 0; i < elementResults.length; i++) {
+      var er = elementResults[i];
+      var row = addElementResultRow(er.element, er.result, er.position, er.actionMessage);
 
+      if (i === 0) {
+        firstRow = row;
+      }
+    }
+  }
+  else {
+    firstRow = addElementResultRow('No results', '', '', '');
+  }
+  if (firstRow) {
+    firstRow.domNode.tabIndex = 0;
+  }
 };
 
 function handleRuleGridAction(type, position) {

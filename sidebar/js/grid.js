@@ -7,18 +7,13 @@
 *   Author(s): Jon Gunderson
 */
 
-var Grid = function (domNode, allowHeaderNavigation) {
-
-  if (typeof allowHeaderNavigation !== 'boolean') {
-    allowHeaderNavigation = false;
-  }
+var Grid = function (domNode) {
 
   this.domNode = domNode;
 
   this.theadNode = null;
   this.tbodyNode = null;
 
-  this.allowHeaderNavigation = allowHeaderNavigation;
   this.cellNavigation = true;
 
   this.selectedId = '';
@@ -107,9 +102,7 @@ Grid.prototype.addRow = function (id, action, thead) {
   for (let i = 0; i < this.rows.length; i++) {
     var row = this.rows[i];
     row.index = i;
-    if ((this.firstRowIndex < 0) &&
-        ((row.isThead && this.allowHeaderNavigation) ||
-          !row.isThead)) {
+    if ((this.firstRowIndex < 0) && !row.isThead) {
       this.firstRowIndex = i;
     }
     this.lastRowIndex = i;
@@ -183,12 +176,9 @@ Grid.prototype.moveFocusToLastRow = function () {
 };
 
 Grid.prototype.moveFocusToPreviousRow = function () {
-  if (this.currentIndex > 1) {
+  if (this.currentIndex > this.firstRowIndex) {
     var newRow = this.rows[this.currentIndex-1];
-    if ((newRow.isThead && this.allowHeaderNavigation) ||
-      !newRow.isThead) {
-      this.setSelectedToRow(this.currentIndex-1);
-    }
+    this.setSelectedToRow(this.currentIndex-1);
   }
 };
 
@@ -223,7 +213,9 @@ var GridRow = function (domNode, grid, id, action, thead) {
   this.grid    = grid;
   this.id      = id;
   this.action  = action;
-  this.index = -1;
+  if (!thead) {
+    this.index = -1;
+  }
 
   this.isThead = thead;
 
@@ -244,15 +236,13 @@ var GridRow = function (domNode, grid, id, action, thead) {
 };
 
 GridRow.prototype.init = function () {
-  if (this.isThead && !this.grid.allowHeaderNavigation) {
-    this.domNode.tabindex = '';
+  if (!this.isThead) {
+    this.domNode.addEventListener('keydown',  this.handleKeydown.bind(this));
+    this.domNode.addEventListener('click',    this.handleClick.bind(this));
+    this.domNode.addEventListener('dblclick', this.handleDoubleClick.bind(this));
+    this.domNode.addEventListener('focus',    this.handleFocus.bind(this));
+    this.domNode.addEventListener('blur',     this.handleBlur.bind(this));
   }
-
-  this.domNode.addEventListener('keydown',  this.handleKeydown.bind(this));
-  this.domNode.addEventListener('click',    this.handleClick.bind(this));
-  this.domNode.addEventListener('dblclick', this.handleDoubleClick.bind(this));
-  this.domNode.addEventListener('focus',    this.handleFocus.bind(this));
-  this.domNode.addEventListener('blur',     this.handleBlur.bind(this));
 };
 
 GridRow.prototype.addCell = function (content, type, sort, header) {

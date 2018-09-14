@@ -74,6 +74,7 @@ ViewMenuButton.prototype.init = function () {
   if (menu) {
     this.menu = new Menu(menu, this);
     this.menu.init();
+    // save a reference to view menu
     viewMenu = this.menu;
   }
 
@@ -150,6 +151,32 @@ window.addEventListener('load', function (event) {
   var viewMenuButton = document.getElementById('view_options_button');
   var mb = new ViewMenuButton(viewMenuButton);
   mb.init();
-  updateViewMenu();
 }, false);
 
+
+function updateViewMenu() {
+  viewMenu.removeAllOptions();
+
+  viewMenu.addOption('summary', 'menuitem', 'Summary', function() {handleGetSummary();});
+
+  viewMenu.addOption('', 'separator', '-------------');
+
+  for (let i = 0; i < (rcOptions.length-1); i++) {
+    viewMenu.addOption(rcOptions[i].id, 'menuitem', rcOptions[i].label, function() {var id = 'rc-' + rcOptions[i].id; handleGetGroup(id);});
+  }
+
+  if (messageArgs.includeGuidelines) {
+    viewMenu.addOption('', 'separator', '-------------');
+
+    for (let i = 0; i < (glOptions.length-1); i++) {
+      viewMenu.addOption(glOptions[i].id, 'menuitem', glOptions[i].label, function() {var id = 'gl-' + glOptions[i].id; handleGetGroup(id);});
+    }
+  }
+
+  viewMenu.addOption('', 'separator', '-------------');
+
+  var last = rcOptions.length-1;
+
+  viewMenu.addOption(rcOptions[last].id, 'menuitem', rcOptions[last].label, function() {var id = 'rc-' + rcOptions[last].id; handleGetGroup(id);});
+
+};

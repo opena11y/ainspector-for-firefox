@@ -5,8 +5,11 @@ function onError(error) {
 }
 
 var messageArgs = {
-  option: 'summary',
+  promptForDelay: false,
+  includeGuidelines: true,
+  includePassAndNotApplicable: true,
   ruleset: 'ARIA_STRICT',
+  option: 'summary',
   groupType: 'rc',
   groupId: 1,
   rule: '',
@@ -17,13 +20,25 @@ var messageArgs = {
 
 // Setup storage
 
-var storedValue = browser.storage.local.get("ainspectorSidebarPrefs").then(getAInspectorPreferences, onError);
+var storedValue = browser.storage.local.get("ainspectorPreferences").then(getAInspectorPreferences, onError);
 
 function getAInspectorPreferences(item) {
-  var prefs = item.ainspectorSidebarPrefs;
+  var prefs = item.ainspectorPreferences;
 
   if (typeof prefs != 'undefined'){
     messageArgs = prefs;
+
+    if ((messageArgs.option !== 'summary') &&
+        (messageArgs.option !== 'group') &&
+        (messageArgs.option !== 'rule')) {
+
+      if (messageArgs.option === 'highlight') {
+        messageArgs.option = 'group';
+      }
+      else {
+        messageArgs.option = 'summary';
+      }
+    }
   }
   else {
     setAInspectorPreferences();
@@ -32,9 +47,9 @@ function getAInspectorPreferences(item) {
 
 function setAInspectorPreferences() {
 
-  var getAInspectorPreferences = messageArgs;
+  var ainspectorPreferences = messageArgs;
 
-  browser.storage.local.set({getAInspectorPreferences})
+  browser.storage.local.set({ainspectorPreferences})
 
 }
 
@@ -87,6 +102,7 @@ function changePanelElements(evaluationResult) {
       updateResults();
       show('summary_panel');
       updateTitle("Summary");
+      backButton.disabled = true;
       updateSummaryPanel(evaluationResult);
       setSummaryPanelFocus();
       break;
@@ -184,6 +200,8 @@ function handleGetRule(ruleId, position) {
 // Add event handlers
 
 function sendMessageToTabs(tabs) {
+
+  setAInspectorPreferences()
 
   if (messageArgs.option !== 'highlight') {
     clearSummaryPanel();

@@ -61,6 +61,52 @@ button:focus {
   outline: none;
 }
 
+#ainspector_preferences {
+  margin: 0;
+  padding: 0;
+}
+
+#ainspector_preferences h2 {
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+}
+
+#ainspector_preferences fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#ainspector_preferences legend {
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  font-size: 110%;
+}
+
+#ainspector_preferences ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#ainspector_preferences ul li {
+  margin: 0;
+  padding: 0;
+}
+
+#ainspector_preferences label {
+  margin: 0;
+  padding: 0;
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-size: 110%;
+}
+
 
 table {
   margin-top: 2.5em;
@@ -128,15 +174,6 @@ table.grid {
   border: 1px solid #444;
 }
 
-/*
-table.grid th,
-table.grid td {
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent;
-}
-*/
-
-
 table.grid thead th {
   padding: 0.25em;
   padding-top: 0.5em;
@@ -193,28 +230,27 @@ table.grid tbody tr th:first-child {
   padding-left: 1em;
 }
 
-table.grid thead tr[aria-selected="true"] th,
-table.grid tbody tr[aria-selected="true"] th {
-  background-image:  url(grid-row-selected.svg);
-  background-repeat: no-repeat;
-  background-position: left center;
+table.grid tbody tr[aria-selected="true"] {
+  outline: 2px solid #888;
 }
+
+table.grid tbody tr:focus {
+  outline: 2px solid hsl(216, 94%, 70%);
+}
+
 
 table.grid thead tr:focus th,
 table.grid tbody tr:focus th,
 table.grid tbody tr:focus td {
   background-color: hsl(216, 94%, 90%);
-  border-color: hsl(216, 94%, 90%);
 }
 
 table.grid tbody tr:focus td.v {
   background-color: hsl(0, 100%, 90%);
-  border-color: hsl(216, 94%, 90%);
 }
 
 table.grid tbody tr:focus td.w {
   background-color: hsl(49, 100%, 90%);
-  border-color: hsl(216, 94%, 90%);
 }
 
 table.grid tbody tr:focus td.mc {
