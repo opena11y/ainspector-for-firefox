@@ -53,17 +53,31 @@ function updateGroupPanel(evaluationResult) {
 
   ruleResults = evaluationResult.ruleResults;
 
-  ruleResults.sort(function (a, b) {
+  var displayResults = [];
+
+  for (let i = 0; i < ruleResults.length; i++) {
+    var rr = ruleResults[i];
+    if (messageArgs.includePassAndNotApplicable ||
+      (rr.resultValue > 2)) {
+      displayResults.push(rr);
+    }
+  }
+
+  displayResults.sort(function (a, b) {
     return b.resultValue - a.resultValue;
   });
 
   groupGrid.clearRows();
 
-  for (let i = 0; i < ruleResults.length; i++) {
-    var rr = ruleResults[i];
-    addRuleResultRow(rr.ruleId, rr.summary, rr.result, rr.wcag, rr.level, rr.required);
+  if (displayResults.length) {
+    for (let i = 0; i < displayResults.length; i++) {
+      var rr = displayResults[i];
+      addRuleResultRow(rr.ruleId, rr.summary, rr.result, rr.wcag, rr.level, rr.required);
+    }
   }
-
+  else {
+    addRuleResultRow('noResults', 'No violations, warnings or manual check results', '-', '-', '-', false);
+  }
 }
 
 

@@ -149,9 +149,8 @@ rulesetAriaTransRadio.addEventListener('click', handleRulesetAriaTrans);
 function handleIncludePassAndNotApplicable (event) {
   messageArgs.includePassAndNotApplicable = includePassAndNotApplicableCheckbox.checked;
   setAInspectorPreferences();
+  reRunEvaluation = true;
 };
 
 includePassAndNotApplicableCheckbox.addEventListener('click', handleIncludePassAndNotApplicable);
-
-
 

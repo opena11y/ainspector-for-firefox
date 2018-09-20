@@ -6,6 +6,8 @@ function onError(error) {
 
 var messageArgs = {
   promptForDelay: false,
+  delay: 5,
+  delayCount: 0,
   includeGuidelines: true,
   includePassAndNotApplicable: true,
   ruleset: 'ARIA_STRICT',
@@ -220,8 +222,32 @@ function sendMessageToTabs(tabs) {
   }
 };
 
+function delayEvaluation() {
+
+  messageArgs.delayCount = messageArgs.delayCount - 1;
+  evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
+  if (messageArgs.delayCount === 0) {
+    handleUpdateEvaluation();
+    evaluateButton.innerHTML = 'Rerun evaluate';
+    evaluateButton.disabled = false;
+  }
+  else {
+    setTimeout(delayEvaluation, 1000);
+  }
+}
+
+function handleEvaluateButton () {
+
+  if (messageArgs.promptForDelay) {
+    delayDialog.open();
+  }
+  else {
+    handleUpdateEvaluation();
+  }
+}
+
 var evaluateButton = document.getElementById('evaluate');
-evaluateButton.addEventListener("click", handleUpdateEvaluation);
+evaluateButton.addEventListener("click", handleEvaluateButton);
 
 window.addEventListener("load", function(){
     messageArgs.option    = 'summary';

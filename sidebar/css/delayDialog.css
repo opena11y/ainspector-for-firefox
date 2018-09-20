@@ -1,0 +1,48 @@
+#delay_dialog {
+  width: 350px;
+  border: 2px solid black;
+  border-radius: 10px;
+  position: absolute;
+  top: 200px;
+  left: 40px;
+  background: #FFFFFF;
+  z-index: 10;
+}
+
+#delay_dialog h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2em;
+  padding-top: 0.125em;
+  padding-bottom: 0.125em;
+  padding-left: 10px;
+  margin-bottom: 1em;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background: #DDD;
+  border-bottom: 1px solid black;
+}
+
+#delay_dialog label,
+#delay_dialog_select_delay {
+  margin: 0;
+  padding: 0;
+  padding-left: 10px;
+  display: block;
+}
+
+#delay_dialog_only_once {
+  margin: 0;
+  padding: 0;
+  padding-left: 1em;
+}
+
+#delay_dialog select {
+  margin-bottom: 1em;
+}
+
+#delay_dialog_buttons {
+  float: right;
+  margin-right: 1em;
+  margin-bottom: 1em;
+}

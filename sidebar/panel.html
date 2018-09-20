@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/panel.css"/>
     <link rel="stylesheet" href="css/tabs.css"/>
     <link rel="stylesheet" href="css/menuButton.css"/>
+    <link rel="stylesheet" href="css/delayDialog.css"/>
   </head>
 
 <body>
@@ -296,25 +297,25 @@
     </footer>
   </div>
 
-  <div id="delay_dialog" role="dialog" aria-labelledby="delay_dialog_title" style="display: none">
-    <h2 id="delay_dialog_title">Rerun Evaluation" Specify Delay</h2>
+  <div tabindex="-1" id="delay_dialog" role="dialog" aria-labelledby="delay_dialog_title" style="display: none">
+    <h2 id="delay_dialog_title">Rerun Evaluation: Specify Delay</h2>
 
-    <label>Rerun evaluation in
-      <select id="delay_dialog_value">
-        <option  value="5"> 5 sec.</option>
-        <option value="10">10 sec.</option>
-        <option value="20">20 sec.</option>
-        <option value="40">40 sec.</option>
-        <option value="60"> 1 min.</option>
-      </select>
-    </label>
+    <label for="delay_dialog_select_delay">Rerun evaluation in</label>
+    <select id="delay_dialog_select_delay">
+      <option value="5" selected> 5 sec.</option>
+      <option value="10">10 sec.</option>
+      <option value="20">20 sec.</option>
+      <option value="40">40 sec.</option>
+      <option value="60"> 1 min.</option>
+    </select>
+
 
     <label>
       <input type="checkbox" id="delay_dialog_only_once"/>
       After this evaluation, stop prompting for delay setting.
     </label>
 
-    <div>
+    <div id="delay_dialog_buttons">
       <button id="delay_dialog_cancel">Cancel</button>
       <button id="delay_dialog_ok">Ok</button>
     </div>
@@ -334,6 +335,7 @@
   <script src="js/grid.js"></script>
   <script src="js/viewMenuButton.js"></script>
   <script src="js/preferences.js"></script>
+  <script src="js/delayDialog.js"></script>
 </body>
 
 </html>
