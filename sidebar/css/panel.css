@@ -46,6 +46,12 @@ footer .info {
   z-index: 0;
 }
 
+button#evaluate,
+button#preferences {
+  width: 10em;
+  text-align: center;
+}
+
 button {
   font-size: 1em;
   border: 1px solid #888;
@@ -56,9 +62,12 @@ button {
 }
 
 button:focus {
-  border-width: 2px;
+  border: 2px solid hsl(216, 94%, 70%);
   padding: 1px 11px 1px 11px;
-  outline: none;
+}
+
+button::-moz-focus-inner {
+  border: 0;
 }
 
 #ainspector_preferences {

@@ -7,7 +7,6 @@
 *   Desc:   Dialog box to select a delay time
 */
 
-
 var delayDialog = {
 
   dialogNode: null,
@@ -23,21 +22,18 @@ var delayDialog = {
   keyCode: Object.freeze({
     'RETURN': 13,
     'SPACE': 32,
-    'END': 35,
-    'HOME': 36,
-    'LEFT': 37,
-    'UP': 38,
-    'RIGHT': 39,
-    'DOWN': 40,
-    'TAB': 9
+    'TAB': 9,
+    'ESC': 27
   }),
 
   init: function () {
 
     this.dialogNode      = document.getElementById('delay_dialog');
     this.selectDelayNode = document.getElementById('delay_dialog_select_delay');
+    this.onlyOnceNode    = document.getElementById('delay_dialog_only_once');
     this.cancelNode      = document.getElementById('delay_dialog_cancel');
     this.okNode          = document.getElementById('delay_dialog_ok');
+    this.backDropNode    = document.getElementById('dialog_backdrop');
 
     this.selectDelayNode.addEventListener('keydown', this.handleSelectDelayKeyDown.bind(this));
 
@@ -46,19 +42,28 @@ var delayDialog = {
 
     this.cancelNode.addEventListener('click', this.handleCancelClick.bind(this));
 
+    this.dialogNode.addEventListener('keydown', this.handleDialogKeyDown.bind(this));
+
   },
 
   open: function () {
     show('delay_dialog');
-    this.dialogNode.focus();
+    this.selectDelayNode.focus();
+    this.backDropNode.classList.add('active');
+    this.backDropNode.addEventListener('click', this.handleBackDropClick.bind(this));
+
+    this.dialogNode.style.top = (parseInt(evaluateButton.getBoundingClientRect().top) - parseInt(this.dialogNode.getBoundingClientRect().height) - 20) + 'px';
   },
 
   close: function () {
     hide('delay_dialog');
+    this.backDropNode.removeEventListener('click', this.handleBackDropClick.bind(this));
+    this.backDropNode.classList.remove('active');
   },
 
   handleCancelClick: function () {
     this.close();
+    messageArgs.promptForDelay = !this.onlyOnceNode.checked;
     handleUpdateEvaluation();
   },
 
@@ -72,15 +77,23 @@ var delayDialog = {
     messageArgs.delayCount = messageArgs.delay
     evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
     evaluateButton.disabled = true;
-    setTimeout(delayEvaluation, 1000);
+    setTimeout(this.delayEvaluation.bind(this), 1000);
   },
 
   handleOkKeyDown: function (event) {
-
     if (event.keyCode === this.keyCode.TAB && !event.shiftKey) {
       event.stopPropagation();
       event.preventDefault();
       this.selectDelayNode.focus();
+    }
+  },
+
+  handleDialogKeyDown: function (event) {
+    if (event.keyCode === this.keyCode.ESC) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.close();
+      handleUpdateEvaluation();
     }
   },
 
@@ -93,7 +106,24 @@ var delayDialog = {
     }
   },
 
-  handleBodyClick: function (event) {
+  handleBackDropClick: function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.selectDelayNode.focus();
+  },
+
+  delayEvaluation: function  () {
+
+    messageArgs.delayCount = messageArgs.delayCount - 1;
+    evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
+    if (messageArgs.delayCount === 0) {
+      handleUpdateEvaluation();
+      evaluateButton.innerHTML = 'Rerun evaluate';
+      evaluateButton.disabled = false;
+    }
+    else {
+      setTimeout(this.delayEvaluation.bind(this), 1000);
+    }
   }
 
 };

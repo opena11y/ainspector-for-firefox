@@ -6,7 +6,7 @@
     "version": "0.5",
 
     "sidebar_action": {
-      "default_icon": "icons/star.png",
+      "default_icon": "icons/ainspector-icon.png",
       "default_title" : "AInspector Sidebar",
       "default_panel": "sidebar/panel.html"
     },

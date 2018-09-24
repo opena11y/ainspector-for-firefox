@@ -222,19 +222,6 @@ function sendMessageToTabs(tabs) {
   }
 };
 
-function delayEvaluation() {
-
-  messageArgs.delayCount = messageArgs.delayCount - 1;
-  evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
-  if (messageArgs.delayCount === 0) {
-    handleUpdateEvaluation();
-    evaluateButton.innerHTML = 'Rerun evaluate';
-    evaluateButton.disabled = false;
-  }
-  else {
-    setTimeout(delayEvaluation, 1000);
-  }
-}
 
 function handleEvaluateButton () {
 
