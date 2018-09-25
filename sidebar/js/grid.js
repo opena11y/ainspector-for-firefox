@@ -68,7 +68,12 @@ Grid.prototype.init = function () {
     this.domNode.appendChild(this.tbodyNode);
   }
 
-//  alert('[gridRow.cells]: ' + gridRow.cells.length);
+  this.resize();
+};
+
+Grid.prototype.resize = function () {
+
+
 
 };
 

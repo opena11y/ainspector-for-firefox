@@ -15,9 +15,11 @@ ul[role="menu"] {
   width: 15.5em;
   height: 20em;
   overflow: auto;
+  z-index: 7;
 }
 
 ul[role="menu"] li[role="menuitem"] {
+  margin: 0;
   display: block;
   padding: 0.25em;
   padding-left: 0.5em;

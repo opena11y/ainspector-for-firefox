@@ -1,9 +1,16 @@
 {
 
     "manifest_version": 2,
-    "name": "AInspector Sidebar",
-    "description": "Inspects web pages for features and issues related to WCAG 2.0 level A and AA requirements.",
-    "version": "0.5",
+    "name": "__MSG_extensionName__",
+    "description": "__MSG_extensionDescription__",
+    "version": "0.8",
+    "version_name": "0.8 Beta",
+    "author": "Accessible IT Group at University of Illinois",
+    "default_locale": "en",
+    "icons": {
+      "48": "icons/ainspector-icon.png",
+      "96": "icons/ainspector-icon.png"
+    },
 
     "sidebar_action": {
       "default_icon": "icons/ainspector-icon.png",

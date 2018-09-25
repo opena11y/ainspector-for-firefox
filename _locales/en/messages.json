@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "AInspector WCAG",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Inspects web pages for features and issues related to WCAG 2.0 level A and AA requirements.",
+    "description": "Description of the extension."
+  }
+}
