@@ -69,6 +69,8 @@ function clearSummaryPanel() {
     addGroupResultRow(glGrid, '', glOptions[i].label, '-', '-', '-', '-');
   }
 
+  rcGrid.resize();
+  glGrid.resize();
 }
 
 function updateSummaryPanel(evaluationResult) {
@@ -165,3 +167,5 @@ function handleDetailsGroup(event) {
 
 var detailsGroupButton = document.getElementById('details_group');
 detailsGroupButton.addEventListener('click', handleDetailsGroup);
+detailsGroupButton.disabled = true;
+

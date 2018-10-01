@@ -4,17 +4,25 @@ function handleError(error) {
   console.log(`Error: ${error}`);
 }
 
-window.onload = function notifyPanel() {
+window.onload = function () {
 
-  // to be run when the window finishes loading
-  var aiResponse = {};
-  aiResponse.option = 'update';
+  function notifyPanel () {
+    // to be run when the window finishes loading
+    var aiResponse = {};
+    aiResponse.option = 'update';
 
-  var sending = browser.runtime.sendMessage({
-    messageForPanel: aiResponse
-  });
-  sending.then(handleError);
+    var sending = browser.runtime.sendMessage({
+      messageForPanel: aiResponse
+    });
+    sending.then(handleError);
+  }
+
+  notifyPanel();
+
+  window.addEventListener('focus', function(e) {notifyPanel();});
+
 }
+
 
 function evaluateRules(ruleset) {
 

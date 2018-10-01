@@ -128,7 +128,7 @@
           </div>
         </div>
 
-        <div class="details_action">
+        <div id="rr_details_action" class="details_action">
 
           <div id="rr_none_selected">
             nothing selected
@@ -250,53 +250,6 @@
     </footer>
   </div>
 
-  <div id="ainspector_preferences" style="display: none">
-    <header>
-      <h1>Preferences</h1>
-    </header>
-
-    <main>
-
-      <h2>General</h2>
-
-      <fieldset>
-        <legend>'Views' menu</legend>
-        <label><input type="Checkbox" checked id="include_guidelines"/>Include WCAG Guidelines</label>
-      </fieldset>
-
-      <fieldset>
-        <legend>'Rerun Evaluation' Button</legend>
-        <ul>
-          <li><label><input type="radio" name="delay" id="NO_DELAY"/>Rerun with no delay</label></li>
-          <li><label><input type="radio" name="delay" id="PROMPT_FOR_DELAY"/>Prompt for delay setting</label></li>
-        </ul>
-      </fieldset>
-
-      <h2>Evaluation</h2>
-      <fieldset>
-        <legend>Ruleset</legend>
-        <ul>
-          <li><label><input type="radio" name="ruleset" id="ARIA_STRICT"/>HTML5 and ARIA Techniques</label></li>
-          <li><label><input type="radio" name="ruleset" id="ARIA_TRANS"/>HTML4 Legacy Techniques</label></li>
-        </ul>
-      </fieldset>
-
-      <fieldset>
-        <legend>Rule Results</legend>
-        <label><input type="Checkbox" checked id="include_pass_and_na"/>Include 'Pass' and 'N/A' results</label>
-      </fieldset>
-
-    </main>
-
-    <footer style="width: 96%">
-      <div>
-        <button id="preferences_default">Reset Defaults</button>
-        <div class="right">
-          <button id="preferences_close">Close</button>
-        </div>
-      </div>
-    </footer>
-  </div>
 
   <div id="dialog_backdrop">
   </div>
@@ -326,6 +279,7 @@
     </div>
   </div>
 
+  <script src="js/options.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/summary.js"></script>
   <script src="js/group.js"></script>
@@ -337,7 +291,6 @@
   <script src="js/menuitem.js"></script>
   <script src="js/grid.js"></script>
   <script src="js/viewMenuButton.js"></script>
-  <script src="js/preferences.js"></script>
   <script src="js/delayDialog.js"></script>
 </body>
 

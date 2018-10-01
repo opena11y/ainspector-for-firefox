@@ -1,10 +1,6 @@
 "use strict";
 
-hide('ainspector_preferences');
-
-var preferencesButton         = document.getElementById('preferences');
 var preferencesDefaultButton  = document.getElementById('preferences_default');
-var preferencesCloseButton    = document.getElementById('preferences_close');
 
 var includeGuidelinesCheckbox = document.getElementById('include_guidelines');
 
@@ -18,6 +14,18 @@ var includePassAndNotApplicableCheckbox = document.getElementById('include_pass_
 
 var reRunEvaluation = false;
 // Restore Defaults
+
+function handleResponse(message) {
+  console.log(`Message from the sidebar script:  ${message.response}`);
+}
+
+function notifySidebarOfPreferenceChanges() {
+  var sending = browser.runtime.sendMessage({
+    updatePreferences: "all"
+  });
+  sending.then(handleResponse, onError);
+}
+
 
 function handleResetDefault (event) {
 
@@ -40,63 +48,19 @@ function handleResetDefault (event) {
   }
 
   setAInspectorPreferences();
+  notifySidebarOfPreferenceChanges();
 
 };
 
 preferencesDefaultButton.addEventListener('click', handleResetDefault);
 
-
-// Open Preferences
-
-function handlePreferences (event) {
-
-  reRunEvaluation = false;
-
-  includeGuidelinesCheckbox.checked = messageArgs.includeGuidelines;
-
-  if (messageArgs.promptForDelay) {
-    promptForDelayRadio.checked = true;
-  }
-  else {
-    noDelayRadio.checked = true;
-  }
-
-  if (messageArgs.ruleset === 'ARIA_STRICT') {
-    rulesetAriaStrictRadio.checked = true;
-  }
-
-  if (messageArgs.ruleset === 'ARIA_TRANS') {
-    rulesetAriaTransRadio.checked = true;
-  }
-
-  includePassAndNotApplicableCheckbox.checked = messageArgs.includePassAndNotApplicable;
-
-  hide('ainspector_results');
-  show('ainspector_preferences');
-};
-
-preferencesButton.addEventListener('click', handlePreferences);
-
-
-// Close preferences
-
-function handlePreferencesClose (event) {
-  hide('ainspector_preferences');
-  show('ainspector_results');
-
-  if (reRunEvaluation) {
-    handleUpdateEvaluation();
-  }
-};
-
-preferencesCloseButton.addEventListener('click', handlePreferencesClose);
-
-
 // Include Guidelines
 
 function handleIncludeGuidelines (event) {
   messageArgs.includeGuidelines = includeGuidelinesCheckbox.checked;
+
   setAInspectorPreferences();
+  notifySidebarOfPreferenceChanges();
 };
 
 includeGuidelinesCheckbox.addEventListener('click', handleIncludeGuidelines);
@@ -106,6 +70,7 @@ includeGuidelinesCheckbox.addEventListener('click', handleIncludeGuidelines);
 function handleNoDelay (event) {
   if (noDelayRadio.checked) {
     messageArgs.promptForDelay = false;
+
     setAInspectorPreferences();
   }
 };
@@ -128,6 +93,7 @@ function handleRulesetAriaStrict (event) {
   if (rulesetAriaStrictRadio.checked) {
     messageArgs.ruleset = 'ARIA_STRICT';
     setAInspectorPreferences();
+    notifySidebarOfPreferenceChanges();
     reRunEvaluation = true;
   }
 };
@@ -138,6 +104,7 @@ function handleRulesetAriaTrans (event) {
   if (rulesetAriaTransRadio.checked) {
     messageArgs.ruleset = 'ARIA_TRANS';
     setAInspectorPreferences();
+    notifySidebarOfPreferenceChanges();
     reRunEvaluation = true;
   }
 };
@@ -154,3 +121,34 @@ function handleIncludePassAndNotApplicable (event) {
 
 includePassAndNotApplicableCheckbox.addEventListener('click', handleIncludePassAndNotApplicable);
 
+var storedValue = browser.storage.local.get("ainspectorPreferences").then(updateAInspectorPreferencesPanel, onError);
+
+function updateAInspectorPreferencesPanel(item) {
+  var prefs = item.ainspectorPreferences;
+
+  if (typeof prefs != 'undefined'){
+    messageArgs = prefs;
+  }
+  else {
+    setAInspectorPreferences();
+  }
+
+  if (messageArgs.promptForDelay) {
+    promptForDelayRadio.checked = true;
+  }
+  else {
+    noDelayRadio.checked = true;
+  }
+
+  includeGuidelinesCheckbox.checked = messageArgs.includeGuidelines;
+
+  if (messageArgs.ruleset === 'ARIA_STRICT') {
+    rulesetAriaStrictRadio.checked = true;
+  }
+  else {
+    rulesetAriaTransRadio.checked = true;
+  }
+
+  includePassAndNotApplicableCheckbox.checked = messageArgs.includePassAndNotApplicable;
+
+};

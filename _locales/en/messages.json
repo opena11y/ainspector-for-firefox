@@ -7,5 +7,21 @@
   "extensionDescription": {
     "message": "Inspects web pages for features and issues related to WCAG 2.0 level A and AA requirements.",
     "description": "Description of the extension."
+  },
+
+  "extensionAuthor": {
+    "message": "Accessible IT Group at University of Illinois.",
+    "description": "Author of the accessibility extension."
+  },
+
+  "panelSummaryTitle": {
+    "message": "Summary",
+    "description": "Title for the Summary Panel"
+  },
+
+  "panelBackButton": {
+    "message": "Back",
+    "description": "Label for the Back button"
   }
+
 }

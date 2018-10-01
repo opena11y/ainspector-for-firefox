@@ -1,65 +1,17 @@
 "use strict";
 
-function onError(error) {
-//  console.error(`Error: ${error}`);
-}
-
-var messageArgs = {
-  promptForDelay: false,
-  delay: 5,
-  delayCount: 0,
-  includeGuidelines: true,
-  includePassAndNotApplicable: true,
-  ruleset: 'ARIA_STRICT',
-  option: 'summary',
-  groupType: 'rc',
-  groupId: 1,
-  rule: '',
-  position: -1,
-  highlight: 'none',  // other options 'selected', 'v/w', 'mc' and 'all'
-  position: 0       // position of element to highlight
-};
-
-// Setup storage
-
 var storedValue = browser.storage.local.get("ainspectorPreferences").then(getAInspectorPreferences, onError);
-
-function getAInspectorPreferences(item) {
-  var prefs = item.ainspectorPreferences;
-
-  if (typeof prefs != 'undefined'){
-    messageArgs = prefs;
-
-    if ((messageArgs.option !== 'summary') &&
-        (messageArgs.option !== 'group') &&
-        (messageArgs.option !== 'rule')) {
-
-      if (messageArgs.option === 'highlight') {
-        messageArgs.option = 'group';
-      }
-      else {
-        messageArgs.option = 'summary';
-      }
-    }
-  }
-  else {
-    setAInspectorPreferences();
-  }
-}
-
-function setAInspectorPreferences() {
-
-  var ainspectorPreferences = messageArgs;
-
-  browser.storage.local.set({ainspectorPreferences})
-
-}
 
 browser.runtime.onMessage.addListener(notify);
 
 function notify(message) {
+
   if (message.messageForPanel) {
     changePanelElements(message.messageForPanel);
+  }
+
+  if (message.updatePreferences) {
+    browser.storage.local.get("ainspectorPreferences").then(getAInspectorPreferences, onError);
   }
 };
 
@@ -102,10 +54,10 @@ function changePanelElements(evaluationResult) {
 
     case 'summary':
       updateResults();
-      show('summary_panel');
-      updateTitle("Summary");
+      updateTitle("panelSummaryTitle");
       backButton.disabled = true;
       updateSummaryPanel(evaluationResult);
+      show('summary_panel');
       setSummaryPanelFocus();
       break;
 
@@ -130,6 +82,10 @@ function changePanelElements(evaluationResult) {
       break;
 
     case 'highlight':
+      break;
+
+    case 'preferenceUpdate':
+      alert('Preference Update');
       break;
 
     default:
@@ -290,6 +246,7 @@ function handleBack(event) {
 };
 
 var backButton = document.getElementById('back');
+backButton.innerHTML = browser.i18n.getMessage('panelBackButton');
 backButton.addEventListener('click', handleBack);
 
 // Highlight button
@@ -317,6 +274,14 @@ highlightOptions.addEventListener('change', handleHighlight);
 
 
 
+// init Preferences
+
+function handlePreferences (event) {
+   chrome.runtime.openOptionsPage();
+};
+
+var preferencesButton = document.getElementById('preferences');
+preferencesButton.addEventListener('click', handlePreferences);
 
 // Initialize panel
 
@@ -327,7 +292,7 @@ showSummaryPanel();
 hideGroupPanel();
 hideRulePanel();
 
+
 backButton.disabled = true;
-detailsGroupButton.disabled = true;
 
 

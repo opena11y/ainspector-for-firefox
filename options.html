@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="sidebar/css/panel.css"/>
+
+
+  </head>
+
+  <body>
+
+    <main id="ainspector_preferences">
+
+      <h1>Preferences</h1>
+
+      <h2>General</h2>
+
+      <form>
+      <fieldset>
+        <legend>'Views' menu</legend>
+        <label>
+          <input type="Checkbox" checked id="include_guidelines"/>
+          Include WCAG Guidelines
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>'Rerun Evaluation' Button</legend>
+        <label><input type="radio" name="delay" id="NO_DELAY"/>Rerun with no delay</label><label><input type="radio" name="delay" id="PROMPT_FOR_DELAY"/>Prompt for delay setting</label>
+      </fieldset>
+
+      <h2>Evaluation</h2>
+
+      <fieldset>
+        <legend>Ruleset</legend>
+        <label><input type="radio" name="ruleset" id="ARIA_STRICT"/>HTML5 and ARIA Techniques</label><label><input type="radio" name="ruleset" id="ARIA_TRANS"/>HTML4 Legacy Techniques</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Rule Results</legend>
+        <label><input type="Checkbox" checked id="include_pass_and_na"/>Include 'Pass' and 'N/A' results</label>
+      </fieldset>
+
+      <button id="preferences_default">Reset Defaults</button>
+
+    </main>
+
+  <script src="sidebar/js/options.js"></script>
+  <script src="sidebar/js/preferences.js"></script>
+
+  </body>
+
+</html>

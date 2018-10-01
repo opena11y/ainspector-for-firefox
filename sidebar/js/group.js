@@ -140,3 +140,4 @@ function handleDetailsRule(event) {
 
 var detailsRuleButton = document.getElementById('details_rule');
 detailsRuleButton.addEventListener('click', handleDetailsRule);
+

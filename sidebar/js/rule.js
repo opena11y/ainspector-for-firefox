@@ -154,3 +154,21 @@ function handleRuleGridAction(type, position) {
 
   }
 };
+
+window.addEventListener('resize', function() {
+
+  function resize(id) {
+    var node = document.getElementById(id);
+
+    var totalWidth = refNode.getBoundingClientRect().right - node.getBoundingClientRect().left;
+
+    node.style.width = totalWidth + 'px';
+
+  }
+
+  var refNode = document.getElementById('view_options_button');
+
+  resize('rr_details_action');
+  resize('da_tabpanel')
+
+});

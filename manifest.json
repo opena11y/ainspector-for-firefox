@@ -5,7 +5,7 @@
     "description": "__MSG_extensionDescription__",
     "version": "0.8",
     "version_name": "0.8 Beta",
-    "author": "Accessible IT Group at University of Illinois",
+    "author": "__MSG_extensionAuthor__",
     "default_locale": "en",
     "icons": {
       "48": "icons/ainspector-icon.png",
@@ -26,6 +26,10 @@
           "default": "Ctrl+Shift+Y"
         }
       }
+    },
+
+    "options_ui": {
+      "page": "options.html"
     },
 
     "content_scripts": [

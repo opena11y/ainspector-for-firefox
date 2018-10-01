@@ -73,7 +73,10 @@ Grid.prototype.init = function () {
 
 Grid.prototype.resize = function () {
 
-
+  var totalWidth = 400;
+  var node = document.getElementById('view_options_button');
+  totalWidth = node.getBoundingClientRect().right - this.domNode.getBoundingClientRect().left;
+  this.domNode.style.width = totalWidth + 'px'
 
 };
 
@@ -476,4 +479,9 @@ groupGrid.init();
 var ruleGrid = new Grid(document.getElementById('rule_grid'));
 ruleGrid.init();
 
-// alert(rcGrid + '\n' + glGrid + '\n' + groupGrid + '\n' + ruleGrid);
+window.addEventListener('resize', function() {
+  rcGrid.resize();
+  glGrid.resize();
+  groupGrid.resize();
+  ruleGrid.resize();
+});
