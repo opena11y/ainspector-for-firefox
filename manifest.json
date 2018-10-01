@@ -29,7 +29,7 @@
     },
 
     "options_ui": {
-      "page": "options.html"
+      "page": "preferences.html"
     },
 
     "content_scripts": [
