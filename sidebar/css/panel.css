@@ -238,35 +238,45 @@ table.grid tbody tr th:first-child {
   padding-left: 1em;
 }
 
-table.grid tbody tr[aria-selected="true"] {
+table.grid tbody tr[aria-selected="true"],
+table.grid tbody tr th[aria-selected="true"],
+table.grid tbody tr td[aria-selected="true"] {
   outline: 2px solid #888;
 }
 
-table.grid tbody tr:focus {
+table.grid tbody tr:focus,
+table.grid tbody tr th:focus,
+table.grid tbody tr td:focus {
   outline: 2px solid hsl(216, 94%, 70%);
 }
 
 
 table.grid thead tr:focus th,
 table.grid tbody tr:focus th,
-table.grid tbody tr:focus td {
+table.grid tbody tr:focus td,
+table.grid tbody tr th:focus,
+table.grid tbody tr td:focus {
   background-color: hsl(216, 94%, 90%);
 }
 
-table.grid tbody tr:focus td.v {
+table.grid tbody tr:focus td.v,
+table.grid tbody tr td:focus.v {
   background-color: hsl(0, 100%, 90%);
 }
 
-table.grid tbody tr:focus td.w {
+table.grid tbody tr:focus td.w,
+table.grid tbody tr td:focus.w {
   background-color: hsl(49, 100%, 90%);
 }
 
-table.grid tbody tr:focus td.mc {
+table.grid tbody tr:focus td.mc,
+table.grid tbody tr td:focus.mc {
   background-color: hsl(198, 52%, 90%);
   border-color: hsl(216, 94%, 90%);
 }
 
-table.grid tbody tr:focus td.p {
+table.grid tbody tr:focus td.p,
+table.grid tbody tr td:focus.p {
   background-color: hsl(90, 67%, 90%);
   border-color: hsl(216, 94%, 90%);
 }

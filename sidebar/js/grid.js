@@ -17,9 +17,11 @@ var Grid = function (domNode) {
   this.cellNavigation = true;
 
   this.selectedId = '';
-  this.currentIndex = 0;
+  this.currentRowIndex = 0;
   this.firstRowIndex = -1;
   this.lastRowIndex = -1;
+
+  this.currentColumnIndex = -1;
 
   this.rows = [];
 
@@ -160,43 +162,100 @@ Grid.prototype.setSelectedToRowById = function (id) {
 
 }
 
-Grid.prototype.setSelectedToRow = function (index) {
+Grid.prototype.setSelectedToRow = function (rowIndex) {
 
   for(let i = 0; i < this.rows.length; i++) {
     this.rows[i].removeSelected();
   }
 
-  if (this.rows[index]) {
-    this.rows[index].setSelected();
+  if (this.rows[rowIndex]) {
+    this.rows[rowIndex].setSelected();
+    this.currentColumnIndex = -1;
   }
   else {
     this.rows[this.firstRowIndex].setSelected();
+    this.currentColumnIndex = -1;
   }
 
 };
 
+Grid.prototype.setSelectedToCell = function (rowIndex, columnIndex) {
+
+  for(let i = 0; i < this.rows.length; i++) {
+    this.rows[i].removeSelected();
+  }
+
+  if (this.rows[rowIndex] && this.rows[rowIndex].cells[columnIndex]) {
+    this.rows[rowIndex].cells[columnIndex].setSelected();
+  }
+  else {
+    if (this.rows[rowIndex] && this.rows[rowIndex].cells[0]) {
+      this.rows[this.firstRowIndex].cells[0].setSelected();
+    }
+    else {
+      this.rows[this.firstRowIndex].setSelected();
+    }
+  }
+};
+
+
 Grid.prototype.moveFocusToFirstRow = function () {
-  this.setSelectedToRow(this.firstRowIndex);
+  if (this.grid.currentColumnIndex < 0) {
+    this.setSelectedToRow(this.firstRowIndex);
+  }
+  else {
+    this.setSelectedToCell(this.firstRowIndex, this.grid.currentColumnIndex);
+  }
 };
 
 Grid.prototype.moveFocusToLastRow = function () {
-  this.setSelectedToRow(this.lastRowIndex);
+  if (this.grid.currentColumnIndex < 0) {
+    this.setSelectedToRow(this.lastRowIndex);
+  }
+  else {
+    this.setSelectedToCell(this.lastRowIndex, this.grid.currentColumnIndex);
+  }
 };
 
 Grid.prototype.moveFocusToPreviousRow = function () {
-  if (this.currentIndex > this.firstRowIndex) {
-    var newRow = this.rows[this.currentIndex-1];
-    this.setSelectedToRow(this.currentIndex-1);
+  if (this.currentRowIndex > this.firstRowIndex) {
+    if (this.currentColumnIndex < 0) {
+      this.setSelectedToRow(this.currentRowIndex-1);
+    }
+    else {
+      this.setSelectedToCell((this.currentRowIndex-1), this.currentColumnIndex);
+    }
   }
 };
 
 Grid.prototype.moveFocusToNextRow = function () {
-  if (this.currentIndex < this.lastRowIndex) {
-    this.setSelectedToRow(this.currentIndex+1);
+  if (this.currentRowIndex < this.lastRowIndex) {
+    if (this.currentColumnIndex < 0) {
+      this.setSelectedToRow(this.currentRowIndex+1);
+    }
+    else {
+      this.setSelectedToCell((this.currentRowIndex+1), this.currentColumnIndex);
+    }
   }
 };
 
 Grid.prototype.moveFocusToFirstCell = function () {
+  this.setSelectedToCell(this.currentRowIndex, 0);
+};
+
+Grid.prototype.moveFocusToPreviousCell = function () {
+  if (this.currentColumnIndex > 0) {
+    this.setSelectedToCell(this.currentRowIndex, (this.currentColumnIndex-1));
+  }
+  else {
+    this.setSelectedToRow(this.currentRowIndex);
+  }
+};
+
+Grid.prototype.moveFocusToNextCell = function () {
+  if (this.currentColumnIndex < (this.rows[this.currentRowIndex].cells.length-1)) {
+    this.setSelectedToCell(this.currentRowIndex, (this.currentColumnIndex+1));
+  }
 };
 
 // =======================
@@ -222,10 +281,12 @@ var GridRow = function (domNode, grid, id, action, thead) {
   this.id      = id;
   this.action  = action;
   if (!thead) {
-    this.index = -1;
+    this.rowIndex = -1;
   }
 
   this.isThead = thead;
+
+  this.rowIndex = this.grid.rows.length;
 
   this.cells = [];
 
@@ -298,14 +359,19 @@ GridRow.prototype.remove = function () {
 GridRow.prototype.removeSelected = function () {
   this.domNode.tabIndex = -1;
   this.domNode.setAttribute('aria-selected', 'false');
+  this.cells.forEach(function(cell) {
+    cell.removeSelected();
+  });
 };
 
 GridRow.prototype.setSelected = function () {
   this.domNode.focus();
   this.domNode.tabIndex = 0;
-  this.grid.currentIndex = this.index;
+  this.grid.currentRowIndex = this.index;
   this.domNode.setAttribute('aria-selected', 'true');
 };
+
+
 
 
 /* EVENT HANDLERS */
@@ -343,6 +409,7 @@ GridRow.prototype.handleKeydown = function (event) {
       break;
 
     case this.keyCode.RIGHT:
+      this.grid.moveFocusToFirstCell();
       flag = true;
       break;
 
@@ -399,7 +466,7 @@ var GridCell = function (domNode, gridRow, header) {
   this.domNode  = domNode;
   this.gridRow  = gridRow;
   this.isHeader = header;
-  this.column   = gridRow.cells.length + 1;
+  this.column   = gridRow.cells.length;
 
   this.keyCode = Object.freeze({
     'RETURN': 13,
@@ -424,7 +491,18 @@ GridCell.prototype.init = function () {
 
 };
 
+GridCell.prototype.removeSelected = function () {
+  this.domNode.tabIndex = -1;
+  this.domNode.setAttribute('aria-selected', 'false');
+};
 
+GridCell.prototype.setSelected = function () {
+  this.domNode.focus();
+  this.domNode.tabIndex = 0;
+  this.gridRow.grid.currentRowIndex = this.gridRow.rowIndex;
+  this.gridRow.grid.currentColumnIndex = this.column;
+  this.domNode.setAttribute('aria-selected', 'true');
+};
 
 /* EVENT HANDLERS */
 
@@ -432,16 +510,42 @@ GridCell.prototype.handleKeydown = function (event) {
   var flag = false;
 
   switch (event.keyCode) {
+
+    case this.keyCode.SPACE:
+    case this.keyCode.RETURN:
+      if (this.gridRow.action) {
+        this.gridRow.action("activate", this.gridRow.id);
+      }
+      flag = true;
+      break;
+
     case this.keyCode.UP:
+      this.gridRow.grid.moveFocusToPreviousRow();
       flag = true;
       break;
+
     case this.keyCode.DOWN:
+      this.gridRow.grid.moveFocusToNextRow();
       flag = true;
       break;
+
+    case this.keyCode.HOME:
+      this.gridRow.grid.moveFocusToFirstRow();
+      flag = true;
+      break;
+
+    case this.keyCode.END:
+      this.gridRow.grid.moveFocusToLastRow();
+      flag = true;
+      break;
+
     case this.keyCode.LEFT:
+      this.gridRow.grid.moveFocusToPreviousCell();
       flag = true;
       break;
+
     case this.keyCode.RIGHT:
+      this.gridRow.grid.moveFocusToNextCell();
       flag = true;
       break;
 
