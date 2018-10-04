@@ -34,7 +34,9 @@ var viewMenu;
 
 var ViewMenuButton = function (domNode) {
 
+
   this.domNode   = domNode;
+  this.domNode.innerHTML = browser.i18n.getMessage('panelViewsButton');
   this.menu = false;
 
   this.hasFocus = false;
@@ -161,22 +163,22 @@ function updateViewMenu() {
 
   viewMenu.addOption('', 'separator', ' ');
 
-  for (let i = 0; i < (rcOptions.length-1); i++) {
-    viewMenu.addOption(rcOptions[i].id, 'menuitem', rcOptions[i].label, function() {var id = 'rc-' + rcOptions[i].id; handleGetGroup(id);});
+  for (let i = 0; i < (summaryPanel.rcOptions.length-1); i++) {
+    viewMenu.addOption(summaryPanel.rcOptions[i].id, 'menuitem', summaryPanel.rcOptions[i].label, function() {var id = 'rc-' + summaryPanel.rcOptions[i].id; handleGetGroup(id);});
   }
 
   if (messageArgs.includeGuidelines) {
     viewMenu.addOption('', 'separator', ' ');
 
-    for (let i = 0; i < (glOptions.length-1); i++) {
-      viewMenu.addOption(glOptions[i].id, 'menuitem', glOptions[i].label, function() {var id = 'gl-' + glOptions[i].id; handleGetGroup(id);});
+    for (let i = 0; i < (summaryPanel.glOptions.length-1); i++) {
+      viewMenu.addOption(summaryPanel.glOptions[i].id, 'menuitem', summaryPanel.glOptions[i].label, function() {var id = 'gl-' + summaryPanel.glOptions[i].id; handleGetGroup(id);});
     }
   }
 
   viewMenu.addOption('', 'separator', ' ');
 
-  var last = rcOptions.length-1;
+  var last = summaryPanel.rcOptions.length-1;
 
-  viewMenu.addOption(rcOptions[last].id, 'menuitem', rcOptions[last].label, function() {var id = 'rc-' + rcOptions[last].id; handleGetGroup(id);});
+  viewMenu.addOption(summaryPanel.rcOptions[last].id, 'menuitem', summaryPanel.rcOptions[last].label, function() {var id = 'rc-' + summaryPanel.rcOptions[last].id; handleGetGroup(id);});
 
 };

@@ -136,19 +136,3 @@ Tablist.prototype.setSelectedById = function (tabId, moveFocus) {
 };
 
 
-/* Initialize Tablists */
-
-var summaryTablist;
-
-window.addEventListener('load', function (event) {
-  var Tablists = document.querySelectorAll('[role=tablist]');
-
-  for (var i = 0; i < Tablists.length; i++) {
-    var ctl = new Tablist(Tablists[i]);
-    ctl.init();
-    if (i === 0) {
-      summaryTablist = ctl;
-    }
-  }
-}, false);
-

@@ -56,9 +56,9 @@ function changePanelElements(evaluationResult) {
       updateResults();
       updateTitle("panelSummaryTitle");
       backButton.disabled = true;
-      updateSummaryPanel(evaluationResult);
-      show('summary_panel');
-      setSummaryPanelFocus();
+      summaryPanel.update(evaluationResult);
+      summaryPanel.show();
+      summaryPanel.setFocus();
       break;
 
     case 'group':
@@ -162,7 +162,7 @@ function sendMessageToTabs(tabs) {
   setAInspectorPreferences()
 
   if (messageArgs.option !== 'highlight') {
-    clearSummaryPanel();
+    summaryPanel.clear();
     clearGroupPanel();
     clearRulePanel();
   }
@@ -190,6 +190,7 @@ function handleEvaluateButton () {
 }
 
 var evaluateButton = document.getElementById('evaluate');
+evaluateButton.innerHTML = browser.i18n.getMessage('panelEvaluateButton');
 evaluateButton.addEventListener("click", handleEvaluateButton);
 
 window.addEventListener("load", function(){
@@ -221,7 +222,7 @@ function handleBack(event) {
       messageArgs.option = 'summary';
       backButton.disabled = true;
       update = true;
-      showSummaryPanel();
+      summaryPanel.show();
       hideGroupPanel();
       break;
 
@@ -272,6 +273,8 @@ function handleHighlight(event) {
 var highlightOptions = document.getElementById('highlight');
 highlightOptions.addEventListener('change', handleHighlight);
 
+document.getElementById('highlight_label').innerHTML = browser.i18n.getMessage('panelHighlightLabel');
+
 
 
 // init Preferences
@@ -281,14 +284,15 @@ function handlePreferences (event) {
 };
 
 var preferencesButton = document.getElementById('preferences');
+preferencesButton.innerHTML = browser.i18n.getMessage('panelPreferencesButton');
 preferencesButton.addEventListener('click', handlePreferences);
 
 // Initialize panel
 
-clearSummaryPanel();
+summaryPanel.init();
 clearGroupPanel();
 
-showSummaryPanel();
+summaryPanel.show();
 hideGroupPanel();
 hideRulePanel();
 

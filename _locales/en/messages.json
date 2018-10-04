@@ -22,6 +22,31 @@
   "panelBackButton": {
     "message": "Back",
     "description": "Label for the Back button"
+  },
+
+  "panelViewsButton": {
+    "message": "Views",
+    "description": "Label for the Views button"
+  },
+
+  "panelDetailsButton": {
+    "message": "Details",
+    "description": "Label for the Details button"
+  },
+
+  "panelPreferencesButton": {
+    "message": "Preferences",
+    "description": "Label for the Preferences button"
+  },
+
+  "panelEvaluateButton": {
+    "message": "Rerun Evaluation",
+    "description": "Label for the Rerun button"
+  },
+
+  "panelHighlightLabel": {
+    "message": "Highlight",
+    "description": "Label for the highlight options select box"
   }
 
 }

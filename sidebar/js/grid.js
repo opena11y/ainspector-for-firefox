@@ -491,6 +491,13 @@ GridCell.prototype.init = function () {
 
 };
 
+GridCell.prototype.updateContentAndTitle = function (content, title) {
+  this.domNode.innerHTML = content;
+  if (title) {
+    this.domNode.setAttribute('title', title);
+  }
+};
+
 GridCell.prototype.removeSelected = function () {
   this.domNode.tabIndex = -1;
   this.domNode.setAttribute('aria-selected', 'false');
@@ -571,12 +578,6 @@ GridCell.prototype.handleBlur = function (event) {
 
 };
 
-var rcGrid = new Grid(document.getElementById('rc_grid'));
-rcGrid.init();
-
-var glGrid = new Grid(document.getElementById('gl_grid'));
-glGrid.init();
-
 var groupGrid = new Grid(document.getElementById('group_grid'));
 groupGrid.init();
 
@@ -584,8 +585,6 @@ var ruleGrid = new Grid(document.getElementById('rule_grid'));
 ruleGrid.init();
 
 window.addEventListener('resize', function() {
-  rcGrid.resize();
-  glGrid.resize();
   groupGrid.resize();
   ruleGrid.resize();
 });

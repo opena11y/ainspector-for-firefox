@@ -94,10 +94,8 @@ Tab.prototype.handleClick = function (event) {
 Tab.prototype.handleFocus = function (event) {
   this.domNode.classList.add('focus');
   this.tablist.hasFocus = true;
-  this.tablist.stopRotation();
 };
 
 Tab.prototype.handleBlur = function (event) {
   this.domNode.classList.remove('focus');
-  this.tablist.startRotation();
 };

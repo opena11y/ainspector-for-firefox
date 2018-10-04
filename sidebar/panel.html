@@ -44,7 +44,7 @@
           </tr>
         </table>
 
-        <ul role="tablist" aria-label="Summary View Options">
+        <ul id="summary_tablist" role="tablist" aria-label="Summary View Options">
           <li id="rc_tab" tabindex="-1" role="tab" aria-controls="rc_tabpanel" aria-selected="true">Rule Categories</li>
           <li id="gl_tab" tabindex="-1" role="tab" aria-controls="gl_tabpanel">Guidelines</li>
         </ul>
@@ -223,7 +223,7 @@
 
         <div class="selected_group">
           <div class="right">
-            <label for="highlight">Highlight</label>
+            <label for="highlight" id="highlight_label">Highlight</label>
             <select id="highlight">
               <option value="none">None</option>
               <option value="selected">Selected</option>
@@ -279,17 +279,18 @@
     </div>
   </div>
 
-  <script src="js/options.js"></script>
   <script src="js/utils.js"></script>
-  <script src="js/summary.js"></script>
-  <script src="js/group.js"></script>
-  <script src="js/rule.js"></script>
-  <script src="js/panel.js"></script>
   <script src="js/tabs.js"></script>
   <script src="js/tablist.js"></script>
   <script src="js/menu.js"></script>
   <script src="js/menuitem.js"></script>
   <script src="js/grid.js"></script>
+
+  <script src="js/options.js"></script>
+  <script src="js/summary.js"></script>
+  <script src="js/group.js"></script>
+  <script src="js/rule.js"></script>
+  <script src="js/panel.js"></script>
   <script src="js/viewMenuButton.js"></script>
   <script src="js/delayDialog.js"></script>
 </body>
