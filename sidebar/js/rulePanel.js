@@ -7,6 +7,11 @@ var rulePanel = {
     this.ruleGrid = new Grid(document.getElementById('rule_grid'));
     this.ruleGrid.init();
 
+    this.tablist = new Tablist(document.getElementById('rule_tablist'));
+    this.tablist.init();
+    this.tablist.updateTabContentAndTitle(0, i18n('labelDetailsAction'), '');
+    this.tablist.updateTabContentAndTitle(1, i18n('labelElementResults'), '');
+
     window.addEventListener('resize', function() {
       rulePanel.ruleGrid.resize();
     });

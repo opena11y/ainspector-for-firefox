@@ -162,19 +162,19 @@ function updateViewMenu() {
 
   viewMenu.removeAllOptions();
 
-  viewMenu.addOption('summary', 'menuitem', 'Summary', function() {handleGetSummary();});
+  viewMenu.addOption('summary', 'menuitem', i18n('labelSummary'), function() {handleGetSummary();});
 
   viewMenu.addOption('', 'separator', ' ');
 
   for (let i = 0; i < (summaryPanel.rcOptions.length-1); i++) {
-    viewMenu.addOption(summaryPanel.rcOptions[i].id, 'menuitem', summaryPanel.rcOptions[i].label, function() {var id = 'rc-' + summaryPanel.rcOptions[i].id; handleGetGroup(id);});
+    viewMenu.addOption(summaryPanel.rcOptions[i].id, 'menuitem', i18n(summaryPanel.rcOptions[i].label), function() {var id = 'rc-' + summaryPanel.rcOptions[i].id; handleGetGroup(id);});
   }
 
   if (messageArgs.includeGuidelines) {
     viewMenu.addOption('', 'separator', ' ');
 
     for (let i = 0; i < (summaryPanel.glOptions.length-1); i++) {
-      viewMenu.addOption(summaryPanel.glOptions[i].id, 'menuitem', summaryPanel.glOptions[i].label, function() {var id = 'gl-' + summaryPanel.glOptions[i].id; handleGetGroup(id);});
+      viewMenu.addOption(summaryPanel.glOptions[i].id, 'menuitem', i18n(summaryPanel.glOptions[i].label), function() {var id = 'gl-' + summaryPanel.glOptions[i].id; handleGetGroup(id);});
     }
   }
 
@@ -182,6 +182,6 @@ function updateViewMenu() {
 
   var last = summaryPanel.rcOptions.length-1;
 
-  viewMenu.addOption(summaryPanel.rcOptions[last].id, 'menuitem', summaryPanel.rcOptions[last].label, function() {var id = 'rc-' + summaryPanel.rcOptions[last].id; handleGetGroup(id);});
+  viewMenu.addOption(summaryPanel.rcOptions[last].id, 'menuitem', i18n(summaryPanel.rcOptions[last].label), function() {var id = 'rc-' + summaryPanel.rcOptions[last].id; handleGetGroup(id);});
 
 };

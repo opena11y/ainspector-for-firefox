@@ -139,6 +139,16 @@
     "description": "Passed rules"
   },
 
+  "labelDetailsAction": {
+    "message": "Details/Action",
+    "description": "Label for details/action tab in rule panel"
+  },
+
+  "labelElementResults": {
+    "message": "Element Results",
+    "description": "Label for element results tab in rule panel"
+  },
+
   "labelLandmarks": {
     "message": "Landmarks",
     "description": "Landmark rule category"
