@@ -132,13 +132,34 @@ var summaryPanel = {
 
   addGroupResultRow: function (grid, id, label, v, w, mc, p) {
 
+    function getAccName(value, singular, plural) {
+      var accName = '';
+
+      if (typeof value === 'number') {
+        switch (value) {
+          case 0:
+            accName = i18n('labelNo') + ' ' + plural + '; ';
+            break;
+
+          case 1:
+            accName = '1 ' + singular + '; ';
+            break;
+
+          default:
+            accName = value + ' ' + plural + '; ';
+            break;
+        }
+      }
+      return accName;
+    }
+
     var row = grid.addRow(id, this.handleAction);
 
-    row.addCell(i18n(label), 'text category', '', true);
-    row.addCell(v,  'num result');
-    row.addCell(w,  'num result');
-    row.addCell(mc, 'num result');
-    row.addCell(p,  'num result');
+    row.addCell(i18n(label), 'text category', '', '', true);
+    row.addCell(v,  'num result', getAccName(v,  i18n('labelViolation'),   i18n('labelViolations')));
+    row.addCell(w,  'num result', getAccName(w,  i18n('labelWarning'),     i18n('labelWarnings')));
+    row.addCell(mc, 'num result', getAccName(mc, i18n('labelManualCheck'), i18n('labelManualChecks')));
+    row.addCell(p,  'num result', getAccName(p,  i18n('labelPassed'),      i18n('labelPassed')));
   },
 
   clear: function () {
@@ -207,8 +228,8 @@ var summaryPanel = {
     }
     else {
       this.tablist.setSelectedById('gl_tab', false);
-      this.glGrid.setSelectedToRowById('gl-' + messageArgs.groupId);
       this.rcGrid.setSelectedToRowById();
+      this.glGrid.setSelectedToRowById('gl-' + messageArgs.groupId);
     }
   }
 

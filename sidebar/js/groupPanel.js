@@ -65,13 +65,42 @@ var groupPanel = {
   },
 
   addRuleResultRow: function (rule_id, summary, result, wcag, level, required) {
+
+    function getAccNameResult(result) {
+      var accName = '';
+
+      switch (result) {
+        case 'V':
+          accName = i18n('labelViolation');
+          break;
+
+        case 'W':
+          accName = i18n('labelWarning');
+          break;
+
+        case 'MC':
+          accName = i18n('labelManualCheck');
+          break;
+
+        case 'P':
+          accName = i18n('labelPassed');
+          break;
+
+        default:
+          break;
+
+      }
+
+      return accName;
+    }
+
     var row = this.groupGrid.addRow(rule_id, this.handleAction);
 
-    row.addCell(summary, 'text rule', '', true);
-    row.addCell(result,  'value result ' + result.toLowerCase(), result);
-    row.addCell(level,    'value sc', level);
-    row.addCell(level,   'value level', level);
-    row.addCell((required ? 'Y' : ''), 'value required', (required ? 'Y' : ''));
+    row.addCell(summary, 'text rule', '', '', true);
+    row.addCell(result,  'value result ' + result.toLowerCase(), getAccNameResult(result), result);
+    row.addCell(wcag,   'value sc', '', wcag);
+    row.addCell(level,   'value level', '',level);
+    row.addCell((required ? 'Y' : ''), 'value required', '', (required ? 'Y' : ''));
   },
 
   clear: function () {

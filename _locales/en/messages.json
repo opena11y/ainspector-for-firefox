@@ -74,6 +74,11 @@
     "description": "Column header for summary grid"
   },
 
+  "labelNo": {
+    "message": "No",
+    "description": "used to label no violations, warnings, ..."
+  },
+
   "labelV": {
     "message": "V",
     "description": "Abbreviation for violations used in summary grid as a column header"

@@ -324,7 +324,11 @@ GridRow.prototype.init = function () {
   }
 };
 
-GridRow.prototype.addCell = function (content, type, sort, header) {
+GridRow.prototype.addCell = function (content, type, accName, sort, header) {
+
+  if (typeof accName !== 'string') {
+    accName = false;
+  }
 
   if (typeof sort !== 'number' && typeof sort !== 'string') {
     sort = false;
@@ -346,6 +350,10 @@ GridRow.prototype.addCell = function (content, type, sort, header) {
   node.innerHTML = content;
   this.domNode.appendChild(node);
   node.className = type;
+  if (accName) {
+    node.setAttribute('aria-label', accName);
+  }
+
   if (sort) {
     node.setAttribute('data-sort', sort);
   }
