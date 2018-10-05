@@ -36,7 +36,7 @@ var ViewMenuButton = function (domNode) {
 
 
   this.domNode   = domNode;
-  this.domNode.innerHTML = browser.i18n.getMessage('panelViewsButton');
+  this.domNode.innerHTML = i18n('labelViews');
   this.menu = false;
 
   this.hasFocus = false;
@@ -157,6 +157,9 @@ window.addEventListener('load', function (event) {
 
 
 function updateViewMenu() {
+
+
+
   viewMenu.removeAllOptions();
 
   viewMenu.addOption('summary', 'menuitem', 'Summary', function() {handleGetSummary();});

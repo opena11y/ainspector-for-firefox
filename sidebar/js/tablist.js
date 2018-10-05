@@ -52,6 +52,14 @@ Tablist.prototype.init = function () {
 
 };
 
+
+Tablist.prototype.updateTabContentAndTitle = function (index, content, title) {
+  if (this.tabs[index]) {
+    this.tabs[index].updateContentAndTitle(content, title);
+  }
+};
+
+
 Tablist.prototype.getSelectedTabId = function () {
   return this.currentTab.id;
 };

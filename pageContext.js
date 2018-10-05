@@ -82,18 +82,18 @@ function addRuleCategoryData(aiResponse, evaluationResult) {
 
   aiResponse.rcResults = [];
 
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.LANDMARKS, 'Landmarks');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.HEADINGS, 'Headings');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY, 'Styles/Content');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.IMAGES, 'Images');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.LINKS, 'Links' );
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.FORMS, 'Forms');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.TABLES, 'Tables');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS, 'Widgets/Scripts');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.AUDIO_VIDEO, 'Audio/Video');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT, 'Keyboard');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.TIMING, 'Timing');
-  addItem(OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION, 'Site Navigation');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.LANDMARKS, 'labelLandmarks');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.HEADINGS, 'labelHeadings');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY, 'labelStylesContent');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.IMAGES, 'labelImages');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.LINKS, 'labelLinks' );
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.FORMS, 'labelForms');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.TABLES, 'labelTables');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS, 'labelWidgetsScripts');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.AUDIO_VIDEO, 'labelAudioVideo');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT, 'labelKeyboard');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.TIMING, 'labelTiming');
+  addItem(OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION, 'labelSiteNavigation');
 }
 
 function addGuidelineData(aiResponse, evaluationResult) {
@@ -118,18 +118,18 @@ function addGuidelineData(aiResponse, evaluationResult) {
 
   aiResponse.glResults = [];
 
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_1, '1.1 Text Alternatives');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_2, '1.2 Time-based Media');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_3, '1.3 Adaptable');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_4, '1.4 Distinguishable');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_1, '2.1 Keyboard Accessible' );
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_2, '2.2 Enough Time');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_3, '2.3 Seizures');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_4, '2.4 Navigable');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_1, '3.1 Readable');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2, '3.2 Predictable');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3, '3.3 Input Assistance');
-  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1, '4.1 Compatible');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_1, 'g1.1');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_2, 'g1.2');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_3, 'g1.3');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_1_4, 'g1.4');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_1, 'g2.1' );
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_2, 'g2.2');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_3, 'g2.3');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_2_4, 'g2.4');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_1, 'g3.1');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2, 'g3.2');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3, 'g3.3');
+  addItem(OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1, 'g4.1');
 }
 
 function summary(ruleset) {
@@ -460,6 +460,11 @@ browser.runtime.onMessage.addListener(request => {
       console.log('[onMessage] [highlight]: ' + request.highlight);
       console.log('[onMessage]  [position]: ' + request.position);
       aiResponse = highlight(request.highlight, request.position);
+      break;
+
+    case 'debug':
+      console.log('[debug]: ' + request.debug);
+      aiResponse = {};
       break;
 
     default:

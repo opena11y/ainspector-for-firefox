@@ -82,6 +82,16 @@ Grid.prototype.resize = function () {
 
 };
 
+Grid.prototype.updateCellContentAndTitle = function (row, col, content, title) {
+
+  if (this.rows[row]) {
+    if (this.rows[row].cells[col]) {
+      this.rows[row].cells[col].updateContentAndTitle(content, title);
+    }
+  }
+
+};
+
 Grid.prototype.addRow = function (id, action, thead) {
 
   if (typeof action !== 'function') {
@@ -578,13 +588,6 @@ GridCell.prototype.handleBlur = function (event) {
 
 };
 
-var groupGrid = new Grid(document.getElementById('group_grid'));
-groupGrid.init();
 
-var ruleGrid = new Grid(document.getElementById('rule_grid'));
-ruleGrid.init();
 
-window.addEventListener('resize', function() {
-  groupGrid.resize();
-  ruleGrid.resize();
-});
+

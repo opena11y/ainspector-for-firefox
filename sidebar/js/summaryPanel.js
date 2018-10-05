@@ -11,45 +11,58 @@ var summaryPanel = {
 
   init: function() {
 
-    this.rcOptions.push({ 'id': 0x0001, 'label': 'Landmarks'});
-    this.rcOptions.push({ 'id': 0x0002, 'label': 'Headings'});
-    this.rcOptions.push({ 'id': 0x0004, 'label': 'Styles/Content'});
-    this.rcOptions.push({ 'id': 0x0008, 'label': 'Images'});
-    this.rcOptions.push({ 'id': 0x0010, 'label': 'Links'});
-    this.rcOptions.push({ 'id': 0x0020, 'label': 'Tables'});
-    this.rcOptions.push({ 'id': 0x0040, 'label': 'Forms'});
-    this.rcOptions.push({ 'id': 0x0080, 'label': 'Widgets/Scripts'});
-    this.rcOptions.push({ 'id': 0x0100, 'label': 'Audio/Video'});
-    this.rcOptions.push({ 'id': 0x0200, 'label': 'Keyboard'});
-    this.rcOptions.push({ 'id': 0x0400, 'label': 'Timing'});
-    this.rcOptions.push({ 'id': 0x0800, 'label': 'Site Navigation'});
-    this.rcOptions.push({ 'id': 0x0FFF, 'label': 'All'});
 
-    this.glOptions.push({ 'id': 0x000010, 'label': '1.1 Text Alternatives'});
-    this.glOptions.push({ 'id': 0x000020, 'label': '1.2 Time-based Media'});
-    this.glOptions.push({ 'id': 0x000040, 'label': '1.3 Adaptable'});
-    this.glOptions.push({ 'id': 0x000080, 'label': '1.4 Distinguishable'});
-    this.glOptions.push({ 'id': 0x000100, 'label': '2.1 Keyboard Accessible'});
-    this.glOptions.push({ 'id': 0x000200, 'label': '2.2 Enough Time'});
-    this.glOptions.push({ 'id': 0x000400, 'label': '2.3 Seizures'});
-    this.glOptions.push({ 'id': 0x000800, 'label': '2.4 Navigable'});
-    this.glOptions.push({ 'id': 0x001000, 'label': '3.1 Readable'});
-    this.glOptions.push({ 'id': 0x002000, 'label': '3.2 Predictable'});
-    this.glOptions.push({ 'id': 0x004000, 'label': '3.3 Input Assistance'});
-    this.glOptions.push({ 'id': 0x010000, 'label': '4.1 Compatible'});
-    this.glOptions.push({ 'id': 0x01FFF0, 'label': 'All'});
+    this.rcOptions.push({ 'id': 0x0001, 'label': 'labelLandmarks'});
+    this.rcOptions.push({ 'id': 0x0002, 'label': 'labelHeadings'});
+    this.rcOptions.push({ 'id': 0x0004, 'label': 'labelStylesContent'});
+    this.rcOptions.push({ 'id': 0x0008, 'label': 'labelImages'});
+    this.rcOptions.push({ 'id': 0x0010, 'label': 'labelLinks'});
+    this.rcOptions.push({ 'id': 0x0020, 'label': 'labelTables'});
+    this.rcOptions.push({ 'id': 0x0040, 'label': 'labelForms'});
+    this.rcOptions.push({ 'id': 0x0080, 'label': 'labelWidgetsScripts'});
+    this.rcOptions.push({ 'id': 0x0100, 'label': 'labelAudioVideo'});
+    this.rcOptions.push({ 'id': 0x0200, 'label': 'labelKeyboard'});
+    this.rcOptions.push({ 'id': 0x0400, 'label': 'labelTiming'});
+    this.rcOptions.push({ 'id': 0x0800, 'label': 'labelSiteNavigation'});
+    this.rcOptions.push({ 'id': 0x0FFF, 'label': 'labelAll'});
 
+    this.glOptions.push({ 'id': 0x000010, 'label': 'g1.1'});
+    this.glOptions.push({ 'id': 0x000020, 'label': 'g1.2'});
+    this.glOptions.push({ 'id': 0x000040, 'label': 'g1.3'});
+    this.glOptions.push({ 'id': 0x000080, 'label': 'g1.4'});
+    this.glOptions.push({ 'id': 0x000100, 'label': 'g2.1'});
+    this.glOptions.push({ 'id': 0x000200, 'label': 'g2.2'});
+    this.glOptions.push({ 'id': 0x000400, 'label': 'g2.3'});
+    this.glOptions.push({ 'id': 0x000800, 'label': 'g2.4'});
+    this.glOptions.push({ 'id': 0x001000, 'label': 'g3.1'});
+    this.glOptions.push({ 'id': 0x002000, 'label': 'g3.2'});
+    this.glOptions.push({ 'id': 0x004000, 'label': 'g3.3'});
+    this.glOptions.push({ 'id': 0x010000, 'label': 'g4.1'});
+    this.glOptions.push({ 'id': 0x01FFF0, 'label': 'labelAll'});
 
     this.rcGrid = new Grid(document.getElementById('rc_grid'));
     this.rcGrid.init();
+    this.rcGrid.updateCellContentAndTitle(0, 0, i18n('labelCategories'), '');
+    this.rcGrid.updateCellContentAndTitle(0, 1, i18n('labelV'),  i18n('labelViolations'));
+    this.rcGrid.updateCellContentAndTitle(0, 2, i18n('labelW'),  i18n('labelWarnings'));
+    this.rcGrid.updateCellContentAndTitle(0, 3, i18n('labelMC'), i18n('labelManualChecks'));
+    this.rcGrid.updateCellContentAndTitle(0, 4, i18n('labelP'),  i18n('labelPass'));
 
     this.glGrid = new Grid(document.getElementById('gl_grid'));
     this.glGrid.init();
+    this.glGrid.updateCellContentAndTitle(0, 0, i18n('labelGuidelines'), '');
+    this.glGrid.updateCellContentAndTitle(0, 1, i18n('labelV'),  i18n('labelViolations'));
+    this.glGrid.updateCellContentAndTitle(0, 2, i18n('labelW'),  i18n('labelWarnings'));
+    this.glGrid.updateCellContentAndTitle(0, 3, i18n('labelMC'), i18n('labelManualChecks'));
+    this.glGrid.updateCellContentAndTitle(0, 4, i18n('labelP'),  i18n('labelPass'));
 
     this.tablist = new Tablist(document.getElementById('summary_tablist'));
     this.tablist.init();
+    this.tablist.updateTabContentAndTitle(0, i18n('labelRuleCategories'), '');
+    this.tablist.updateTabContentAndTitle(1, i18n('labelGuidelines'), '');
 
     this.detailsButton = document.getElementById('details_group');
+    this.detailsButton.innerHTML = i18n('labelDetails');
     this.detailsButton.addEventListener('click', this.handleDetailsButton.bind(this));
     this.detailsButton.disabled = true;
 
@@ -89,6 +102,8 @@ var summaryPanel = {
 
   show: function() {
     show('summary_panel');
+    this.resize();
+    backButton.disabled = true;
   },
 
   handleAction: function(type, id) {
@@ -119,7 +134,7 @@ var summaryPanel = {
 
     var row = grid.addRow(id, this.handleAction);
 
-    row.addCell(label, 'text category', '', true);
+    row.addCell(i18n(label), 'text category', '', true);
     row.addCell(v,  'num result');
     row.addCell(w,  'num result');
     row.addCell(mc, 'num result');
@@ -165,7 +180,7 @@ var summaryPanel = {
       this.addGroupResultRow(grid, group + '-' + gr.id, gr.label, gr.violations, gr.warnings, gr.manual_checks, gr.passed);
     }
 
-    this.addGroupResultRow(grid, group + '-' + 0x0FFF, 'All', evaluationResult.violations, evaluationResult.warnings, evaluationResult.manual_checks, evaluationResult.passed);
+    this.addGroupResultRow(grid, group + '-' + 0x0FFF, 'labelAll', evaluationResult.violations, evaluationResult.warnings, evaluationResult.manual_checks, evaluationResult.passed);
 
   },
 
@@ -198,17 +213,6 @@ var summaryPanel = {
   }
 
 }
-
-
-
-
-
-
-
-
-
-// Details button for group
-
 
 
 

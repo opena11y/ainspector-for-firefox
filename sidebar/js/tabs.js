@@ -39,6 +39,14 @@ Tab.prototype.init = function () {
   this.domNode.addEventListener('blur', this.handleBlur.bind(this));
 };
 
+
+Tab.prototype.updateContentAndTitle = function (content, title) {
+  this.domNode.innerHTML = content;
+  if (title) {
+    this.domNode.setAttribute('title', title);
+  }
+};
+
 Tab.prototype.hideTabPanel = function () {
   this.tabpanelDomNode.style.display = 'none';
   this.domNode.setAttribute('aria-selected', 'false');

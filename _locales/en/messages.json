@@ -14,39 +14,258 @@
     "description": "Author of the accessibility extension."
   },
 
-  "panelSummaryTitle": {
+  "ARIA_STRICT": {
+    "message": "HTML5 and ARIA Techniques",
+    "description": "Openajax evaluation ruleset ID"
+  },
+
+  "ARIA_TRANS": {
+    "message": "HTML4 Legacy Techniques",
+    "description": "Openajax evaluation ruleset ID"
+  },
+
+  "labelSummary": {
     "message": "Summary",
     "description": "Title for the Summary Panel"
   },
 
-  "panelBackButton": {
+  "labelBack": {
     "message": "Back",
     "description": "Label for the Back button"
   },
 
-  "panelViewsButton": {
+  "labelViews": {
     "message": "Views",
     "description": "Label for the Views button"
   },
 
-  "panelDetailsButton": {
+  "labelDetails": {
     "message": "Details",
     "description": "Label for the Details button"
   },
 
-  "panelPreferencesButton": {
+  "labelPreferences": {
     "message": "Preferences",
     "description": "Label for the Preferences button"
   },
 
-  "panelEvaluateButton": {
+  "labelRerunEvaluate": {
     "message": "Rerun Evaluation",
     "description": "Label for the Rerun button"
   },
 
-  "panelHighlightLabel": {
+  "labelHighlight": {
     "message": "Highlight",
     "description": "Label for the highlight options select box"
-  }
+  },
 
+  "labelCategories": {
+    "message": "Categories",
+    "description": "Column header for summary grid"
+  },
+
+  "labelRuleCategories": {
+    "message": "Rule Categories",
+    "description": "Rule Categories label"
+  },
+
+  "labelGuidelines": {
+    "message": "Guidelines",
+    "description": "Column header for summary grid"
+  },
+
+  "labelV": {
+    "message": "V",
+    "description": "Abbreviation for violations used in summary grid as a column header"
+  },
+
+  "labelViolation": {
+    "message": "Violation",
+    "description": "Singular version of violations"
+  },
+
+  "labelViolations": {
+    "message": "Violations",
+    "description": "Plural version of violations"
+  },
+
+  "labelW": {
+    "message": "W",
+    "description": "Abbreviation for warnings used in summary grid as a column header"
+  },
+
+  "labelWarning": {
+    "message": "Warning",
+    "description": "Singular version of warnings"
+  },
+
+  "labelWarnings": {
+    "message": "Warnings",
+    "description": "Plural version of warnings"
+  },
+
+  "labelMC": {
+    "message": "MC",
+    "description": "Abbreviation for manual checks used in summary grid as a column header"
+  },
+
+  "labelManualCheck": {
+    "message": "Manual Check",
+    "description": "Singular version of manual checks"
+  },
+
+  "labelManualChecks": {
+    "message": "Manual Checks",
+    "description": "Plural version of manual checks"
+  },
+
+  "labelP": {
+    "message": "P",
+    "description": "Abbreviation for passed used in summary grid as a column header"
+  },
+
+  "labelPass": {
+    "message": "Pass",
+    "description": "Pass"
+  },
+
+  "labelPassed": {
+    "message": "Passed",
+    "description": "Passed rules"
+  },
+
+  "labelPassed": {
+    "message": "Passed",
+    "description": "Passed rules"
+  },
+
+  "labelLandmarks": {
+    "message": "Landmarks",
+    "description": "Landmark rule category"
+  },
+
+  "labelHeadings": {
+    "message": "Headings",
+    "description": "Headings rule category"
+  },
+
+  "labelStylesContent": {
+    "message": "Styles/Content",
+    "description": "Styles/Content rule category"
+  },
+
+  "labelImages": {
+    "message": "Images",
+    "description": "Images rule category"
+  },
+
+  "labelForms": {
+    "message": "Forms",
+    "description": "Forms rule category"
+  },
+
+  "labelLinks": {
+    "message": "Links",
+    "description": "Links rule category"
+  },
+
+  "labelTables": {
+    "message": "Tables",
+    "description": "Tables rule category"
+  },
+
+  "labelWidgetsScripts": {
+    "message": "Widgets/Scripts",
+    "description": "Widgets/Scripts rule category"
+  },
+
+  "labelAudioVideo": {
+    "message": "Audio/Video",
+    "description": "Audio/Video rule category"
+  },
+
+  "labelKeyboard": {
+    "message": "Keyboard",
+    "description": "Keyboard rule category"
+  },
+
+  "labelTiming": {
+    "message": "Timing",
+    "description": "Timing rule category"
+  },
+
+  "labelSiteNavigation": {
+    "message": "Site Navigation",
+    "description": "Site Navigation rule category"
+  },
+
+  "labelAll": {
+    "message": "All",
+    "description": "All rules"
+  },
+
+  "g1.1": {
+    "message": "1.1 Text Alternatives",
+    "description": "WCAG Guideline 1.1"
+  },
+
+  "g1.2": {
+    "message": "1.2 Time-based Media",
+    "description": "WCAG Guideline 1.2"
+  },
+
+  "g1.3": {
+    "message": "1.3 Adaptable",
+    "description": "WCAG Guideline 1.3"
+  },
+
+  "g1.4": {
+    "message": "1.4 Distinguishable",
+    "description": "WCAG Guideline 1.4"
+  },
+
+  "g2.1": {
+    "message": "2.1 Keyboard Accessible",
+    "description": "WCAG Guideline 2.1"
+  },
+
+  "g2.2": {
+    "message": "2.2 Enough Time",
+    "description": "WCAG Guideline 2.2"
+  },
+
+  "g2.3": {
+    "message": "2.3 Seizures",
+    "description": "WCAG Guideline 2.3"
+  },
+
+  "g2.4": {
+    "message": "2.4 Navigable",
+    "description": "WCAG Guideline 2.4"
+  },
+
+  "g3.1": {
+    "message": "3.1 Readable",
+    "description": "WCAG Guideline 3.1"
+  },
+
+  "g3.2": {
+    "message": "3.2 Predictable",
+    "description": "WCAG Guideline 3.2"
+  },
+
+  "g3.3": {
+    "message": "3.3 Input Assistance",
+    "description": "WCAG Guideline 3.3"
+  },
+
+  "g4.1": {
+    "message": "4.1 Compatible",
+    "description": "WCAG Guideline 4.1"
+  },
+
+  "noGroupResults": {
+    "message": "No violations, warnings or manual check results",
+    "description": "No rule group results"
+  }
 }

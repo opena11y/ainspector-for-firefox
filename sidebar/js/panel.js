@@ -7,7 +7,7 @@ browser.runtime.onMessage.addListener(notify);
 function notify(message) {
 
   if (message.messageForPanel) {
-    changePanelElements(message.messageForPanel);
+    updateEvaluationResults(message.messageForPanel);
   }
 
   if (message.updatePreferences) {
@@ -28,14 +28,14 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-function changePanelElements(evaluationResult) {
+function updateEvaluationResults(evaluationResult) {
 
   function updateResults () {
-    hide('summary_panel');
-    hide('group_panel');
-    hide('rule_panel');
+    summaryPanel.hide();
+    groupPanel.hide();
+    rulePanel.hide();
 
-    document.getElementById("ruleset").innerHTML = evaluationResult.ruleset;
+    document.getElementById("ruleset").innerHTML = i18n(evaluationResult.ruleset);
 
     var url = evaluationResult.url;
     if (evaluationResult.url.length > 50) {
@@ -54,8 +54,7 @@ function changePanelElements(evaluationResult) {
 
     case 'summary':
       updateResults();
-      updateTitle("panelSummaryTitle");
-      backButton.disabled = true;
+      updateTitle("labelSummary");
       summaryPanel.update(evaluationResult);
       summaryPanel.show();
       summaryPanel.setFocus();
@@ -63,22 +62,23 @@ function changePanelElements(evaluationResult) {
 
     case 'group':
       updateResults();
-      show('group_panel');
       updateTitle(evaluationResult.groupLabel);
-      updateGroupPanel(evaluationResult);
-      setGroupPanelFocus();
+      groupPanel.update(evaluationResult);
+      groupPanel.show();
+      groupPanel.setFocus();
       break;
 
     case 'rule':
       updateResults();
-      show('rule_panel');
       if (evaluationResult.groupType === 'rc') {
         updateTitle(evaluationResult.ruleResult.category);
       }
       else {
         updateTitle(evaluationResult.ruleResult.guideline);
       }
-      updateRulePanel(evaluationResult);
+      rulePanel.update(evaluationResult);
+      rulePanel.show();
+//      rulePanel.setFocus();
       break;
 
     case 'highlight':
@@ -91,6 +91,17 @@ function changePanelElements(evaluationResult) {
     default:
       break;
   }
+};
+
+function debug(message) {
+
+  messageArgs.option    = 'debug';
+  messageArgs.debug     = message;
+
+  browser.tabs.query({
+      currentWindow: true,
+      active: true
+  }).then(sendMessageToTabs).catch(onError);
 };
 
 // Group events and messages
@@ -159,12 +170,21 @@ function handleGetRule(ruleId, position) {
 
 function sendMessageToTabs(tabs) {
 
-  setAInspectorPreferences()
+  switch (messageArgs.option) {
+    case 'debug':
+    case 'unload':
+      break;
 
-  if (messageArgs.option !== 'highlight') {
-    summaryPanel.clear();
-    clearGroupPanel();
-    clearRulePanel();
+    case 'highlight':
+      setAInspectorPreferences();
+      break;
+
+    default:
+      setAInspectorPreferences();
+      summaryPanel.clear();
+      groupPanel.clear();
+      rulePanel.clear();
+      break;
   }
 
   for (let tab of tabs) {
@@ -173,7 +193,7 @@ function sendMessageToTabs(tabs) {
       messageArgs
     ).then(response => {
       var evaluationResult = response.response;
-      changePanelElements(evaluationResult);
+      updateEvaluationResults(evaluationResult);
     }).catch(onError);
   }
 };
@@ -190,10 +210,11 @@ function handleEvaluateButton () {
 }
 
 var evaluateButton = document.getElementById('evaluate');
-evaluateButton.innerHTML = browser.i18n.getMessage('panelEvaluateButton');
+evaluateButton.innerHTML = i18n('labelRerunEvaluate');
 evaluateButton.addEventListener("click", handleEvaluateButton);
 
 window.addEventListener("load", function(){
+
     messageArgs.option    = 'summary';
 
     browser.tabs.query({
@@ -203,7 +224,7 @@ window.addEventListener("load", function(){
 });
 
 window.addEventListener("unload", function(){
-      alert('unload');
+
       messageArgs.option    = 'unload';
 
       browser.tabs.query({
@@ -220,18 +241,17 @@ function handleBack(event) {
   switch (messageArgs.option) {
     case 'group':
       messageArgs.option = 'summary';
-      backButton.disabled = true;
       update = true;
+      groupPanel.hide();
       summaryPanel.show();
-      hideGroupPanel();
       break;
 
     case 'rule':
     case 'highlight':
       messageArgs.option = 'group';
       update = true;
-      showGroupPanel();
-      hideRulePanel();
+      rulePanel.hide();
+      groupPanel.show();
       break;
 
     default:
@@ -247,7 +267,7 @@ function handleBack(event) {
 };
 
 var backButton = document.getElementById('back');
-backButton.innerHTML = browser.i18n.getMessage('panelBackButton');
+backButton.innerHTML = i18n('labelBack');
 backButton.addEventListener('click', handleBack);
 
 // Highlight button
@@ -273,30 +293,26 @@ function handleHighlight(event) {
 var highlightOptions = document.getElementById('highlight');
 highlightOptions.addEventListener('change', handleHighlight);
 
-document.getElementById('highlight_label').innerHTML = browser.i18n.getMessage('panelHighlightLabel');
+document.getElementById('highlight_label').innerHTML = i18n('labelHighlight');
 
 
 
-// init Preferences
+// initialize Preferences
 
 function handlePreferences (event) {
    chrome.runtime.openOptionsPage();
 };
 
 var preferencesButton = document.getElementById('preferences');
-preferencesButton.innerHTML = browser.i18n.getMessage('panelPreferencesButton');
+preferencesButton.innerHTML = i18n('labelPreferences');
 preferencesButton.addEventListener('click', handlePreferences);
 
-// Initialize panel
+// Initialize panels
 
 summaryPanel.init();
-clearGroupPanel();
+groupPanel.init();
+rulePanel.init();
 
 summaryPanel.show();
-hideGroupPanel();
-hideRulePanel();
-
-
-backButton.disabled = true;
-
-
+groupPanel.hide();
+rulePanel.hide();
