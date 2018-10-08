@@ -11,6 +11,13 @@
       "64": "icons/ainspector-icon.png"
     },
 
+    "applications": {
+      "gecko": {
+        "id": "{b59fbdaf-28d8-453b-a333-8e55cd07869d}",
+        "strict_min_version": "62.0"
+      }
+    },
+
     "sidebar_action": {
       "default_icon": "icons/ainspector-icon.png",
       "default_title" : "AInspector Sidebar",
