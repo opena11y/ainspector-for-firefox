@@ -3,13 +3,12 @@
     "manifest_version": 2,
     "name": "__MSG_extensionName__",
     "description": "__MSG_extensionDescription__",
-    "version": "0.8",
-    "version_name": "0.8 Beta",
+    "version": "0.9",
+    "version_name": "0.9 Beta",
     "author": "__MSG_extensionAuthor__",
     "default_locale": "en",
     "icons": {
-      "48": "icons/ainspector-icon.png",
-      "96": "icons/ainspector-icon.png"
+      "64": "icons/ainspector-icon.png"
     },
 
     "sidebar_action": {

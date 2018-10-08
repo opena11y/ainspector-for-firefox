@@ -55,7 +55,7 @@ Tablist.prototype.init = function () {
 
 Tablist.prototype.updateTabContentAndTitle = function (index, content, title) {
   if (this.tabs[index]) {
-    this.tabs[index].updateContentAndTitle(content, title);
+    this.tabs[index].setContentAndTitle(content, title);
   }
 };
 

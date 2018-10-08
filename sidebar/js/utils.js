@@ -29,7 +29,7 @@ function updateTitle(title) {
   }
 
   if (node) {
-    node.innerHTML = title;
+    node.textContent = title;
   }
 }
 

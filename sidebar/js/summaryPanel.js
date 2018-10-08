@@ -62,7 +62,7 @@ var summaryPanel = {
     this.tablist.updateTabContentAndTitle(1, i18n('labelGuidelines'), '');
 
     this.detailsButton = document.getElementById('details_group');
-    this.detailsButton.innerHTML = i18n('labelDetails');
+    this.detailsButton.textContent = i18n('labelDetails');
     this.detailsButton.addEventListener('click', this.handleDetailsButton.bind(this));
     this.detailsButton.disabled = true;
 
@@ -138,15 +138,15 @@ var summaryPanel = {
       if (typeof value === 'number') {
         switch (value) {
           case 0:
-            accName = i18n('labelNo') + ' ' + plural + '; ';
+            accName = i18n('labelNo') + ' ' + plural;
             break;
 
           case 1:
-            accName = '1 ' + singular + '; ';
+            accName = '1 ' + singular;
             break;
 
           default:
-            accName = value + ' ' + plural + '; ';
+            accName = value + ' ' + plural;
             break;
         }
       }
@@ -155,19 +155,28 @@ var summaryPanel = {
 
     var row = grid.addRow(id, this.handleAction);
 
-    row.addCell(i18n(label), 'text category', '', '', true);
-    row.addCell(v,  'num result', getAccName(v,  i18n('labelViolation'),   i18n('labelViolations')));
-    row.addCell(w,  'num result', getAccName(w,  i18n('labelWarning'),     i18n('labelWarnings')));
-    row.addCell(mc, 'num result', getAccName(mc, i18n('labelManualCheck'), i18n('labelManualChecks')));
-    row.addCell(p,  'num result', getAccName(p,  i18n('labelPassed'),      i18n('labelPassed')));
+    var cell = row.addCell(i18n(label), 'text category', '', true);
+
+    cell = row.addCell(v,  'num result' );
+    cell.setAccessibleName(getAccName(v,  i18n('labelViolation'),   i18n('labelViolations')));
+
+    cell = row.addCell(w,  'num result');
+    cell.setAccessibleName(getAccName(w,  i18n('labelWarning'),     i18n('labelWarnings')));
+
+    cell = row.addCell(mc, 'num result');
+    cell.setAccessibleName(getAccName(mc, i18n('labelManualCheck'), i18n('labelManualChecks')));
+
+    cell = row.addCell(p,  'num result');
+    cell.setAccessibleName(getAccName(p,  i18n('labelPassed'),      i18n('labelPassed')));
+
   },
 
   clear: function () {
     // update Rule Summary
-    document.getElementById("summary_violations").innerHTML      = '-';
-    document.getElementById("summary_warnings").innerHTML        = '-';
-    document.getElementById("summary_manual_checks").innerHTML   = '-';
-    document.getElementById("summary_passed").innerHTML          = '-';
+    document.getElementById("summary_violations").textContent      = '-';
+    document.getElementById("summary_warnings").textContent        = '-';
+    document.getElementById("summary_manual_checks").textContent   = '-';
+    document.getElementById("summary_passed").textContent          = '-';
 
     // Update Group Results
 
@@ -208,10 +217,10 @@ var summaryPanel = {
   update: function(evaluationResult) {
 
     // update Rule Summary
-    document.getElementById("summary_violations").innerHTML      = evaluationResult.violations;
-    document.getElementById("summary_warnings").innerHTML        = evaluationResult.warnings;
-    document.getElementById("summary_manual_checks").innerHTML   = evaluationResult.manual_checks;
-    document.getElementById("summary_passed").innerHTML          = evaluationResult.passed;
+    document.getElementById("summary_violations").textContent      = evaluationResult.violations;
+    document.getElementById("summary_warnings").textContent        = evaluationResult.warnings;
+    document.getElementById("summary_manual_checks").textContent   = evaluationResult.manual_checks;
+    document.getElementById("summary_passed").textContent          = evaluationResult.passed;
 
     // Update Group Results
 

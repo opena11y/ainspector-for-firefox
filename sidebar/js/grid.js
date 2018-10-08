@@ -86,7 +86,7 @@ Grid.prototype.updateCellContentAndTitle = function (row, col, content, title) {
 
   if (this.rows[row]) {
     if (this.rows[row].cells[col]) {
-      this.rows[row].cells[col].updateContentAndTitle(content, title);
+      this.rows[row].cells[col].setContentAndTitle(content, title);
     }
   }
 
@@ -324,11 +324,7 @@ GridRow.prototype.init = function () {
   }
 };
 
-GridRow.prototype.addCell = function (content, type, accName, sort, header) {
-
-  if (typeof accName !== 'string') {
-    accName = false;
-  }
+GridRow.prototype.addCell = function (content, type, sort, header) {
 
   if (typeof sort !== 'number' && typeof sort !== 'string') {
     sort = false;
@@ -347,12 +343,9 @@ GridRow.prototype.addCell = function (content, type, accName, sort, header) {
     node = document.createElement('td');
   }
 
-  node.innerHTML = content;
+  node.textContent = content;
   this.domNode.appendChild(node);
   node.className = type;
-  if (accName) {
-    node.setAttribute('aria-label', accName);
-  }
 
   if (sort) {
     node.setAttribute('data-sort', sort);
@@ -509,12 +502,25 @@ GridCell.prototype.init = function () {
 
 };
 
-GridCell.prototype.updateContentAndTitle = function (content, title) {
-  this.domNode.innerHTML = content;
+GridCell.prototype.setContentAndTitle = function (content, title) {
+  this.domNode.textContent = content;
   if (title) {
     this.domNode.setAttribute('title', title);
   }
 };
+
+GridCell.prototype.setAccessibleName = function (name) {
+  if (name) {
+    this.domNode.setAttribute('aria-label', name + ';');
+  }
+};
+
+GridCell.prototype.setDescribedBy = function (id) {
+  if (id) {
+    this.domNode.setAttribute('aria-describedby', id);
+  }
+};
+
 
 GridCell.prototype.removeSelected = function () {
   this.domNode.tabIndex = -1;

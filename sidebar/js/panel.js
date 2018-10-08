@@ -35,13 +35,13 @@ function updateEvaluationResults(evaluationResult) {
     groupPanel.hide();
     rulePanel.hide();
 
-    document.getElementById("ruleset").innerHTML = i18n(evaluationResult.ruleset);
+    document.getElementById("ruleset").textContent = i18n(evaluationResult.ruleset);
 
     var url = evaluationResult.url;
     if (evaluationResult.url.length > 50) {
       url = evaluationResult.url.substring(0, 48) + '...';
     }
-    document.getElementById("location").innerHTML = url;
+    document.getElementById("location").textContent = url;
     if (url !== evaluationResult.url) {
       document.getElementById("location").setAttribute('title', evaluationResult.url);
     }
@@ -210,7 +210,7 @@ function handleEvaluateButton () {
 }
 
 var evaluateButton = document.getElementById('evaluate');
-evaluateButton.innerHTML = i18n('labelRerunEvaluate');
+evaluateButton.textContent = i18n('labelRerunEvaluate');
 evaluateButton.addEventListener("click", handleEvaluateButton);
 
 window.addEventListener("load", function(){
@@ -267,7 +267,7 @@ function handleBack(event) {
 };
 
 var backButton = document.getElementById('back');
-backButton.innerHTML = i18n('labelBack');
+backButton.textContent = i18n('labelBack');
 backButton.addEventListener('click', handleBack);
 
 // Highlight button
@@ -293,7 +293,7 @@ function handleHighlight(event) {
 var highlightOptions = document.getElementById('highlight');
 highlightOptions.addEventListener('change', handleHighlight);
 
-document.getElementById('highlight_label').innerHTML = i18n('labelHighlight');
+document.getElementById('highlight_label').textContent = i18n('labelHighlight');
 
 
 
@@ -304,7 +304,7 @@ function handlePreferences (event) {
 };
 
 var preferencesButton = document.getElementById('preferences');
-preferencesButton.innerHTML = i18n('labelPreferences');
+preferencesButton.textContent = i18n('labelPreferences');
 preferencesButton.addEventListener('click', handlePreferences);
 
 // Initialize panels

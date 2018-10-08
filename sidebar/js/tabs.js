@@ -40,8 +40,8 @@ Tab.prototype.init = function () {
 };
 
 
-Tab.prototype.updateContentAndTitle = function (content, title) {
-  this.domNode.innerHTML = content;
+Tab.prototype.setContentAndTitle = function (content, title) {
+  this.domNode.textContent = content;
   if (title) {
     this.domNode.setAttribute('title', title);
   }

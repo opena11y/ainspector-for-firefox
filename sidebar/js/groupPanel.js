@@ -10,7 +10,7 @@ var groupPanel = {
     this.groupGrid.init();
 
     this.detailsButton = document.getElementById('details_rule');
-    this.detailsButton.innerHTML = i18n('labelDetails');
+    this.detailsButton.textContent = i18n('labelDetails');
     this.detailsButton.addEventListener('click', this.handleDetails);
 
     window.addEventListener('resize', function() {
@@ -96,27 +96,35 @@ var groupPanel = {
 
     var row = this.groupGrid.addRow(rule_id, this.handleAction);
 
-    row.addCell(summary, 'text rule', '', '', true);
-    row.addCell(result,  'value result ' + result.toLowerCase(), getAccNameResult(result), result);
-    row.addCell(wcag,   'value sc', '', wcag);
-    row.addCell(level,   'value level', '',level);
-    row.addCell((required ? 'Y' : ''), 'value required', '', (required ? 'Y' : ''));
+    var cell = row.addCell(summary, 'text rule', '', '', true);
+
+    cell = row.addCell(result,  'value result ' + result.toLowerCase(), getAccNameResult(result), result);
+    cell.setAccessibleName(getAccNameResult(result));
+
+    cell = row.addCell(wcag,   'value sc', '', wcag);
+    cell.setContentAndTitle(wcag, i18n('sc' + wcag))
+
+    cell = row.addCell(level,   'value level', '',level);
+    cell.setAccessibleName(i18n('labelLevel' + level));
+
+    cell = row.addCell((required ? 'Y' : ''), 'value required', '', (required ? 'Y' : ''));
+    cell.setAccessibleName(required ? i18n('labelRequired') : i18n('labelRecommended'));
   },
 
   clear: function () {
 
     // update Rule Summary
-    document.getElementById("group_violations").innerHTML      = '-';
-    document.getElementById("group_warnings").innerHTML        = '-';
-    document.getElementById("group_manual_checks").innerHTML   = '-';
-    document.getElementById("group_passed").innerHTML          = '-';
+    document.getElementById("group_violations").textContent      = '-';
+    document.getElementById("group_warnings").textContent        = '-';
+    document.getElementById("group_manual_checks").textContent   = '-';
+    document.getElementById("group_passed").textContent          = '-';
 
     // Update Group Results
 
     var cells = document.querySelectorAll('tbody#rule_results td');
 
     for (let i = 0; i < cells.length; i++) {
-      cells[i].innerHTML = '-';
+      cells[i].textContent = '-';
     }
 
   },
@@ -124,10 +132,10 @@ var groupPanel = {
   update: function (evaluationResult) {
 
     // update Rule Summary
-    document.getElementById("group_violations").innerHTML      = evaluationResult.violations;
-    document.getElementById("group_warnings").innerHTML        = evaluationResult.warnings;
-    document.getElementById("group_manual_checks").innerHTML   = evaluationResult.manual_checks;
-    document.getElementById("group_passed").innerHTML          = evaluationResult.passed;
+    document.getElementById("group_violations").textContent    = evaluationResult.violations;
+    document.getElementById("group_warnings").textContent      = evaluationResult.warnings;
+    document.getElementById("group_manual_checks").textContent = evaluationResult.manual_checks;
+    document.getElementById("group_passed").textContent        = evaluationResult.passed;
 
     // Update Group Results
 

@@ -60,6 +60,34 @@ var rulePanel = {
 
   addElementResultRow: function (element, result, position, actionMessage) {
 
+    function getAccNameResult(result) {
+      var accName = '';
+
+      switch (result) {
+        case 'V':
+          accName = i18n('labelViolation');
+          break;
+
+        case 'W':
+          accName = i18n('labelWarning');
+          break;
+
+        case 'MC':
+          accName = i18n('labelManualCheck');
+          break;
+
+        case 'P':
+          accName = i18n('labelPassed');
+          break;
+
+        default:
+          break;
+
+      }
+
+      return accName;
+    }
+
     var row = this.ruleGrid.addRow(position, this.handleAction);
 
     // Trim element length if too long
@@ -67,10 +95,15 @@ var rulePanel = {
       element = element.substring(0, 47) + '...';
     }
 
-    row.addCell(element, 'text element', '', true);
-    row.addCell(result, 'value result ' + result.toLowerCase());
-    row.addCell(position, 'num position');
-    row.addCell(actionMessage, 'text action');
+    var cell = row.addCell(element, 'text element', '', true);
+
+    cell = row.addCell(result, 'value result ' + result.toLowerCase());
+    cell.setAccessibleName(getAccNameResult(result));
+
+    cell = row.addCell(position, 'num position');
+    cell.setAccessibleName(i18n('labelPosition') + ' ' + position);
+
+    cell = row.addCell(actionMessage, 'text action');
 
     return row;
 
@@ -80,7 +113,7 @@ var rulePanel = {
     var cells = document.querySelectorAll('tbody#element_results tr > *');
 
     for (let i = 0; i < cells.length; i++) {
-      cells[i].innerHTML = '-';
+      cells[i].textContent = '-';
     }
   },
 
@@ -120,9 +153,9 @@ var rulePanel = {
 
   updateRulePanelSummaryResult: function (evaluationResult) {
 
-    document.getElementById('rule_panel_summary').innerHTML = evaluationResult.ruleResult.summary;
+    document.getElementById('rule_panel_summary').textContent = evaluationResult.ruleResult.summary;
     var node = document.getElementById('rule_panel_result');
-    node.innerHTML = evaluationResult.ruleResult.result;
+    node.textContent = evaluationResult.ruleResult.result;
     node.className = 'right ' + evaluationResult.ruleResult.result.toLowerCase();
   }
 
@@ -165,14 +198,14 @@ function updateDetailsAction(id, detailsAction) {
 
   }
 
-  document.getElementById(id + '_definition').innerHTML      = getDetails(detailsAction.definition);
-  document.getElementById(id + '_action').innerHTML          = getDetails(detailsAction.action);
-  document.getElementById(id + '_purpose').innerHTML         = getDetails(detailsAction.purpose);
-  document.getElementById(id + '_techniques').innerHTML      = getDetails(detailsAction.techniques);
-  document.getElementById(id + '_target_elements').innerHTML = getDetails(detailsAction.targetElements);
-  document.getElementById(id + '_compliance').innerHTML      = getDetails(detailsAction.compliance);
-  document.getElementById(id + '_wcag').innerHTML            = getDetails(detailsAction.wcagPrimary);
-  document.getElementById(id + '_information').innerHTML     = getDetails(detailsAction.informationalLinks);
+  document.getElementById(id + '_definition').textContent      = getDetails(detailsAction.definition);
+  document.getElementById(id + '_action').textContent          = getDetails(detailsAction.action);
+  document.getElementById(id + '_purpose').textContent         = getDetails(detailsAction.purpose);
+  document.getElementById(id + '_techniques').textContent      = getDetails(detailsAction.techniques);
+  document.getElementById(id + '_target_elements').textContent = getDetails(detailsAction.targetElements);
+  document.getElementById(id + '_compliance').textContent      = getDetails(detailsAction.compliance);
+  document.getElementById(id + '_wcag').textContent            = getDetails(detailsAction.wcagPrimary);
+  document.getElementById(id + '_information').textContent     = getDetails(detailsAction.informationalLinks);
 
   if (id === 'rr') {
     document.getElementById('rr_none_selected').style.display = 'none';

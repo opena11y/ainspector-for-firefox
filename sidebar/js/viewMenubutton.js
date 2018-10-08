@@ -36,7 +36,7 @@ var ViewMenuButton = function (domNode) {
 
 
   this.domNode   = domNode;
-  this.domNode.innerHTML = i18n('labelViews');
+  this.domNode.textContent = i18n('labelViews');
   this.menu = false;
 
   this.hasFocus = false;

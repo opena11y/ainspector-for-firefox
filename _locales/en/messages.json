@@ -139,11 +139,6 @@
     "description": "Passed rules"
   },
 
-  "labelPassed": {
-    "message": "Passed",
-    "description": "Passed rules"
-  },
-
   "labelDetailsAction": {
     "message": "Details/Action",
     "description": "Label for details/action tab in rule panel"
@@ -277,6 +272,341 @@
   "g4.1": {
     "message": "4.1 Compatible",
     "description": "WCAG Guideline 4.1"
+  },
+
+  "sc1.1.1": {
+    "message": "Non-text Content",
+    "description": "WCAG Success Criteria 1.1.1"
+  },
+
+  "sc1.2.1": {
+    "message": "Audio-only and Video-only (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.1"
+  },
+
+  "sc1.2.2": {
+    "message": "Captions (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.2"
+  },
+
+  "sc1.2.3": {
+    "message": "Audio Description or Media Alternative (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.3"
+  },
+
+  "sc1.2.4": {
+    "message": "Captions (Live)",
+    "description": "WCAG Success Criteria 1.2.4 "
+  },
+
+  "sc1.2.5": {
+    "message": "Audio Description (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.5"
+  },
+
+  "sc1.2.6": {
+    "message": "Sign Language (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.6"
+  },
+
+  "sc1.2.7": {
+    "message": "Extended Audio Description (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.7"
+  },
+
+  "sc1.2.8": {
+    "message": "Media Alternative (Prerecorded)",
+    "description": "WCAG Success Criteria 1.2.8"
+  },
+
+  "sc1.2.9": {
+    "message": "Audio-only (Live)",
+    "description": "WCAG Success Criteria 1.2.9"
+  },
+
+  "sc1.3.1": {
+    "message": "Info and Relationships",
+    "description": "WCAG Success Criteria 1.3.1"
+  },
+
+  "sc1.3.2": {
+    "message": "Meaningful Sequence",
+    "description": "WCAG Success Criteria 1.3.2"
+  },
+
+  "sc1.3.3": {
+    "message": "Sensory Characteristics",
+    "description": "WCAG Success Criteria 1.3.3"
+  },
+
+  "sc1.4.1": {
+    "message": "Use of Color",
+    "description": "WCAG Success Criteria 1.4.1"
+  },
+
+  "sc1.4.2": {
+    "message": "Audio Control",
+    "description": "WCAG Success Criteria 1.4.2"
+  },
+
+  "sc1.4.3": {
+    "message": "Contrast (Minimum)",
+    "description": "WCAG Success Criteria 1.4.3"
+  },
+
+  "sc1.4.4": {
+    "message": "Resize text",
+    "description": "WCAG Success Criteria 1.4.4"
+  },
+
+  "sc1.4.5": {
+    "message": "Images of Text",
+    "description": "WCAG Success Criteria 1.4.5"
+  },
+
+  "sc1.4.6": {
+    "message": "Contrast (Enhanced)",
+    "description": "WCAG Success Criteria 1.4.6"
+  },
+
+  "sc1.4.7": {
+    "message": "Low or No Background Audio",
+    "description": "WCAG Success Criteria 1.4.7"
+  },
+
+  "sc1.4.8": {
+    "message": "Visual Presentation",
+    "description": "WCAG Success Criteria 1.4.8"
+  },
+
+  "sc1.4.9": {
+    "message": "Images of Text (No Exception)",
+    "description": "WCAG Success Criteria 1.4.9"
+  },
+
+  "sc2.1.1": {
+    "message": "Keyboard",
+    "description": "WCAG Success Criteria 2.1.1"
+  },
+
+  "sc2.1.2": {
+    "message": "No Keyboard Trap",
+    "description": "WCAG Success Criteria 2.1.2"
+  },
+
+  "sc2.1.3": {
+    "message": "2.1.3Keyboard (No Exception)",
+    "description": "WCAG Success Criteria 2.1.3"
+  },
+
+  "sc2.2.1": {
+    "message": "Timing Adjustable",
+    "description": "WCAG Success Criteria 2.2.1"
+  },
+
+  "sc2.2.2": {
+    "message": "Pause, Stop, Hide",
+    "description": "WCAG Success Criteria 2.2.2"
+  },
+
+  "sc2.2.3": {
+    "message": "No Timing",
+    "description": "WCAG Success Criteria 2.2.3"
+  },
+
+  "sc2.2.4": {
+    "message": "Interruptions",
+    "description": "WCAG Success Criteria 2.2.4"
+  },
+
+  "sc2.2.5": {
+    "message": "Re-authenticating",
+    "description": "WCAG Success Criteria 2.2.5"
+  },
+
+  "sc2.3.1": {
+    "message": "Three Flashes or Below Threshold",
+    "description": "WCAG Success Criteria 2.3.1"
+  },
+
+  "sc2.3.2": {
+    "message": "Three Flashes",
+    "description": "WCAG Success Criteria 2.3.2"
+  },
+
+  "sc2.4.1": {
+    "message": "Bypass Blocks",
+    "description": "WCAG Success Criteria 2.4.1"
+  },
+
+  "sc2.4.2 ": {
+    "message": "Page Titled",
+    "description": "WCAG Success Criteria 2.4.2"
+  },
+
+  "sc2.4.3": {
+    "message": "Focus Order",
+    "description": "WCAG Success Criteria 2.4.3"
+  },
+
+  "sc2.4.4": {
+    "message": "Link Purpose (In Context)",
+    "description": "WCAG Success Criteria 2.4.4"
+  },
+
+  "sc2.4.5": {
+    "message": "Multiple Ways",
+    "description": "WCAG Success Criteria 2.4.5"
+  },
+
+  "sc2.4.6": {
+    "message": "Headings and Labels",
+    "description": "WCAG Success Criteria 2.4.6"
+  },
+
+  "sc2.4.7": {
+    "message": "Focus Visible",
+    "description": "WCAG Success Criteria 2.4.7"
+  },
+
+  "sc2.4.8 ": {
+    "message": "Location",
+    "description": "WCAG Success Criteria 2.4.8 "
+  },
+
+  "sc2.4.9": {
+    "message": "Link Purpose (Link Only)",
+    "description": "WCAG Success Criteria 2.4.9"
+  },
+
+  "sc2.4.10": {
+    "message": "2.4.10 Section Headings",
+    "description": "WCAG Success Criteria 2.4.10"
+  },
+
+  "sc3.1.1": {
+    "message": "Language of Page",
+    "description": "WCAG Success Criteria 3.1.1"
+  },
+
+  "sc3.1.2": {
+    "message": "Language of Parts",
+    "description": "WCAG Success Criteria 3.1.2"
+  },
+
+  "sc3.1.3 ": {
+    "message": "Unusual Words",
+    "description": "WCAG Success Criteria 3.1.3"
+  },
+
+  "sc3.1.4": {
+    "message": "Abbreviations",
+    "description": "WCAG Success Criteria 3.1.4"
+  },
+
+  "sc3.1.5": {
+    "message": "Reading Level",
+    "description": "WCAG Success Criteria 3.1.5"
+  },
+
+  "sc3.1.6": {
+    "message": "Pronunciation",
+    "description": "WCAG Success Criteria 3.1.6"
+  },
+
+  "sc3.2.1": {
+    "message": "On Focus",
+    "description": "WCAG Success Criteria 3.2.1"
+  },
+
+  "sc3.2.2": {
+    "message": "On Input",
+    "description": "WCAG Success Criteria 3.2.2"
+  },
+
+  "sc3.2.3": {
+    "message": "Consistent Navigation",
+    "description": "WCAG Success Criteria 3.2.3"
+  },
+
+  "sc3.2.4": {
+    "message": "Consistent Identification",
+    "description": "WCAG Success Criteria 3.2.4"
+  },
+
+  "sc3.2.5": {
+    "message": "Change on Request",
+    "description": "WCAG Success Criteria 3.2.5"
+  },
+
+  "sc3.3.1": {
+    "message": "Error Identification",
+    "description": "WCAG Success Criteria 3.3.1"
+  },
+
+  "sc3.3.2": {
+    "message": "Labels or Instructions",
+    "description": "WCAG Success Criteria 3.3.2"
+  },
+
+  "sc3.3.3": {
+    "message": "Error Suggestion",
+    "description": "WCAG Success Criteria 3.3.3"
+  },
+
+  "sc3.3.4": {
+    "message": "Error Prevention (Legal, Financial, Data)",
+    "description": "WCAG Success Criteria 3.3.4"
+  },
+
+  "sc3.3.5": {
+    "message": "Help",
+    "description": "WCAG Success Criteria 3.3.5"
+  },
+
+  "sc3.3.6": {
+    "message": "Error Prevention (All)",
+    "description": "WCAG Success Criteria 3.3.6"
+  },
+
+  "sc4.1.1": {
+    "message": "Parsing",
+    "description": "WCAG Success Criteria 4.1.1"
+  },
+
+  "sc4.1.2": {
+    "message": "Name, Role, Value",
+    "description": "WCAG Success Criteria 4.1.2"
+  },
+
+  "labelLevelA": {
+    "message": "Level Single A",
+    "description": "WCAG Success Criteria Level A"
+  },
+
+  "labelLevelAA": {
+    "message": "Level Double A",
+    "description": "WCAG Success Criteria Level AA"
+  },
+
+  "labelLevelAAA": {
+    "message": "Level Triple A",
+    "description": "WCAG Success Criteria Level AAA"
+  },
+
+  "labelRequired": {
+    "message": "Required Rule",
+    "description": "Required rule"
+  },
+
+  "labelRecommended": {
+    "message": "Recommended Rule",
+    "description": "Recommended rule"
+  },
+
+  "labelPosition": {
+    "message": "Position",
+    "description": "Position of element in document, used in rule result view"
   },
 
   "noGroupResults": {

@@ -75,7 +75,7 @@ var delayDialog = {
     }
     messageArgs.promptForDelay = !this.onlyOnceNode.checked;
     messageArgs.delayCount = messageArgs.delay
-    evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
+    evaluateButton.textContent = messageArgs.delayCount + ' secs';
     evaluateButton.disabled = true;
     setTimeout(this.delayEvaluation.bind(this), 1000);
   },
@@ -115,10 +115,10 @@ var delayDialog = {
   delayEvaluation: function  () {
 
     messageArgs.delayCount = messageArgs.delayCount - 1;
-    evaluateButton.innerHTML = messageArgs.delayCount + ' secs';
+    evaluateButton.textContent = messageArgs.delayCount + ' secs';
     if (messageArgs.delayCount === 0) {
       handleUpdateEvaluation();
-      evaluateButton.innerHTML = 'Rerun evaluate';
+      evaluateButton.textContent = 'Rerun evaluate';
       evaluateButton.disabled = false;
     }
     else {

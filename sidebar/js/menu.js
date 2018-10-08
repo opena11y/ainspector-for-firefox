@@ -92,7 +92,7 @@ Menu.prototype.init = function () {
 };
 
 Menu.prototype.removeAllOptions = function() {
-  this.domNode.innerHTML = '';
+  this.domNode.textContent = '';
   this.menuitems  = [];
   this.firstChars = [];
 
@@ -108,7 +108,7 @@ Menu.prototype.addOption = function(id, role, label, menuAction) {
   var menuElement = document.createElement('li');
   menuElement.id = id;
   menuElement.setAttribute('role', role);
-  menuElement.innerHTML = label;
+  menuElement.textContent = label;
   this.domNode.appendChild(menuElement);
 
   if (role === 'menuitem') {
