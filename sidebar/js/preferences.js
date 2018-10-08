@@ -1,16 +1,40 @@
 "use strict";
 
-var preferencesDefaultButton  = document.getElementById('preferences_default');
+// Internationalizationalization of preferences messages
 
-var includeGuidelinesCheckbox = document.getElementById('include_guidelines');
+var prefsTitle  = document.getElementById('prefs_title');
+prefsTitle.textContent = i18n('prefsTitle');
+
+var prefsGeneral  = document.getElementById('prefs_general');
+prefsGeneral.textContent = i18n('prefsGeneral');
+
+var prefsViewsMenu  = document.getElementById('prefs_views_menu');
+prefsViewsMenu.textContent = i18n('prefsViewsMenu');
+
+var prefsIncludeGuidelinesLabel  = document.getElementById('prefs_include_guidelines_label');
+prefsIncludeGuidelinesLabel.textContent = i18n('prefsIncludeGuidelinesLabel');
+
+var prefsNoDelayLabel  = document.getElementById('prefs_no_delay_label');
+prefsNoDelayLabel.textContent = i18n('prefsNoDelayLabel');
+
+var prefsPromptForDelayLabel  = document.getElementById('prefs_prompt_for_delay_label');
+prefsPromptForDelayLabel.textContent = i18n('prefsPromptForDelayLabel');
+
+
+
+
+var defaultButton  = document.getElementById('prefs_default');
+defaultButton.textContent = i18n('prefsDefault');
+
+var includeGuidelinesCheckbox = document.getElementById('prefs_include_guidelines_checkbox');
 
 var rulesetAriaStrictRadio = document.getElementById('ARIA_STRICT');
 var rulesetAriaTransRadio  = document.getElementById('ARIA_TRANS');
 
-var noDelayRadio        = document.getElementById('NO_DELAY');
-var promptForDelayRadio = document.getElementById('PROMPT_FOR_DELAY');
+var noDelayRadio        = document.getElementById('prefs_no_delay');
+var promptForDelayRadio = document.getElementById('prefs_prompt_for_delay');
 
-var includePassAndNotApplicableCheckbox = document.getElementById('include_pass_and_na');
+var includePassAndNotApplicableCheckbox = document.getElementById('prefs_include_pass_and_na');
 
 var reRunEvaluation = false;
 // Restore Defaults
@@ -52,7 +76,7 @@ function handleResetDefault (event) {
 
 };
 
-preferencesDefaultButton.addEventListener('click', handleResetDefault);
+defaultButton.addEventListener('click', handleResetDefault);
 
 // Include Guidelines
 
