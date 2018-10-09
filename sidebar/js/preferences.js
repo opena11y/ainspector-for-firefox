@@ -5,14 +5,19 @@
 var prefsTitle  = document.getElementById('prefs_title');
 prefsTitle.textContent = i18n('prefsTitle');
 
-var prefsGeneral  = document.getElementById('prefs_general');
-prefsGeneral.textContent = i18n('prefsGeneral');
+var prefsGeneralHeading  = document.getElementById('prefs_general_heading');
+prefsGeneralHeading.textContent = i18n('prefsGeneralHeading');
 
-var prefsViewsMenu  = document.getElementById('prefs_views_menu');
-prefsViewsMenu.textContent = i18n('prefsViewsMenu');
+
+var prefsViewsMenuLegend  = document.getElementById('prefs_views_menu_legend');
+prefsViewsMenuLegend.textContent = i18n('prefsViewsMenuLegend');
 
 var prefsIncludeGuidelinesLabel  = document.getElementById('prefs_include_guidelines_label');
 prefsIncludeGuidelinesLabel.textContent = i18n('prefsIncludeGuidelinesLabel');
+
+
+var prefsRerunEvaluationLegend  = document.getElementById('prefs_rerun_evaluation_legend');
+prefsRerunEvaluationLegend.textContent = i18n('prefsRerunEvaluationLegend');
 
 var prefsNoDelayLabel  = document.getElementById('prefs_no_delay_label');
 prefsNoDelayLabel.textContent = i18n('prefsNoDelayLabel');
@@ -21,6 +26,25 @@ var prefsPromptForDelayLabel  = document.getElementById('prefs_prompt_for_delay_
 prefsPromptForDelayLabel.textContent = i18n('prefsPromptForDelayLabel');
 
 
+var prefsEvaluationHeading  = document.getElementById('prefs_evaluation_heading');
+prefsEvaluationHeading.textContent = i18n('prefsEvaluationHeading');
+
+
+var prefsRulesetLegend  = document.getElementById('prefs_ruleset_legend');
+prefsRulesetLegend.textContent = i18n('prefsRulesetLegend');
+
+var prefsAriaStrictLabel  = document.getElementById('aria_strict_label');
+prefsAriaStrictLabel.textContent = i18n('prefsAriaStrictLabel');
+
+var prefsAriaTransLabel  = document.getElementById('aria_trans_label');
+prefsAriaTransLabel.textContent  = i18n('prefsAriaTransLabel');
+
+
+var prefsRuleResultsLegend  = document.getElementById('prefs_rule_results_legend');
+prefsRuleResultsLegend.textContent = i18n('prefsRuleResultsLegend');
+
+var prefsIncludePassAndNALabel  = document.getElementById('prefs_include_pass_and_na_label');
+prefsIncludePassAndNALabel.textContent  = i18n('prefsIncludePassAndNALabel');
 
 
 var defaultButton  = document.getElementById('prefs_default');
@@ -31,8 +55,8 @@ var includeGuidelinesCheckbox = document.getElementById('prefs_include_guideline
 var rulesetAriaStrictRadio = document.getElementById('ARIA_STRICT');
 var rulesetAriaTransRadio  = document.getElementById('ARIA_TRANS');
 
-var noDelayRadio        = document.getElementById('prefs_no_delay');
-var promptForDelayRadio = document.getElementById('prefs_prompt_for_delay');
+var noDelayRadio        = document.getElementById('prefs_no_delay_radio');
+var promptForDelayRadio = document.getElementById('prefs_prompt_for_delay_radio');
 
 var includePassAndNotApplicableCheckbox = document.getElementById('prefs_include_pass_and_na');
 

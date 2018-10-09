@@ -5,7 +5,7 @@
   },
 
   "extensionDescription": {
-    "message": "Inspects web pages for features and issues related to WCAG 2.0 level A and AA requirements.",
+    "message": "The AInspector Sidebar is a web accessibility tool that evaluates the page being viewed in the browser according to the rules in the selected OpenAjax Alliance ruleset, which in turn are based on WCAG 2.0 and WAI-ARIA requirements. The rule results may be organized by either Rule Categories or WCAG Guidelines.",
     "description": "Description of the extension."
   },
 
@@ -615,44 +615,84 @@
   },
 
   "prefsTitle": {
-    "message": "Preferences X",
+    "message": "Preferences",
     "description": "Preferences: title"
   },
 
-  "prefsGeneral": {
-    "message": "General X",
-    "description": "Preferences: General Section Label"
+
+  "prefsGeneralHeading": {
+    "message": "General",
+    "description": "Preferences: General Section Heading"
   },
 
-  "prefsViewsMenu": {
-    "message": "'Views' Menu X",
+
+  "prefsViewsMenuLegend": {
+    "message": "'Views' Menu",
     "description": "Preferences: View Menu Section"
   },
 
   "prefsIncludeGuidelinesLabel": {
-    "message": "Include WCAG Guidelines X",
+    "message": "Include WCAG Guidelines",
     "description": "Preferences: label for include WCAG Guidelines in view menu"
   },
 
   "prefsNoDelayLabel": {
-    "message": "Rerun with no delay X",
+    "message": "Rerun with no delay",
     "description": "Preferences: Rerun with no delay label"
   },
 
+
+  "prefsRerunEvaluationLegend": {
+    "message": "'Rerun Evaluation' Button",
+    "description": "Preferences: 'Rerun Evaluation' Button"
+  },
+
   "prefsNoDelayLabel": {
-    "message": "Prompt for delay setting X",
+    "message": "Prompt for delay setting",
     "description": "Preferences: Prompt for delay setting label"
   },
 
   "prefsPromptForDelayLabel": {
-    "message": "Rerun with no delay X",
+    "message": "Rerun with no delay",
     "description": "Preferences: Rerun with no delay label"
   },
 
 
+  "prefsEvaluationHeading": {
+    "message": "Evaluation",
+    "description": "Preferences: Evaluation Section Heading"
+  },
+
+
+  "prefsRulesetLegend": {
+    "message": "Ruleset",
+    "description": "Preferences: Ruleset"
+  },
+
+  "prefsAriaStrictLabel": {
+    "message": "HTML5 and ARIA Techniques",
+    "description": "Preferences: HTML5 and ARIA Techniques"
+  },
+
+  "prefsAriaTransLabel": {
+    "message": "HTML4 Legacy Techniques",
+    "description": "Preferences: HTML4 Legacy Techniques"
+  },
+
+
+  "prefsRuleResultsLegend": {
+    "message": "Rul;e Results",
+    "description": "Preferences: Rule Results"
+  },
+
+  "prefsIncludePassAndNALabel": {
+    "message": "Include 'Pass' and 'N/A' results",
+    "description": "Preferences: Include 'Pass' and 'N/A' results"
+  },
 
   "prefsDefault": {
-    "message": "Reset Defaults X",
+    "message": "Reset Defaults",
     "description": "Preferences: Reset defauls button"
   }
+
 }
