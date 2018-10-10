@@ -15,6 +15,7 @@ function notify(message) {
   }
 };
 
+/*
 browser.contextMenus.create({
   id: "ainspector",
   title: "AInspector Sidebar",
@@ -27,6 +28,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     evaluateButton.click();
   }
 });
+*/
 
 function updateEvaluationResults(evaluationResult) {
 

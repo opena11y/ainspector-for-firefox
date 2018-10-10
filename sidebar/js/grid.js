@@ -343,7 +343,6 @@ GridRow.prototype.addCell = function (content, type, sort, header) {
     node = document.createElement('td');
   }
 
-  node.textContent = content;
   this.domNode.appendChild(node);
   node.className = type;
 
@@ -351,11 +350,13 @@ GridRow.prototype.addCell = function (content, type, sort, header) {
     node.setAttribute('data-sort', sort);
   }
 
-  var gridCell = new GridCell(node, this, header);
-  gridCell.init();
-  this.cells.push(gridCell);
+  var cell = new GridCell(node, this, header);
+  cell.init();
+  this.cells.push(cell);
 
-  return gridCell;
+  cell.setContentAndTitle(content, '');
+
+  return cell;
 
 };
 
@@ -503,8 +504,16 @@ GridCell.prototype.init = function () {
 };
 
 GridCell.prototype.setContentAndTitle = function (content, title) {
-  this.domNode.textContent = content;
-  if (title) {
+  if ((typeof content === 'string' ) &&
+      (content.indexOf('<') >= 0) &&
+      (content.indexOf('>') >= 0)) {
+    this.domNode.innerHTML = content;
+  }
+  else {
+    this.domNode.textContent = content;
+  }
+
+  if ((typeof title === 'string') && title) {
     this.domNode.setAttribute('title', title);
   }
 };

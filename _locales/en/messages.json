@@ -5,7 +5,7 @@
   },
 
   "extensionDescription": {
-    "message": "The AInspector Sidebar is a web accessibility tool that evaluates the page being viewed in the browser according to the rules in the selected OpenAjax Alliance ruleset, which in turn are based on WCAG 2.0 and WAI-ARIA requirements. The rule results may be organized by either Rule Categories or WCAG Guidelines.\n\nCreated by: Nichoals Hoyt and Jon Gunderson\n\nAdditional Contributions: Prasanna Bale and OpenAjax Accessibility Working Group\n\nDedicated to: Morton N. Hoyt, 1917-2014",
+    "message": "The AInspector Sidebar is a web accessibility tool that evaluates the page being viewed in the browser according to the rules in the selected OpenAjax Alliance ruleset, which in turn are based on WCAG 2.0 and WAI-ARIA requirements. The rule results may be organized by either Rule Categories or WCAG Guidelines.\n\nKeyboard Shortcuts:\nWindows: ALT + SHIFT + I\nLinux: ALT + SHIFT + I\nMac OSX: Command + Shift + I\n\nCreated by: Nichoals Hoyt and Jon Gunderson\n\nAdditional Contributions: Prasanna Bale and OpenAjax Accessibility Working Group\n\nDedicated to: Morton N. Hoyt, 1917-2014",
     "description": "Description of the extension."
   },
 
