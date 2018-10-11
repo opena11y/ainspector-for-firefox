@@ -73,7 +73,12 @@ var delayDialog = {
     if (typeof messageArgs.delay !== 'number') {
       messageArgs.delay = 5;
     }
-    messageArgs.promptForDelay = !this.onlyOnceNode.checked;
+
+    if (this.onlyOnceNode.checked) {
+      messageArgs.promptForDelay = false;
+      setAInspectorPreferences();
+    }
+
     messageArgs.delayCount = messageArgs.delay
     evaluateButton.textContent = messageArgs.delayCount + ' secs';
     evaluateButton.disabled = true;
@@ -118,7 +123,7 @@ var delayDialog = {
     evaluateButton.textContent = messageArgs.delayCount + ' secs';
     if (messageArgs.delayCount === 0) {
       handleUpdateEvaluation();
-      evaluateButton.textContent = 'Rerun evaluate';
+      evaluateButton.textContent = i18n('labelRerunEvaluate');
       evaluateButton.disabled = false;
     }
     else {

@@ -201,14 +201,14 @@ function updateDetailsAction(id, detailsAction) {
 
   }
 
-  document.getElementById(id + '_definition').textContent      = getDetails(detailsAction.definition);
-  document.getElementById(id + '_action').textContent          = getDetails(detailsAction.action);
-  document.getElementById(id + '_purpose').textContent         = getDetails(detailsAction.purpose);
-  document.getElementById(id + '_techniques').textContent      = getDetails(detailsAction.techniques);
-  document.getElementById(id + '_target_elements').textContent = getDetails(detailsAction.targetElements);
-  document.getElementById(id + '_compliance').textContent      = getDetails(detailsAction.compliance);
-  document.getElementById(id + '_wcag').textContent            = getDetails(detailsAction.wcagPrimary);
-  document.getElementById(id + '_information').textContent     = getDetails(detailsAction.informationalLinks);
+  document.getElementById(id + '_definition').innerHTML      = getDetails(detailsAction.definition);
+  document.getElementById(id + '_action').innerHTML          = getDetails(detailsAction.action);
+  document.getElementById(id + '_purpose').innerHTML         = getDetails(detailsAction.purpose);
+  document.getElementById(id + '_techniques').innerHTML      = getDetails(detailsAction.techniques);
+  document.getElementById(id + '_target_elements').innerHTML = getDetails(detailsAction.targetElements);
+  document.getElementById(id + '_compliance').innerHTML      = getDetails(detailsAction.compliance);
+  document.getElementById(id + '_wcag').innerHTML            = getDetails(detailsAction.wcagPrimary);
+  document.getElementById(id + '_information').innerHTML     = getDetails(detailsAction.informationalLinks);
 
   if (id === 'rr') {
     document.getElementById('rr_none_selected').style.display = 'none';

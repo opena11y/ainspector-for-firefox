@@ -23,5 +23,5 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 | Open sidebar | Command + Shift + I | Opens sidebar
 | Move focus to sidebar | Command + L and Tab | Keys move focus first to the address bar and then uses tab key to move focus to the controls in the sidebar  |
 
-
-
+## Issues and Features
+* Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features

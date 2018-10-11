@@ -64,7 +64,12 @@ var reRunEvaluation = false;
 // Restore Defaults
 
 function handleResponse(message) {
-  console.log(`Message from the sidebar script:  ${message.response}`);
+  if (message) {
+    console.log(`[PreferenceChange]: Message from the sidebar script:  ${message.response}`);
+  }
+  else {
+    console.log('[PreferenceChange]: no response message');
+  }
 }
 
 function notifySidebarOfPreferenceChanges() {
@@ -118,8 +123,8 @@ includeGuidelinesCheckbox.addEventListener('click', handleIncludeGuidelines);
 function handleNoDelay (event) {
   if (noDelayRadio.checked) {
     messageArgs.promptForDelay = false;
-
     setAInspectorPreferences();
+    notifySidebarOfPreferenceChanges();
   }
 };
 
@@ -129,6 +134,7 @@ function handlePromptForDelay (event) {
   if (promptForDelayRadio.checked) {
     messageArgs.promptForDelay = true;
     setAInspectorPreferences();
+    notifySidebarOfPreferenceChanges();
   }
 };
 
@@ -164,6 +170,7 @@ rulesetAriaTransRadio.addEventListener('click', handleRulesetAriaTrans);
 function handleIncludePassAndNotApplicable (event) {
   messageArgs.includePassAndNotApplicable = includePassAndNotApplicableCheckbox.checked;
   setAInspectorPreferences();
+  notifySidebarOfPreferenceChanges();
   reRunEvaluation = true;
 };
 

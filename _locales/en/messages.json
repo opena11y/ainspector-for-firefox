@@ -325,7 +325,7 @@
   },
 
   "sc1.3.1": {
-    "message": "Information and Relationships",
+    "message": "Info and Relationships",
     "description": "WCAG Success Criteria 1.3.1"
   },
 
@@ -642,13 +642,13 @@
   },
 
   "prefsNoDelayLabel": {
-    "message": "Prompt for delay setting",
-    "description": "Preferences: Prompt for delay setting label"
+    "message": "Rerun with no delay",
+    "description": "Preferences: Rerun with no delay label"
   },
 
   "prefsPromptForDelayLabel": {
-    "message": "Rerun with no delay",
-    "description": "Preferences: Rerun with no delay label"
+    "message": "Prompt for delay setting",
+    "description": "Preferences: Prompt for delay setting label"
   },
 
 
