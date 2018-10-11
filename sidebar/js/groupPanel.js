@@ -97,12 +97,17 @@ var groupPanel = {
     var row = this.groupGrid.addRow(rule_id, this.handleAction);
 
     var cell = row.addCell(summary, 'text rule', '', '', true);
+    var id = rule_id + '_summary';
+    cell.setId(id);
+    cell.setLabelledby(id);
+
 
     cell = row.addCell(result,  'value result ' + result.toLowerCase(), getAccNameResult(result), result);
     cell.setAccessibleName(getAccNameResult(result));
 
     cell = row.addCell(wcag,   'value sc', '', wcag);
-    cell.setContentAndTitle(wcag, i18n('sc' + wcag))
+    cell.setAccessibleName(wcag);
+    cell.setContentAndTitle(wcag, i18n('sc' + wcag));
 
     cell = row.addCell(level,   'value level', '',level);
     cell.setAccessibleName(i18n('labelLevel' + level));

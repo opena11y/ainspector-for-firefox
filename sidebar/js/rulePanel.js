@@ -104,6 +104,9 @@ var rulePanel = {
     cell.setAccessibleName(i18n('labelPosition') + ' ' + position);
 
     cell = row.addCell(actionMessage, 'text action');
+    var id = position + '_element';
+    cell.setId(id);
+    cell.setLabelledby(id);
 
     return row;
 

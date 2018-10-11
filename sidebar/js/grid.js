@@ -524,12 +524,25 @@ GridCell.prototype.setAccessibleName = function (name) {
   }
 };
 
-GridCell.prototype.setDescribedBy = function (id) {
+GridCell.prototype.setId = function (id) {
   if (id) {
+    this.domNode.id = id;
+  }
+};
+
+
+GridCell.prototype.setDescribedBy = function (id) {
+  if (ids) {
     this.domNode.setAttribute('aria-describedby', id);
   }
 };
 
+
+GridCell.prototype.setLabelledby = function (ids) {
+  if (ids) {
+    this.domNode.setAttribute('aria-labelledby', ids);
+  }
+};
 
 GridCell.prototype.removeSelected = function () {
   this.domNode.tabIndex = -1;
