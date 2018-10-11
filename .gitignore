@@ -1,2 +1,5 @@
 openajax/
 web-ext-artifacts/
+node_modules/
+package-lock.json
+
