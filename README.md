@@ -9,16 +9,19 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 ## Keyboard Shortcuts
 
-### Windows
+### Windows and Linux
 
 | Function | Key | Notes |
 |----------|:---:|-------|
 | Open sidebar | ALT+ Shift + I | Opens sidebar
-| Move focus to sidebar | F6 | * F6 moves focus between the address bar, HTML content and the sidebar, visual focus is often difficult to see visually
-  * Use the TAB key to move focus to sidbar controls
-|
+| Move focus to sidebar | F6 | <ul><li>F6 moves focus between the address bar, HTML content and the sidebar, visual focus is often difficult to see visually</li><li>Use the TAB key to move focus to sidbar controls</li></ul> |
 
 ### Mac OSX
+
+| Function | Key | Notes |
+|----------|:---:|-------|
+| Open sidebar | Command + Shift + I | Opens sidebar
+| Move focus to sidebar | Command + L and Tab | Keys move focus first to the address bar and then uses tab key to move focus to the controls in the sidebar  |
 
 
 
