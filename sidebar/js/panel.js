@@ -15,21 +15,6 @@ function notify(message) {
   }
 };
 
-/*
-browser.contextMenus.create({
-  id: "ainspector",
-  title: "AInspector Sidebar",
-  contexts: ["all"],
-});
-
-browser.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "ainspector") {
-    browser.sidebarAction.open();
-    evaluateButton.click();
-  }
-});
-*/
-
 function updateEvaluationResults(evaluationResult) {
 
   function updateResults () {
