@@ -4,7 +4,7 @@ function handleError(error) {
   console.log(`Error: ${error}`);
 }
 
-window.onload = function () {
+window.addEventListener('load', function () {
 
   function notifyPanel () {
     // to be run when the window finishes loading
@@ -20,8 +20,7 @@ window.onload = function () {
   notifyPanel();
 
   window.addEventListener('focus', function(e) {notifyPanel();});
-
-}
+});
 
 
 function evaluateRules(ruleset) {
