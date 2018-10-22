@@ -80,6 +80,33 @@ function updateEvaluationResults(evaluationResult) {
   }
 };
 
+function repositionFooter(id) {
+
+  var bottomNode = document.getElementById(id);
+  var bottom     = bottomNode.getBoundingClientRect();
+
+  var footerNode  = document.getElementById('id_footer');
+  var footer      = footerNode.getBoundingClientRect();
+
+  if (bottom.bottom === 0) {
+    return;
+  }
+
+  var diff = window.innerHeight - (bottom.bottom + footer.height);
+
+  if (diff < 0) {
+    footerNode.style.position = 'static';
+    footerNode.style.bottom   = 'auto';
+  }
+  else {
+    footerNode.style.position = 'absolute';
+    footerNode.style.bottom   = '0px';
+  }
+
+
+
+}
+
 function debug(message) {
 
   messageArgs.option    = 'debug';

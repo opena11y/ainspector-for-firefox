@@ -3,8 +3,8 @@
     "manifest_version": 2,
     "name": "__MSG_extensionName__",
     "description": "__MSG_extensionDescription__",
-    "version": "0.91.6",
-    "version_name": "0.91.6 Beta",
+    "version": "0.91.8",
+    "version_name": "0.91.8 Beta",
     "author": "__MSG_extensionAuthor__",
     "default_locale": "en",
     "icons": {
@@ -40,11 +40,11 @@
     "commands": {
       "_execute_sidebar_action": {
         "suggested_key": {
-          "default": "Alt+Shift+I",
-          "linux": "Alt+Shift+I",
-          "mac": "Command+Shift+I"
+          "default": "Alt+Shift+U",
+          "linux": "Alt+Shift+U",
+          "mac": "Command+Shift+U"
         },
-        "description": "Toggle open and close the AInspector WCAG sidebar"
+        "description": "__MSG_extensionShortCutDescription__"
       }
     },
 

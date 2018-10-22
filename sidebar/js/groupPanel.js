@@ -15,6 +15,7 @@ var groupPanel = {
 
     window.addEventListener('resize', function() {
       groupPanel.groupGrid.resize();
+      repositionFooter('rr_details_action');
     });
 
     this.clear();

@@ -156,7 +156,7 @@ var rulePanel = {
 
   updateRulePanelSummaryResult: function (evaluationResult) {
 
-    document.getElementById('rule_panel_summary').textContent = evaluationResult.ruleResult.summary;
+    document.getElementById('rule_panel_summary').innerHTML = evaluationResult.ruleResult.summary;
     var node = document.getElementById('rule_panel_result');
     node.textContent = evaluationResult.ruleResult.result;
     node.className = 'right ' + evaluationResult.ruleResult.result.toLowerCase();
@@ -234,6 +234,8 @@ window.addEventListener('resize', function() {
   var refNode = document.getElementById('view_options_button');
 
   resize('rr_details_action');
-  resize('da_tabpanel')
+  resize('da_tabpanel');
+
+  repositionFooter('id_highlight_section');
 
 });

@@ -13,8 +13,11 @@ header button {
 }
 
 footer {
-    position: absolute;
-    bottom: 10px;
+  clear: both;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  position: absolute;
+  bottom: 0;
 }
 
 footer .info {
