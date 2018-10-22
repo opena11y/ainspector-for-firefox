@@ -82,19 +82,20 @@ function updateEvaluationResults(evaluationResult) {
 
 function repositionFooter(id) {
 
-  var bottomNode = document.getElementById(id);
-  var bottom     = bottomNode.getBoundingClientRect();
+  var mainNode = document.getElementById('id_main');
+  var mainRect = mainNode.getBoundingClientRect();
 
   var footerNode  = document.getElementById('id_footer');
-  var footer      = footerNode.getBoundingClientRect();
+  var footerRect  = footerNode.getBoundingClientRect();
 
-  if (bottom.bottom === 0) {
+  if (mainRect.bottom === 0) {
     return;
   }
 
-  var diff = window.innerHeight - (bottom.bottom + footer.height);
+  var diff = window.innerHeight - (mainRect.bottom + footerRect.height);
 
-  if (diff < 0) {
+
+  if (diff < 9) {
     footerNode.style.position = 'static';
     footerNode.style.bottom   = 'auto';
   }

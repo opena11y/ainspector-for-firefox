@@ -12,9 +12,15 @@ header button {
   top: 5px;
 }
 
+main {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 1em;
+}
+
 footer {
   clear: both;
-  margin-top: 0.5em;
+  padding-top: 2.5em;
   margin-bottom: 0.5em;
   position: absolute;
   bottom: 0;
