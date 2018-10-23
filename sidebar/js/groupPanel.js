@@ -13,13 +13,15 @@ var groupPanel = {
     this.detailsButton.textContent = i18n('labelDetails');
     this.detailsButton.addEventListener('click', this.handleDetails);
 
-    window.addEventListener('resize', function() {
-      groupPanel.groupGrid.resize();
-      repositionFooter('rr_details_action');
-    });
+    window.addEventListener('resize', this.resize.bind(this));
 
     this.clear();
 
+  },
+
+  resize: function () {
+    this.groupGrid.resize();
+    repositionFooter();
   },
 
   hide: function () {
@@ -28,7 +30,7 @@ var groupPanel = {
 
   show: function () {
     show('group_panel');
-    this.groupGrid.resize();
+    this.resize();
     backButton.disabled = false;
   },
 

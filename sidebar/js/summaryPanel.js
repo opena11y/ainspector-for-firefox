@@ -75,7 +75,7 @@ var summaryPanel = {
   resize: function () {
     this.rcGrid.resize();
     this.glGrid.resize();
-    repositionFooter('details_group');
+    repositionFooter();
   },
 
   handleDetailsButton: function (event) {

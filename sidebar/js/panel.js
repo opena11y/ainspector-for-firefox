@@ -80,7 +80,7 @@ function updateEvaluationResults(evaluationResult) {
   }
 };
 
-function repositionFooter(id) {
+function repositionFooter() {
 
   var mainNode = document.getElementById('id_main');
   var mainRect = mainNode.getBoundingClientRect();
@@ -285,33 +285,6 @@ var backButton = document.getElementById('back');
 backButton.textContent = i18n('labelBack');
 backButton.addEventListener('click', handleBack);
 
-// Highlight button
-
-function handleHighlight(event) {
-  var value = event.target.value;
-
-  messageArgs.option    = 'highlight';
-
-  if (value) {
-    messageArgs.highlight = value;
-  }
-  else {
-    messageArgs.highlight = 'none';
-  }
-
-  browser.tabs.query({
-      currentWindow: true,
-      active: true
-  }).then(sendMessageToTabs).catch(onError);
-};
-
-var highlightOptions = document.getElementById('highlight');
-highlightOptions.addEventListener('change', handleHighlight);
-
-document.getElementById('highlight_label').textContent = i18n('labelHighlight');
-
-
-
 // initialize Preferences
 
 function handlePreferences (event) {
@@ -331,3 +304,4 @@ rulePanel.init();
 summaryPanel.show();
 groupPanel.hide();
 rulePanel.hide();
+

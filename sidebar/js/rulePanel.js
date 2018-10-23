@@ -12,10 +12,23 @@ var rulePanel = {
     this.tablist.updateTabContentAndTitle(0, i18n('labelDetailsAction'), '');
     this.tablist.updateTabContentAndTitle(1, i18n('labelElementResults'), '');
 
-    window.addEventListener('resize', function() {
-      rulePanel.ruleGrid.resize();
-    });
+    document.getElementById('highlight_label').textContent = i18n('labelHighlight');
+    this.highlightOptions = document.getElementById('highlight');
+    this.highlightOptions.addEventListener('change', this.handleHighlight.bind(this));
 
+    var option = this.highlightOptions.querySelector('[value=' + messageArgs.highlight + ']');
+
+    if (option) {
+      option.setAttribute('selected');
+    }
+
+    window.addEventListener('resize', this.resize.bind(this));
+
+  },
+
+  resize: function () {
+    this.ruleGrid.resize();
+    repositionFooter();
   },
 
   hide: function () {
@@ -24,8 +37,26 @@ var rulePanel = {
 
   show: function () {
     show('rule_panel');
-    this.ruleGrid.resize();
+    this.resize();
     backButton.disabled = false;
+  },
+
+  handleHighlight: function () {
+    var value = this.highlightOptions.value;
+
+    messageArgs.option    = 'highlight';
+
+    if (value) {
+      messageArgs.highlight = value;
+    }
+    else {
+      messageArgs.highlight = 'none';
+    }
+
+    browser.tabs.query({
+        currentWindow: true,
+        active: true
+    }).then(sendMessageToTabs).catch(onError);
   },
 
   handleAction: function (type, position) {
@@ -218,8 +249,6 @@ function updateDetailsAction(id, detailsAction) {
 };
 
 
-
-
 window.addEventListener('resize', function() {
 
   function resize(id) {
@@ -236,6 +265,6 @@ window.addEventListener('resize', function() {
   resize('rr_details_action');
   resize('da_tabpanel');
 
-  repositionFooter('id_highlight_section');
+  repositionFooter();
 
 });
