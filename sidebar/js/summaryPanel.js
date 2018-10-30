@@ -57,7 +57,7 @@ var summaryPanel = {
     this.glGrid.updateCellContentAndTitle(0, 4, i18n('labelP'),  i18n('labelPass'));
 
     this.tablist = new Tablist(document.getElementById('summary_tablist'));
-    this.tablist.init();
+    this.tablist.init(this.handleTabChange);
     this.tablist.updateTabContentAndTitle(0, i18n('labelRuleCategories'), '');
     this.tablist.updateTabContentAndTitle(1, i18n('labelGuidelines'), '');
 
@@ -105,6 +105,13 @@ var summaryPanel = {
     show('summary_panel');
     this.resize();
     backButton.disabled = true;
+  },
+
+  handleTabChange: function(id) {
+
+    var groupType = id.substring(0,2);
+    messageArgs.groupType = groupType;
+
   },
 
   handleAction: function(type, id) {

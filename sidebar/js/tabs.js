@@ -96,7 +96,6 @@ Tab.prototype.handleKeydown = function (event) {
 
 Tab.prototype.handleClick = function (event) {
   this.tablist.setSelected(this);
-  console.log('pause status is ' + this.tablist.rotate);
 };
 
 Tab.prototype.handleFocus = function (event) {

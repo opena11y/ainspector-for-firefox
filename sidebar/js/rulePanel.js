@@ -19,7 +19,7 @@ var rulePanel = {
     var option = this.highlightOptions.querySelector('[value=' + messageArgs.highlight + ']');
 
     if (option) {
-      option.setAttribute('selected');
+      option.setAttribute('selected', '');
     }
 
     window.addEventListener('resize', this.resize.bind(this));

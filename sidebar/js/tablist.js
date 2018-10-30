@@ -21,9 +21,14 @@ var Tablist = function (domNode) {
   this.enableRotation = true;
   this.hasFocus = null;
   this.timeInterval = 5000;
+  this.action = false;
 };
 
-Tablist.prototype.init = function () {
+Tablist.prototype.init = function (action) {
+
+  if (typeof action === 'function') {
+    this.action = action;
+  }
 
   var tabs = this.domNode.querySelectorAll('[role=tab]');
 
@@ -81,6 +86,11 @@ Tablist.prototype.setSelected = function (newTab, moveFocus) {
   if (moveFocus) {
     this.currentTab.domNode.focus();
   }
+
+  if (this.action) {
+    this.action(this.currentTab.id);
+  }
+
 };
 
 Tablist.prototype.setSelectedToPreviousTab = function (currentTab, moveFocus) {

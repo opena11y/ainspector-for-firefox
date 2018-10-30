@@ -51,9 +51,11 @@ input:hover {
 }
 
 ul[role="menu"] li[role="menuitem"]:focus,
-ul[role="menu"] li[role="menuitem"].focus,
+ul[role="menu"] li[role="menuitem"].focus {
+  background-color: hsl(216, 94%, 90%);
+}
+
 ul[role="menu"] li[role="menuitem"]:hover {
-  background-color: black;
-  color: white;
+  background-color: #DDD;
 }
 

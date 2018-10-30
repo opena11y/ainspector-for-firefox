@@ -147,18 +147,8 @@ ViewMenuButton.prototype.handleMouseout = function (event) {
   setTimeout(this.menu.close.bind(this.menu, false), 300);
 };
 
-// Initialize menu button
-
-window.addEventListener('load', function (event) {
-  var viewMenuButton = document.getElementById('view_options_button');
-  var mb = new ViewMenuButton(viewMenuButton);
-  mb.init();
-}, false);
-
 
 function updateViewMenu() {
-
-
 
   viewMenu.removeAllOptions();
 
@@ -185,3 +175,11 @@ function updateViewMenu() {
   viewMenu.addOption(summaryPanel.rcOptions[last].id, 'menuitem', i18n(summaryPanel.rcOptions[last].label), function() {var id = 'rc-' + summaryPanel.rcOptions[last].id; handleGetGroup(id);});
 
 };
+
+// Initialize menu button
+
+var viewMenuButton = document.getElementById('view_options_button');
+var mb = new ViewMenuButton(viewMenuButton);
+mb.init();
+
+

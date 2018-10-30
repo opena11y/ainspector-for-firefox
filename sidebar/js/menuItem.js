@@ -165,8 +165,6 @@ MenuItem.prototype.handleBlur = function (event) {
 
 MenuItem.prototype.handleMouseover = function (event) {
   this.popupMenu.hasHover = true;
-  this.popupMenu.open();
-
 };
 
 MenuItem.prototype.handleMouseout = function (event) {
