@@ -7,6 +7,10 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 ## Compatibility
 * Firefox Version 60 or newer
 
+## Differences with AInspector Sidebar
+* Does not have a DOM inspector button.   The webextension APIs does not provide a way to open the DOM inspector from a web extension.
+* Sidebar stays open until closed by user.  The web extension APIs do not provide a way to progamamtically open a sidebar based on changing the borwser tabs.
+
 ## Keyboard Shortcuts
 
 ### Windows and Linux
