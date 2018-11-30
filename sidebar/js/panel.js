@@ -302,7 +302,9 @@ window.addEventListener('keydown', function(event) {
 
   var keyCode = Object.freeze({
     'BACKSPACE' : 8,
+    'PERIOD' : 190,
     'A' : 65
+
   });
 
   var flag = false;
@@ -326,9 +328,17 @@ window.addEventListener('keydown', function(event) {
 
 
     case keyCode.A:
-      if (event.ctrlKey) {
+      if (event.ctrlKey || event.altKey) {
         mb.menu.open();
         mb.menu.setFocusToFirstItem();
+        flag = true;
+      }
+
+      break;
+
+    case keyCode.PERIOD:
+      if (event.ctrlKey || event.metaKey) {
+        chrome.runtime.openOptionsPage();
         flag = true;
       }
 
