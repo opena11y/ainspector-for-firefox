@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg  xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      xmlns:xlink="http:/www.w3.org/1999/xlink"
+      width="100" height="100" viewBox="0 0 200 200">
+
+    <style>
+    /* <![CDATA[ */
+    path.border {
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+      stroke: white;
+    }
+    polygon.text {
+      stroke-width: 1;
+      stroke: white;
+      fill: white;
+    }
+    /* ]]> */
+  </style>
+  <g>
+    <path class="border" d="m20,5 h105 a20,20 0 0 1 20,20 v100 a20,20 0 0 1 -20,20 h-100 a20,20 0 0 1 -20,-20 v-100 a20,20 0 0 1 20,-20 z"  />
+
+    <polygon class="text" points="25,115 29,115 62,50 93,115  105,115 65,35"/>
+
+    <polygon class="text" points="45,83 80,83 78,77 48,77"/>
+
+    <polygon class="text" points="115,115 125,115 125,35 115, 35"/>
+
+  </g>
+</svg>
