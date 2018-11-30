@@ -315,12 +315,13 @@ function getRuleResult(evaluationResult, ruleId) {
   return item;
 }
 
-function rule(ruleset, ruleId, highlight, position) {
+function rule(ruleset, groupType, ruleId, highlight, position) {
 
   var evaluationResult = evaluateRules(ruleset);
   var aiResponse  = getCommonData(evaluationResult);
 
-  aiResponse.option = 'rule'
+  aiResponse.option = 'rule';
+  aiResponse.groupType = groupType;
   aiResponse.detailsAction  = getDetailsAction(evaluationResult, ruleId);
   aiResponse.ruleResult     = getRuleResult(evaluationResult, ruleId);
   aiResponse.elementResults = getElementResults(evaluationResult, ruleId);
@@ -432,9 +433,6 @@ browser.runtime.onMessage.addListener(request => {
     ruleset = request.ruleset;
   }
 
-  console.log("[onMessage][start]");
-  console.log('[onMessage][option]:    ' + option);
-
   highlightModule.initHighlight();
   highlightModule.removeHighlight(document);
 
@@ -444,20 +442,14 @@ browser.runtime.onMessage.addListener(request => {
       break;
 
     case 'group':
-      console.log('[onMessage][groupType]: ' + request.groupType);
-      console.log('[onMessage]  [groupId]:   ' + request.groupId);
       aiResponse = group(ruleset, request.groupType, request.groupId);
       break;
 
     case 'rule':
-      console.log('[onMessage]     [rule]: ' + request.ruleId);
-      console.log('[onMessage][highlight]: ' + request.highlight);
-      aiResponse = rule(ruleset, request.ruleId, request.highlight, request.position);
+      aiResponse = rule(ruleset, request.groupType, request.ruleId, request.highlight, request.position);
       break;
 
     case 'highlight':
-      console.log('[onMessage] [highlight]: ' + request.highlight);
-      console.log('[onMessage]  [position]: ' + request.position);
       aiResponse = highlight(request.highlight, request.position);
       break;
 
@@ -471,6 +463,5 @@ browser.runtime.onMessage.addListener(request => {
 
   }
 
-  console.log('[onMessage][End]:' + aiResponse);
   return Promise.resolve({response: aiResponse});
 });

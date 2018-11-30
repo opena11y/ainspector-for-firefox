@@ -3,8 +3,8 @@
     "manifest_version": 2,
     "name": "__MSG_extensionName__",
     "description": "__MSG_extensionDescription__",
-    "version": "0.94.1",
-    "version_name": "0.94.1 Beta",
+    "version": "0.95.0",
+    "version_name": "0.95.0 Beta",
     "author": "__MSG_extensionAuthor__",
     "default_locale": "en",
     "icons": {

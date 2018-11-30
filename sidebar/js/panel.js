@@ -295,6 +295,56 @@ var preferencesButton = document.getElementById('preferences');
 preferencesButton.textContent = i18n('labelPreferences');
 preferencesButton.addEventListener('click', handlePreferences);
 
+// Initialize SHortcut Keys
+
+window.addEventListener('keydown', function(event) {
+
+
+  var keyCode = Object.freeze({
+    'BACKSPACE' : 8,
+    'A' : 65
+  });
+
+  var flag = false;
+
+  switch(event.keyCode) {
+
+    case keyCode.BACKSPACE:
+      if (event.metaKey || event.ctrlKey) {
+        handleBack(event);
+        flag = true;
+      }
+
+      if ((event.ctrlKey || event.metaKey) &&
+          event.shiftKey) {
+        messageArgs.option = 'group';
+        handleBack(event);
+        flag = true;
+      }
+
+      break;
+
+
+    case keyCode.A:
+      if (event.ctrlKey) {
+        mb.menu.open();
+        mb.menu.setFocusToFirstItem();
+        flag = true;
+      }
+
+      break;
+
+    default:
+      break;
+
+  }
+
+  if (flag) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+});
+
 // Initialize panels
 
 summaryPanel.init();
