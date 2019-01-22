@@ -1,6 +1,6 @@
 # AInspector WCAG
 
-AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/) to use the web extension APIs for the Firefox browser.  Firefox was choosen to port to first, since Firefox supports the the sidebar API and Chrome does not.  The extnesion is availabel in the firefox add-ons page.
+AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/) to use the web extension APIs for the Firefox browser.  Firefox was choosen to port to first, since Firefox supports the the sidebar API and Chrome does not.  The extension is available in the Firefox add-ons page.
 
 [Install AInspector WCAG](https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag)
 
