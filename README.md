@@ -32,6 +32,6 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 ## Version History
 
-| Version  | Notes |
-|----------|-------|
-| 0.96.0   | Fixes bug in highlight option not being remembered
+| Version  | Date | Notes |
+|----------|:----:|-------|
+| 0.96.0   | 10/30/19 | Fixes bug in highlight option not being remembered
