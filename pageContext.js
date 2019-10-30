@@ -164,8 +164,6 @@ function addGroupSummaryData(aiResponse, evaluationResult, groupType, groupId) {
 
   }
 
-  console.log('[getGroupSummaryData][Start]: ' + groupType + ' ' + groupId);
-
   var ruleGroupResult;
 
   if (groupType === 'gl') {
@@ -282,7 +280,6 @@ function getElementResults(evaluationResult, ruleId) {
     addElementResult(results[i]);
   }
 
-  console.log('[addRuleResultData][End]');
   return elementResults;
 };
 
@@ -378,8 +375,6 @@ function highlight(highlight, position) {
 
     if (elementResults) {
       highlightModule.initHighlight();
-      console.log('[highlight]: ' + highlight);
-      console.log('[highlight][position]: ' + position);
 
       switch(highlight) {
         case 'all':

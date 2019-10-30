@@ -16,12 +16,6 @@ var rulePanel = {
     this.highlightOptions = document.getElementById('highlight');
     this.highlightOptions.addEventListener('change', this.handleHighlight.bind(this));
 
-    var option = this.highlightOptions.querySelector('[value=' + messageArgs.highlight + ']');
-
-    if (option) {
-      option.setAttribute('selected', '');
-    }
-
     window.addEventListener('resize', this.resize.bind(this));
 
   },
@@ -38,6 +32,13 @@ var rulePanel = {
   show: function () {
     show('rule_panel');
     this.resize();
+
+    var option = this.highlightOptions.querySelector('[value=' + messageArgs.highlight + ']');
+
+    if (option) {
+      option.setAttribute('selected', '');
+    }
+
     backButton.disabled = false;
   },
 

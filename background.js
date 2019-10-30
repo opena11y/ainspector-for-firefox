@@ -34,9 +34,7 @@ setInterval( function () {
     sidebarOpen = result;
 
     if (!sidebarOpen && (sidebarOpen !== previousSidebarOpen)) {
-      console.log('sidebar closed');
       removeHighlight();
-      console.log('');
     }
   });
 
