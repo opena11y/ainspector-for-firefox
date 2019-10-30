@@ -29,3 +29,9 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 ## Issues and Features
 * Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features
+
+## Version History
+
+| Version  | Notes |
+|----------|-------|
+| 0.96.0   | Fixes bug in highlight option not being remembered
