@@ -221,10 +221,14 @@ function updateDetailsAction(id, detailsAction) {
     for (let i=0; i < items.length; i++) {
       var item = items[i];
       if (typeof item === 'string') {
-        html += '<li>' + items[i] + '</li>';
+        html += '<li>' + item + '</li>';
       }
       else {
-        html += '<li><a href="' + items[i].url +'">' + items[i].title + '</li>';
+        if (items.url) {
+          html += '<li><a href="' + item.url +'">' + item.title + '</li>';
+        } else {
+          html += '<li>' + item.title + '</li>';
+        }
       }
     }
     html += '</ul>';
