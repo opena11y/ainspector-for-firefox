@@ -224,7 +224,7 @@ function updateDetailsAction(id, detailsAction) {
         html += '<li>' + item + '</li>';
       }
       else {
-        if (items.url) {
+        if (item.url) {
           html += '<li><a href="' + item.url +'">' + item.title + '</li>';
         } else {
           html += '<li>' + item.title + '</li>';
