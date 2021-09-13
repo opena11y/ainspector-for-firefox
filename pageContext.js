@@ -1,7 +1,7 @@
 "use strict";
 
 function handleError(error) {
-  console.log(`Error: ${error}`);
+  // console.log(`Error: ${error}`);
 }
 
 window.addEventListener('load', function () {
