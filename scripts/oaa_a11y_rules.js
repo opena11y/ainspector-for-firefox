@@ -8460,22 +8460,22 @@ OpenAjax.a11y.RuleManager.addRulesNLSFromJSON('en-us', {
         },
         WIDGET_16: {
             ID:                    'Widget 16',
-            DEFINITION:            'Web compnent %s be manually checked for accessibility requirements.',
-            SUMMARY:               'Web component manual check.',
-            TARGET_RESOURCES_DESC: 'Custom web components.',
+            DEFINITION:            'Custom element using web components API %s be manually checked for accessibility requirements.',
+            SUMMARY:               'Custom element manual check.',
+            TARGET_RESOURCES_DESC: 'Custom elements.',
             RULE_RESULT_MESSAGES: {
-              MANUAL_CHECK_S:  'Verify the web component meets WCAG accessibility requirments.',
-              MANUAL_CHECK_P:  'Verify the %N_MC web components meet WCAG accessibility requirments.',
-              NOT_APPLICABLE:  'No web components found on the page.'
+              MANUAL_CHECK_S:  'Verify the custom element meets WCAG accessibility requirments.',
+              MANUAL_CHECK_P:  'Verify the %N_MC custom elementsmeet WCAG accessibility requirments.',
+              NOT_APPLICABLE:  'No custom elements found on the page.'
             },
             NODE_RESULT_MESSAGES: {
-              ELEMENT_MC_1:       'Verify the @aria-live@ attribute value of @%1@ is appropriate for the type of informational change that can occur in the region.',
-              ELEMENT_HIDDEN_1:  'The @%1@ attribute on the @%2[role="%3"]@ element was not tested because it is hidden from assistive technologies.',
+              ELEMENT_MC_1:       'Verify the features of the custom component with the tag name of @%1@ is accessible using manual checking techniques or automated tools that can anlyze the shaodw DOM of custom elements.',
+              ELEMENT_HIDDEN_1:  'The @%1@ custom element is hidden from assistive technologies.',
             },
             PURPOSE: [
-              'Web compnent technology is used to create user interface components by packaging HTML, CSS and Javascript in a single loadable file using a DOM template.',
-              'Web compnents cannot be analyzed by the evaluation library because they have their own isolated "shadow" DOM that cannot be accessed by the library.',
-              'The evaluation library does report the presence of web components for manually checking the component for accessibility or use other DOM inspection tools to identify accessibility issues and features.'
+              'Custom elements using the web compnents API technology is used to create user interface components by packaging HTML, CSS and Javascript in a single loadable file using a DOM template.',
+              'Custom elements cannot be analyzed by the evaluation library because they have their own isolated "shadow" DOM that cannot be accessed by the library.',
+              'The evaluation library does report the presence of custom elements for manually checking the component for accessibility or use other DOM inspection tools to identify accessibility issues and features.'
             ],
             TECHNIQUES: [
               'Using the keyboard to test keyboard navigation and operation requirements.',
