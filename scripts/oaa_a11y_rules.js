@@ -8480,9 +8480,8 @@ OpenAjax.a11y.RuleManager.addRulesNLSFromJSON('en-us', {
             TECHNIQUES: [
               'When a custom element is used to create an interactive widget, the most important manual check is keyboard navigation and focus styling for the operation of the widget.',
               'Testing with screen readers to verify functionality is operable by a screen reader user.',
-              'Use accessibility tools in the browser DOM inspector to assist with manual and in automated inspection, since DOM inspector allows access the "shadow" DOM of the web component.',
+              'Use accessibility tools in browser DOM inspectors to assist with manual and in automated inspection, since the DOM inspector allows access the "shadow" DOM of the custom element.',
               'You can use the rules used in this tool to help guide your manual testing proceedures.'
-
             ],
             MANUAL_CHECKS: [
             ],
