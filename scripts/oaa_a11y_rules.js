@@ -8460,12 +8460,14 @@ OpenAjax.a11y.RuleManager.addRulesNLSFromJSON('en-us', {
         },
         WIDGET_16: {
             ID:                    'Widget 16',
-            DEFINITION:            'Custom element using web components API %s be manually checked for accessibility requirements.',
+            DEFINITION:            'Custom elements using web components API %s be manually checked for accessibility requirements.',
             SUMMARY:               'Custom element manual check.',
             TARGET_RESOURCES_DESC: 'Custom elements.',
             RULE_RESULT_MESSAGES: {
               MANUAL_CHECK_S:  'Verify the custom element meets WCAG accessibility requirments.',
               MANUAL_CHECK_P:  'Verify the %N_MC custom elements meet WCAG accessibility requirments.',
+              HIDDEN_S: 'A custom element is hidden and was not evaluated.',
+              HIDDEN_P: '%N_H custom elements are hidden and were not evaluated.',
               NOT_APPLICABLE:  'No custom elements found on the page.'
             },
             NODE_RESULT_MESSAGES: {
@@ -18528,7 +18530,7 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
   rule_group          : OpenAjax.a11y.RULE_GROUP.GROUP2,
   wcag_primary_id     : '4.1.1',
   wcag_related_ids    : ['4.1.2'],
-  target_resources    : ["web components"],
+  target_resources    : ["Custom elements using web component APIs"],
   primary_property    : '',
   resource_properties : [],
   language_dependency : "",
