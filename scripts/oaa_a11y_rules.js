@@ -8462,7 +8462,7 @@ OpenAjax.a11y.RuleManager.addRulesNLSFromJSON('en-us', {
             ID:                    'Widget 16',
             DEFINITION:            'Custom elements using web components API %s be manually checked for accessibility requirements.',
             SUMMARY:               'Custom element manual check.',
-            TARGET_RESOURCES_DESC: 'Custom elements.',
+            TARGET_RESOURCES_DESC: 'Custom elements using web components API.',
             RULE_RESULT_MESSAGES: {
               MANUAL_CHECK_S:  'Verify the custom element meets WCAG accessibility requirments.',
               MANUAL_CHECK_P:  'Verify the %N_MC custom elements meet WCAG accessibility requirments.',
@@ -18524,7 +18524,7 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
  * @desc     Web compnents require manual check
  */
 { rule_id             : 'WIDGET_16',
-  last_updated        : '2021-08-12',
+  last_updated        : '2021-09-12',
   rule_scope          : OpenAjax.a11y.RULE_SCOPE.ELEMENT,
   rule_category       : OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS,
   rule_group          : OpenAjax.a11y.RULE_GROUP.GROUP2,
