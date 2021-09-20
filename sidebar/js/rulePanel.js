@@ -243,7 +243,7 @@ function updateDetailsAction(id, detailsAction) {
   document.getElementById(id + '_techniques').innerHTML      = getDetails(detailsAction.techniques);
   document.getElementById(id + '_target_elements').innerHTML = getDetails(detailsAction.targetElements);
   document.getElementById(id + '_compliance').innerHTML      = getDetails(detailsAction.compliance);
-  document.getElementById(id + '_wcag').innerHTML            = getDetails(detailsAction.wcagPrimary);
+  document.getElementById(id + '_wcag').innerHTML            = getDetails(detailsAction.wcag);
   document.getElementById(id + '_information').innerHTML     = getDetails(detailsAction.informationalLinks);
 
   if (id === 'rr') {

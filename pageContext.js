@@ -218,7 +218,13 @@ function getDetailsAction(evaluationResult, ruleId) {
 
     for (let i = 0; i < infoItems.length; i++) {
 
-      items.push(getItem(infoItems[i].title, infoItems[i].url));
+      var item = infoItems[i];
+
+      if (item.url_spec) {
+        items.push(getItem(item.title, item.url_spec));
+      } else {
+        items.push(getItem(item.title, item.url));
+      }
 
     }
 
@@ -229,6 +235,14 @@ function getDetailsAction(evaluationResult, ruleId) {
   var rule       = ruleResult.getRule();
   var required   = ruleResult.isRuleRequired()
 
+
+  var primarySC = {};
+  var wcag = [];
+  primarySC.title    = rule.getPrimarySuccessCriterion().title + ' (Primary)';
+  primarySC.url_spec = rule.getPrimarySuccessCriterion().url_spec;
+  wcag.push(primarySC);
+  wcag = wcag.concat(rule.getRelatedSuccessCriteria());
+
   var detailsAction = {
     'ruleId'             : rule.getId(),
     'definition'         : rule.getDefinition(required),
@@ -237,8 +251,7 @@ function getDetailsAction(evaluationResult, ruleId) {
     'techniques'         : getInformationalInfoArray(rule.getTechniques()),
     'targetElements'     : rule.getTargetResources(),
     'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (ruleResult.isRuleRequired() ? 'Required' : 'Recommended'),
-    'wcagPrimary'        : rule.getPrimarySuccessCriterion().title,
-    'wcagSecondary'      : rule.getRelatedSuccessCriteria(),
+    'wcag'               : getInformationalInfoArray(wcag),
     'informationalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
   }
 
