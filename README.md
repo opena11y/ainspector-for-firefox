@@ -30,6 +30,7 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 | Version  | Date | Notes |
 |----------|:----:|-------|
+| 1.1.3    |  10/7/21 | Updated references in documentation to use WCAG 2.1 for techniques
 | 1.1.2    |  9/20/21 | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
 | 1.1.1    |  9/16/21 | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0   | 10/30/19 | Fixes bug in highlight option not being remembered
