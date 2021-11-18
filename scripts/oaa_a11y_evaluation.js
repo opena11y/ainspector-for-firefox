@@ -59,7 +59,7 @@ var OpenAjax = OpenAjax || {};
  */
 
 OpenAjax.a11y = OpenAjax.a11y || {};
-OpenAjax.a11y.VERSION = "1.2.0";
+OpenAjax.a11y.VERSION = "1.3.0";
 
 /**
  * @method getVersion
