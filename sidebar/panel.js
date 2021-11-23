@@ -2,9 +2,7 @@
 *   panel.js
 */
 
-import ListBox from '../listbox.js';
 import { saveOptions } from '../storage.js';
-
 
 var myWindowId;
 var logInfo = true;
@@ -224,6 +222,7 @@ function runContentScript (callerFn) {
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
+      browser.tabs.executeScript({ file: '../common.js' });
       browser.tabs.executeScript({ file: '../evaluate.js' });
       browser.tabs.executeScript({ file: '../content.js' })
       .then(() => {

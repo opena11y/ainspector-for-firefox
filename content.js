@@ -40,7 +40,7 @@ var focusProperties = `{
   console.log('[content.js][ruleset]: ' + infoAInspectorEvaluation.ruleset);
 
   let info = {};
-  info.id  = 'info';
+  info.id       = 'info';
   info.title    = document.title;
   info.location = document.location.href
 
