@@ -34,24 +34,33 @@ var focusProperties = `{
 
 (function () {
 
-  console.log('[content.js][   view]: ' + infoAInspectorEvaluation.view);
-  console.log('[content.js][  group]: ' + infoAInspectorEvaluation.group);
-  console.log('[content.js][   rule]: ' + infoAInspectorEvaluation.rule);
-  console.log('[content.js][ruleset]: ' + infoAInspectorEvaluation.ruleset);
+  let view      = infoAInspectorEvaluation.view;
+  let groupType = infoAInspectorEvaluation.groupType;
+  let groupId   = infoAInspectorEvaluation.groupId;
+  let ruleId    = infoAInspectorEvaluation.ruleId;
+  let rulesetId = infoAInspectorEvaluation.rulesetId;
+
+
+  console.log('[content.js][     view]: ' + view);
+  console.log('[content.js][groupType]: ' + groupType);
+  console.log('[content.js][  groupId]: ' + groupId);
+  console.log('[content.js][   ruleId]: ' + ruleId);
+  console.log('[content.js][rulesetId]: ' + rulesetId);
 
   let info = {};
   info.id       = 'info';
   info.title    = document.title;
   info.location = document.location.href
 
-  switch(infoAInspectorEvaluation.view) {
+  switch(view) {
     case 'summary':
     console.log('[summaryInfo]: ' + typeof getSummaryInfo);
     info.infoSummary = getSummaryInfo();
     break;
 
     case 'group':
-
+    console.log('[groupInfo]: ' + typeof getGroupInfo);
+    info.infoSummary = getGroupInfo(groupType, groupId);
     break;
 
     case 'rule':

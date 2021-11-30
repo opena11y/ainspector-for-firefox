@@ -65,7 +65,7 @@
   },
 
   "protocolNotSupported": {
-    "message": "Protocol not supported; unable to retrieve content information.",
+    "message": "Protocol not supported; Unable to retrieve content information.",
     "description": "Message explaining that content script cannot be executed."
   },
 
@@ -192,5 +192,57 @@
   "g4.1": {
     "message": "4.1 Compatible",
     "description": "WCAG Guideline 4.1"
+  },
+
+  "violationsAbbrev": {
+    "message": "V",
+    "description": "Abbreviation for violations"
+  },
+
+  "violationsLabel": {
+    "message": "Violations",
+    "description": "Label for violation results"
+  },
+
+  "warningsAbbrev": {
+    "message": "W",
+    "description": "Abbreviation for warnings"
+  },
+
+  "warningsLabel": {
+    "message": "Warnings",
+    "description": "Label for warning results"
+  },
+
+  "manualChecksAbbrev": {
+    "message": "MC",
+    "description": "Abbreviation for manual checks"
+  },
+
+  "manualChecksLabel": {
+    "message": "Manual Checks",
+    "description": "Label for manual check results"
+  },
+
+  "passedAbbrev": {
+    "message": "P",
+    "description": "Abbreviation for passed"
+  },
+
+  "passedlabel": {
+    "message": "Passed",
+    "description": "Label for pass results"
+  },
+
+  "ruleCategoryLabel": {
+    "message": "Rule Category",
+    "description": "Label for the rule category group"
+  },
+
+  "guidelineLabel": {
+    "message": "Guideline",
+    "description": "Label for the guildeine group"
   }
+
+
 }

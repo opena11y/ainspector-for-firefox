@@ -1,0 +1,47 @@
+/* resultTablist.css */
+
+[role="tablist"] {
+  margin:  0;
+  margin-top: 1em;
+  padding:  0;
+}
+
+[role="tablist"] [role="tab"] {
+  margin: 0;
+  padding: 0.25em;
+  display: inline-block;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  border-radius: 5px 5px 0 0;
+  position: relative;
+  top: 1px;
+  background-color: #ddd;
+}
+
+[role="tablist"] [role="tab"] span {
+  display: inline-block;
+  margin: 2px;
+  padding: 4px;
+}
+
+[role="tablist"] [role="tab"][aria-selected="true"] {
+  border-bottom: 1px white solid;
+  background-color: white;
+  z-index: 10;
+}
+
+[role="tabpanel"] {
+  display:  none;
+  border: 1px solid #aaa;
+}
+
+[role="tabpanel"].show {
+  display:  block;
+}
+
+[role="tablist"] [role="tab"]:focus span,
+[role="tablist"] [role="tab"]:hover span {
+  padding: 2px;
+  border: 2px solid currentColor;
+}

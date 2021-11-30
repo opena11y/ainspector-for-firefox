@@ -1,5 +1,3 @@
-// import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId} from 'common.js';
-
 // Evaluates current document using evaluation library
 
 function evaluate (ruleset) {
@@ -20,15 +18,68 @@ function evaluate (ruleset) {
   return evaluationResult;
 };
 
+function getDetailsAction(evaluationResult, ruleId) {
+
+  function getInformationalInfoArray(infoItems) {
+
+    function getItem(title, url) {
+      var item = {};
+      item.title = title;
+      item.url = url;
+      return item;
+    }
+
+    var items = [];
+
+    for (let i = 0; i < infoItems.length; i++) {
+
+      var item = infoItems[i];
+
+      if (item.url_spec) {
+        items.push(getItem(item.title, item.url_spec));
+      } else {
+        items.push(getItem(item.title, item.url));
+      }
+
+    }
+
+    return items;
+  }
+
+  var ruleResult = evaluationResult.getRuleResult(ruleId);
+  var rule       = ruleResult.getRule();
+  var required   = ruleResult.isRuleRequired()
+
+
+  var primarySC = {};
+  var wcag = [];
+  primarySC.title    = rule.getPrimarySuccessCriterion().title + ' (Primary)';
+  primarySC.url_spec = rule.getPrimarySuccessCriterion().url_spec;
+  wcag.push(primarySC);
+  wcag = wcag.concat(rule.getRelatedSuccessCriteria());
+
+  var detailsAction = {
+    'ruleId'             : rule.getId(),
+    'definition'         : rule.getDefinition(required),
+    'action'             : ruleResult.getResultMessagesArray(),
+    'purpose'            : rule.getPurpose(),
+    'techniques'         : getInformationalInfoArray(rule.getTechniques()),
+    'targetElements'     : rule.getTargetResources(),
+    'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (ruleResult.isRuleRequired() ? 'Required' : 'Recommended'),
+    'wcag'               : getInformationalInfoArray(wcag),
+    'informationalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
+  }
+
+  return detailsAction;
+
+}
+
 // Summary Result functions
 
-
-// Helper function for getting rule category and guideline group summary results
-
-function getGroupItem (summary, id, labelId) {
+function getSummaryItem (summary, id, labelId) {
   let item = {
     'id'             : id,
-    'labelId'             : labelId,
+    'labelId'        : labelId,
     'violations'     : summary.violations,
     'warnings'       : summary.warnings,
     'manual_checks'  : summary.manual_checks,
@@ -43,7 +94,7 @@ function getRuleCategoryResults (evalResult) {
   ruleCategoryIds.forEach ((id) => {
     let summary = evalResult.getRuleResultsByCategory(id).getRuleResultsSummary();
     let labelId = getRuleCategoryLabelId(id);
-    rcResults.push(getGroupItem(summary, id, labelId));
+    rcResults.push(getSummaryItem(summary, id, labelId));
   });
   return rcResults;
 };
@@ -53,7 +104,7 @@ function getGuidelineResults (evalResult) {
   guidelineIds.forEach ((id) => {
     let summary = evalResult.getRuleResultsByGuideline(id).getRuleResultsSummary();
     let labelId = getGuidelineLabelId(id);
-    glResults.push(getGroupItem(summary, id, labelId));
+    glResults.push(getSummaryItem(summary, id, labelId));
   });
   return glResults;
 };
@@ -64,7 +115,7 @@ function getGuidelineResults (evalResult) {
 */
 function getSummaryInfo () {
 
-  console.log('[getSummaryInfo][A]');
+  console.log('[getSummaryInfo]: starting');
 
   let info = {};
 
@@ -74,24 +125,88 @@ function getSummaryInfo () {
 
   info.ruleset  = evaluationResult.getRuleset().getId();
 
-  console.log('[getSummaryInfo][B]');
+  info.violations    = ruleSummaryResult.violations;
+  info.warnings      = ruleSummaryResult.warnings;
+  info.manual_checks = ruleSummaryResult.manual_checks;
+  info.passed        = ruleSummaryResult.passed;
+
+  info.rcResults = getRuleCategoryResults(evaluationResult);
+  info.glResults = getGuidelineResults(evaluationResult);
+
+  // Remove the evaluation library from the page,
+  // otherwise get duplicate warnings for rulesest and rules being reloaded
+  OpenAjax = {};
+
+  console.log('[getSummaryInfo]: ending');
+
+  return info;
+};
+
+// Group Result functions
+
+function getGroupItem(ruleResult) {
+
+  var ruleId = ruleResult.getRule().getId();
+
+  var item = { 'ruleId'        : ruleId,
+               'summary'       : ruleResult.getRuleSummary(),
+               'required'      : ruleResult.isRuleRequired(),
+               'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
+               'result'        : ruleResult.getResultValueNLS(),
+               'resultValue'   : ruleResult.getResultValue(),
+               'level'         : ruleResult.getWCAG20LevelNLS(),
+               'messages'      : ruleResult.getResultMessagesArray(),
+               'detailsAction' : getDetailsAction(evaluationResult, ruleId)
+             };
+
+  return item;
+
+}
+
+/*
+*   getGroupInfo: (1) Run evlauation library;
+*   (2) return result objec for the summary view in the sidebar;
+*/
+function getGroupInfo (groupType, groupId) {
+
+  console.log('[getGroupInfo]: starting');
+
+  let info = {};
+
+  let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
+
+  let ruleGroupResult;
+
+  if (groupType === 'gl') {
+    ruleGroupResult   = evaluationResult.getRuleResultsByGuideline(groupId);
+  }
+  else {
+    ruleGroupResult   = evaluationResult.getRuleResultsByCategory(groupId);
+  }
+
+  let ruleGroupInfo     = ruleGroupResult.getRuleGroupInfo();
+  let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
+  let ruleResults       = ruleGroupResult.getRuleResultsArray();
+
+  info.groupLabel  = ruleGroupInfo.title;
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
   info.manual_checks = ruleSummaryResult.manual_checks;
   info.passed        = ruleSummaryResult.passed;
 
-  console.log('[getSummaryInfo][C]');
+  info.ruleResults = []
 
-  info.rcResults = getRuleCategoryResults(evaluationResult);
-  console.log('[getSummaryInfo][D]');
-  info.glResults = getGuidelineResults(evaluationResult);
-  console.log('[getSummaryInfo][E]');
-
+  for(let i = 0; i < ruleResults.length; i++) {
+    info.ruleResults.push(getGroupItem(ruleResults[i]));
+  }
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
   OpenAjax = {};
 
+  console.log('[getGroupInfo]: ending');
+
   return info;
 };
+

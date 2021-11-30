@@ -1,0 +1,28 @@
+/* resultSummary.css */
+
+table {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+th, td {
+  padding: 0.25em;
+  width: 40px;
+  text-align: center;
+}
+
+#violationsValue {
+  background-color: hsl(0, 100%, 84%);
+}
+
+#warningsValue {
+  background-color: hsl(49, 100%, 79%);
+}
+
+#manualChecksValue {
+  background-color: hsl(198, 52%, 81%);
+}
+
+#passedValue {
+  background-color: hsl(90, 67%, 69%);
+}

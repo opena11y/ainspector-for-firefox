@@ -53,7 +53,7 @@ const RULE_CATEGORIES = {
   ALL                    : 0x0FFF
 };
 
-const ruleCategoryIds = [
+export let ruleCategoryIds = [
   RULE_CATEGORIES.LANDMARKS,
   RULE_CATEGORIES.HEADINGS,
   RULE_CATEGORIES.STYLES_READABILITY,
@@ -68,7 +68,7 @@ const ruleCategoryIds = [
   RULE_CATEGORIES.SITE_NAVIGATION
 ];
 
-const guidelineIds = [
+export let guidelineIds = [
   GUIDELINES.G_1_1,
   GUIDELINES.G_1_2,
   GUIDELINES.G_1_3,
@@ -83,7 +83,7 @@ const guidelineIds = [
   GUIDELINES.G_4_1
 ];
 
-function getRuleCategoryLabelId (id) {
+export function getRuleCategoryLabelId (id) {
   switch (id) {
   case RULE_CATEGORIES.LANDMARKS:
     return 'landmarksLabel';
@@ -111,11 +111,10 @@ function getRuleCategoryLabelId (id) {
     return 'siteNavigationLabel'
   default:
     return RULE_CATEGORIES.UNDEFINED;
-
   }
 };
 
-function getGuidelineLabelId (id) {
+export function getGuidelineLabelId (id) {
 
   switch(id) {
 

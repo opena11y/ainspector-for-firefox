@@ -1,114 +1,87 @@
-html, body {
+body {
   height: 95%;
   font: caption;
-  margin: 2px 7px 0 6px;
+  margin: 0;
+  padding: 0.25em;
   background-color: white;
+  border: 1px dashed blue;
 }
 
-body > h2 {
-  font-size: 133%;
-  margin: 0.66em 0 0.33em;
+
+header {
+  margin: 0;
   padding: 0;
+  position: relative;
 }
 
-.content {
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  padding: 5px;
-}
-
-#page-title-content {
-  min-height: 60px;
-}
-
-#page-title-content p {
-  margin: 0.5em 0;
-}
-
-#headings-content {
-  height: 80%;
-}
-
-body > details {
-  height: 10%;
-}
-
-body > details > summary {
-  font-size: 110%;
+header h1 {
+  margin:  0;
+  padding: 0;
+  font-size: 175%;
   font-weight: bold;
-  margin: 1em 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-body > details ul {
-  padding: 0 1em;
+header .right {
+  position: absolute;
+  right: 0;
+  top: 0.25em;
 }
 
-body > details li:not(:first-child) {
-  margin-top: 0.66em;
+main .view {
+  display:  none;
 }
 
-.h1-name, .h2-name, .h3-name, .h4-name, .h5-name, .h6-name {
-  color: #999;
-  font-size: 85%;
-  margin-top: 1.4px;
-  text-transform: lowercase;
+main .view.show {
+  display:  block;
 }
 
-.h1-text, .h2-text, .h3-text, .h4-text, .h5-text, .h6-text {
-  /*
-  *   Change user-select value to 'all' if heading text content problems
-  *   are resolved (by using getElementContent and isVisible functions).
-  */
-  /* user-select: all; */
+footer {
+  margin: 0.25em;
+  padding: 0;
+  position: absolute;
+  bottom:  0;
 }
 
-.h1-name { grid-column: 1; }
-.h1-text { grid-column: 2 / span 6; }
-
-.h2-name { grid-column: 2; }
-.h2-text { grid-column: 3 / span 5; }
-
-.h3-name { grid-column: 3; }
-.h3-text { grid-column: 4 / span 4; }
-
-.h4-name { grid-column: 4; }
-.h4-text { grid-column: 5 / span 3; }
-
-.h5-name { grid-column: 5; }
-.h5-text { grid-column: 6 / span 2; }
-
-.h6-name { grid-column: 6; }
-.h6-text { grid-column: 7; }
-
-.grid-message { grid-column: 1 / span 7; }
-
-span.empty {
-  color: #999;
+footer .right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 
-button.search {
-  font-size: 12px;
-  border: 0;
-  border-radius: 2px;
-  padding: 4px 8px;
-  margin-top: 15px;
-  background: rgba(12, 12, 13, 0.1);
+footer .info {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-columns: 80px 1fr;
+  grid-template-rows: auto;
+  font-size: 125%;
 }
 
-button.search:hover {
-  background: rgba(12, 12, 13, 0.2);
+footer .info .label {
+  grid-column: 1;
+  text-align: right;
+  padding-right:  0.25em;
+  font-weight:  bold;
 }
 
-button.search:active {
-  background: rgba(12, 12, 13, 0.3);
+footer .info .label:after {
+  content: ':';
 }
 
-button.search:focus {
-  box-shadow: 0 0 0 1px #0a84ff inset,
-              0 0 0 1px #0a84ff,
-              0 0 0 4px rgba(10, 132, 255, 0.3);
+footer .info .value {
+  display:  inline-block;
+  padding-right: 1em;
+  grid-column: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-button.search:last-child {
-  margin-left: 8px;
+footer button {
+  margin-top: 1em;
+  padding: 4px;
 }
+
+
