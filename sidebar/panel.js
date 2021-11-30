@@ -4,8 +4,6 @@
 
 import { saveOptions } from '../storage.js';
 
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './commonModule.js';
-
 import viewSummary     from './viewSummary.js';
 import viewGroup       from './viewGroup.js';
 import viewRule        from './viewRule.js';
@@ -95,7 +93,7 @@ browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
   myWindowId = windowInfo.id;
   addLabelsAndHelpContent();
   initControls();
-  runContentScript();
+  runContentScript('onload');
 });
 
 /*
@@ -125,7 +123,7 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 
   clearTimeout(timeoutID);
   if (changeInfo.status === "complete") {
-    runContentScript();
+    runContentScript('handleTabUpdated');
   }
   else {
     timeoutID = setTimeout(function () {
@@ -140,7 +138,7 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 function handleTabActivated (activeInfo) {
   if (logInfo) console.log(activeInfo);
 
-  runContentScript();
+  runContentScript('handleTabActivated');
 }
 
 /*
@@ -156,7 +154,7 @@ function handleWindowFocusChanged (windowId) {
   function onGotStatus (result) {
     if (result) {
       myWindowId = windowId;
-      runContentScript();
+      runContentScript('onGotFocus');
       if (logInfo) console.log(`Focus changed to window: ${myWindowId}`);
     }
   }
@@ -175,7 +173,6 @@ function handleWindowFocusChanged (windowId) {
 */
 
 function showView (id) {
-
   for (let i = 0; i < views.length; i++) {
     let view = views[i];
     if (view.id === id) {
@@ -216,12 +213,12 @@ function updateSidebar (info) {
       else {
         if (info.infoRule) {
           showView('rule');
-          vRule.update(info.infoRule);
+//          vRule.update(info.infoRule);
         }
         else {
           vSummary.clear();
-          vGroup.clear();
-          vRule.clear();
+ //         vGroup.clear();
+ //         vRule.clear();
         }
       }
     }
@@ -291,7 +288,7 @@ function runContentScript (callfunct) {
       updateSidebar (protocolNotSupported);
     }
   })
-}
+};
 
 /*
 *   getActiveTabFor: expected argument is ID of window with focus. The module

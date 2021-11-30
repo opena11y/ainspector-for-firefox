@@ -23,7 +23,7 @@ export default class viewSummary {
 
   }
 
-  initGrids() {
+  initGrids () {
     let i, id, label;
 
     let handleRowClick = this.handleRowClick.bind(this);
@@ -38,7 +38,7 @@ export default class viewSummary {
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       id = ruleCategoryIds[i];
       label = getMessage(getRuleCategoryLabelId(id));
-      this.rcResultGrid.addRow('rc' + id, label, ['-', '-', '-', '-'], handleRowClick);
+      this.rcResultGrid.addRow('rc' + id, label, ['-', '-', '-', '-'], this.handleRowClick);
     }
 
     this.resultTablist.tabLabel2 = getMessage("guidelineLabel");
@@ -51,21 +51,20 @@ export default class viewSummary {
     for (i = 0; i < guidelineIds.length; i += 1 ) {
       id = guidelineIds[i];
       label = getMessage(getGuidelineLabelId(id));
-      this.glResultGrid.addRow('gl' + id, label, ['-', '-', '-', '-'], handleRowClick);
+      this.glResultGrid.addRow('gl' + id, label, ['-', '-', '-', '-'], this.handleRowClick);
     }
 
   }
 
   handleRowClick (event) {
     let tgt = event.currentTarget;
+    alert(tgt.id);
 
-    let eval = {};
-    eval.id = 'eval';
-    eval.view = 'group';
-    eval.groupId = parseInt(tgt.id.substring(2));
-    eval.groupType = tgt.id.substring(0,2);
-    browser.runtime.sendMessage(eval);
-
+//    let eval = {};
+//    eval.id = 'eval';
+//    eval.view = 'group';
+//    eval.groupId = parseInt(tgt.id.substring(2));
+//    eval.groupType = tgt.id.substring(0,2);
   }
 
   update (infoSummary) {
