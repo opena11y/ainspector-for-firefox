@@ -18,62 +18,6 @@ function evaluate (ruleset) {
   return evaluationResult;
 };
 
-function getDetailsAction(evaluationResult, ruleId) {
-
-  function getInformationalInfoArray(infoItems) {
-
-    function getItem(title, url) {
-      var item = {};
-      item.title = title;
-      item.url = url;
-      return item;
-    }
-
-    var items = [];
-
-    for (let i = 0; i < infoItems.length; i++) {
-
-      var item = infoItems[i];
-
-      if (item.url_spec) {
-        items.push(getItem(item.title, item.url_spec));
-      } else {
-        items.push(getItem(item.title, item.url));
-      }
-
-    }
-
-    return items;
-  }
-
-  var ruleResult = evaluationResult.getRuleResult(ruleId);
-  var rule       = ruleResult.getRule();
-  var required   = ruleResult.isRuleRequired()
-
-
-  var primarySC = {};
-  var wcag = [];
-  primarySC.title    = rule.getPrimarySuccessCriterion().title + ' (Primary)';
-  primarySC.url_spec = rule.getPrimarySuccessCriterion().url_spec;
-  wcag.push(primarySC);
-  wcag = wcag.concat(rule.getRelatedSuccessCriteria());
-
-  var detailsAction = {
-    'ruleId'             : rule.getId(),
-    'definition'         : rule.getDefinition(required),
-    'action'             : ruleResult.getResultMessagesArray(),
-    'purpose'            : rule.getPurpose(),
-    'techniques'         : getInformationalInfoArray(rule.getTechniques()),
-    'targetElements'     : rule.getTargetResources(),
-    'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (ruleResult.isRuleRequired() ? 'Required' : 'Recommended'),
-    'wcag'               : getInformationalInfoArray(wcag),
-    'informationalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
-  }
-
-  return detailsAction;
-
-}
-
 // Summary Result functions
 
 function getSummaryItem (summary, id, labelId) {
@@ -146,9 +90,9 @@ function getSummaryInfo () {
 
 function getGroupItem(ruleResult) {
 
-  var ruleId = ruleResult.getRule().getId();
+  let ruleId = ruleResult.getRule().getId();
 
-  var item = { 'ruleId'        : ruleId,
+  let item = { 'ruleId'        : ruleId,
                'summary'       : ruleResult.getRuleSummary(),
                'required'      : ruleResult.isRuleRequired(),
                'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
@@ -156,7 +100,7 @@ function getGroupItem(ruleResult) {
                'resultValue'   : ruleResult.getResultValue(),
                'level'         : ruleResult.getWCAG20LevelNLS(),
                'messages'      : ruleResult.getResultMessagesArray(),
-               'detailsAction' : getDetailsAction(evaluationResult, ruleId)
+               'detailsAction' : getDetailsAction(ruleResult)
              };
 
   return item;
@@ -175,7 +119,7 @@ function getGroupInfo (groupType, groupId) {
 
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
 
-  let ruleGroupResult;
+  let rGroupResult;
 
   if (groupType === 'gl') {
     ruleGroupResult   = evaluationResult.getRuleResultsByGuideline(groupId);
@@ -188,14 +132,16 @@ function getGroupInfo (groupType, groupId) {
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
-  info.groupLabel  = ruleGroupInfo.title;
+  info.groupLabel    = ruleGroupInfo.title;
+
+  console.log('[getGroupInfo][groupLabel]: ' + info.groupLabel);
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
   info.manual_checks = ruleSummaryResult.manual_checks;
   info.passed        = ruleSummaryResult.passed;
 
-  info.ruleResults = []
+  info.ruleResults = [];
 
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getGroupItem(ruleResults[i]));
@@ -209,4 +155,56 @@ function getGroupInfo (groupType, groupId) {
 
   return info;
 };
+
+
+function getDetailsAction(ruleResult) {
+
+  function getInformationalInfoArray(infoItems) {
+
+    function getItem(title, url) {
+      let item = {};
+      item.title = title;
+      item.url = url;
+      return item;
+    }
+
+    let items = [];
+
+    for (let i = 0; i < infoItems.length; i++) {
+      let item = infoItems[i];
+      if (item.url_spec) {
+        items.push(getItem(item.title, item.url_spec));
+      } else {
+        items.push(getItem(item.title, item.url));
+      }
+    }
+
+    return items;
+  }
+
+  let rule       = ruleResult.getRule();
+  let required   = ruleResult.isRuleRequired()
+
+  let primarySC = {};
+  let wcag = [];
+  primarySC.title    = rule.getPrimarySuccessCriterion().title + ' (Primary)';
+  primarySC.url_spec = rule.getPrimarySuccessCriterion().url_spec;
+  wcag.push(primarySC);
+  wcag = wcag.concat(rule.getRelatedSuccessCriteria());
+
+  let detailsAction = {
+    'ruleId'             : rule.getId(),
+    'definition'         : rule.getDefinition(required),
+    'action'             : ruleResult.getResultMessagesArray(),
+    'purpose'            : rule.getPurpose(),
+    'techniques'         : getInformationalInfoArray(rule.getTechniques()),
+    'targetElements'     : rule.getTargetResources(),
+    'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
+    'wcag'               : getInformationalInfoArray(wcag),
+    'informationalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
+  }
+
+  return detailsAction;
+
+}
 

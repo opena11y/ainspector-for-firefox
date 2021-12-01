@@ -51,21 +51,21 @@ var focusProperties = `{
   info.id       = 'info';
   info.title    = document.title;
   info.location = document.location.href
+  info.ruleset  = rulesetId;
 
   switch(view) {
     case 'summary':
-    console.log('[summaryInfo]: ' + typeof getSummaryInfo);
-    info.infoSummary = getSummaryInfo();
-    break;
+      info.infoSummary = getSummaryInfo();
+      break;
 
     case 'group':
-    console.log('[groupInfo]: ' + typeof getGroupInfo);
-    info.infoSummary = getGroupInfo(groupType, groupId);
-    break;
+      info.infoGroup = getGroupInfo(groupType, groupId);
+      break;
 
     case 'rule':
+      info.view = 'rule';
 
-    break;
+      break;
 
     default:
     break;
@@ -102,6 +102,11 @@ browser.runtime.onMessage.addListener (
         document.removeEventListener('focus', focusListener);
         document.removeEventListener('blur', blurListener);
         break;
+
+      case 'eval':
+        console.log('[eval]');
+        break;
+
     }
 });
 

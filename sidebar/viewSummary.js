@@ -1,10 +1,13 @@
 
-const getMessage = browser.i18n.getMessage;
+const getMessage  = browser.i18n.getMessage;
+const sendMessage = browser.runtime.sendMessage;
+
 
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './commonModule.js';
 
 export default class viewSummary {
-  constructor(id) {
+  constructor(id, callback) {
+    this.callback = callback;
     this.summaryNode   = document.getElementById(id);
 
     this.resultSummary = document.createElement('result-summary');
@@ -38,7 +41,7 @@ export default class viewSummary {
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       id = ruleCategoryIds[i];
       label = getMessage(getRuleCategoryLabelId(id));
-      this.rcResultGrid.addRow('rc' + id, label, ['-', '-', '-', '-'], this.handleRowClick);
+      this.rcResultGrid.addRow('rc' + id, label, ['-', '-', '-', '-'], this.callback);
     }
 
     this.resultTablist.tabLabel2 = getMessage("guidelineLabel");
@@ -51,20 +54,20 @@ export default class viewSummary {
     for (i = 0; i < guidelineIds.length; i += 1 ) {
       id = guidelineIds[i];
       label = getMessage(getGuidelineLabelId(id));
-      this.glResultGrid.addRow('gl' + id, label, ['-', '-', '-', '-'], this.handleRowClick);
+      this.glResultGrid.addRow('gl' + id, label, ['-', '-', '-', '-'], this.callback);
     }
 
   }
 
   handleRowClick (event) {
     let tgt = event.currentTarget;
-    alert(tgt.id);
+    let info = {};
+    info.id = 'eval';
+    info.view = 'group';
+    info.groupId = parseInt(tgt.id.substring(2));
+    info.groupType = tgt.id.substring(0,2);
 
-//    let eval = {};
-//    eval.id = 'eval';
-//    eval.view = 'group';
-//    eval.groupId = parseInt(tgt.id.substring(2));
-//    eval.groupType = tgt.id.substring(0,2);
+    browser.runtime.sendMessage(info);
   }
 
   update (infoSummary) {
