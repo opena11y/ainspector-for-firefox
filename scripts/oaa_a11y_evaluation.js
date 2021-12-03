@@ -38854,7 +38854,7 @@ OpenAjax.a11y.RuleManager = function () {
         }
 
         if (this.getRuleByRuleId(rule_item.rule_id)) {
-          OpenAjax.a11y.logger.error("[RuleManager]  ** Duplicate Rule ID: " + rule_item.rule_id);
+//          OpenAjax.a11y.logger.error("[RuleManager]  ** Duplicate Rule ID: " + rule_item.rule_id);
           errors = true;
         }
 

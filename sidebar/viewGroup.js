@@ -2,13 +2,15 @@
 const getMessage = browser.i18n.getMessage;
 
 export default class viewGroup {
-  constructor(id) {
+  constructor(id, callback) {
+    this.callback = callback;
+
     this.groupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.groupNode.appendChild(this.resultSummary);
 
-    this.resultGrid = document.createElement('result-grid');
-    this.groupNode.appendChild(this.resultGrid);
+    this.ruleResultGrid = document.createElement('result-grid');
+    this.groupNode.appendChild(this.ruleResultGrid);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
     this.groupNode.appendChild(this.resultRuleInfo);
@@ -19,23 +21,37 @@ export default class viewGroup {
 
   initGrid () {
 
-    this.resultGrid.addHeaderCell('Rule');
-    this.resultGrid.addHeaderCell('Result');
-    this.resultGrid.addHeaderCell('SC');
-    this.resultGrid.addHeaderCell('Level');
-    this.resultGrid.addHeaderCell('Req');
+    this.ruleResultGrid.addHeaderCell('Rule');
+    this.ruleResultGrid.addHeaderCell('Result');
+    this.ruleResultGrid.addHeaderCell('SC', 'Success Criteria');
+    this.ruleResultGrid.addHeaderCell('Level', 'WCAG  Level');
+    this.ruleResultGrid.addHeaderCell('Req', 'Required');
 
   }
 
   update (infoGroup) {
+    let i, rResult;
+
     this.resultSummary.violations   = infoGroup.violations;
     this.resultSummary.warnings     = infoGroup.warnings;
     this.resultSummary.manualChecks = infoGroup.manual_checks;
     this.resultSummary.passed       = infoGroup.passed;
+
+    this.ruleResultGrid.deleteDataRows();
+
+    for (i = 0; i < infoGroup.ruleResults.length; i += 1) {
+      rResult = infoGroup.ruleResults[i];
+//      data.push(r.result);
+//      data.push(r.wcag);
+//      data.push(r.level);
+//      data.push(r.required ? 'Y' : '');
+//      this.ruleResultGrid.addRow(r.ruleId, r.summary, data, this.callback);
+    }
+
   }
 
   clear () {
     this.resultSummary.clear();
-    this.resultGrid.clearDataCells();
+    this.ruleResultGrid.deleteDataRows();
   }
 }

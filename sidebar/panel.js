@@ -76,6 +76,16 @@ function handleSummaryRowClick (event) {
   runContentScript('handleSummaryRowClick');
 }
 
+function handleRuleRowClick (event) {
+  let tgt = event.currentTarget;
+
+  sidebarView   = 'rule';
+  sidebarRuleId = tgt.id;
+
+  runContentScript('handleRuleRowClick');
+}
+
+
 function initControls () {
 
   let backBtn = document.getElementById('back-button');
@@ -85,7 +95,7 @@ function initControls () {
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
   vSummary = new viewSummary('summary', handleSummaryRowClick);
-  vGroup   = new viewGroup('group');
+  vGroup   = new viewGroup('group', handleRuleRowClick);
   vRule    = new viewRule('rule');
 
   views = document.querySelectorAll('main .view');
@@ -224,9 +234,9 @@ function updateSidebar (info) {
   if (typeof info === 'object') {
 
     // Update the page information footer
-    infoTitle.innerHTML    = info.title;
-    infoLocation.innerHTML = info.location;
-    infoRuleset.innerHTML  = info.ruleset;
+    infoTitle.textContent    = info.title;
+    infoLocation.textContent = info.location;
+    infoRuleset.textContent  = info.ruleset;
 
     // Update the headings box
     if (typeof info.infoSummary === 'object') {
@@ -247,8 +257,8 @@ function updateSidebar (info) {
         }
         else {
           vSummary.clear();
- //         vGroup.clear();
- //         vRule.clear();
+          vGroup.clear();
+          vRule.clear();
         }
       }
     }
@@ -262,8 +272,9 @@ function updateSidebar (info) {
       infoLocation.textContent = parts[0];
       infoTitle.textContent = parts[1];
     }
-    infoRuleset.textContent = '';
-    summary.innerHTML = '';
+      vSummary.clear();
+      vGroup.clear();
+      vRule.clear();
   }
 }
 
@@ -301,7 +312,8 @@ function runContentScript (callfunct) {
       browser.tabs.executeScript({ code: `var infoAInspectorEvaluation = {};`});
       browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
       browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = "${sidebarGroupId}";` });
+      // note sidebarGroupId is a number value
+      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = ${sidebarGroupId};` });
       browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId    = "${sidebarRuleId}";` });
       browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId = "${sidebarRulesetId}";` });
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });

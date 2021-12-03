@@ -234,15 +234,29 @@
     "description": "Label for pass results"
   },
 
-  "ruleCategoryLabel": {
-    "message": "Rule Category",
+  "ruleCategoriesLabel": {
+    "message": "Rule Categories",
     "description": "Label for the rule category group"
   },
 
-  "guidelineLabel": {
-    "message": "Guideline",
+  "guidelinesLabel": {
+    "message": "Guidelines",
     "description": "Label for the guildeine group"
-  }
+  },
 
+  "groupViewGridHeaderRule": {
+    "message": "Rule",
+    "description": "Column header for group view grid"
+  },
+
+  "groupViewGridHeaderResult": {
+    "message": "Result",
+    "description": "Column header for group view grid"
+  },
+
+  "groupViewGridHeaderResult": {
+    "message": "Result",
+    "description": "Column header for group view grid"
+  }
 
 }

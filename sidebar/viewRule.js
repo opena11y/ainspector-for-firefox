@@ -33,6 +33,6 @@ export default class viewRule {
   }
 
   clear () {
-    this.resultGrid.clearDataCells();
+    this.resultGrid.deleteDataRows();
   }
 }

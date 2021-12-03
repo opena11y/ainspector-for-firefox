@@ -40,10 +40,9 @@ var focusProperties = `{
   let ruleId    = infoAInspectorEvaluation.ruleId;
   let rulesetId = infoAInspectorEvaluation.rulesetId;
 
-
   console.log('[content.js][     view]: ' + view);
   console.log('[content.js][groupType]: ' + groupType);
-  console.log('[content.js][  groupId]: ' + groupId);
+  console.log('[content.js][  groupId]: ' + groupId + ' (' + typeof groupId + ')');
   console.log('[content.js][   ruleId]: ' + ruleId);
   console.log('[content.js][rulesetId]: ' + rulesetId);
 

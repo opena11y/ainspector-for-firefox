@@ -79,7 +79,6 @@ function getSummaryInfo () {
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
-  OpenAjax = {};
 
   console.log('[getSummaryInfo]: ending');
 
@@ -113,13 +112,12 @@ function getGroupItem(ruleResult) {
 */
 function getGroupInfo (groupType, groupId) {
 
-  console.log('[getGroupInfo]: starting');
+  console.log('[getGroupInfo]: starting ');
 
   let info = {};
 
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
-
-  let rGroupResult;
+  let ruleGroupResult;
 
   if (groupType === 'gl') {
     ruleGroupResult   = evaluationResult.getRuleResultsByGuideline(groupId);
@@ -132,9 +130,7 @@ function getGroupInfo (groupType, groupId) {
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
-  info.groupLabel    = ruleGroupInfo.title;
-
-  console.log('[getGroupInfo][groupLabel]: ' + info.groupLabel);
+  info.groupLabel = ruleGroupInfo.title.replace('Guideline ', '');
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
@@ -149,7 +145,6 @@ function getGroupInfo (groupType, groupId) {
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
-  OpenAjax = {};
 
   console.log('[getGroupInfo]: ending');
 
