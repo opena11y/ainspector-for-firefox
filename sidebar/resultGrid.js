@@ -36,30 +36,67 @@ export default class ResultGrid extends HTMLElement {
   }
 
   getRowCount() {
-    return this.tbody.querySelectorAll('tr').length;
+    return this.table.querySelectorAll('tr').length;
+  }
+
+  getRowByPosition(pos) {
+    if (pos < 1) {
+      return this.headersTr;
+    }
+    let rows =  this.table.querySelectorAll('tr');
+    if (pos > rows.length) {
+      return this.tbody.lastElementChild;
+    }
+    return rows[pos-1];
+  }
+
+  getRowCurrentPosition(row) {
+    let rows =  this.table.querySelectorAll('tr');
+    for (let i = 0; i < rows.length; i += 1) {
+      if (rows[i] === row) {
+        return i + 1;
+      }
+    }
+    // if not found return zero
+    return 0;
+  }
+
+  getRowById(id) {
+    return this.table.querySelector(`#${id}`);
   }
 
   getColCount(row) {
     return row.querySelectorAll('th, td').length;
   }
 
-  getRowByPosition(pos) {
-    return this.tbody.querySelector(`[data-grid-row="${pos}"]`);
+  getCellByPosition(row, pos) {
+    let cells = row.querySelectorAll('th, td');
+    if (pos < 2) {
+      return cells[0];
+    }
+    for (let i = 0; i < cells.length; i += 1) {
+      if (i === (pos-1)) {
+        return cells[i];
+      }
+    }
+    return cells[cells.length-1];
   }
 
-  getRowById(id) {
-    return this.tbody.querySelector(`#${id}`);
-  }
-
-  getDataCellByPosition(row, pos) {
-    return row.querySelector(`td:nth-child(${pos})`);
+  getCellCurrentPosition(row, cell) {
+    let cells = row.querySelectorAll('th, td');
+    for (let i = 0; i < cells.length; i += 1) {
+      if (cells[i] === cell) {
+        return i + 1;
+      }
+    }
+    // if not found return zero
+    return 0;
   }
 
   // This grid only supports one row of headers
   addHeaderCell(txt, style, title, isSortable) {
     let th = document.createElement('th');
     th.tabIndex = -1;
-    th.setAttribute('data-grid-col', this.getColCount(this.headersTr) + 1);
     th.textContent = txt;
     if (style) {
       th.className = style;
@@ -80,10 +117,9 @@ export default class ResultGrid extends HTMLElement {
     let row = document.createElement('tr');
     let rowCount = this.getRowCount();
     // first data row by default gets tabindex=0 to be part of tab sequence of page
-    row.tabIndex = (rowCount === 0) ? 0 : -1;
+    row.tabIndex = (rowCount === 1) ? 0 : -1;
 
     row.id = id;
-    row.setAttribute('data-grid-row', rowCount + 1);
     this.tbody.appendChild(row);
 
     row.addEventListener('keydown', this.handleRowKeydown.bind(this));
@@ -103,7 +139,6 @@ export default class ResultGrid extends HTMLElement {
     td.tabIndex = -1;
 
     td.textContent = txt;
-    td.setAttribute('data-grid-col', this.getColCount(row) + 1);
 
     if (style) {
       td.className = style;
@@ -119,7 +154,7 @@ export default class ResultGrid extends HTMLElement {
   }
 
   updateDataCell(row, pos, txt, style, sortValue) {
-    let cell = this.getDataCellByPosition(row, pos);
+    let cell = this.getCellByPosition(row, pos);
     cell.textContent = txt;
     if (style) {
       cell.className = style;
@@ -150,24 +185,23 @@ export default class ResultGrid extends HTMLElement {
     let flag = false;
 
     let tgt = event.target;
-    let row = parseInt(tgt.getAttribute('data-grid-row'));
+    let rowPos = this.getRowCurrentPosition(tgt);
 
     switch(event.key) {
       case 'ArrowDown':
+        nextItem = this.getRowByPosition(rowPos+1);
         flag = true;
-        nextItem = this.getRowByPosition(row+1);
         break;
 
       case 'ArrowUp':
+        nextItem = this.getRowByPosition(rowPos-1);
         flag = true;
-        nextItem = this.getRowByPosition(row-1);
         break;
 
       case 'ArrowRight':
         nextItem = tgt.firstElementChild;
         flag = true;
         break;
-
 
       default:
         break;
@@ -193,29 +227,30 @@ export default class ResultGrid extends HTMLElement {
     let tgt   = event.target;
     let tgtTr = tgt.parentNode;
 
-    let col = parseInt(tgt.getAttribute('data-grid-col'));
-    let row = parseInt(tgtTr.getAttribute('data-grid-row'));
+    let colPos = this.getCellCurrentPosition(tgtTr, tgt);
+    let rowPos = this.getRowCurrentPosition(tgtTr);
 
     switch(event.key) {
       case 'ArrowDown':
-        flag = true;
-        nextRow = this.getRowByPosition(row+1);
-        if (nextRow) {
-          nextItem = this.getDataCellByPosition(nextRow, col);
+        if (rowPos && colPos) {
+          nextRow = this.getRowByPosition(rowPos+1);
+          nextItem = this.getCellByPosition(nextRow, colPos);
         }
+        flag = true;
         break;
 
       case 'ArrowUp':
-        flag = true;
-        nextRow = this.getRowByPosition(row-1);
-        if (nextRow) {
-          nextItem = this.getDataCellByPosition(nextRow, col);
+        if (rowPos && colPos) {
+          nextRow = this.getRowByPosition(rowPos-1)
+          nextItem = this.getCellByPosition(nextRow, colPos);
         }
+        flag = true;
         break;
 
       case 'ArrowLeft':
-        nextItem = tgt.previousElementSibling;
-        if (!nextItem) {
+        if (tgt.previousElementSibling) {
+          nextItem = tgt.previousElementSibling;
+        } else {
           nextItem = tgtTr;
         }
         flag = true;
