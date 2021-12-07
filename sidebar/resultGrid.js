@@ -12,13 +12,13 @@ template.innerHTML = `
 `;
 
 export default class ResultGrid extends HTMLElement {
-  constructor (callbackRowClick, callbackRowDoubleClick) {
+  constructor () {
     super();
     this.attachShadow({ mode: 'open' });
 
-    // Save callback functions
-    this.callbackRowClick = callbackRowClick;
-    this.callbackRowDoubleClick = callbackRowDoubleClick;
+    // Save handle functions
+    this.handleRowActivation = null;
+    this.handleRowSelection = null;
 
     // Use external CSS stylesheet
     const link = document.createElement('link');
@@ -33,6 +33,14 @@ export default class ResultGrid extends HTMLElement {
     this.table     = this.shadowRoot.querySelector('table');
     this.headersTr = this.table.querySelector('thead tr');
     this.tbody     = this.table.querySelector('tbody');
+  }
+
+  setRowActivationEventHandler (handler) {
+    this.handleRowActivation = handler;
+  }
+
+  setRowSelectionEventHandler (handler) {
+    this.handleRowSelection = handler;
   }
 
   getRowCount() {
@@ -124,12 +132,13 @@ export default class ResultGrid extends HTMLElement {
 
     row.addEventListener('keydown', this.handleRowKeydown.bind(this));
 
-    if (this.callbackClick) {
-      row.addEventListener('click', this.callbackClick);
-    }
-
-    if (this.callbackDoubleClick) {
-      row.addEventListener('dblclick', this.callbackDoubleClick);
+    if (this.handleRowSelection) {
+      row.addEventListener('click', this.handleRowSection);
+      row.addEventListener('dblclick', this.handleRowActivation);
+    } else {
+      if (this.handleRowActivation) {
+        row.addEventListener('click', this.handleRowActivation);
+      }
     }
     return row;
   }
@@ -188,6 +197,11 @@ export default class ResultGrid extends HTMLElement {
     let rowPos = this.getRowCurrentPosition(tgt);
 
     switch(event.key) {
+      case 'Enter':
+        this.handleActivation(event);
+        flag = true;
+        break;
+
       case 'ArrowDown':
         nextItem = this.getRowByPosition(rowPos+1);
         flag = true;
@@ -231,6 +245,11 @@ export default class ResultGrid extends HTMLElement {
     let rowPos = this.getRowCurrentPosition(tgtTr);
 
     switch(event.key) {
+      case 'Enter':
+        this.handleActivation(event);
+        flag = true;
+        break;
+
       case 'ArrowDown':
         if (rowPos && colPos) {
           nextRow = this.getRowByPosition(rowPos+1);

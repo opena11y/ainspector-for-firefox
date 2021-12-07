@@ -2,14 +2,16 @@
 const getMessage = browser.i18n.getMessage;
 
 export default class viewGroup {
-  constructor(id, callback) {
-    this.callback = callback;
+  constructor(id, handleRowActivation) {
 
     this.groupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.groupNode.appendChild(this.resultSummary);
 
     this.ruleResultGrid = document.createElement('result-grid');
+    this.ruleResultGrid.setRowActivationEventHandler(handleRowActivation);
+    this.ruleResultGrid.setRowSelectionEventHandler(this.handleRowSelection);
+
     this.groupNode.appendChild(this.ruleResultGrid);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
@@ -45,7 +47,7 @@ export default class viewGroup {
 //      data.push(r.wcag);
 //      data.push(r.level);
 //      data.push(r.required ? 'Y' : '');
-//      this.ruleResultGrid.addRow(r.ruleId, r.summary, data, this.callback);
+//      this.ruleResultGrid.addRow(r.ruleId, r.summary, data, this.handle);
     }
 
   }
@@ -54,4 +56,9 @@ export default class viewGroup {
     this.resultSummary.clear();
     this.ruleResultGrid.deleteDataRows();
   }
+
+  handleRowSelection (event) {
+    let tgt = event.currentTarget;
+  }
+
 }

@@ -8,8 +8,13 @@ import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabe
 // The summary view for AInspector WCAG
 
 export default class viewSummary {
-  constructor(id, callback) {
-    this.callback = callback;
+  constructor(id, handleRowActivation) {
+
+    if (typeof handleRowActivation !== 'function') {
+      handleRowActivation = null;
+    }
+    this.handleRowActivation = handleRowActivation;
+
     this.summaryNode   = document.getElementById(id);
 
     this.resultSummary = document.createElement('result-summary');
@@ -18,11 +23,13 @@ export default class viewSummary {
     this.resultTablist = document.createElement('result-tablist');
     this.summaryNode.appendChild(this.resultTablist);
 
-    this.rcResultGrid = document.createElement('result-grid', this.callback);
+    this.rcResultGrid = document.createElement('result-grid');
     this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
+    this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
-    this.glResultGrid = document.createElement('result-grid', this.callback);
+    this.glResultGrid = document.createElement('result-grid');
     this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
+    this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     this.initGrids();
 

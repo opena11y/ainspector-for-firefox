@@ -66,7 +66,7 @@ function addLabelsAndHelpContent () {
 
 }
 
-function handleSummaryRowClick (event) {
+function handleSummaryRowActivation (event) {
   let tgt = event.currentTarget;
 
   sidebarView      = 'group';
@@ -76,7 +76,7 @@ function handleSummaryRowClick (event) {
   runContentScript('handleSummaryRowClick');
 }
 
-function handleRuleRowClick (event) {
+function handleGroupRowActivation (event) {
   let tgt = event.currentTarget;
 
   sidebarView   = 'rule';
@@ -84,6 +84,7 @@ function handleRuleRowClick (event) {
 
   runContentScript('handleRuleRowClick');
 }
+
 
 
 function initControls () {
@@ -94,8 +95,8 @@ function initControls () {
   let rerunBtn = document.getElementById('rerun-evaluation-button');
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
-  vSummary = new viewSummary('summary', handleSummaryRowClick);
-  vGroup   = new viewGroup('group', handleRuleRowClick);
+  vSummary = new viewSummary('summary', handleSummaryRowActivation);
+  vGroup   = new viewGroup('group', handleGroupRowActivation);
   vRule    = new viewRule('rule');
 
   views = document.querySelectorAll('main .view');
