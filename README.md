@@ -37,6 +37,14 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 | 1.1.1    |  9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0   | 10/30/19  | Fixes bug in highlight option not being remembered
 
+
+## Major To Do's for Version 2.0
+
+* ViewsMenu: Using web compontent
+* Preferences: Using storage
+* Delay feature for re-run button
+* Element highlight feature
+
 ## Code Documentation
 
 ### Sidebar
@@ -124,7 +132,7 @@ rule result view.
 The "ResultRuleInfo" is used to render the details/actions related to a rule result.  It is used
 in the Rule Group and Rule Result views.
 
-#### `commonModule.js`
+#### `constants.js`
 
 Constants used for constucting the initial grid for the summary view and the views menu.
 
