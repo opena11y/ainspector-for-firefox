@@ -51,7 +51,7 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
   * Back button
   * Views menu button
   * Preferences button
-  * Re-run evaluation button
+  * Re-run evaluation button, includes option for delayed evaluation
 
 #### `viewSummary.js`
 
@@ -64,11 +64,10 @@ rule results are shown in a grid (i.e. interactive table).  Activating a
 row chnages to the "Rule Group View" showing the summary results for the
 group of rules.
 
-This view uses the following custom eeb components:
+The Summary view uses the following custom web components:
 * `resultSummary`: Summary table of all rule results at top of sidepanel
 * `resultTablist`: Switching between Rule Category and WCAG Guidelines grids
 * `resultGrid`: Grids of rule group results for Rule Category and WCAG Guidelines
-
 
 #### `viewRuleGroup.js`
 
@@ -81,13 +80,27 @@ rule results are shown in a grid (i.e. interactive table).  Activating a
 row chnages to the "Rule Group View" showing the summary results for the
 group of rules.
 
-This view uses the following custom eeb components:
+The Rule Group view uses the following custom web components:
 * `resultSummary`: Summary table of all rule results at top of sidepanel
 * `resultGrid`: Grid of rule results for a rule group
 * `resultRuleInfo`: Details on the rule currently selected in the rule results
 
-
 #### `viewRuleResult.js`
+
+The "Rule Result View" provides information on rule results for a web page.
+It includes a summary of the total number of rules that resulted in
+violations, warnings, manual checks or have passed at the top of the
+page using a small table.  It includes two tabs for showing groups of
+rules organized by Rule Categories or WCAG Guidlelines.  The groups of
+rule results are shown in a grid (i.e. interactive table).  Activating a
+row chnages to the "Rule Group View" showing the summary results for the
+group of rules.
+
+The Rule Result view uses the following custom web components:
+* `resultGrid`: Grid of element results for a rule result
+* `resultRuleInfo`: Details on the rule currently selected in the rule results
+* Select box for choosing highlight option
+
 
 #### `resultTablist.js`
 
