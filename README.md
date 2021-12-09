@@ -43,16 +43,51 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 #### `panel.js`
 * Sidebar views and features are created and initialized.
-  * Summary view: Overall rule results and rule grouping results
-  * Rule Group view: The rule results for either a rule category or WCAG guideline group of rules
-  * Rule Result: The element results for a specific rule
+  * Summary View: Overall rule results and rule grouping results
+  * Rule Group View: The rule results for either a rule category or WCAG guideline group of rules
+  * Rule Result View: The element results for a specific rule
 * Exchanges inform with the `content.js` in the web page to using messaging.
+* Includes initializing and responding to common controls used in all views:
+  * Back button
+  * Views menu button
+  * Preferences button
+  * Re-run evaluation button
 
 #### `viewSummary.js`
 
-#### `viewGroup.js`
+The "Summary View" provides information on rule results for a web page.
+It includes a summary of the total number of rules that resulted in
+violations, warnings, manual checks or have passed at the top of the
+page using a small table.  It includes two tabs for showing groups of
+rules organized by Rule Categories or WCAG Guidlelines.  The groups of
+rule results are shown in a grid (i.e. interactive table).  Activating a
+row chnages to the "Rule Group View" showing the summary results for the
+group of rules.
 
-#### `viewRule.js`
+This view uses the following custom eeb components:
+* `resultSummary`: Summary table of all rule results at top of sidepanel
+* `resultTablist`: Switching between Rule Category and WCAG Guidelines grids
+* `resultGrid`: Grids of rule group results for Rule Category and WCAG Guidelines
+
+
+#### `viewRuleGroup.js`
+
+The "Rule Group View" provides information on rule results for a web page.
+It includes a summary of the total number of rules that resulted in
+violations, warnings, manual checks or have passed at the top of the
+page using a small table.  It includes two tabs for showing groups of
+rules organized by Rule Categories or WCAG Guidlelines.  The groups of
+rule results are shown in a grid (i.e. interactive table).  Activating a
+row chnages to the "Rule Group View" showing the summary results for the
+group of rules.
+
+This view uses the following custom eeb components:
+* `resultSummary`: Summary table of all rule results at top of sidepanel
+* `resultGrid`: Grid of rule results for a rule group
+* `resultRuleInfo`: Details on the rule currently selected in the rule results
+
+
+#### `viewRuleResult.js`
 
 #### `resultTablist.js`
 
@@ -62,8 +97,18 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 #### `resultRuleInfo.js`
 
-#### 'commonModule.js'
+#### `commonModule.js`
 
-### Content
+### Content Page
 
-### Background
+#### `content.js`
+
+#### `evaluate.js`
+
+### Other
+
+#### `background.js`
+
+#### `storage.js`
+
+#### OpenAjax Evaluation Library

@@ -5,8 +5,8 @@
 import { saveOptions } from '../storage.js';
 
 import viewSummary     from './viewSummary.js';
-import viewGroup       from './viewGroup.js';
-import viewRule        from './viewRule.js';
+import viewRuleGroup   from './viewRuleGroup.js';
+import viewRuleResult  from './viewRuleResult.js';
 
 import ResultSummary   from './resultSummary.js';
 import ResultTablist   from './resultTablist.js';
@@ -95,8 +95,8 @@ function initControls () {
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
   vSummary = new viewSummary('summary', handleSummaryRowActivation);
-  vGroup   = new viewGroup('group', handleGroupRowActivation);
-  vRule    = new viewRule('rule');
+  vGroup   = new viewRuleGroup('group', handleGroupRowActivation);
+  vRule    = new viewRuleResult('rule');
 
   views = document.querySelectorAll('main .view');
   showView('summary');

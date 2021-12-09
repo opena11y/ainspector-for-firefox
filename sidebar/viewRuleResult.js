@@ -1,7 +1,7 @@
 
 const getMessage = browser.i18n.getMessage;
 
-export default class viewRule {
+export default class viewRuleResult {
   constructor(id) {
     this.ruleNode     = document.getElementById(id);
 

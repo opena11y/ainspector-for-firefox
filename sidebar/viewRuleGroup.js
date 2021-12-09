@@ -1,7 +1,7 @@
 
 const getMessage = browser.i18n.getMessage;
 
-export default class viewGroup {
+export default class viewRuleGroup {
   constructor(id, handleRowActivation) {
     let div, h2;
 
