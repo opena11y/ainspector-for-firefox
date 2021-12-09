@@ -252,8 +252,9 @@ function updateSidebar (info) {
       }
       else {
         if (info.infoRule) {
+          viewTitle.textContent = 'Rule Result';
           showView('rule');
-//          vRule.update(info.infoRule);
+          vRule.update(info.infoRule);
         }
         else {
           vSummary.clear();

@@ -295,12 +295,29 @@ export default class ResultGrid extends HTMLElement {
 
   }
 
+  tryHandleRowSelection(id) {
+    if (this.handleRowSelection) {
+      this.handleRowSelection(id);
+      return true;
+    }
+    return false;
+  }
+
+  tryHandleRowActivation(event) {
+    if (this.handleRowActivation) {
+      this.handleRowActivation(event);
+      return true;
+    }
+    return false;
+  }
+
   // event handlers
 
   handleRowClick (event) {
     let tgt = event.currentTarget;
-    this.handleRowSelection(tgt.id);
-    tgt.focus();
+    if (this.tryHandleRowSelection(tgt.id)) {
+      tgt.focus();
+    }
     event.preventDefault();
     event.stopPropagation();
   }
@@ -315,20 +332,20 @@ export default class ResultGrid extends HTMLElement {
     switch(event.key) {
       case 'Enter':
         if (tgt.id) {
-          this.handleActivation(event);
+          this.tryHandleRowActivation(event);
           flag = true;
         }
         break;
 
       case 'ArrowDown':
         nextItem = this.getRowByPosition(rowPos+1);
-        this.handleRowSelection(nextItem.id);
+        this.tryHandleRowSelection(nextItem.id);
         flag = true;
         break;
 
       case 'ArrowUp':
         nextItem = this.getRowByPosition(rowPos-1);
-        this.handleRowSelection(nextItem.id);
+        this.tryHandleRowSelection(nextItem.id);
         flag = true;
         break;
 
@@ -367,7 +384,7 @@ export default class ResultGrid extends HTMLElement {
     switch(event.key) {
       case 'Enter':
         if (tgtTr.id) {
-          this.handleActivation(event);
+          this.tryHandleRowActivation(event);
           flag = true;
         }
         break;
@@ -376,7 +393,7 @@ export default class ResultGrid extends HTMLElement {
         if (rowPos && colPos) {
           nextRow = this.getRowByPosition(rowPos+1);
           nextItem = this.getCellByPosition(nextRow, colPos);
-          this.handleRowSelection(nextRow.id);
+          this.tryHandleRowSelection(nextRow.id);
         }
         flag = true;
         break;
@@ -385,7 +402,7 @@ export default class ResultGrid extends HTMLElement {
         if (rowPos && colPos) {
           nextRow = this.getRowByPosition(rowPos-1)
           nextItem = this.getCellByPosition(nextRow, colPos);
-          this.handleRowSelection(nextRow.id);
+          this.tryHandleRowSelection(nextRow.id);
         }
         flag = true;
         break;
