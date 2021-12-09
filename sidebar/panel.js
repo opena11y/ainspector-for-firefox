@@ -36,7 +36,6 @@ var sidebarRulesetId = 'ARIA_STRICT';
 const getMessage = browser.i18n.getMessage;
 
 const emptyContent         = getMessage("emptyContent");
-const noHeadingElements    = getMessage("noHeadingElements");
 const tabIsLoading         = getMessage("tabIsLoading");
 const protocolNotSupported = getMessage("protocolNotSupported");
 

@@ -10,11 +10,6 @@ import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabe
 export default class viewSummary {
   constructor(id, handleRowActivation) {
 
-    if (typeof handleRowActivation !== 'function') {
-      handleRowActivation = null;
-    }
-    this.handleRowActivation = handleRowActivation;
-
     this.summaryNode   = document.getElementById(id);
 
     this.resultSummary = document.createElement('result-summary');
@@ -24,10 +19,12 @@ export default class viewSummary {
     this.summaryNode.appendChild(this.resultTablist);
 
     this.rcResultGrid = document.createElement('result-grid');
+    this.rcResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
     this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     this.glResultGrid = document.createElement('result-grid');
+    this.glResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
@@ -53,11 +50,11 @@ export default class viewSummary {
 
     this.resultTablist.tabLabel1 = getMessage("ruleCategoriesLabel");
 
-    this.rcResultGrid.addHeaderCell(getMessage('ruleCategoriesLabel'),     'group text');
-    this.rcResultGrid.addHeaderCell(getMessage('violationsAbbrev'),   'summ num', getMessage('violationsLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('warningsAbbrev'),     'summ num', getMessage('warningsLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'), 'summ num', getMessage('manualChecksLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('passedAbbrev'),       'summ num', getMessage('passedLabel'));
+    this.rcResultGrid.addHeaderCell(getMessage('ruleCategoriesLabel'), 'group text');
+    this.rcResultGrid.addHeaderCell(getMessage('violationsAbbrev'),    'summ num', getMessage('violationsLabel'));
+    this.rcResultGrid.addHeaderCell(getMessage('warningsAbbrev'),      'summ num', getMessage('warningsLabel'));
+    this.rcResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'),  'summ num', getMessage('manualChecksLabel'));
+    this.rcResultGrid.addHeaderCell(getMessage('passedAbbrev'),        'summ num', getMessage('passedLabel'));
 
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       id = ruleCategoryIds[i];

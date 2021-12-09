@@ -11,18 +11,18 @@ th, td {
   text-align: center;
 }
 
-#violationsValue {
+#violations-value {
   background-color: hsl(0, 100%, 84%);
 }
 
-#warningsValue {
+#warnings-value {
   background-color: hsl(49, 100%, 79%);
 }
 
-#manualChecksValue {
+#manual-checks-value {
   background-color: hsl(198, 52%, 81%);
 }
 
-#passedValue {
+#passed-value {
   background-color: hsl(90, 67%, 69%);
 }

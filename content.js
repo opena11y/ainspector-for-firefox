@@ -63,7 +63,7 @@ var focusProperties = `{
 
     case 'rule':
       info.view = 'rule';
-
+      info.infoRule = getRuleInfo(ruleId);
       break;
 
     default:

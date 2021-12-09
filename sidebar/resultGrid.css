@@ -6,12 +6,40 @@ table {
   border-collapse: collapse;
 }
 
+table thead,
+table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table.group tbody,
+table.rule tbody {
+  display: block;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+table.group {
+  margin-top: 2em;
+  border: 1px solid #aaa;
+}
+
 table tbody tr:nth-child(even) {
   background: #eee;
 }
 
 table thead th {
   border-bottom: 1px solid #ddd;
+}
+
+table thead th span.icon {
+  display:  none;
+}
+
+table thead th[aria-sort] span.icon {
+  display:  inline;
+  padding-left: 2px;
 }
 
 table tr th:first-child,
@@ -27,7 +55,7 @@ table td {
 
 table th.group,
 table td.group {
-  width: 40%;
+  width: auto;
 }
 
 table th.summ,
@@ -46,9 +74,51 @@ table th.num {
   text-align: right;
 }
 
-table tr:focus,
+table th.rule,
+table td.rule {
+  width: auto;
+}
+
+table th.result,
+table td.result,
+table th.sc,
+table td.sc,
+table th.level,
+table td.level,
+table th.required,
+table td.required {
+  width: 12%;
+  text-align: center;
+}
+
+
+/* Result brackground colors */
+
+table td.not-applicable {
+  background-color: transparent;
+}
+
+table td.manual-check {
+  background-color: hsl(198, 52%, 81%);
+}
+
+table td.passed {
+  background-color: hsl(90, 67%, 69%);
+}
+
+table td.violation {
+  background-color: hsl(0, 100%, 84%);
+}
+
+table td.warning {
+  background-color: hsl(49, 100%, 79%);
+}
+
 table th:focus,
-table td:focus {
+table td:focus,
+table tr:focus {
+  outline-offset:  -2px;
   outline: currentColor 2px solid;
 }
+
 

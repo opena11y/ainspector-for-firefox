@@ -18,7 +18,9 @@ function evaluate (ruleset) {
   return evaluationResult;
 };
 
+// ----------------------
 // Summary Result functions
+// ----------------------
 
 function getSummaryItem (summary, id, labelId) {
   let item = {
@@ -54,7 +56,8 @@ function getGuidelineResults (evalResult) {
 };
 
 /*
-*   getSummaryInfo: (1) Run evlauation library;
+*   getSummaryInfo
+*   (1) Run evlauation library;
 *   (2) return result objec for the summary view in the sidebar;
 */
 function getSummaryInfo () {
@@ -85,7 +88,9 @@ function getSummaryInfo () {
   return info;
 };
 
+// ----------------------
 // Group Result functions
+// ----------------------
 
 function getGroupItem(ruleResult) {
 
@@ -107,8 +112,9 @@ function getGroupItem(ruleResult) {
 }
 
 /*
-*   getGroupInfo: (1) Run evlauation library;
-*   (2) return result objec for the summary view in the sidebar;
+*   getGroupInfo
+*   (1) Run evlauation library;
+*   (2) return result objec for the group view in the sidebar;
 */
 function getGroupInfo (groupType, groupId) {
 
@@ -151,6 +157,95 @@ function getGroupInfo (groupType, groupId) {
   return info;
 };
 
+// ----------------------
+// Rule Result functions
+// ----------------------
+
+function getRuleResultInfo(ruleResult) {
+
+  let rule   = ruleResult.getRule()
+
+  var info = { 'ruleId'        : rule.getId(),
+               'summary'       : ruleResult.getRuleSummary(),
+               'required'      : ruleResult.isRuleRequired(),
+               'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
+               'result'        : ruleResult.getResultValueNLS(),
+               'category'      : rule.getCategoryInfo().title,
+               'guideline'     : rule.getGuidelineInfo().title,
+               'resultValue'   : ruleResult.getResultValue(),
+               'level'         : ruleResult.getWCAG20LevelNLS(),
+               'messages'      : ruleResult.getResultMessagesArray(),
+               'detailsAction' : getDetailsAction(ruleResult)
+             };
+
+  return info;
+}
+
+function getElementResultInfo(ruleResult) {
+
+  function addElementResult(elementResult) {
+
+    var item = { 'element'       : elementResult.getElementIdentifier(),
+                 'position'      : elementResult.getOrdinalPosition(),
+                 'result'        : elementResult.getResultValueNLS(),
+                 'resultValue'   : elementResult.getResultValue(),
+                 'actionMessage' : elementResult.getResultMessage()
+               };
+
+    // Adjust sort order of element results for AInspector Sidebar
+    if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
+      item.resultValue = 1;
+    }
+    else {
+      if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.PASS) {
+        item.resultValue = 2;
+      }
+    }
+
+    elementResults.push(item);
+
+  }
+
+  var elementResults = [];
+
+  var results = ruleResult.getElementResultsArray();
+
+  for(let i = 0; i < results.length; i++) {
+    addElementResult(results[i]);
+  }
+
+  return elementResults;
+};
+
+/*
+*   getRuleInfo
+*   (1) Run evlauation library;
+*   (2) return result objec for the rule view in the sidebar;
+*/
+
+function getRuleInfo(ruleId) {
+
+  console.log('[getRuleInfo]: starting ');
+
+  let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
+  let ruleResult = evaluationResult.getRuleResult(ruleId);
+
+  let info = {};
+
+  info.detailsAction  = getDetailsAction(ruleResult);
+  info.ruleResult     = getRuleResultInfo(ruleResult);
+  info.elementResults = getElementResultInfo(ruleResult);
+
+  console.log('[getRuleInfo]: ending ');
+
+  return info;
+}
+
+// ----------------------
+// getDetailsAction
+//
+// Returns information related to a rule result
+// ----------------------
 
 function getDetailsAction(ruleResult) {
 
@@ -193,10 +288,10 @@ function getDetailsAction(ruleResult) {
     'action'             : ruleResult.getResultMessagesArray(),
     'purpose'            : rule.getPurpose(),
     'techniques'         : getInformationalInfoArray(rule.getTechniques()),
-    'targetElements'     : rule.getTargetResources(),
+    'targets'            : rule.getTargetResources(),
     'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
-    'wcag'               : getInformationalInfoArray(wcag),
-    'informationalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
+    'sc'                 : getInformationalInfoArray(wcag),
+    'additionalLinks'    : getInformationalInfoArray(rule.getInformationalLinks())
   }
 
   return detailsAction;

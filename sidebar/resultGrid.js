@@ -30,9 +30,14 @@ export default class ResultGrid extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // Initialize references
-    this.table     = this.shadowRoot.querySelector('table');
-    this.headersTr = this.table.querySelector('thead tr');
-    this.tbody     = this.table.querySelector('tbody');
+    this.table   = this.shadowRoot.querySelector('table');
+    this.theadTr = this.table.querySelector('thead tr');
+    this.thead   = this.table.querySelector('thead');
+    this.tbody   = this.table.querySelector('tbody');
+  }
+
+  addClassNameToTable (name) {
+    return this.table.classList.add(name);
   }
 
   setRowActivationEventHandler (handler) {
@@ -49,7 +54,7 @@ export default class ResultGrid extends HTMLElement {
 
   getRowByPosition(pos) {
     if (pos < 1) {
-      return this.headersTr;
+      return this.theadTr;
     }
     let rows =  this.table.querySelectorAll('tr');
     if (pos > rows.length) {
@@ -113,10 +118,15 @@ export default class ResultGrid extends HTMLElement {
       th.title = title;
     }
     if (isSortable) {
-      th.setAttribute('data-sortable', 'true');
+      let span = document.createElement('span');
+      span.className = 'icon';
+      span.textContent = '▼';
+      span.setAttribute('aria-hidden', 'true');
+      th.appendChild(span);
+      th.classList.add('sortable');
     }
-    this.headersTr.appendChild(th);
-    this.headersTr.addEventListener('keydown', this.handleRowKeydown.bind(this));
+    this.theadTr.appendChild(th);
+    this.theadTr.addEventListener('keydown', this.handleRowKeydown.bind(this));
     th.addEventListener('keydown', this.handleCellKeydown.bind(this));
   }
 
@@ -133,7 +143,7 @@ export default class ResultGrid extends HTMLElement {
     row.addEventListener('keydown', this.handleRowKeydown.bind(this));
 
     if (this.handleRowSelection) {
-      row.addEventListener('click', this.handleRowSection);
+      row.addEventListener('click', this.handleRowClick.bind(this));
       row.addEventListener('dblclick', this.handleRowActivation);
     } else {
       if (this.handleRowActivation) {
@@ -153,13 +163,12 @@ export default class ResultGrid extends HTMLElement {
       td.className = style;
     }
     if (sortValue) {
-      td.attribute('data-sort-value', sortValue);
+      td.setAttribute('data-sort-value', sortValue);
     }
     row.appendChild(td);
     td.addEventListener('keydown', this.handleCellKeydown.bind(this));
 
     return td;
-
   }
 
   updateDataCell(row, pos, txt, style, sortValue) {
@@ -184,10 +193,117 @@ export default class ResultGrid extends HTMLElement {
   }
 
   deleteDataRows () {
-    this.tbody.innerHTML = '';
+    let cs1 = window.getComputedStyle(this.table);
+    let cs2 = window.getComputedStyle(this.tbody);
+    while (this.tbody.firstChild) {
+      this.tbody.firstChild.remove();
+    }
+  }
+
+  // sorts table rows using the data-sort attribute
+  // data-sort attribute must me a number
+  sortGridByColumn(primaryIndex, secondaryIndex, thirdIndex, sortValue) {
+    function compareValues(a, b) {
+      if (sortValue === 'ascending') {
+        if (a.value1 === b.value1) {
+          if (a.value2 === b.value2) {
+            if (a.value3 === b.value3) {
+              return 0;
+            } else {
+              return a.value3 - b.value3;
+            }
+          } else {
+            return a.value2 - b.value2;
+          }
+        } else {
+          return a.value1 - b.value1;
+        }
+      } else {
+        if (a.value1 === b.value1) {
+          if (a.value2 === b.value2) {
+            if (a.value3 === b.value3) {
+              return 0;
+            } else {
+              return b.value3 - a.value3;
+            }
+          } else {
+            return b.value2 - a.value2;
+          }
+        } else {
+          return b.value1 - a.value1;
+        }
+      }
+    }
+
+    if (typeof sortValue !== 'string') {
+      sortValue = 'descending';
+    }
+
+    let trs = [];
+    let rowData = [];
+    let cell1;
+    let cell2;
+    let cell3;
+
+    let tr = this.tbody.firstElementChild;
+
+    let index = 0;
+    while (tr) {
+      trs.push(tr);
+      cell1 = this.getCellByPosition(tr, primaryIndex);
+      cell2 = this.getCellByPosition(tr, secondaryIndex);
+      cell3 = this.getCellByPosition(tr, thirdIndex);
+
+      let data = {};
+      data.index = index;
+      data.value1 = parseFloat(cell1.getAttribute('data-sort-value'));
+      data.value2 = parseFloat(cell2.getAttribute('data-sort-value'));
+      data.value3 = parseFloat(cell3.getAttribute('data-sort-value'));
+
+      rowData.push(data);
+      tr = tr.nextElementSibling;
+      index += 1;
+    }
+
+    rowData.sort(compareValues);
+
+    this.deleteDataRows();
+
+    // add sorted rows
+    for (let i = 0; i < rowData.length; i += 1) {
+      this.tbody.appendChild(trs[rowData[i].index]);
+    }
+
+    this.setSortHeader(primaryIndex);
+
+  }
+
+  setSortHeader(index) {
+    let th = this.getCellByPosition(this.theadTr, index);
+    let cell = this.theadTr.firstChild;
+
+    while (cell) {
+
+      if (cell === th) {
+        cell.setAttribute('aria-sort', 'descending');
+      } else {
+        cell.removeAttribute('aria-sort');
+      }
+
+      cell = cell.nextElementSibling;
+    }
+
   }
 
   // event handlers
+
+  handleRowClick (event) {
+    let tgt = event.currentTarget;
+    this.handleRowSelection(tgt.id);
+    tgt.focus();
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   handleRowKeydown (event) {
     let nextItem = null;
@@ -198,17 +314,21 @@ export default class ResultGrid extends HTMLElement {
 
     switch(event.key) {
       case 'Enter':
-        this.handleActivation(event);
-        flag = true;
+        if (tgt.id) {
+          this.handleActivation(event);
+          flag = true;
+        }
         break;
 
       case 'ArrowDown':
         nextItem = this.getRowByPosition(rowPos+1);
+        this.handleRowSelection(nextItem.id);
         flag = true;
         break;
 
       case 'ArrowUp':
         nextItem = this.getRowByPosition(rowPos-1);
+        this.handleRowSelection(nextItem.id);
         flag = true;
         break;
 
@@ -246,14 +366,17 @@ export default class ResultGrid extends HTMLElement {
 
     switch(event.key) {
       case 'Enter':
-        this.handleActivation(event);
-        flag = true;
+        if (tgtTr.id) {
+          this.handleActivation(event);
+          flag = true;
+        }
         break;
 
       case 'ArrowDown':
         if (rowPos && colPos) {
           nextRow = this.getRowByPosition(rowPos+1);
           nextItem = this.getCellByPosition(nextRow, colPos);
+          this.handleRowSelection(nextRow.id);
         }
         flag = true;
         break;
@@ -262,6 +385,7 @@ export default class ResultGrid extends HTMLElement {
         if (rowPos && colPos) {
           nextRow = this.getRowByPosition(rowPos-1)
           nextItem = this.getCellByPosition(nextRow, colPos);
+          this.handleRowSelection(nextRow.id);
         }
         flag = true;
         break;

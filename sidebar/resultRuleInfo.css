@@ -1,0 +1,11 @@
+/* resultRuleInfo.css */
+
+.result-rule-info {
+  border: 1px solid #aaa;
+  padding: 2px;
+  display: block;
+  left:  2px;
+  right:  2px;
+  height: 300px;
+  overflow: scroll;
+}

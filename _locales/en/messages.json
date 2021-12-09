@@ -244,19 +244,90 @@
     "description": "Label for the guildeine group"
   },
 
-  "groupViewGridHeaderRule": {
+  "ruleLabel": {
     "message": "Rule",
-    "description": "Column header for group view grid"
+    "description": "Rule column header for rule group view grid"
   },
 
-  "groupViewGridHeaderResult": {
+  "resultLabel": {
     "message": "Result",
-    "description": "Column header for group view grid"
+    "description": "Result column header for rule group view grid"
   },
 
-  "groupViewGridHeaderResult": {
-    "message": "Result",
-    "description": "Column header for group view grid"
+  "successCriteriaAbbrev": {
+    "message": "SC",
+    "description": "Abbreviation for WCAG Success Criteria"
+  },
+
+  "successCriteriaLabel": {
+    "message": "WCAG Success Criteria",
+    "description": "WCAG Success Criteria"
+  },
+
+  "levelLabel": {
+    "message": "Level",
+    "description": "Level column header for rule group view grid"
+  },
+
+  "requiredAbbrev": {
+    "message": "Req",
+    "description": "Abbreviation for required column header for rule group view grid"
+  },
+
+  "requiredLabel": {
+    "message": "Required",
+    "description": "Required column header for rule group view grid"
+  },
+
+  "requiredValue": {
+    "message": "Y",
+    "description": "Value for required column in rule group grid"
+  },
+
+  "ruleSelectedLabel": {
+    "message": "Selected Rule",
+    "description": "Selected rule label for rule information"
+  },
+
+  "ruleDefinitionLabel": {
+    "message": "Definition",
+    "description": "Definition section label for rule information"
+  },
+
+  "ruleActionLabel": {
+    "message": "Action",
+    "description": "Action section label for rule information"
+  },
+
+  "rulePurposeLabel": {
+    "message": "Purpose",
+    "description": "Purpose section label for rule information"
+  },
+
+  "ruleTechniquesLabel": {
+    "message": "Techniques",
+    "description": "Techniques section label for rule information"
+  },
+
+  "ruleTargetLabel": {
+    "message": "Target Elements",
+    "description": "Target elements section label for rule information"
+  },
+
+  "ruleComplianceLabel": {
+    "message": "Compliance",
+    "description": "Compliance section label for rule information"
+  },
+
+  "ruleSCLabel": {
+    "message": "WCAG Success Criteria",
+    "description": "WCAG Success Criteria section label for rule information"
+  },
+
+  "ruleAdditionalLabel": {
+    "message": "Additional Information",
+    "description": "Additional information section label for rule information"
   }
+
 
 }

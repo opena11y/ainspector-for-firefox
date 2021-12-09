@@ -19,7 +19,7 @@ export default class viewRule {
 
   initGrid () {
 
-    this.resultTablist.tabLabel1 = 'Detials/Action';
+    this.resultTablist.tabLabel1 = 'Details/Action';
     this.resultTablist.tabLabel2 = 'Element Results';
 
     this.resultGrid.addHeaderCell('Element');
