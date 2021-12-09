@@ -57,13 +57,13 @@ var focusProperties = `{
       info.infoSummary = getSummaryInfo();
       break;
 
-    case 'group':
-      info.infoGroup = getGroupInfo(groupType, groupId);
+    case 'rule-group':
+      info.infoRuleGroup = getRuleGroupInfo(groupType, groupId);
       break;
 
-    case 'rule':
+    case 'rule-result':
       info.view = 'rule';
-      info.infoRule = getRuleInfo(ruleId);
+      info.infoRuleResult = getRuleResultInfo(ruleId);
       break;
 
     default:

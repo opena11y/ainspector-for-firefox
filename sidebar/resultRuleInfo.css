@@ -9,3 +9,27 @@
   height: 300px;
   overflow: scroll;
 }
+
+.result-rule-info h3 {
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+  font-size: 100%;
+  font-weight: bold;
+}
+
+.result-rule-info h3:first-child {
+  margin-top: 0;
+}
+
+.result-rule-info ul {
+  margin: 0;
+  padding: 0;
+}
+
+.result-rule-info li {
+  margin:  0;
+  padding: 0;
+  margin-left:  1em;
+  line-spacing: 1.25em;
+}

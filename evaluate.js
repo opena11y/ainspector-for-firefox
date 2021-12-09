@@ -1,5 +1,7 @@
 // Evaluates current document using evaluation library
 
+// Evaulate the web page
+
 function evaluate (ruleset) {
 
   if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
@@ -22,10 +24,9 @@ function evaluate (ruleset) {
 // Summary Result functions
 // ----------------------
 
-function getSummaryItem (summary, id, labelId) {
+function getSummaryItem (summary, id) {
   let item = {
     'id'             : id,
-    'labelId'        : labelId,
     'violations'     : summary.violations,
     'warnings'       : summary.warnings,
     'manual_checks'  : summary.manual_checks,
@@ -36,21 +37,51 @@ function getSummaryItem (summary, id, labelId) {
 };
 
 function getRuleCategoryResults (evalResult) {
+
+  const rcIds = [
+    OpenAjax.a11y.RULE_CATEGORIES.LANDMARKS,
+    OpenAjax.a11y.RULE_CATEGORIES.HEADINGS,
+    OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY,
+    OpenAjax.a11y.RULE_CATEGORIES.IMAGES,
+    OpenAjax.a11y.RULE_CATEGORIES.LINKS,
+    OpenAjax.a11y.RULE_CATEGORIES.FORMS,
+    OpenAjax.a11y.RULE_CATEGORIES.TABLES,
+    OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    OpenAjax.a11y.RULE_CATEGORIES.AUDIO_VIDEO,
+    OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT,
+    OpenAjax.a11y.RULE_CATEGORIES.TIMING,
+    OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION
+  ];
+
   let rcResults = [];
-  ruleCategoryIds.forEach ((id) => {
+  rcIds.forEach ((id) => {
     let summary = evalResult.getRuleResultsByCategory(id).getRuleResultsSummary();
-    let labelId = getRuleCategoryLabelId(id);
-    rcResults.push(getSummaryItem(summary, id, labelId));
+    rcResults.push(getSummaryItem(summary, id));
   });
   return rcResults;
 };
 
 function getGuidelineResults (evalResult) {
+
+  const glIds = [
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_1,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_2,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_3,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_4,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_1,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_2,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_3,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_4,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_1,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3,
+    OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1
+  ];
+
   let glResults = [];
-  guidelineIds.forEach ((id) => {
+  glIds.forEach ((id) => {
     let summary = evalResult.getRuleResultsByGuideline(id).getRuleResultsSummary();
-    let labelId = getGuidelineLabelId(id);
-    glResults.push(getSummaryItem(summary, id, labelId));
+    glResults.push(getSummaryItem(summary, id));
   });
   return glResults;
 };
@@ -89,10 +120,10 @@ function getSummaryInfo () {
 };
 
 // ----------------------
-// Group Result functions
+// Rule Group Result functions
 // ----------------------
 
-function getGroupItem(ruleResult) {
+function getRuleGroupItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
 
@@ -112,13 +143,13 @@ function getGroupItem(ruleResult) {
 }
 
 /*
-*   getGroupInfo
+*   getRuleGroupInfo
 *   (1) Run evlauation library;
 *   (2) return result objec for the group view in the sidebar;
 */
-function getGroupInfo (groupType, groupId) {
+function getRuleGroupInfo (groupType, groupId) {
 
-  console.log('[getGroupInfo]: starting ');
+  console.log('[getRuleGroupInfo]: starting ');
 
   let info = {};
 
@@ -132,7 +163,7 @@ function getGroupInfo (groupType, groupId) {
     ruleGroupResult   = evaluationResult.getRuleResultsByCategory(groupId);
   }
 
-  let ruleGroupInfo     = ruleGroupResult.getRuleGroupInfo();
+  let ruleGroupInfo = ruleGroupResult.getRuleGroupInfo();
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
@@ -146,13 +177,13 @@ function getGroupInfo (groupType, groupId) {
   info.ruleResults = [];
 
   for(let i = 0; i < ruleResults.length; i++) {
-    info.ruleResults.push(getGroupItem(ruleResults[i]));
+    info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
   }
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
 
-  console.log('[getGroupInfo]: ending');
+  console.log('[getRuleGroupInfo]: ending');
 
   return info;
 };
@@ -161,7 +192,7 @@ function getGroupInfo (groupType, groupId) {
 // Rule Result functions
 // ----------------------
 
-function getRuleResultInfo(ruleResult) {
+function getResultInfo(ruleResult) {
 
   let rule   = ruleResult.getRule()
 
@@ -218,12 +249,12 @@ function getElementResultInfo(ruleResult) {
 };
 
 /*
-*   getRuleInfo
+*   getRuleResultInfo
 *   (1) Run evlauation library;
 *   (2) return result objec for the rule view in the sidebar;
 */
 
-function getRuleInfo(ruleId) {
+function getRuleResultInfo(ruleId) {
 
   console.log('[getRuleInfo]: starting ');
 
@@ -233,7 +264,7 @@ function getRuleInfo(ruleId) {
   let info = {};
 
   info.detailsAction  = getDetailsAction(ruleResult);
-  info.ruleResult     = getRuleResultInfo(ruleResult);
+  info.ruleResult     = getResultInfo(ruleResult);
   info.elementResults = getElementResultInfo(ruleResult);
 
   console.log('[getRuleInfo]: ending ');

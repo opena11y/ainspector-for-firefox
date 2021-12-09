@@ -327,7 +327,35 @@
   "ruleAdditionalLabel": {
     "message": "Additional Information",
     "description": "Additional information section label for rule information"
+  },
+
+  "detailsActionLabel": {
+    "message": "Details/Action",
+    "description": "Details/action tab label in rule results view"
+  },
+
+  "elementResultsLabel": {
+    "message": "Element Results",
+    "description": "Element results tab label in rule results view"
+  },
+
+  "elementLabel": {
+    "message": "Element",
+    "description": "Element column label in grid for rule results view"
+  },
+
+  "positionAbbrev": {
+    "message": "Pos",
+    "description": "Position column abbreviation in grid for rule results view"
+  },
+
+  "positionLabel": {
+    "message": "Position",
+    "description": "Position column label in grid for rule results view"
+  },
+
+  "actionLabel": {
+    "message": "Action",
+    "description": "Action column label in grid for rule results view"
   }
-
-
 }

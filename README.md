@@ -56,12 +56,12 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 #### `viewSummary.js`
 
 The "Summary View" provides information on rule results for a web page.
-It includes a summary of the total number of rules that resulted in
+The view includes a summary of the total number of rules that resulted in
 violations, warnings, manual checks or have passed at the top of the
-page using a small table.  It includes two tabs for showing groups of
+sidebar using a table.  It includes two tabs for showing groups of
 rules organized by Rule Categories or WCAG Guidlelines.  The groups of
 rule results are shown in a grid (i.e. interactive table).  Activating a
-row chnages to the "Rule Group View" showing the summary results for the
+row changes to the "Rule Group View" showing the summary results for the
 group of rules.
 
 The Summary view uses the following custom web components:
@@ -71,57 +71,83 @@ The Summary view uses the following custom web components:
 
 #### `viewRuleGroup.js`
 
-The "Rule Group View" provides information on rule results for a web page.
-It includes a summary of the total number of rules that resulted in
+The "Rule Group View" provides information on rule results for a group of rules.
+Ihe view includes a summary of the number of rules in the group that resulted in
 violations, warnings, manual checks or have passed at the top of the
-page using a small table.  It includes two tabs for showing groups of
-rules organized by Rule Categories or WCAG Guidlelines.  The groups of
-rule results are shown in a grid (i.e. interactive table).  Activating a
-row chnages to the "Rule Group View" showing the summary results for the
-group of rules.
+sidebar using a table.  The rule results are shown in a grid (i.e. interactive table).
+Activating a row changes to the "Rule Result View" showing the summary results for the
+group of rules.  Changing the row selection updates the details/action information.
 
 The Rule Group view uses the following custom web components:
 * `resultSummary`: Summary table of all rule results at top of sidepanel
 * `resultGrid`: Grid of rule results for a rule group
-* `resultRuleInfo`: Details on the rule currently selected in the rule results
+* `resultRuleInfo`: Details and actions for the rule results currently selected in the grid
 
 #### `viewRuleResult.js`
 
-The "Rule Result View" provides information on rule results for a web page.
-It includes a summary of the total number of rules that resulted in
-violations, warnings, manual checks or have passed at the top of the
-page using a small table.  It includes two tabs for showing groups of
-rules organized by Rule Categories or WCAG Guidlelines.  The groups of
-rule results are shown in a grid (i.e. interactive table).  Activating a
-row chnages to the "Rule Group View" showing the summary results for the
-group of rules.
+The "Rule Result View" provides information on element results for a rule result.
+The view includes two tabs for showing the details/actions and the element results.
+The element results are shown in a grid (i.e. interactive table).  Selecting a
+row can highlight the element on the web page. The other tab has details/action about the
+rule and actions associated with the rule result.  The select box is used for choosing
+highlighting options.
 
-The Rule Result view uses the following custom web components:
+The Rule Result view uses the following custom web components and form controls:
 * `resultGrid`: Grid of element results for a rule result
 * `resultRuleInfo`: Details on the rule currently selected in the rule results
-* Select box for choosing highlight option
+* Standard HTML `select` element for choosing highlight option
 
 
 #### `resultTablist.js`
 
+The "ResultTablist" custom web component is used to switch the rendering between two tabs.
+The web component is used in the "Summary" and "Rule Result" views.
+
 #### `resultSummary.js`
+
+The "ResultSummary" custom web component is used to display a summary of rule results for a
+group of rules, including all rule results.  The summary uses a table to provide context for
+the number of rules violations, warnings, manual checks or have passed.  The numbers have
+background colors related to severity of the rule results.
 
 #### `resultGrid.js`
 
+The "ResultGrid" custom web component is used to display an interactive table of rule and element
+result details.
+The result grid provides keyboard navigation, row sorting and supports the handling of row activation
+and selection events.  Activation events change to a more detailed view and selection
+events update rule result details/action in the rule group view and element highlighting in the
+rule result view.
+
 #### `resultRuleInfo.js`
 
+The "ResultRuleInfo" is used to render the details/actions related to a rule result.  It is used
+in the Rule Group and Rule Result views.
+
 #### `commonModule.js`
+
+Constants used for constucting the initial grid for the summary view and the views menu.
 
 ### Content Page
 
 #### `content.js`
 
+The content script receives commands from the panel.js script and returns information objects
+associated with the Summary, Rule Group and Rule Results views.
+
 #### `evaluate.js`
+
+The evalute script is the interface between the evaluation library and the content script.
+The functions in the script evecute and evaluation and then constucts data objects for sending
+information to the panel script for rendering in the sidebar.
 
 ### Other
 
 #### `background.js`
 
+The background script is used to show and hide the sidebar when the button is selected in the address bar or from a menu option.
+
 #### `storage.js`
 
+The stoage script is used to manage extension options and preferences.
 #### OpenAjax Evaluation Library

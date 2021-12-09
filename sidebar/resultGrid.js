@@ -251,14 +251,26 @@ export default class ResultGrid extends HTMLElement {
     while (tr) {
       trs.push(tr);
       cell1 = this.getCellByPosition(tr, primaryIndex);
-      cell2 = this.getCellByPosition(tr, secondaryIndex);
-      cell3 = this.getCellByPosition(tr, thirdIndex);
+      if (secondaryIndex) {
+        cell2 = this.getCellByPosition(tr, secondaryIndex);
+      }
+      if (thirdIndex) {
+        cell3 = this.getCellByPosition(tr, thirdIndex);
+      }
 
       let data = {};
       data.index = index;
       data.value1 = parseFloat(cell1.getAttribute('data-sort-value'));
-      data.value2 = parseFloat(cell2.getAttribute('data-sort-value'));
-      data.value3 = parseFloat(cell3.getAttribute('data-sort-value'));
+      if (secondaryIndex) {
+        data.value2 = parseFloat(cell2.getAttribute('data-sort-value'));
+      } else {
+        data.value2 = 0;
+      }
+      if (thirdIndex) {
+        data.value3 = parseFloat(cell3.getAttribute('data-sort-value'));
+      } else {
+        data.value3 = 0;
+      }
 
       rowData.push(data);
       tr = tr.nextElementSibling;

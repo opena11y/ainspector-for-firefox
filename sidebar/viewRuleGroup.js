@@ -5,22 +5,23 @@ export default class viewRuleGroup {
   constructor(id, handleRowActivation) {
     let div, h2;
 
-    this.groupNode     = document.getElementById(id);
+    this.ruleGroupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
-    this.groupNode.appendChild(this.resultSummary);
+    this.ruleGroupNode.appendChild(this.resultSummary);
 
     this.ruleResultGrid = document.createElement('result-grid');
     this.ruleResultGrid.setRowActivationEventHandler(handleRowActivation);
     this.ruleResultGrid.setRowSelectionEventHandler(this.handleRowSelection.bind(this));
     this.ruleResultGrid.addClassNameToTable('group');
-    this.groupNode.appendChild(this.ruleResultGrid);
+    this.ruleGroupNode.appendChild(this.ruleResultGrid);
 
     // Create container DIV with heading for rule information
     div = document.createElement('div');
     div.className = 'rule-info';
-    this.groupNode.appendChild(div);
+    this.ruleGroupNode.appendChild(div);
 
     h2 = document.createElement('h2');
+    h2.className = 'selected-rule';
     h2.textContent = getMessage('ruleSelectedLabel');
     div.appendChild(h2);
 
@@ -88,20 +89,20 @@ export default class viewRuleGroup {
     return required ? 2 : 1;
   }
 
-  update (infoGroup) {
+  update (infoRuleGroup) {
     let i, rr, row, style, value, sortValue;
 
     this.detailsActions = {};
 
-    this.resultSummary.violations   = infoGroup.violations;
-    this.resultSummary.warnings     = infoGroup.warnings;
-    this.resultSummary.manualChecks = infoGroup.manual_checks;
-    this.resultSummary.passed       = infoGroup.passed;
+    this.resultSummary.violations   = infoRuleGroup.violations;
+    this.resultSummary.warnings     = infoRuleGroup.warnings;
+    this.resultSummary.manualChecks = infoRuleGroup.manual_checks;
+    this.resultSummary.passed       = infoRuleGroup.passed;
 
     this.ruleResultGrid.deleteDataRows();
 
-    for (i = 0; i < infoGroup.ruleResults.length; i += 1) {
-      rr = infoGroup.ruleResults[i];
+    for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
+      rr = infoRuleGroup.ruleResults[i];
 
       row = this.ruleResultGrid.addRow(rr.ruleId);
 
@@ -127,7 +128,7 @@ export default class viewRuleGroup {
 
     this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
 
-    this.resultRuleInfo.update(this.detailsActions[infoGroup.ruleResults[0].ruleId]);
+    this.resultRuleInfo.update(this.detailsActions[infoRuleGroup.ruleResults[0].ruleId]);
 
   }
 

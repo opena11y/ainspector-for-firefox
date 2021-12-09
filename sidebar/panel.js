@@ -22,8 +22,8 @@ var myWindowId;
 var logInfo = true;
 
 var vSummary;
-var vGroup;
-var vRule;
+var vRuleResultGroup;
+var vRuleResult;
 var views;
 
 var sidebarView      = 'summary';  // other options 'group' or 'rule'
@@ -68,17 +68,17 @@ function addLabelsAndHelpContent () {
 function handleSummaryRowActivation (event) {
   let tgt = event.currentTarget;
 
-  sidebarView      = 'group';
+  sidebarView      = 'rule-group';
   sidebarGroupType = tgt.id.substring(0,2);
   sidebarGroupId   = parseInt(tgt.id.substring(2));
 
   runContentScript('handleSummaryRowClick');
 }
 
-function handleGroupRowActivation (event) {
+function handleRuleGroupRowActivation (event) {
   let tgt = event.currentTarget;
 
-  sidebarView   = 'rule';
+  sidebarView   = 'rule-result';
   sidebarRuleId = tgt.id;
 
   runContentScript('handleRuleRowClick');
@@ -94,9 +94,9 @@ function initControls () {
   let rerunBtn = document.getElementById('rerun-evaluation-button');
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
-  vSummary = new viewSummary('summary', handleSummaryRowActivation);
-  vGroup   = new viewRuleGroup('group', handleGroupRowActivation);
-  vRule    = new viewRuleResult('rule');
+  vSummary         = new viewSummary('summary', handleSummaryRowActivation);
+  vRuleResultGroup = new viewRuleGroup('rule-group', handleRuleGroupRowActivation);
+  vRuleResult      = new viewRuleResult('rule-result');
 
   views = document.querySelectorAll('main .view');
   showView('summary');
@@ -105,12 +105,12 @@ function initControls () {
 function handleClickBackButton() {
 
   switch (sidebarView) {
-    case 'group':
+    case 'rule-group':
       sidebarView = 'summary';
       break;
 
-    case 'rule':
-      sidebarView = 'group';
+    case 'rule-result':
+      sidebarView = 'rule-group';
       break;
 
     default:
@@ -245,21 +245,21 @@ function updateSidebar (info) {
       vSummary.update(info.infoSummary);
     }
     else {
-      if (typeof info.infoGroup === 'object') {
-        viewTitle.textContent = info.infoGroup.groupLabel;
-        showView('group');
-        vGroup.update(info.infoGroup);
+      if (typeof info.infoRuleGroup === 'object') {
+        viewTitle.textContent = info.infoRuleGroup.groupLabel;
+        showView('rule-group');
+        vRuleResultGroup.update(info.infoRuleGroup);
       }
       else {
-        if (info.infoRule) {
+        if (info.infoRuleResult) {
           viewTitle.textContent = 'Rule Result';
-          showView('rule');
-          vRule.update(info.infoRule);
+          showView('rule-result');
+          vRuleResult.update(info.infoRuleResult);
         }
         else {
           vSummary.clear();
-          vGroup.clear();
-          vRule.clear();
+          vRuleResultGroup.clear();
+          vRuleResult.clear();
         }
       }
     }
@@ -274,8 +274,8 @@ function updateSidebar (info) {
       infoTitle.textContent = parts[1];
     }
       vSummary.clear();
-      vGroup.clear();
-      vRule.clear();
+      vRuleResultGroup.clear();
+      vRuleResult.clear();
   }
 }
 
@@ -306,7 +306,7 @@ browser.runtime.onMessage.addListener(
 */
 function runContentScript (callfunct) {
   vSummary.clear();
-  vGroup.clear();
+  vRuleResultGroup.clear();
 
   getActiveTabFor(myWindowId).then(tab => {
     if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
@@ -320,7 +320,6 @@ function runContentScript (callfunct) {
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
       browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
-      browser.tabs.executeScript({ file: '../common.js' });
       browser.tabs.executeScript({ file: '../evaluate.js' });
       browser.tabs.executeScript({ file: '../content.js' })
       .then(() => {

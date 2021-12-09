@@ -21,13 +21,15 @@ export default class viewRuleResult {
 
   initGrid () {
 
-    this.resultTablist.tabLabel1 = 'Details/Action';
-    this.resultTablist.tabLabel2 = 'Element Results';
+    this.resultTablist.tabLabel1 = getMessage('detailsActionLabel');
+    this.resultTablist.tabLabel2 = getMessage('elementResultsLabel');
+    // Make element results the deafult tab
+    this.resultTablist.showTabpanel('tabpane-2');
 
-    this.elementResultGrid.addHeaderCell('Element');
-    this.elementResultGrid.addHeaderCell('Result');
-    this.elementResultGrid.addHeaderCell('Pos');
-    this.elementResultGrid.addHeaderCell('Action');
+    this.elementResultGrid.addHeaderCell(getMessage('elementLabel'), 'element-info');
+    this.elementResultGrid.addHeaderCell(getMessage('resultLabel'), 'result');
+    this.elementResultGrid.addHeaderCell(getMessage('positionAbbrev'), 'position', getMessage('positionLabel'));
+    this.elementResultGrid.addHeaderCell(getMessage('actionLabel'), 'action');
 
   }
 
@@ -47,6 +49,9 @@ export default class viewRuleResult {
       case 'W':
         style = 'warning';
         break;
+      case 'H':
+        style = 'hidden';
+        break;
       default:
         break;
     }
@@ -55,36 +60,46 @@ export default class viewRuleResult {
 
   // returns a number for the sorting the result value
   getResultSortingValue(result) {
-    return ['', 'N/A', 'P', 'MC', 'W', 'V'].indexOf(result);
+    return ['', 'H', 'P', 'MC', 'W', 'V'].indexOf(result);
   }
 
-  update (infoRule) {
-    let i, row, er, style, sortValue;
+  getRowId (position) {
+    return 'er-' + position;
+  }
+
+  getPositionFromId(id) {
+    return id.subString(3, id.length);
+  }
+
+  update (infoRuleResult) {
+    let i, id, row, er, style, sortValue;
 
     this.elementResultGrid.deleteDataRows();
 
-    for (i = 0; i < infoRule.elementResults.length; i += 1) {
-      er = infoRule.elementResults[i];
+    for (i = 0; i < infoRuleResult.elementResults.length; i += 1) {
+      er = infoRuleResult.elementResults[i];
 
-      row = this.elementResultGrid.addRow('er-' + er.position);
+      row = this.elementResultGrid.addRow(this.getRowId(er.position));
 
-      this.elementResultGrid.addDataCell(row, er.element, 'element text');
+      this.elementResultGrid.addDataCell(row, er.element, 'element');
 
       style = 'result ' + this.getResultStyle(er.result);
       sortValue = this.getResultSortingValue(er.result);
       this.elementResultGrid.addDataCell(row, er.result, style, sortValue);
 
-      this.elementResultGrid.addDataCell(row, er.position, 'num');
+      this.elementResultGrid.addDataCell(row, er.position, 'position');
 
-      this.elementResultGrid.addDataCell(row, er.actionMessage, 'text');
+      this.elementResultGrid.addDataCell(row, er.actionMessage, 'action');
     }
 
-    this.resultRuleInfo.update(infoRule.detailsAction);
+    this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
+
+    this.resultRuleInfo.update(infoRuleResult.detailsAction);
 
   }
 
   clear () {
-    this.resultGrid.deleteDataRows();
+    this.elementResultGrid.deleteDataRows();
     this.resultRuleInfo.clear();
   }
 }

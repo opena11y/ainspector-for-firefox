@@ -2,8 +2,7 @@
 const getMessage  = browser.i18n.getMessage;
 const sendMessage = browser.runtime.sendMessage;
 
-
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './commonModule.js';
+import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
 // The summary view for AInspector WCAG
 

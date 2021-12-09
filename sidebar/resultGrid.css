@@ -16,6 +16,7 @@ table tbody tr {
 table.group tbody,
 table.rule tbody {
   display: block;
+  min-height: 200px;
   max-height: 300px;
   overflow-y: scroll;
 }
@@ -90,6 +91,14 @@ table td.required {
   width: 12%;
   text-align: center;
 }
+
+table th.position,
+table td.position {
+  width: 12%;
+  text-align: right;
+  padding-right: 8px;
+}
+
 
 
 /* Result brackground colors */
