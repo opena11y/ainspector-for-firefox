@@ -28,7 +28,7 @@ var myWindowId;
 var logInfo = true;
 
 var vSummary;
-var vRuleResultGroup;
+var vRuleGroup;
 var vRuleResult;
 var views;
 
@@ -99,9 +99,9 @@ function initControls () {
   let rerunBtn = document.getElementById('rerun-evaluation-button');
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
-  vSummary         = new ViewSummary('summary', handleSummaryRowActivation);
-  vRuleResultGroup = new ViewRuleGroup('rule-group', handleRuleGroupRowActivation);
-  vRuleResult      = new ViewRuleResult('rule-result');
+  vSummary    = new ViewSummary('summary', handleSummaryRowActivation);
+  vRuleGroup  = new ViewRuleGroup('rule-group', handleRuleGroupRowActivation);
+  vRuleResult = new ViewRuleResult('rule-result');
 
   views = document.querySelectorAll('main .view');
   showView('summary');
@@ -253,7 +253,7 @@ function updateSidebar (info) {
       if (typeof info.infoRuleGroup === 'object') {
         viewTitle.textContent = info.infoRuleGroup.groupLabel;
         showView('rule-group');
-        vRuleResultGroup.update(info.infoRuleGroup);
+        vRuleGroup.update(info.infoRuleGroup);
       }
       else {
         if (info.infoRuleResult) {
@@ -263,7 +263,7 @@ function updateSidebar (info) {
         }
         else {
           vSummary.clear();
-          vRuleResultGroup.clear();
+          vRuleGroup.clear();
           vRuleResult.clear();
         }
       }
@@ -278,9 +278,9 @@ function updateSidebar (info) {
       infoLocation.textContent = parts[0];
       infoTitle.textContent = parts[1];
     }
-      vSummary.clear();
-      vRuleResultGroup.clear();
-      vRuleResult.clear();
+    vSummary.clear();
+    vRuleGroup.clear();
+    vRuleResult.clear();
   }
 }
 
@@ -315,7 +315,8 @@ browser.runtime.onMessage.addListener(
 */
 function runContentScripts (callerFn) {
   vSummary.clear();
-  vRuleResultGroup.clear();
+  vRuleGroup.clear();
+  vRuleResult.clear();
 
   getActiveTabFor(myWindowId).then(tab => {
     if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
