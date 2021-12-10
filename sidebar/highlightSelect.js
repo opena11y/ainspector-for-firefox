@@ -5,7 +5,7 @@ const getMessage = browser.i18n.getMessage;
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="highlight-select">
-      <label id="label" for="select">Highlight</label>
+      <label for="select">Highlight</label>
       <select id="select">
         <option value="none" selected>None</none>
         <option value="selected">Selected</none>
@@ -33,6 +33,26 @@ export default class HighlightSelect extends HTMLElement {
 
     this.select = this.shadowRoot.querySelector('#select');
 
+    this.init();
+  }
+
+  init () {
+    function updateTextContent(elemSelector, messageId) {
+      let elem = sr.querySelector(elemSelector);
+      let msg = getMessage(messageId);
+      if (elem && msg) {
+        elem.textContent = msg;
+      }
+    }
+
+    // "sr" is used by updateTextContent
+    let sr = this.shadowRoot;
+
+    updateTextContent('label',              'highlightLabel');
+    updateTextContent('[value="none"]',     'highlightOptionNone');
+    updateTextContent('[value="selected"]', 'highlightOptionSelected');
+    updateTextContent('[value="vw"]',       'highlightOptionVW');
+    updateTextContent('[value="all"]',      'highlightOptionAll');
   }
 
   get value () {
@@ -41,7 +61,7 @@ export default class HighlightSelect extends HTMLElement {
 
   set value (value) {
     for (let i = 0; i < this.select.options.length; i += 1) {
-      if (this.select.options[i].id === value) {
+      if (this.select.options[i].value === value) {
         this.select.options[i].selected = true;
       }
     }

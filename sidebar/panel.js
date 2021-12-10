@@ -4,9 +4,9 @@
 
 import { saveOptions } from '../storage.js';
 
-import viewSummary     from './viewSummary.js';
-import viewRuleGroup   from './viewRuleGroup.js';
-import viewRuleResult  from './viewRuleResult.js';
+import ViewSummary     from './viewSummary.js';
+import ViewRuleGroup   from './viewRuleGroup.js';
+import ViewRuleResult  from './viewRuleResult.js';
 
 import ResultSummary   from './resultSummary.js';
 import ResultTablist   from './resultTablist.js';
@@ -14,12 +14,15 @@ import ResultGrid      from './resultGrid.js';
 import ResultRuleInfo  from './resultRuleInfo.js';
 
 import HighlightSelect from './highlightSelect.js';
+import ViewsMenuButton from './viewsMenuButton.js';
 
-customElements.define('result-summary',   ResultSummary);
-customElements.define('result-tablist',   ResultTablist);
-customElements.define('result-grid',      ResultGrid);
-customElements.define('result-rule-info', ResultRuleInfo);
-customElements.define('highlight-select', HighlightSelect);
+customElements.define('result-summary',    ResultSummary);
+customElements.define('result-tablist',    ResultTablist);
+customElements.define('result-grid',       ResultGrid);
+customElements.define('result-rule-info',  ResultRuleInfo);
+customElements.define('highlight-select',  HighlightSelect);
+customElements.define('views-menu-button', ViewsMenuButton);
+
 
 var myWindowId;
 var logInfo = true;
@@ -34,6 +37,7 @@ var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId      = 'test rule';
 var sidebarRulesetId = 'ARIA_STRICT';
+var sidebarViewsMenuIncludeGuidelines = true;
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -49,8 +53,6 @@ function addLabelsAndHelpContent () {
     getMessage("viewTitleSummaryLabel");
   document.getElementById('back-button').textContent =
     getMessage("backButtonLabel");
-  document.getElementById('views-button').textContent =
-    getMessage("viewsButtonLabel");
 
   // Footer titles and labels
 
@@ -97,9 +99,9 @@ function initControls () {
   let rerunBtn = document.getElementById('rerun-evaluation-button');
   rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
 
-  vSummary         = new viewSummary('summary', handleSummaryRowActivation);
-  vRuleResultGroup = new viewRuleGroup('rule-group', handleRuleGroupRowActivation);
-  vRuleResult      = new viewRuleResult('rule-result');
+  vSummary         = new ViewSummary('summary', handleSummaryRowActivation);
+  vRuleResultGroup = new ViewRuleGroup('rule-group', handleRuleGroupRowActivation);
+  vRuleResult      = new ViewRuleResult('rule-result');
 
   views = document.querySelectorAll('main .view');
   showView('summary');

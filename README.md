@@ -1,6 +1,6 @@
 # AInspector WCAG
 
-AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/) to use the web extension APIs for the Firefox browser.  Firefox was choosen to port to first, since Firefox supports the the sidebar API and Chrome does not.  The extension is available in the Firefox add-ons page.
+AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/) to use the web extension APIs for the Firefox browser.  Firefox was chosen to port to first, since Firefox supports the the sidebar API and Chrome does not.  The extension is available in the Firefox add-ons page.
 
 [Install AInspector WCAG](https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag)
 
@@ -30,8 +30,8 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 | Version  | Date | Notes |
 |----------|:----:|-------|
-| 2.0      |  12/09/21 | Updated code to use web components and fix long standing bugs
-| 1.2      |  11/19/21 | Updated evaluation library to version 1.3
+| 2.0.0      |  12/09/21 | Updated code to use web components and
+| 1.2.0      |  11/19/21 | Updated evaluation library to version 1.3
 | 1.1.3    |  10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
 | 1.1.2    |  9/20/21  | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
 | 1.1.1    |  9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
@@ -40,12 +40,15 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 ## Major To Do's for Version 2.0
 
-* ViewsMenu: Using web compontent
+* ViewsMenu: Using web component
 * Preferences: Using storage
 * Delay feature for re-run button
 * Element highlight feature
 * Resizing and positioning of controls based on sidebar dimensions
 * Adding accessible names to grid rows and cells
+* Supporting event model used in a11ytools/addons/structure-3
+* Using a messaging port to talk to the content scripts
+* Using A11y Evaluation Library 1.3
 
 ## Code Documentation
 

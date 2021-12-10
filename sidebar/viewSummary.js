@@ -6,7 +6,7 @@ import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabe
 
 // The summary view for AInspector WCAG
 
-export default class viewSummary {
+export default class ViewSummary {
   constructor(id, handleRowActivation) {
 
     this.summaryNode   = document.getElementById(id);

@@ -18,7 +18,7 @@ function evaluate (ruleset) {
   let evaluator = evaluator_factory.newEvaluator();
   let evaluationResult = evaluator.evaluate(doc, doc.title, doc.location.href);
   return evaluationResult;
-};
+}
 
 // ----------------------
 // Summary Result functions
@@ -34,7 +34,7 @@ function getSummaryItem (summary, id) {
     'not_applicable' : summary.not_applicable
   };
   return item;
-};
+}
 
 function getRuleCategoryResults (evalResult) {
 
@@ -59,7 +59,7 @@ function getRuleCategoryResults (evalResult) {
     rcResults.push(getSummaryItem(summary, id));
   });
   return rcResults;
-};
+}
 
 function getGuidelineResults (evalResult) {
 
@@ -84,7 +84,7 @@ function getGuidelineResults (evalResult) {
     glResults.push(getSummaryItem(summary, id));
   });
   return glResults;
-};
+}
 
 /*
 *   getSummaryInfo
@@ -117,7 +117,7 @@ function getSummaryInfo () {
   console.log('[getSummaryInfo]: ending');
 
   return info;
-};
+}
 
 // ----------------------
 // Rule Group Result functions
@@ -127,16 +127,17 @@ function getRuleGroupItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
 
-  let item = { 'ruleId'        : ruleId,
-               'summary'       : ruleResult.getRuleSummary(),
-               'required'      : ruleResult.isRuleRequired(),
-               'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
-               'result'        : ruleResult.getResultValueNLS(),
-               'resultValue'   : ruleResult.getResultValue(),
-               'level'         : ruleResult.getWCAG20LevelNLS(),
-               'messages'      : ruleResult.getResultMessagesArray(),
-               'detailsAction' : getDetailsAction(ruleResult)
-             };
+  let item = {
+    'ruleId'        : ruleId,
+    'summary'       : ruleResult.getRuleSummary(),
+    'required'      : ruleResult.isRuleRequired(),
+    'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
+    'result'        : ruleResult.getResultValueNLS(),
+    'resultValue'   : ruleResult.getResultValue(),
+    'level'         : ruleResult.getWCAG20LevelNLS(),
+    'messages'      : ruleResult.getResultMessagesArray(),
+    'detailsAction' : getDetailsAction(ruleResult)
+  };
 
   return item;
 
@@ -186,7 +187,7 @@ function getRuleGroupInfo (groupType, groupId) {
   console.log('[getRuleGroupInfo]: ending');
 
   return info;
-};
+}
 
 // ----------------------
 // Rule Result functions
@@ -196,18 +197,19 @@ function getResultInfo(ruleResult) {
 
   let rule   = ruleResult.getRule()
 
-  var info = { 'ruleId'        : rule.getId(),
-               'summary'       : ruleResult.getRuleSummary(),
-               'required'      : ruleResult.isRuleRequired(),
-               'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
-               'result'        : ruleResult.getResultValueNLS(),
-               'category'      : rule.getCategoryInfo().title,
-               'guideline'     : rule.getGuidelineInfo().title,
-               'resultValue'   : ruleResult.getResultValue(),
-               'level'         : ruleResult.getWCAG20LevelNLS(),
-               'messages'      : ruleResult.getResultMessagesArray(),
-               'detailsAction' : getDetailsAction(ruleResult)
-             };
+  var info = {
+    'ruleId'        : rule.getId(),
+    'summary'       : ruleResult.getRuleSummary(),
+    'required'      : ruleResult.isRuleRequired(),
+    'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
+    'result'        : ruleResult.getResultValueNLS(),
+    'category'      : rule.getCategoryInfo().title,
+    'guideline'     : rule.getGuidelineInfo().title,
+    'resultValue'   : ruleResult.getResultValue(),
+    'level'         : ruleResult.getWCAG20LevelNLS(),
+    'messages'      : ruleResult.getResultMessagesArray(),
+    'detailsAction' : getDetailsAction(ruleResult)
+  };
 
   return info;
 }
@@ -216,12 +218,13 @@ function getElementResultInfo(ruleResult) {
 
   function addElementResult(elementResult) {
 
-    var item = { 'element'       : elementResult.getElementIdentifier(),
-                 'position'      : elementResult.getOrdinalPosition(),
-                 'result'        : elementResult.getResultValueNLS(),
-                 'resultValue'   : elementResult.getResultValue(),
-                 'actionMessage' : elementResult.getResultMessage()
-               };
+    let item = {
+      'element'       : elementResult.getElementIdentifier(),
+      'position'      : elementResult.getOrdinalPosition(),
+      'result'        : elementResult.getResultValueNLS(),
+      'resultValue'   : elementResult.getResultValue(),
+      'actionMessage' : elementResult.getResultMessage()
+    };
 
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
@@ -246,7 +249,7 @@ function getElementResultInfo(ruleResult) {
   }
 
   return elementResults;
-};
+}
 
 /*
 *   getRuleResultInfo

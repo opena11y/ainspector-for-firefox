@@ -1,0 +1,18 @@
+/* highlightSelect.css */
+
+.views-menu-button {
+  position:  absolute;
+  display: inline-block;
+}
+
+[role="menu"] {
+  position: relative;
+  display: none;
+  top: 1.5em;
+}
+
+[role="menu"].show {
+  display: block;
+}
+
+

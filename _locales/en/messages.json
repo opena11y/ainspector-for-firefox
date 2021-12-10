@@ -357,5 +357,35 @@
   "actionLabel": {
     "message": "Action",
     "description": "Action column label in grid for rule results view"
+  },
+
+  "highlightLabel": {
+    "message": "Highlight",
+    "description": "Label text for the highlight select box"
+  },
+
+  "highlightOptionNone": {
+    "message": "None",
+    "description": "None option in the highlight select box"
+  },
+
+  "highlightOptionSelected": {
+    "message": "None",
+    "description": "Selected option in the highlight select box"
+  },
+
+  "highlightOptionVW": {
+    "message": "V/W",
+    "description": "Violations/Warning option in the highlight select box"
+  },
+
+  "highlightOptionAll": {
+    "message": "All",
+    "description": "All option in the highlight select box"
+  },
+
+  "viewsMenuButtonLabel": {
+    "message": "Views",
+    "description": "Label for button in views menu button"
   }
 }

@@ -13,20 +13,20 @@
 */
 
 const GUIDELINES =  {
-  G_1_1          : 0x000010,
-  G_1_2          : 0x000020,
-  G_1_3          : 0x000040,
-  G_1_4          : 0x000080,
-  G_2_1          : 0x000100,
-  G_2_2          : 0x000200,
-  G_2_3          : 0x000400,
-  G_2_4          : 0x000800,
-  G_2_5          : 0x001000,
-  G_3_1          : 0x002000,
-  G_3_2          : 0x004000,
-  G_3_3          : 0x008000,
-  G_4_1          : 0x010000,
-  ALL            : 0x01FFF0
+  G_1_1: 0x000010,
+  G_1_2: 0x000020,
+  G_1_3: 0x000040,
+  G_1_4: 0x000080,
+  G_2_1: 0x000100,
+  G_2_2: 0x000200,
+  G_2_3: 0x000400,
+  G_2_4: 0x000800,
+  G_2_5: 0x001000,
+  G_3_1: 0x002000,
+  G_3_2: 0x004000,
+  G_3_3: 0x008000,
+  G_4_1: 0x010000,
+  ALL  : 0x01FFF0
 };
 
 /*
@@ -53,7 +53,7 @@ const RULE_CATEGORIES = {
   ALL                    : 0x0FFF
 };
 
-export let ruleCategoryIds = [
+export const ruleCategoryIds = [
   RULE_CATEGORIES.LANDMARKS,
   RULE_CATEGORIES.HEADINGS,
   RULE_CATEGORIES.STYLES_READABILITY,
@@ -68,7 +68,7 @@ export let ruleCategoryIds = [
   RULE_CATEGORIES.SITE_NAVIGATION
 ];
 
-export let guidelineIds = [
+export const guidelineIds = [
   GUIDELINES.G_1_1,
   GUIDELINES.G_1_2,
   GUIDELINES.G_1_3,
