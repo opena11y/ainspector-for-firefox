@@ -3,18 +3,20 @@ const getMessage = browser.i18n.getMessage;
 
 export default class viewRuleResult {
   constructor(id) {
-    this.ruleNode     = document.getElementById(id);
+    this.ruleResultDiv = document.getElementById(id);
 
     this.resultTablist = document.createElement('result-tablist');
-    this.ruleNode.appendChild(this.resultTablist);
+    this.ruleResultDiv.appendChild(this.resultTablist);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
     this.resultTablist.tabpanel1.appendChild(this.resultRuleInfo);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
-
     this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
+
+    this.highlightSelect = document.createElement('highlight-select');
+    this.resultTablist.tabpanel2.appendChild(this.highlightSelect);
 
     this.initGrid();
   }

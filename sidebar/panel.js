@@ -13,10 +13,13 @@ import ResultTablist   from './resultTablist.js';
 import ResultGrid      from './resultGrid.js';
 import ResultRuleInfo  from './resultRuleInfo.js';
 
+import HighlightSelect from './highlightSelect.js';
+
 customElements.define('result-summary',   ResultSummary);
 customElements.define('result-tablist',   ResultTablist);
 customElements.define('result-grid',      ResultGrid);
 customElements.define('result-rule-info', ResultRuleInfo);
+customElements.define('highlight-select', HighlightSelect);
 
 var myWindowId;
 var logInfo = true;

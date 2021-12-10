@@ -132,6 +132,10 @@ rule result view.
 The "ResultRuleInfo" is used to render the details/actions related to a rule result.  It is used
 in the Rule Group and Rule Result views.
 
+#### `highlightSelect.js`
+
+The "HighlightSelect" custom web compnent is used to choose the element results highlighting option in the rule results view.
+
 #### `constants.js`
 
 Constants used for constucting the initial grid for the summary view and the views menu.
