@@ -45,6 +45,7 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 * Delay feature for re-run button
 * Element highlight feature
 * Resizing and positioning of controls based on sidebar dimensions
+* Adding accessible names to grid rows and cells
 
 ## Code Documentation
 
