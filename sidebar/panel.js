@@ -77,7 +77,7 @@ function handleSummaryRowActivation (event) {
   sidebarGroupType = tgt.id.substring(0,2);
   sidebarGroupId   = parseInt(tgt.id.substring(2));
 
-  runContentScript('handleSummaryRowClick');
+  runContentScripts('handleSummaryRowClick');
 }
 
 function handleRuleGroupRowActivation (event) {
@@ -86,7 +86,7 @@ function handleRuleGroupRowActivation (event) {
   sidebarView   = 'rule-result';
   sidebarRuleId = tgt.id;
 
-  runContentScript('handleRuleRowClick');
+  runContentScripts('handleRuleRowClick');
 }
 
 
@@ -121,11 +121,11 @@ function handleClickBackButton() {
     default:
       break;
   }
-  runContentScript('handleClickBackButton');
+  runContentScripts('handleClickBackButton');
 }
 
 function handleClickRerunEvaluationButton() {
-  runContentScript('handleClickRerunEvaluationButton');
+  runContentScripts('handleClickRerunEvaluationButton');
 }
 
 /*
@@ -136,7 +136,7 @@ browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
   myWindowId = windowInfo.id;
   addLabelsAndHelpContent();
   initControls();
-  runContentScript('onload');
+  runContentScripts('onload');
 });
 
 /*
@@ -166,7 +166,7 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 
   clearTimeout(timeoutID);
   if (changeInfo.status === "complete") {
-    runContentScript('handleTabUpdated');
+    runContentScripts('handleTabUpdated');
   }
   else {
     timeoutID = setTimeout(function () {
@@ -181,7 +181,7 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 function handleTabActivated (activeInfo) {
   if (logInfo) console.log(activeInfo);
 
-  runContentScript('handleTabActivated');
+  runContentScripts('handleTabActivated');
 }
 
 /*
@@ -197,7 +197,7 @@ function handleWindowFocusChanged (windowId) {
   function onGotStatus (result) {
     if (result) {
       myWindowId = windowId;
-      runContentScript('onGotFocus');
+      runContentScripts('onGotFocus');
       if (logInfo) console.log(`Focus changed to window: ${myWindowId}`);
     }
   }
@@ -302,14 +302,18 @@ browser.runtime.onMessage.addListener(
   }
 );
 
+//------------------------------------------------------
+//  Functions that run the content scripts to initiate
+//  processing of the data to be sent via port message
+//------------------------------------------------------
+
 /*
-*   Run the content script to initiate processing of the page structure info.
-*   Upon completion, the content script sends the data packaged in an 'info'
-*   message. When the onMessage handler receives the message, it calls the
-*   updateSidebar function, passing to it the message containing the page
-*   structure info.
+*   runContentScripts: When content.js is executed, it established a port
+*   connection with this script (panel.js), which in turn has a port message
+*   handler listening for the 'info' message. When that message is received,
+*   the handler calls the updateSidebar function with the structure info.
 */
-function runContentScript (callfunct) {
+function runContentScripts (callerFn) {
   vSummary.clear();
   vRuleResultGroup.clear();
 
