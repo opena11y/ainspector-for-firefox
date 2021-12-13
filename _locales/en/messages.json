@@ -49,11 +49,6 @@
     "description": "Label for preferences button"
   },
 
-  "rerunEvaluationButtonLabel": {
-    "message": "Rerun Evaluation",
-    "description": "Label for rerun evaluation button"
-  },
-
   "emptyContent": {
     "message": "&lt;empty&gt;",
     "description": "Message indicating that DOM element has no text content."
@@ -392,5 +387,35 @@
   "viewsMenuButtonLabel": {
     "message": "Views",
     "description": "Label for button in views menu button"
+  },
+
+  "rerunEvalButtonLabel": {
+    "message": "Rerun Evaluation",
+    "description": "Label for rerun evalaution button in main panel"
+  },
+
+  "rerunEvalDialogTitle": {
+    "message": "Rerun Evaluation: Specify Delay",
+    "description": "Title for rerun evalaution dialog box"
+  },
+
+  "rerunEvalSelectLabel": {
+    "message": "Rerun evaluation in ",
+    "description": "Label for select input in rerun evalaution dialog box"
+  },
+
+  "rerunEvalCheckboxLabel": {
+    "message": "After this evaluation, stop prompting for delay setting.",
+    "description": "Label for checkbox input in rerun evalaution dialog box"
+  },
+
+  "cancelButtonLabel": {
+    "message": "Cancel",
+    "description": "Label for cancel button in rerun evalaution dialog box"
+  },
+
+  "okButtonLabel": {
+    "message": "Ok",
+    "description": "Label for OK button in rerun evalaution dialog box"
   }
 }

@@ -18,6 +18,7 @@ div {
   margin: 0;
   padding: 6px 4px;
   border: 2px solid var(--menu-border-color);
+  border-radius: 4px;
   background-color: var(--menu-bg-color);
   right: 0;
   height: 300px;
@@ -31,14 +32,12 @@ div {
   padding-bottom: 2px;
   padding-left: 4px;
   padding-right: 4px;
+  border: 0 solid var(--menu-border-color);
+  border-radius: 4px;
   display: block;
   width: 12em;
   background-color: var(--menu-bg-color);
   color: var(--menu-text-color);
-}
-
-.views-menu-button [role="menuitem"]:first-letter {
-  text-decoration: underline;
 }
 
 .views-menu-button [role="separator"] {
@@ -68,9 +67,6 @@ div {
   padding-left:  2px;
   padding-right:  2px;
   border-width: 2px;
-  border-style: solid;
-  border-color: var(--menu-border-color);
   outline: none;
-  margin: 0;
 }
 

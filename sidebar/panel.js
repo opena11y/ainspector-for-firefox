@@ -15,6 +15,7 @@ import ResultRuleInfo  from './resultRuleInfo.js';
 
 import HighlightSelect from './highlightSelect.js';
 import ViewsMenuButton from './viewsMenuButton.js';
+import RerunEvaluationButton from './rerunEvaluationButton.js';
 
 customElements.define('result-summary',    ResultSummary);
 customElements.define('result-tablist',    ResultTablist);
@@ -22,6 +23,7 @@ customElements.define('result-grid',       ResultGrid);
 customElements.define('result-rule-info',  ResultRuleInfo);
 customElements.define('highlight-select',  HighlightSelect);
 customElements.define('views-menu-button', ViewsMenuButton);
+customElements.define('rerun-evaluation-button', RerunEvaluationButton);
 
 var myWindowId;
 var logInfo = true;
@@ -37,6 +39,9 @@ var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId      = 'test rule';
 var sidebarRulesetId = 'ARIA_STRICT';
 var sidebarViewsMenuIncludeGuidelines = true;
+var sidebarRerunDelayEnabled = false;
+var sidebarRerunDelayPrompt = false;
+var sidebarRerunDelayValue = 0;  // value is in seconds
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -64,57 +69,32 @@ function addLabelsAndHelpContent () {
 
   document.getElementById('preferences-button').textContent =
     getMessage("preferencesButtonLabel");
-  document.getElementById('rerun-evaluation-button').textContent =
-    getMessage("rerunEvaluationButtonLabel");
 
 }
 
-function handleSummaryRowActivation (event) {
+function callbackSummaryRowActivation (event) {
   const tgt = event.currentTarget;
 
   sidebarView      = 'rule-group';
   sidebarGroupType = tgt.id.substring(0,2);
   sidebarGroupId   = parseInt(tgt.id.substring(2));
-
   runContentScripts('handleSummaryRowClick');
 }
 
-function handleRuleGroupRowActivation (event) {
+function callbackRuleGroupRowActivation (event) {
   const tgt = event.currentTarget;
 
   sidebarView   = 'rule-result';
   sidebarRuleId = tgt.id;
-
-  runContentScripts('handleRuleRowClick');
+  runContentScripts('callbackSummaryRowActivation');
 }
 
-
-
-function initControls () {
-
-  const backBtn = document.getElementById('back-button');
-  backBtn.addEventListener('click', handleBackButton);
-
-  const rerunBtn = document.getElementById('rerun-evaluation-button');
-  rerunBtn.addEventListener('click', handleRerunEvaluationButton);
-
-  const viewsMenuButton = document.querySelector('views-menu-button');
-  viewsMenuButton.setActivationCallback(handleViewsMenu);
-
-  vSummary    = new ViewSummary('summary', handleSummaryRowActivation);
-  vRuleGroup  = new ViewRuleGroup('rule-group', handleRuleGroupRowActivation);
-  vRuleResult = new ViewRuleResult('rule-result');
-
-  views = document.querySelectorAll('main .view');
-  showView('summary');
-}
-
-function handleViewsMenu(id) {
-
+function callbackViewsMenuActivation(id) {
   if (id && id.length) {
     if (id === 'summary') {
       sidebarView = 'summary';
     }
+
     if (id === 'all-rules') {
       sidebarView = 'rule-group';
       if (sidebarGroupType === 'rc') {
@@ -123,6 +103,7 @@ function handleViewsMenu(id) {
         sidebarGroupId = 0x01FFF0; // All rules id for guidelines
       }
     }
+
     if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
       const groupType = id.substring(0, 2);
       const groupId = parseInt(id.substring(2));
@@ -130,11 +111,32 @@ function handleViewsMenu(id) {
       sidebarGroupType = groupType;
       sidebarGroupId   = groupId;
     }
-    runContentScripts('handleViewsMenu');
+    runContentScripts('callbackViewsMenuActivation');
   }
-
 }
 
+function callbackRerunEvaluation() {
+  runContentScripts('callbackRerunEvaluation');
+}
+
+function initControls () {
+
+  const backBtn = document.getElementById('back-button');
+  backBtn.addEventListener('click', handleBackButton);
+
+  const viewsMenuButton = document.querySelector('views-menu-button');
+  viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
+
+  const rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
+  rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
+
+  vSummary    = new ViewSummary('summary', callbackSummaryRowActivation);
+  vRuleGroup  = new ViewRuleGroup('rule-group', callbackRuleGroupRowActivation);
+  vRuleResult = new ViewRuleResult('rule-result');
+
+  views = document.querySelectorAll('main .view');
+  showView(sidebarView);
+}
 
 function handleBackButton() {
 
@@ -153,9 +155,6 @@ function handleBackButton() {
   runContentScripts('handleBackButton');
 }
 
-function handleRerunEvaluationButton() {
-  runContentScripts('handleRerunEvaluationButton');
-}
 
 /*
 *   When the sidebar loads, store the ID of the current window and update
@@ -275,19 +274,16 @@ function updateSidebar (info) {
     // Update the headings box
     if (typeof info.infoSummary === 'object') {
       viewTitle.textContent = getMessage("viewTitleSummaryLabel");
-      showView('summary');
       vSummary.update(info.infoSummary);
     }
     else {
       if (typeof info.infoRuleGroup === 'object') {
         viewTitle.textContent = info.infoRuleGroup.groupLabel;
-        showView('rule-group');
         vRuleGroup.update(info.infoRuleGroup);
       }
       else {
         if (info.infoRuleResult) {
           viewTitle.textContent = 'Rule Result';
-          showView('rule-result');
           vRuleResult.update(info.infoRuleResult);
         }
         else {
@@ -342,10 +338,11 @@ browser.runtime.onMessage.addListener(
 *   handler listening for the 'info' message. When that message is received,
 *   the handler calls the updateSidebar function with the structure info.
 */
-function runContentScripts (callerFn) {
+function runContentScripts (callerfn) {
   vSummary.clear();
   vRuleGroup.clear();
   vRuleResult.clear();
+  showView(sidebarView);
 
   getActiveTabFor(myWindowId).then(tab => {
     if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
@@ -362,7 +359,7 @@ function runContentScripts (callerFn) {
       browser.tabs.executeScript({ file: '../evaluate.js' });
       browser.tabs.executeScript({ file: '../content.js' })
       .then(() => {
-        if (logInfo) console.log(`Content script invoked by ${callfunct}`)
+        if (logInfo) console.log(`Content script invoked by ${callerfn}`)
       });
     }
     else {

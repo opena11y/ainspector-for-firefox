@@ -1,0 +1,50 @@
+/* rerunEvaluationButton.css */
+
+
+.rerun-evaluation-button [role="dialog"] {
+  margin: 0;
+  padding: 0;
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 8px;
+  color: black;
+  width: 350px;
+  bottom: 30px;
+  right: 10px;
+}
+
+
+#title {
+  font-weight:  bold;
+}
+
+#title,
+.select,
+.checkbox,
+.buttons {
+  padding: 4px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+label {
+  font-size: 90%;
+}
+
+.rerun-evaluation-button [role="dialog"] #title {
+  background-color: #eee;
+}
+
+.buttons {
+  float: right;
+}
+
+.buttons button {
+  width: 5em;
+}
+
+button#rerun-button {
+  width: 10em;
+}
