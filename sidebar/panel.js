@@ -23,7 +23,6 @@ customElements.define('result-rule-info',  ResultRuleInfo);
 customElements.define('highlight-select',  HighlightSelect);
 customElements.define('views-menu-button', ViewsMenuButton);
 
-
 var myWindowId;
 var logInfo = true;
 
@@ -71,7 +70,7 @@ function addLabelsAndHelpContent () {
 }
 
 function handleSummaryRowActivation (event) {
-  let tgt = event.currentTarget;
+  const tgt = event.currentTarget;
 
   sidebarView      = 'rule-group';
   sidebarGroupType = tgt.id.substring(0,2);
@@ -81,7 +80,7 @@ function handleSummaryRowActivation (event) {
 }
 
 function handleRuleGroupRowActivation (event) {
-  let tgt = event.currentTarget;
+  const tgt = event.currentTarget;
 
   sidebarView   = 'rule-result';
   sidebarRuleId = tgt.id;
@@ -93,11 +92,14 @@ function handleRuleGroupRowActivation (event) {
 
 function initControls () {
 
-  let backBtn = document.getElementById('back-button');
-  backBtn.addEventListener('click', handleClickBackButton);
+  const backBtn = document.getElementById('back-button');
+  backBtn.addEventListener('click', handleBackButton);
 
-  let rerunBtn = document.getElementById('rerun-evaluation-button');
-  rerunBtn.addEventListener('click', handleClickRerunEvaluationButton);
+  const rerunBtn = document.getElementById('rerun-evaluation-button');
+  rerunBtn.addEventListener('click', handleRerunEvaluationButton);
+
+  const viewsMenuButton = document.querySelector('views-menu-button');
+  viewsMenuButton.setActivationCallback(handleViewsMenu);
 
   vSummary    = new ViewSummary('summary', handleSummaryRowActivation);
   vRuleGroup  = new ViewRuleGroup('rule-group', handleRuleGroupRowActivation);
@@ -107,7 +109,34 @@ function initControls () {
   showView('summary');
 }
 
-function handleClickBackButton() {
+function handleViewsMenu(id) {
+
+  if (id && id.length) {
+    if (id === 'summary') {
+      sidebarView = 'summary';
+    }
+    if (id === 'all-rules') {
+      sidebarView = 'rule-group';
+      if (sidebarGroupType === 'rc') {
+        sidebarGroupId = 0x0FFF;  // All rules id for rule categories
+      } else {
+        sidebarGroupId = 0x01FFF0; // All rules id for guidelines
+      }
+    }
+    if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
+      const groupType = id.substring(0, 2);
+      const groupId = parseInt(id.substring(2));
+      sidebarView = 'rule-group';
+      sidebarGroupType = groupType;
+      sidebarGroupId   = groupId;
+    }
+    runContentScripts('handleViewsMenu');
+  }
+
+}
+
+
+function handleBackButton() {
 
   switch (sidebarView) {
     case 'rule-group':
@@ -121,11 +150,11 @@ function handleClickBackButton() {
     default:
       break;
   }
-  runContentScripts('handleClickBackButton');
+  runContentScripts('handleBackButton');
 }
 
-function handleClickRerunEvaluationButton() {
-  runContentScripts('handleClickRerunEvaluationButton');
+function handleRerunEvaluationButton() {
+  runContentScripts('handleRerunEvaluationButton');
 }
 
 /*

@@ -1,18 +1,76 @@
-/* highlightSelect.css */
+/* viewsMenuButton.css */
+
+div {
+  --menu-bg-color: #eee;
+  --menu-text-color: black;
+  --menu-border-color: black;
+}
 
 .views-menu-button {
-  position:  absolute;
-  display: inline-block;
+  margin: 0;
+  padding: 0;
+  display:  inline-block;
 }
 
-[role="menu"] {
-  position: relative;
+.views-menu-button [role="menu"] {
   display: none;
-  top: 1.5em;
+  position: absolute;
+  margin: 0;
+  padding: 6px 4px;
+  border: 2px solid var(--menu-border-color);
+  background-color: var(--menu-bg-color);
+  right: 0;
+  height: 300px;
+  overflow-y: scroll;
 }
 
-[role="menu"].show {
+.views-menu-button [role="menuitem"],
+.views-menu-button [role="separator"] {
+  margin: 0;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   display: block;
+  width: 12em;
+  background-color: var(--menu-bg-color);
+  color: var(--menu-text-color);
 }
 
+.views-menu-button [role="menuitem"]:first-letter {
+  text-decoration: underline;
+}
+
+.views-menu-button [role="separator"] {
+  padding-top: 3px;
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cline x1='0' y1='6' x2='12' y2='6' style='stroke:black;stroke-width:1' /%3E%3C/svg%3E%0A");
+  background-size: 10px 10px;
+  background-position: center;
+  background-repeat: repeat-x;
+}
+
+.views-menu-button button svg.down {
+  padding-left: 0.125em;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.views-menu-button button[aria-expanded="true"] svg.down {
+  transform: rotate(180deg);
+}
+
+/* focus styling */
+
+.views-menu-button [role="menuitem"]:hover,
+.views-menu-button [role="menuitem"]:focus {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left:  2px;
+  padding-right:  2px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--menu-border-color);
+  outline: none;
+  margin: 0;
+}
 
