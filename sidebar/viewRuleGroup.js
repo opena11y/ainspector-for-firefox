@@ -133,8 +133,19 @@ export default class ViewRuleGroup {
         }
       }
       this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
-      console.log('[getSelectedId]: ' + this.ruleResultGrid.getSelectedId());
-      this.resultRuleInfo.update(this.detailsActions[this.ruleResultGrid.getSelectedId()]);
+      const id = this.ruleResultGrid.setSelectedRowUsingLastId();
+      console.log('[update][id]: ' + id);
+      // Update the rule details/actions section
+      if (id) {
+        const detailsActions = this.detailsActions[id];
+        if (detailsActions) {
+          this.resultRuleInfo.update(detailsActions);
+        } else {
+          this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+        }
+      } else {
+        this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+      }
     })
   }
 

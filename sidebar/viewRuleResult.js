@@ -1,6 +1,8 @@
 
 const getMessage = browser.i18n.getMessage;
 
+import { getOptions } from '../storage.js';
+
 export default class ViewRuleResult {
   constructor(id) {
     this.ruleResultDiv = document.getElementById(id);
@@ -78,26 +80,31 @@ export default class ViewRuleResult {
 
     this.elementResultGrid.deleteDataRows();
 
-    for (i = 0; i < infoRuleResult.elementResults.length; i += 1) {
-      er = infoRuleResult.elementResults[i];
+    getOptions().then( (options) => {
+      for (i = 0; i < infoRuleResult.elementResults.length; i += 1) {
+        er = infoRuleResult.elementResults[i];
 
-      row = this.elementResultGrid.addRow(this.getRowId(er.position));
+        // check to exclude pass and not applicable rules
+        if (options.resultsIncludePassNa ||
+            (['', 'V', 'W', 'MC'].indexOf(er.result) > 0)) {
+          row = this.elementResultGrid.addRow(this.getRowId(er.position));
 
-      this.elementResultGrid.addDataCell(row, er.element, 'element');
+          this.elementResultGrid.addDataCell(row, er.element, 'element');
 
-      style = 'result ' + this.getResultStyle(er.result);
-      sortValue = this.getResultSortingValue(er.result);
-      this.elementResultGrid.addDataCell(row, er.result, style, sortValue);
+          style = 'result ' + this.getResultStyle(er.result);
+          sortValue = this.getResultSortingValue(er.result);
+          this.elementResultGrid.addDataCell(row, er.result, style, sortValue);
 
-      this.elementResultGrid.addDataCell(row, er.position, 'position');
+          this.elementResultGrid.addDataCell(row, er.position, 'position');
 
-      this.elementResultGrid.addDataCell(row, er.actionMessage, 'action');
-    }
+          this.elementResultGrid.addDataCell(row, er.actionMessage, 'action');
+        }
+      }
+      this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
+      const id = this.ruleResultGrid.setSelectedRowUsingLastId();
 
-    this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
-
-    this.resultRuleInfo.update(infoRuleResult.detailsAction);
-
+      this.resultRuleInfo.update(infoRuleResult.detailsAction);
+    });
   }
 
   clear () {

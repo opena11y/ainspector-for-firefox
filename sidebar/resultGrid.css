@@ -48,6 +48,11 @@ table tr td:first-child {
   padding-left: 8px;
 }
 
+table.show-selection tr[aria-selected] {
+  outline-offset:  -2px;
+  outline: currentColor 2px dotted;
+}
+
 table th,
 table td {
   padding-top:  4px;
@@ -99,8 +104,6 @@ table td.position {
   padding-right: 8px;
 }
 
-
-
 /* Result brackground colors */
 
 table td.not-applicable {
@@ -125,7 +128,8 @@ table td.warning {
 
 table th:focus,
 table td:focus,
-table tr:focus {
+table tr:focus,
+table.show-selection tr:focus {
   outline-offset:  -2px;
   outline: currentColor 2px solid;
 }
