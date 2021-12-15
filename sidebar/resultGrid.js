@@ -130,8 +130,12 @@ export default class ResultGrid extends HTMLElement {
     th.addEventListener('keydown', this.handleCellKeydown.bind(this));
   }
 
+  getSelectedId () {
+    return this.tbody.firstElementChild.id;
+  }
+
   // The id is used by event handlers for actions related to the row content
-  addRow(id) {
+  addRow (id) {
     let row = document.createElement('tr');
     let rowCount = this.getRowCount();
     // first data row by default gets tabindex=0 to be part of tab sequence of page
@@ -153,7 +157,7 @@ export default class ResultGrid extends HTMLElement {
     return row;
   }
 
-  addDataCell(row, txt, style, sortValue) {
+  addDataCell (row, txt, style, sortValue) {
     let td = document.createElement('td');
     td.tabIndex = -1;
 

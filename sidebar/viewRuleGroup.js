@@ -1,6 +1,8 @@
 
 const getMessage = browser.i18n.getMessage;
 
+import { getOptions } from '../storage.js';
+
 export default class ViewRuleGroup {
   constructor(id, handleRowActivation) {
     let div, h2;
@@ -101,35 +103,39 @@ export default class ViewRuleGroup {
 
     this.ruleResultGrid.deleteDataRows();
 
-    for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
-      rr = infoRuleGroup.ruleResults[i];
+    getOptions().then( (options) => {
+      for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
+        rr = infoRuleGroup.ruleResults[i];
 
-      row = this.ruleResultGrid.addRow(rr.ruleId);
+        // check to exclude pass and not applicable rules
+        if (options.resultsIncludePassNa ||
+            (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
 
-      this.ruleResultGrid.addDataCell(row, rr.summary, 'rule text');
+          row = this.ruleResultGrid.addRow(rr.ruleId);
 
-      style = 'result ' + this.getResultStyle(rr.result);
-      sortValue = this.getResultSortingValue(rr.result);
-      this.ruleResultGrid.addDataCell(row, rr.result, style, sortValue);
+          this.ruleResultGrid.addDataCell(row, rr.summary, 'rule text');
 
-      sortValue = this.getSCSortingValue(rr.wcag);
-      this.ruleResultGrid.addDataCell(row, rr.wcag, 'sc', sortValue);
+          style = 'result ' + this.getResultStyle(rr.result);
+          sortValue = this.getResultSortingValue(rr.result);
+          this.ruleResultGrid.addDataCell(row, rr.result, style, sortValue);
 
-      sortValue = this.getLevelSortingValue(rr.level);
-      this.ruleResultGrid.addDataCell(row, rr.level, 'level', sortValue);
+          sortValue = this.getSCSortingValue(rr.wcag);
+          this.ruleResultGrid.addDataCell(row, rr.wcag, 'sc', sortValue);
 
-      value = rr.required ? getMessage('requiredValue') : '';
-      sortValue = this.getRequiredSortingValue(rr.required);
-      this.ruleResultGrid.addDataCell(row, value, 'required', sortValue);
+          sortValue = this.getLevelSortingValue(rr.level);
+          this.ruleResultGrid.addDataCell(row, rr.level, 'level', sortValue);
 
-      this.detailsActions[rr.ruleId] = Object.assign(rr.detailsAction);
+          value = rr.required ? getMessage('requiredValue') : '';
+          sortValue = this.getRequiredSortingValue(rr.required);
+          this.ruleResultGrid.addDataCell(row, value, 'required', sortValue);
 
-    }
-
-    this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
-
-    this.resultRuleInfo.update(this.detailsActions[infoRuleGroup.ruleResults[0].ruleId]);
-
+          this.detailsActions[rr.ruleId] = Object.assign(rr.detailsAction);
+        }
+      }
+      this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
+      console.log('[getSelectedId]: ' + this.ruleResultGrid.getSelectedId());
+      this.resultRuleInfo.update(this.detailsActions[this.ruleResultGrid.getSelectedId()]);
+    })
   }
 
   clear () {

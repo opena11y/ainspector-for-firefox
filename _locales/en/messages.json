@@ -417,5 +417,70 @@
   "okButtonLabel": {
     "message": "Ok",
     "description": "Label for OK button in rerun evalaution dialog box"
+  },
+
+  "optionsTitle": {
+    "message": "AInspector WCAG Options",
+    "description": "Title for the options page"
+  },
+
+  "optionsViewsMenuLegend": {
+    "message": "'Views' Menu",
+    "description": "Legend for view menu in the options page"
+  },
+
+  "optionsInclWcagGlLabel": {
+    "message": "Include WCAG Guidelines",
+    "description": "Label for checkbox to include WCAG Guidleines in views menu"
+  },
+
+  "optionsRerunEvaluationLegend": {
+    "message": "'Rerun Evaluation' Button",
+    "description": "Legend for rerun evaluation section in the options page"
+  },
+
+  "optionsNoDelayLabel": {
+    "message": "Rerun with no delay",
+    "description": "Label for rerun with no delay checkbox in the options page"
+  },
+
+  "optionsPromptForDelayLabel": {
+    "message": "Prompt with delay setting",
+    "description": "Label for rerun with prompted delay checkbox in the options page"
+  },
+
+  "optionsEvaluationHeading": {
+    "message": "Evaluation",
+    "description": "Heading for the evaluation section of the options page"
+  },
+
+  "optionsRulesetLegend": {
+    "message": "Ruleset",
+    "description": "Legend for ruleset radio button group in the options page"
+  },
+
+  "optionsRulesetStrictLabel": {
+    "message": "HTML5 and ARIA Ruleset",
+    "description": "Label for strict ruleset checkbox on the options page"
+  },
+
+  "optionsRulesetTransLabel": {
+    "message": "HTML4 Legacy Techniques",
+    "description": "Label for transitional ruleset checkbox on the options page"
+  },
+
+  "optionsRuleResultsLegend": {
+    "message": "Rule Results",
+    "description": "Legend for the rule results section on the options page"
+  },
+
+  "optionsInclPassNaLabel": {
+    "message": "Include 'Pass' and 'N/A' results",
+    "description": "Label for checkbox to include pass and n/a results in the options page"
+  },
+
+  "optionsResetDefaults": {
+    "message": "Reset Defaults",
+    "description": "Label for reset defaults in the options page"
   }
 }

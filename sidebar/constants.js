@@ -3,7 +3,7 @@
 *  identify rule category and guideline constants for filtering evaluation
 *  results and provding localized human readible labels in the sidebar
 *
-*   File: common.js
+*   File: constants.js
 */
 
 /*

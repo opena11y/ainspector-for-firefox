@@ -1,0 +1,22 @@
+/* options.css */
+
+body {
+  padding: 0 4px;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: 550;
+  margin: 1.5rem 0 0.75rem;
+}
+
+fieldset {
+  margin: 0;
+  margin-top: 1em;
+  border: none;
+}
+
+label {
+  display:  block;
+  margin: 0.25em;
+}

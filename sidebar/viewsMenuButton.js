@@ -2,6 +2,8 @@
 
 const getMessage = browser.i18n.getMessage;
 
+import { getOptions } from '../storage.js';
+
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
 const template = document.createElement('template');
@@ -114,14 +116,17 @@ export default class ViewsMenuButton extends HTMLElement {
       this.addMenuitem('rc' + rcId, msgId);
     }
 
-    if (this.includeGuidelines) {
-      this.addSeparator();
-      for (i = 0; i < guidelineIds.length; i += 1 ) {
-        glId = guidelineIds[i];
-        msgId = getGuidelineLabelId(glId);
-        this.addMenuitem('gl' + glId, msgId);
+    getOptions().then( (options) => {
+      if (options.viewsMenuIncludeGuidelines) {
+        this.addSeparator();
+        for (i = 0; i < guidelineIds.length; i += 1 ) {
+          glId = guidelineIds[i];
+          msgId = getGuidelineLabelId(glId);
+          this.addMenuitem('gl' + glId, msgId);
+        }
       }
-    }
+    })
+
 
     this.addSeparator();
     this.addMenuitem('all-rules', 'allRulesLabel');

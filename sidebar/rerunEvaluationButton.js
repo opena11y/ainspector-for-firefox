@@ -2,6 +2,8 @@
 
 const getMessage = browser.i18n.getMessage;
 
+import { getOptions } from '../storage.js';
+
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="rerun-evaluation-button">
@@ -11,6 +13,7 @@ template.innerHTML = `
         Rerun Evaluation
       </button>
       <div role="dialog"
+        tabindex="-1"
         id="dialog"
         aria-labelledby="title">
         <div id="title">Rerun Evlaution: Specify Delay</div>
@@ -56,7 +59,6 @@ export default class RerunEvaluationButton extends HTMLElement {
     // Get references
 
     this.callback = null;
-    this.delayEnabled = true;
     this.promptForDelay = true;
     this.delayValue = 5;
     this.timerValue = 0;
@@ -68,6 +70,7 @@ export default class RerunEvaluationButton extends HTMLElement {
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     label = this.dialogDiv.querySelector('#title');
     label.textContent = getMessage('rerunEvalDialogTitle');
+    this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
     this.select = this.shadowRoot.querySelector('select');
     label = this.shadowRoot.querySelector('label[for="select"]');
@@ -104,7 +107,7 @@ export default class RerunEvaluationButton extends HTMLElement {
   }
 
   openDialog () {
-    this.checkbox.checked = this.promptForDelay;
+    this.checkbox.checked = !this.promptForDelay;
     for (let i = 0; i < this.select.options.length; i += 1) {
       let option = this.select.options[i];
       if (parseInt(option.value) === this.delayValue) {
@@ -113,12 +116,14 @@ export default class RerunEvaluationButton extends HTMLElement {
     }
     this.dialogDiv.style.display = 'block';
     this.rerunButton.setAttribute('aria-expanded', 'true');
+    this.dialogDiv.focus();
   }
 
   closeDialog () {
     if (this.isOpen()) {
       this.rerunButton.removeAttribute('aria-expanded');
       this.dialogDiv.style.display = 'none';
+      this.rerunButton.focus();
     }
   }
 
@@ -139,62 +144,79 @@ export default class RerunEvaluationButton extends HTMLElement {
   }
 
   onRerunButtonClick () {
-    if (this.delayEnabled) {
-      if (this.promptForDelay) {
-        this.openDialog();
+    getOptions().then( (options) => {
+      if (options.rerunDelayEnabled) {
+        if (this.promptForDelay) {
+          this.openDialog();
+        } else {
+          this.delayedRerun();
+        }
       } else {
-        this.delayedRerun();
+        this.callback();
       }
-    } else {
-      this.callback();
-    }
+
+    });
   }
 
   onCancelButtonClick () {
     this.closeDialog();
-    this.rerunButton.focus();
   }
 
   onOkButtonClick () {
     this.delayValue = parseInt(this.select.value);
-    this.promptForDelay = this.checkbox.checked;
+    this.promptForDelay = !this.checkbox.checked;
     this.closeDialog();
-    this.rerunButton.focus();
     this.delayedRerun();
   }
 
   onSelectKeydown(event) {
-    let tgt = event.currentTarget;
-
     if (event.ctrlKey || event.altKey || event.metaKey) {
       return;
     }
 
-    if (event.key === 'Tab' && event.shiftKey) {
+    if ((event.currentTarget === event.target) &&
+        (event.key === 'Tab') &&
+        event.shiftKey) {
       this.okButton.focus();
       event.stopPropagation();
       event.preventDefault();
     }
   }
 
-  onOkButtonKeydown(event) {
-    let tgt = event.currentTarget;
+  onDialogKeydown(event) {
     if (event.ctrlKey || event.altKey || event.metaKey) {
       return;
     }
 
-    if (event.key === 'Tab' && !event.shiftKey) {
-      this.select.focus();
+    if ((event.currentTarget === event.target) &&
+        (event.key === 'Tab') &&
+        event.shiftKey) {
+      this.okButton.focus();
       event.stopPropagation();
       event.preventDefault();
     }
+
+    if (event.key === 'Escape') {
+      this.closeDialog();
+    }
+  }
+
+  onOkButtonKeydown(event) {
+      if (event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+      }
+
+      if (event.key === 'Tab' && !event.shiftKey) {
+        this.select.focus();
+        event.stopPropagation();
+        event.preventDefault();
+      }
   }
 
   onBackgroundMousedown(event) {
     if (!this.contains(event.target)) {
       if (this.isOpen()) {
         this.closeDialog();
-        this.button.focus();
       }
     }
   }

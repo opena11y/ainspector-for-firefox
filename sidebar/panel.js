@@ -2,7 +2,7 @@
 *   panel.js
 */
 
-import { saveOptions } from '../storage.js';
+import { getOptions } from '../storage.js';
 
 import ViewSummary     from './viewSummary.js';
 import ViewRuleGroup   from './viewRuleGroup.js';
@@ -36,12 +36,7 @@ var views;
 var sidebarView      = 'summary';  // other options 'group' or 'rule'
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
-var sidebarRuleId      = 'test rule';
-var sidebarRulesetId = 'ARIA_STRICT';
-var sidebarViewsMenuIncludeGuidelines = true;
-var sidebarRerunDelayEnabled = false;
-var sidebarRerunDelayPrompt = false;
-var sidebarRerunDelayValue = 0;  // value is in seconds
+var sidebarRuleId    = '';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -127,6 +122,9 @@ function initControls () {
   const viewsMenuButton = document.querySelector('views-menu-button');
   viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
 
+  const preferencesButton = document.getElementById('preferences-button');
+  preferencesButton.addEventListener('click', onPreferencesClick);
+
   const rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
   rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
 
@@ -179,6 +177,9 @@ function onError (error) {
 //  button actions
 //--------------------------------------------------------------
 
+function onPreferencesClick (event) {
+   chrome.runtime.openOptionsPage();
+}
 
 //-----------------------------------------------
 //  Functions that handle tab and window events
@@ -344,28 +345,31 @@ function runContentScripts (callerfn) {
   vRuleResult.clear();
   showView(sidebarView);
 
-  getActiveTabFor(myWindowId).then(tab => {
-    if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
-      browser.tabs.executeScript({ code: `var infoAInspectorEvaluation = {};`});
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
-      // note sidebarGroupId is a number value
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = ${sidebarGroupId};` });
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId    = "${sidebarRuleId}";` });
-      browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId = "${sidebarRulesetId}";` });
-      browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
-      browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
-      browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
-      browser.tabs.executeScript({ file: '../evaluate.js' });
-      browser.tabs.executeScript({ file: '../content.js' })
-      .then(() => {
-        if (logInfo) console.log(`Content script invoked by ${callerfn}`)
-      });
-    }
-    else {
-      updateSidebar (protocolNotSupported);
-    }
-  })
+  getOptions().then( (options) => {
+    getActiveTabFor(myWindowId).then(tab => {
+      if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
+        browser.tabs.executeScript({ code: `var infoAInspectorEvaluation = {};`});
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
+        // note sidebarGroupId is a number value
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = ${sidebarGroupId};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId    = "${sidebarRuleId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId = "${options.rulesetId}";` });
+        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
+        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
+        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
+        browser.tabs.executeScript({ file: '../evaluate.js' });
+        browser.tabs.executeScript({ file: '../content.js' })
+        .then(() => {
+          if (logInfo) console.log(`Content script invoked by ${callerfn}`)
+        });
+      }
+      else {
+        updateSidebar (protocolNotSupported);
+      }
+    })
+  });
+
 };
 
 /*

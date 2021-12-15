@@ -80,6 +80,7 @@ export default class ResultRuleInfo extends HTMLElement {
   // Some items maybe an object containing a 'url' and 'title' properties
   renderContent(elem, info) {
     let i, ul, li, a, item;
+    if (!info) return;
     if (typeof info === 'string') {
       elem.textContent = info;
     } else {

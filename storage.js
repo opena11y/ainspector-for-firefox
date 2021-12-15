@@ -3,7 +3,11 @@
 */
 
 export const defaultOptions = {
-  isSidebarOpen: false
+  isSidebarOpen: false,
+  rulesetId: 'ARIA_STRICT',
+  viewsMenuIncludeGuidelines: true,
+  rerunDelayEnabled: false,
+  resultsIncludePassNa: true
 };
 
 /*
