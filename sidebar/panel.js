@@ -37,6 +37,8 @@ var sidebarView      = 'summary';  // other options 'group' or 'rule'
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
+var sidebarElementPosition = 0;
+var sidebarHighlightOnly = false;
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -114,6 +116,13 @@ function callbackRerunEvaluation() {
   runContentScripts('callbackRerunEvaluation');
 }
 
+function callbackUpdateHighlight(position) {
+  sidebarHighlightOnly = true;
+  sidebarElementPosition = position;
+
+  runContentScripts('callbackRerunEvaluation');
+}
+
 function initControls () {
 
   const backBtn = document.getElementById('back-button');
@@ -130,7 +139,7 @@ function initControls () {
 
   vSummary    = new ViewSummary('summary', callbackSummaryRowActivation);
   vRuleGroup  = new ViewRuleGroup('rule-group', callbackRuleGroupRowActivation);
-  vRuleResult = new ViewRuleResult('rule-result');
+  vRuleResult = new ViewRuleResult('rule-result', callbackUpdateHighlight);
 
   views = document.querySelectorAll('main .view');
   showView(sidebarView);
@@ -352,12 +361,16 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
         // note sidebarGroupId is a number value
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = ${sidebarGroupId};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId    = "${sidebarRuleId}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId = "${options.rulesetId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId        = ${sidebarGroupId};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId         = "${sidebarRuleId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId      = "${options.rulesetId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight      = "${options.highlight}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position       = ${sidebarElementPosition};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly  = ${sidebarHighlightOnly};` });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
+        browser.tabs.executeScript({ file: '../highlight.js' });
         browser.tabs.executeScript({ file: '../evaluate.js' });
         browser.tabs.executeScript({ file: '../content.js' })
         .then(() => {
@@ -367,6 +380,7 @@ function runContentScripts (callerfn) {
       else {
         updateSidebar (protocolNotSupported);
       }
+      sidebarHighlightOnly= false;
     })
   });
 

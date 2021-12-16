@@ -92,7 +92,8 @@ export default class ViewRuleGroup {
   }
 
   update (infoRuleGroup) {
-    let i, rr, row, style, value, sortValue;
+    let i, rr, row, style, value, sortValue, label;
+    let count = 0;
 
     this.detailsActions = {};
 
@@ -130,22 +131,35 @@ export default class ViewRuleGroup {
           this.ruleResultGrid.addDataCell(row, value, 'required', sortValue);
 
           this.detailsActions[rr.ruleId] = Object.assign(rr.detailsAction);
+          count += 1;
         }
       }
-      this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
-      const id = this.ruleResultGrid.setSelectedRowUsingLastId();
-      console.log('[update][id]: ' + id);
-      // Update the rule details/actions section
-      if (id) {
-        const detailsActions = this.detailsActions[id];
-        if (detailsActions) {
-          this.resultRuleInfo.update(detailsActions);
+
+      if (count) {
+        this.ruleResultGrid.sortGridByColumn(2, 4, 3, 'descending');
+        const id = this.ruleResultGrid.setSelectedRowUsingLastId();
+
+        // Update the rule details/actions section
+        if (id) {
+          const detailsActions = this.detailsActions[id];
+          if (detailsActions) {
+            this.resultRuleInfo.update(detailsActions);
+          } else {
+            this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+          }
         } else {
           this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
         }
       } else {
-        this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+        if (infoRuleGroup.ruleResults.length === 0) {
+          label = getMessage('noResultsMsg');
+        } else {
+          label = getMessage('noViolationsWarningsMCResultsMsg');
+        }
+        this.ruleResultGrid.addNoResultsRow(label);
+        this.resultRuleInfo.clear();
       }
+
     })
   }
 

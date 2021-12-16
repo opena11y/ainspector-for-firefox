@@ -76,7 +76,8 @@ export default class ViewRuleResult {
   }
 
   update (infoRuleResult) {
-    let i, id, row, er, style, sortValue;
+    let i, id, row, er, style, sortValue, label;
+    let count = 0;
 
     this.elementResultGrid.deleteDataRows();
 
@@ -98,12 +99,23 @@ export default class ViewRuleResult {
           this.elementResultGrid.addDataCell(row, er.position, 'position');
 
           this.elementResultGrid.addDataCell(row, er.actionMessage, 'action');
+          count += 1;
         }
       }
-      this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
-      const id = this.ruleResultGrid.setSelectedRowUsingLastId();
 
-      this.resultRuleInfo.update(infoRuleResult.detailsAction);
+      if (count > 0) {
+        this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
+        const id = this.elementResultGrid.setSelectedRowUsingLastId();
+        this.resultRuleInfo.update(infoRuleResult.detailsAction);
+      } else {
+        if (infoRuleResult.elementResults.length === 0) {
+          label = getMessage('noResultsMsg');
+        } else {
+          label = getMessage('noViolationsWarningsMCResultsMsg');
+        }
+        this.elementResultGrid.addNoResultsRow(label);
+        this.resultRuleInfo.clear();
+      }
     });
   }
 

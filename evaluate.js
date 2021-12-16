@@ -2,6 +2,8 @@
 
 // Evaulate the web page
 
+var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
+
 function evaluate (ruleset) {
 
   if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
@@ -17,6 +19,7 @@ function evaluate (ruleset) {
   evaluator_factory.setFeature('groups', 7);
   let evaluator = evaluator_factory.newEvaluator();
   let evaluationResult = evaluator.evaluate(doc, doc.title, doc.location.href);
+
   return evaluationResult;
 }
 
@@ -164,7 +167,7 @@ function getRuleGroupInfo (groupType, groupId) {
     ruleGroupResult   = evaluationResult.getRuleResultsByCategory(groupId);
   }
 
-  let ruleGroupInfo = ruleGroupResult.getRuleGroupInfo();
+  let ruleGroupInfo     = ruleGroupResult.getRuleGroupInfo();
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
@@ -180,9 +183,6 @@ function getRuleGroupInfo (groupType, groupId) {
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
   }
-
-  // Remove the evaluation library from the page,
-  // otherwise get duplicate warnings for rulesest and rules being reloaded
 
   console.log('[getRuleGroupInfo]: ending');
 
@@ -257,7 +257,7 @@ function getElementResultInfo(ruleResult) {
 *   (2) return result objec for the rule view in the sidebar;
 */
 
-function getRuleResultInfo(ruleId) {
+function getRuleResultInfo(ruleId, highlight, position) {
 
   console.log('[getRuleInfo]: starting ');
 
@@ -270,10 +270,86 @@ function getRuleResultInfo(ruleId) {
   info.ruleResult     = getResultInfo(ruleResult);
   info.elementResults = getElementResultInfo(ruleResult);
 
+  // Save reference to rule results for highlighting elements
+  ainspectorSidebarRuleResult = ruleResult;
+
   console.log('[getRuleInfo]: ending ');
 
   return info;
 }
+
+/*
+*   highlightElements
+*/
+
+function highlightElements(highlight, position) {
+
+  function validElementResults () {
+    return ainspectorSidebarRuleResult &&
+      ainspectorSidebarRuleResult.getElementResultsArray;
+  }
+
+  function getElementResultByPosition() {
+    if (validElementResults()) {
+      const elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+
+      for (let i = 0; i < elementResults.length; i++) {
+        if (elementResults[i].getOrdinalPosition() === position) {
+          return elementResults[i];
+        }
+      }
+    }
+    return false;
+  }
+
+  let domNode = false;
+
+  let info = {};
+
+  info.option = 'highlight';
+
+  if (validElementResults()) {
+    const elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+
+    if (elementResults) {
+      highlightModule.initHighlight();
+
+      switch(highlight) {
+        case 'all':
+          highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
+          break;
+
+        case 'vw':
+          highlightModule.setHighlightPreferences(false, false, false, false);
+          highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
+          break;
+
+        case 'selected':
+          for (let i = 0; i < elementResults.length; i++) {
+            if (elementResults[i].getOrdinalPosition() === position) {
+              highlightModule.highlightElementResults(document, [elementResults[i]]);
+              domNode = elementResults[i].getDOMElement();
+              break;
+            }
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      if (domNode && domNode.scrollIntoView) {
+        domNode.scrollIntoView();
+      }
+
+    }
+  }
+
+  return info;
+}
+
 
 // ----------------------
 // getDetailsAction

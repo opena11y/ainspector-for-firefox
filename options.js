@@ -3,7 +3,7 @@
 import { getOptions, saveOptions } from './storage.js';
 const getMessage = browser.i18n.getMessage;
 
-const debug = true;
+const debug = false;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
 const noDelay        = document.querySelector('input[id="options-no-delay"]');
 const promptForDelay = document.querySelector('input[id="options-prompt-for-delay"]');

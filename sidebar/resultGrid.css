@@ -104,6 +104,11 @@ table td.position {
   padding-right: 8px;
 }
 
+table td.no-results {
+  font-style: italic;
+  font-weight: bold;
+}
+
 /* Result brackground colors */
 
 table td.not-applicable {

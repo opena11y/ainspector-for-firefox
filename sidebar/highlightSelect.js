@@ -2,6 +2,8 @@
 
 const getMessage = browser.i18n.getMessage;
 
+import { getOptions, saveOptions } from '../storage.js';
+
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="highlight-select">
@@ -32,6 +34,7 @@ export default class HighlightSelect extends HTMLElement {
     // Get references
 
     this.select = this.shadowRoot.querySelector('#select');
+    this.select.addEventListener('change', this.onSelectChange.bind(this));
 
     this.init();
   }
@@ -53,17 +56,27 @@ export default class HighlightSelect extends HTMLElement {
     updateTextContent('[value="selected"]', 'highlightOptionSelected');
     updateTextContent('[value="vw"]',       'highlightOptionVW');
     updateTextContent('[value="all"]',      'highlightOptionAll');
+
+    getOptions().then(this.setSelectValue.bind(this));
   }
 
-  get value () {
-    return this.select.options[this.select.selectedIndex].value;
-  }
-
-  set value (value) {
+  setSelectValue (options) {
+    const value = options.highlight;
     for (let i = 0; i < this.select.options.length; i += 1) {
       if (this.select.options[i].value === value) {
         this.select.options[i].selected = true;
       }
+    }
+  }
+
+  onSelectChange () {
+    let value = this.select.value;
+
+    if (value) {
+      getOptions().then( (options) => {
+        options.highlight = value;
+        saveOptions(options);
+      });
     }
   }
 

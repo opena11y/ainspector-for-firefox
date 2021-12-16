@@ -51,11 +51,11 @@ export default class ResultGrid extends HTMLElement {
     this.onRowSelection = handler;
   }
 
-  getRowCount() {
+  getRowCount () {
     return this.table.querySelectorAll('tr').length;
   }
 
-  getRowByPosition(pos) {
+  getRowByPosition (pos) {
     if (pos < 1) {
       return this.theadTr;
     }
@@ -66,7 +66,7 @@ export default class ResultGrid extends HTMLElement {
     return rows[pos-1];
   }
 
-  getRowCurrentPosition(row) {
+  getRowCurrentPosition (row) {
     let rows =  this.table.querySelectorAll('tr');
     for (let i = 0; i < rows.length; i += 1) {
       if (rows[i] === row) {
@@ -77,15 +77,15 @@ export default class ResultGrid extends HTMLElement {
     return 0;
   }
 
-  getRowById(id) {
+  getRowById (id) {
     return this.table.querySelector(`#${id}`);
   }
 
-  getColCount(row) {
+  getColCount (row) {
     return row.querySelectorAll('th, td').length;
   }
 
-  getCellByPosition(row, pos) {
+  getCellByPosition (row, pos) {
     let cells = row.querySelectorAll('th, td');
     if (pos < 2) {
       return cells[0];
@@ -98,7 +98,7 @@ export default class ResultGrid extends HTMLElement {
     return cells[cells.length-1];
   }
 
-  getCellCurrentPosition(row, cell) {
+  getCellCurrentPosition (row, cell) {
     let cells = row.querySelectorAll('th, td');
     for (let i = 0; i < cells.length; i += 1) {
       if (cells[i] === cell) {
@@ -110,7 +110,7 @@ export default class ResultGrid extends HTMLElement {
   }
 
   // This grid only supports one row of headers
-  addHeaderCell(txt, style, title, isSortable) {
+  addHeaderCell (txt, style, title, isSortable) {
     let th = document.createElement('th');
     th.tabIndex = -1;
     th.textContent = txt;
@@ -131,6 +131,22 @@ export default class ResultGrid extends HTMLElement {
     this.theadTr.appendChild(th);
     this.theadTr.addEventListener('keydown', this.onRowKeydown.bind(this));
     th.addEventListener('keydown', this.onCellKeydown.bind(this));
+  }
+
+  getNumberOfColumns () {
+    return this.theadTr.querySelectorAll('th').length;
+  }
+
+  addNoResultsRow (message) {
+    let row = document.createElement('tr');
+    row.tabIndex = 0;
+
+    let td = document.createElement('td');
+    td.className = 'no-results';
+    td.setAttribute('colspan', this.getNumberOfColumns());
+    td.textContent = message;
+    row.appendChild(td);
+    this.tbody.appendChild(row);
   }
 
   // The id is used by event handlers for actions related to the row content

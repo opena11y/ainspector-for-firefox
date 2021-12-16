@@ -7,7 +7,8 @@ export const defaultOptions = {
   rulesetId: 'ARIA_STRICT',
   viewsMenuIncludeGuidelines: true,
   rerunDelayEnabled: false,
-  resultsIncludePassNa: true
+  resultsIncludePassNa: true,
+  highlight: 'selected'
 };
 
 /*

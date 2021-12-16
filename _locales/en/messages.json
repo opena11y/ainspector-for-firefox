@@ -264,6 +264,16 @@
     "description": "WCAG Success Criteria"
   },
 
+  "noResultsMsg": {
+    "message": "No results",
+    "description": "Message for no results"
+  },
+
+  "noViolationsWarningsMCResultsMsg": {
+    "message": "No violations, warnings or manual check results",
+    "description": "Message when there are no violation, warning or manual check results"
+  },
+
   "levelLabel": {
     "message": "Level",
     "description": "Level column header for rule group view grid"
@@ -370,7 +380,7 @@
   },
 
   "highlightOptionSelected": {
-    "message": "None",
+    "message": "Selected",
     "description": "Selected option in the highlight select box"
   },
 
