@@ -38,7 +38,7 @@ var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
 var sidebarElementPosition = 0;
-var sidebarHighlightOnly = false;
+var sidebarHighlightOnly   = false;
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -68,6 +68,8 @@ function addLabelsAndHelpContent () {
     getMessage("preferencesButtonLabel");
 
 }
+
+// Callback functions used by views for activation or selection of rows
 
 function callbackSummaryRowActivation (event) {
   const tgt = event.currentTarget;
@@ -119,20 +121,27 @@ function callbackRerunEvaluation() {
 function callbackUpdateHighlight(position) {
   sidebarHighlightOnly = true;
   sidebarElementPosition = position;
-
-  runContentScripts('callbackRerunEvaluation');
+  runContentScripts('callbackUpdateHighlight');
 }
 
+/*
+** Initilize controls and views on the page
+*/
 function initControls () {
 
-  const backBtn = document.getElementById('back-button');
-  backBtn.addEventListener('click', handleBackButton);
+  window.addEventListener('resize', resizeView);
+
+  const backButton = document.getElementById('back-button');
+  backButton.addEventListener('click', onBackButton);
 
   const viewsMenuButton = document.querySelector('views-menu-button');
   viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
 
   const preferencesButton = document.getElementById('preferences-button');
   preferencesButton.addEventListener('click', onPreferencesClick);
+
+  const exportButton = document.getElementById('export-button');
+  exportButton.addEventListener('click', onExportClick);
 
   const rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
   rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
@@ -145,7 +154,30 @@ function initControls () {
   showView(sidebarView);
 }
 
-function handleBackButton() {
+/*
+**  When the sidebar loads, store the ID of the current window and update
+**  the sidebar content.
+*/
+browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
+  myWindowId = windowInfo.id;
+  addLabelsAndHelpContent();
+  initControls();
+  runContentScripts('onload');
+});
+
+//--------------------------------------------------------------
+//  Functions that handle menu, preferences and re-run evaluation
+//  button actions
+//--------------------------------------------------------------
+
+/*
+**  Generic error handler
+*/
+function onError (error) {
+  console.log(`Error: ${error}`);
+}
+
+function onBackButton() {
 
   switch (sidebarView) {
     case 'rule-group':
@@ -159,43 +191,24 @@ function handleBackButton() {
     default:
       break;
   }
-  runContentScripts('handleBackButton');
+  runContentScripts('onBackButton');
 }
-
-
-/*
-*   When the sidebar loads, store the ID of the current window and update
-*   the sidebar content.
-*/
-browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
-  myWindowId = windowInfo.id;
-  addLabelsAndHelpContent();
-  initControls();
-  runContentScripts('onload');
-});
-
-/*
-*   Generic error handler
-*/
-function onError (error) {
-  console.log(`Error: ${error}`);
-}
-
-//--------------------------------------------------------------
-//  Functions that handle menu, preferences and re-run evaluation
-//  button actions
-//--------------------------------------------------------------
 
 function onPreferencesClick (event) {
    chrome.runtime.openOptionsPage();
 }
+
+function onExportClick (event) {
+  download('test.csv', '"Landmarks","2","3","0","5"');
+}
+
 
 //-----------------------------------------------
 //  Functions that handle tab and window events
 //-----------------------------------------------
 
 /*
-*   Handle tabs.onUpdated event when status is 'complete'
+**  Handle tabs.onUpdated event when status is 'complete'
 */
 let timeoutID;
 function handleTabUpdated (tabId, changeInfo, tab) {
@@ -214,17 +227,16 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 }
 
 /*
-*   Handle tabs.onActivated event
+**  Handle tabs.onActivated event
 */
 function handleTabActivated (activeInfo) {
   if (logInfo) console.log(activeInfo);
-
   runContentScripts('handleTabActivated');
 }
 
 /*
-*   Handle window focus change events: If the sidebar is open in the newly
-*   focused window, save the new window ID and update the sidebar content.
+**  Handle window focus change events: If the sidebar is open in the newly
+**  focused window, save the new window ID and update the sidebar content.
 */
 function handleWindowFocusChanged (windowId) {
   if (windowId !== myWindowId) {
@@ -250,7 +262,7 @@ function handleWindowFocusChanged (windowId) {
 //---------------------------------------------------------------
 
 /*
-*   Show and hide views.
+**  Show and hide views.
 */
 
 function showView (id) {
@@ -262,10 +274,35 @@ function showView (id) {
       view.classList.remove('show');
     }
   }
+  resizeView();
 }
 
 /*
-*   Display the content generated by the content script.
+**  Show and hide views.
+*/
+
+function resizeView () {
+  const minMainHeight = 650;
+
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+
+  const footer = document.querySelector('footer');
+  const header = document.querySelector('header');
+
+  const headerHeight = document.querySelector('header').offsetHeight;
+  const footerHeight = footer.offsetHeight;
+  const mainHeight   = Math.max((height - headerHeight - footerHeight), minMainHeight);
+  footer.style.top   = headerHeight + mainHeight + 'px';
+
+  vSummary.resize(mainHeight);
+  vRuleGroup.resize(mainHeight);
+  vRuleResult.resize(mainHeight);
+
+}
+
+/*
+**  Display the content generated by the content script.
 */
 function updateSidebar (info) {
   let viewTitle    = document.querySelector('#view-title');
@@ -297,9 +334,13 @@ function updateSidebar (info) {
           vRuleResult.update(info.infoRuleResult);
         }
         else {
-          vSummary.clear();
-          vRuleGroup.clear();
-          vRuleResult.clear();
+          if (info.infoHighlight) {
+            console.log('[updateSidebar][infoHighlight]');
+          } else {
+            vSummary.clear();
+            vRuleGroup.clear();
+            vRuleResult.clear();
+          }
         }
       }
     }
@@ -349,10 +390,14 @@ browser.runtime.onMessage.addListener(
 *   the handler calls the updateSidebar function with the structure info.
 */
 function runContentScripts (callerfn) {
-  vSummary.clear();
-  vRuleGroup.clear();
-  vRuleResult.clear();
-  showView(sidebarView);
+    console.log('[runContentScripts]: ' + sidebarHighlightOnly);
+  if (!sidebarHighlightOnly) {
+    console.log('[runContentScripts][clearing]');
+    vSummary.clear();
+    vRuleGroup.clear();
+    vRuleResult.clear();
+    showView(sidebarView);
+  }
 
   getOptions().then( (options) => {
     getActiveTabFor(myWindowId).then(tab => {
@@ -361,12 +406,12 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
         // note sidebarGroupId is a number value
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId        = ${sidebarGroupId};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId         = "${sidebarRuleId}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId      = "${options.rulesetId}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight      = "${options.highlight}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position       = ${sidebarElementPosition};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly  = ${sidebarHighlightOnly};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId          = "${sidebarRuleId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId       = "${options.rulesetId}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight       = "${options.highlight}";` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
         browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
@@ -403,8 +448,22 @@ function getActiveTabFor (windowId) {
 /*
 *   Add event listeners when sidebar loads
 */
-window.addEventListener("load", function (e) {
+window.addEventListener ("load", function (e) {
   browser.tabs.onUpdated.addListener(handleTabUpdated, { properties: ["status"] });
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.windows.onFocusChanged.addListener(handleWindowFocusChanged);
 });
+
+/*
+**  Experimental export
+*/
+
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}

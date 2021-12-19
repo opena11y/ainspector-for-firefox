@@ -205,7 +205,7 @@ var highlightModule = highlightModule || {
         if (node) {
 
           // check if the node is off-screen or hidden from assistive technologies
-          if (computed_style.is_visible_onscreen === VISIBILITY.HIDDEN) {
+          if (false && computed_style.is_visible_onscreen === VISIBILITY.HIDDEN) {
 
             // always do this...
             off_screen_elements.push(element_result);

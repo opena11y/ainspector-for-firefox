@@ -4,7 +4,10 @@ const getMessage = browser.i18n.getMessage;
 import { getOptions } from '../storage.js';
 
 export default class ViewRuleResult {
-  constructor(id) {
+  constructor(id, handleRowSelection) {
+
+    this.handleRowSelection = handleRowSelection;
+
     this.ruleResultDiv = document.getElementById(id);
 
     this.resultTablist = document.createElement('result-tablist');
@@ -16,12 +19,25 @@ export default class ViewRuleResult {
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
     this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
+    this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
 
     this.highlightSelect = document.createElement('highlight-select');
+    this.highlightSelect.setChangeEventCallback(this.onSelectChangeCallback.bind(this));
     this.resultTablist.tabpanel2.appendChild(this.highlightSelect);
 
     this.initGrid();
   }
+
+  resize (size) {
+    const adjustment = 80;
+    const highlightHeight = this.highlightSelect.offsetHeight;
+    const h = (size - highlightHeight - adjustment);
+
+    this.elementResultGrid.resize(h);
+
+  }
+
+
 
   initGrid () {
 
@@ -122,5 +138,25 @@ export default class ViewRuleResult {
   clear () {
     this.elementResultGrid.deleteDataRows();
     this.resultRuleInfo.clear();
+  }
+
+  onRowSelectionCallback (id) {
+    let position = false;
+    if (id) {
+      position = parseInt(id.substring(3));
+      console.log('[onRowSelection]: ' + position + ' ' + typeof position);
+      if (position && typeof position === 'number') {
+        if (this.handleRowSelection) {
+          this.handleRowSelection(position);
+        }
+      }
+    }
+  }
+
+  onSelectChangeCallback () {
+    let id = this.elementResultGrid.getSelectedRowId();
+    if (id) {
+      this.onRowSelectionCallback(id);
+    }
   }
 }

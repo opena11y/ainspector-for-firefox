@@ -15,16 +15,17 @@
   let rulesetId = infoAInspectorEvaluation.rulesetId;
   let highlight = infoAInspectorEvaluation.highlight;
   let position  = infoAInspectorEvaluation.position;
-  let highlightOnly = infoAInspectorEvaluation.highlightOnly;
+  let highlightOnly   = infoAInspectorEvaluation.highlightOnly;
+  let removeHighlight = infoAInspectorEvaluation.removeHighlight;
 
-  console.log('[content.js][         view]: ' + view);
-  console.log('[content.js][    groupType]: ' + groupType);
-  console.log('[content.js][      groupId]: ' + groupId + ' (' + typeof groupId + ')');
-  console.log('[content.js][       ruleId]: ' + ruleId);
-  console.log('[content.js][    rulesetId]: ' + rulesetId);
-  console.log('[content.js][    highlight]: ' + highlight+ ' (' + typeof highlight + ')');
-  console.log('[content.js][highlightOnly]: ' + highlightOnly + ' (' + typeof highlightOnly + ')');
-  console.log('[content.js][     position]: ' + position + ' (' + typeof position + ')');
+  console.log('[content.js][           view]: ' + view);
+  console.log('[content.js][      groupType]: ' + groupType);
+  console.log('[content.js][        groupId]: ' + groupId + ' (' + typeof groupId + ')');
+  console.log('[content.js][         ruleId]: ' + ruleId);
+  console.log('[content.js][      rulesetId]: ' + rulesetId);
+  console.log('[content.js][      highlight]: ' + highlight+ ' (' + typeof highlight + ')');
+  console.log('[content.js][  highlightOnly]: ' + highlightOnly + ' (' + typeof highlightOnly + ')');
+  console.log('[content.js][       position]: ' + position + ' (' + typeof position + ')');
 
   let info = {};
   info.id       = 'info';
@@ -47,6 +48,7 @@
       if (highlightOnly) {
         info.infoHighlight = highlightElements(highlight, position);
       } else {
+        highlightModule.removeHighlight(document);
         info.infoRuleResult = getRuleResultInfo(ruleId, highlight, position);
         highlightElements(highlight, position);
       }
@@ -59,3 +61,15 @@
   browser.runtime.sendMessage(info);
 
 })();
+
+/*
+*  This message handler is used to remove element highlighting
+*  when the sidebar is closed
+*/
+browser.runtime.onMessage.addListener(request => {
+  // to be executed on receiving messages from the panel
+  if ((request.option    === 'highlight') &&
+      (request.highlight === 'none')) {
+    highlightModule.removeHighlight(document);
+  }
+});

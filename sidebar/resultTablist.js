@@ -6,15 +6,33 @@ const template = document.createElement('template');
 template.innerHTML = `
     <div class="result-tablist">
       <div role="tablist">
-        <div role="tab"
+        <div id="tab-1"
+          role="tab"
           tabindex="0"
           aria-controls="tabpanel-1"
-          aria-selected="true"><span>Tab 1</span></div><div role="tab"
+          aria-selected="true">
+          <span>
+            Tab 1
+          </span>
+        </div>
+        <div id="tab-2"
+          role="tab"
           tabindex="-1"
-          aria-controls="tabpanel-2"><span>Tab 2</span></div>
+          aria-controls="tabpanel-2">
+          <span>
+            Tab 2
+          </span>
+        </div>
       </div>
-      <div role="tabpanel" id="tabpanel-1" class="show"></div>
-      <div role="tabpanel" id="tabpanel-2"></div>
+      <div id="tabpanel-1"
+        role="tabpanel"
+        aria-labelledby="tab-1"
+        class="show">
+      </div>
+      <div id="tabpanel-2"
+        role="tabpanel"
+        aria-labelledby="tab-2">
+      </div>
     </div>
 `;
 
@@ -36,6 +54,7 @@ export default class ResultTablist extends HTMLElement {
     this.tabDiv1 = this.shadowRoot.querySelector('[role=tablist] [role=tab]:nth-child(1)');
     this.tabDiv2 = this.shadowRoot.querySelector('[role=tablist] [role=tab]:nth-child(2)');
 
+    // span elements are used for keyboard focus styling
     this.tabSpan1 = this.shadowRoot.querySelector('[role=tablist] [role=tab]:nth-child(1) span');
     this.tabSpan2 = this.shadowRoot.querySelector('[role=tablist] [role=tab]:nth-child(2) span');
 

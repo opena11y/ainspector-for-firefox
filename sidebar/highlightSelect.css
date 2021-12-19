@@ -1,7 +1,12 @@
 /* highlightSelect.css */
 
 .highlight-select {
-  margin-top: 0.5em;
+  display:  block;
+  position: relative;
+  left:  -0.25em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-right: 0.25em;
   width:  100%;
   text-align:  right;
 }

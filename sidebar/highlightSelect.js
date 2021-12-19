@@ -60,6 +60,11 @@ export default class HighlightSelect extends HTMLElement {
     getOptions().then(this.setSelectValue.bind(this));
   }
 
+  setChangeEventCallback (callback) {
+    this.onChangeEventCallback = callback;
+  }
+
+
   setSelectValue (options) {
     const value = options.highlight;
     for (let i = 0; i < this.select.options.length; i += 1) {
@@ -76,6 +81,9 @@ export default class HighlightSelect extends HTMLElement {
       getOptions().then( (options) => {
         options.highlight = value;
         saveOptions(options);
+        if (this.onChangeEvent) {
+          this.onChangeEventCallback()
+        }
       });
     }
   }

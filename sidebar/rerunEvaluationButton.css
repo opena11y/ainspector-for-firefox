@@ -16,37 +16,38 @@
 }
 
 
-#title {
+[role="dialog"] #title {
   font-weight:  bold;
   border-bottom: 1px solid black;
   margin-bottom: 0.5em;
 }
 
-#title,
-.select,
-.checkbox,
-.buttons {
+[role="dialog"] #title,
+[role="dialog"] .select,
+[role="dialog"] .checkbox,
+[role="dialog"] .buttons {
   padding: 4px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
 
-label {
+[role="dialog"] label {
   font-size: 90%;
 }
 
-.rerun-evaluation-button [role="dialog"] #title {
+[role="dialog"] #title {
   background-color: #eee;
 }
 
-.buttons {
+[role="dialog"] .buttons {
   float: right;
 }
 
-.buttons button {
+[role="dialog"] .buttons button {
   width: 5em;
 }
 
 button#rerun-button {
-  width: 10em;
+  text-align:  center;
+  width: 120px;
 }

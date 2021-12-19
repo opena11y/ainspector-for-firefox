@@ -57,6 +57,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.setHeading('#additional-label', 'ruleAdditionalLabel');
 
     // Create content references
+    this.resultRuleInfoDiv = this.shadowRoot.querySelector('.result-rule-info');
     this.definitionDiv = this.shadowRoot.querySelector('#definition-content');
     this.actionDiv     = this.shadowRoot.querySelector('#action-content');
     this.purposeDiv    = this.shadowRoot.querySelector('#purpose-content');
@@ -65,6 +66,13 @@ export default class ResultRuleInfo extends HTMLElement {
     this.complianceDiv = this.shadowRoot.querySelector('#compliance-content');
     this.scDiv         = this.shadowRoot.querySelector('#sc-content');
     this.additionalDiv = this.shadowRoot.querySelector('#additional-content');
+  }
+
+  resize (size) {
+
+    console.log('[ResultRuleInfo][resize][size]: ' + size);
+
+    this.resultRuleInfoDiv.style.height = size + 'px';
   }
 
   setHeading (headingId, messageId) {

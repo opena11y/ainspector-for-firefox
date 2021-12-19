@@ -38,6 +38,16 @@ export default class ResultGrid extends HTMLElement {
     this.lastSelectedRowId = '';
   }
 
+  resize (size) {
+    const headHeight = this.thead.offsetHeight;
+    const h = size - headHeight;
+
+    console.log('[resultGrid][resize][ size]: ' + size + ' [h]: ' + h);
+    this.tbody.style.height = h + 'px';
+    console.log('[resultGrid][resize][tbody]: ' + this.tbody.offsetHeight);
+
+  }
+
   addClassNameToTable (name) {
     return this.table.classList.add(name);
   }

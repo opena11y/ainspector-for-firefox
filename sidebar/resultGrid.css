@@ -16,14 +16,17 @@ table tbody tr {
 table.group tbody,
 table.rule tbody {
   display: block;
-  min-height: 200px;
-  max-height: 300px;
+  height: 200px;
   overflow-y: scroll;
 }
 
 table.group {
-  margin-top: 2em;
+  padding-top: 2em;
   border: 1px solid #aaa;
+}
+
+table.rule {
+  border-bottom: 1px solid #aaa;
 }
 
 table tbody tr:nth-child(even) {
