@@ -199,6 +199,11 @@
     "description": "Abbreviation for violations"
   },
 
+  "violationLabel": {
+    "message": "Violation",
+    "description": "Label for one violation results"
+  },
+
   "violationsLabel": {
     "message": "Violations",
     "description": "Label for violation results"
@@ -209,6 +214,11 @@
     "description": "Abbreviation for warnings"
   },
 
+  "warningLabel": {
+    "message": "Warning",
+    "description": "Label for one warning results"
+  },
+
   "warningsLabel": {
     "message": "Warnings",
     "description": "Label for warning results"
@@ -217,6 +227,11 @@
   "manualChecksAbbrev": {
     "message": "MC",
     "description": "Abbreviation for manual checks"
+  },
+
+  "manualCheckLabel": {
+    "message": "Manual Check",
+    "description": "Label for one manual check results"
   },
 
   "manualChecksLabel": {

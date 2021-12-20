@@ -89,8 +89,15 @@ export default class ViewSummary {
     }
   }
 
+  getNameForNumber(count, idOne, idNotOne) {
+    if (count === 1) {
+      return count + ' ' + getMessage(idOne);
+    }
+    return count + ' ' + getMessage(idNotOne);
+  }
+
   update (infoSummary) {
-    let i, gResult, row;
+    let i, gResult, row, rowName, cell, cellName;
 
     this.resultSummary.violations   = infoSummary.violations;
     this.resultSummary.warnings     = infoSummary.warnings;
@@ -101,20 +108,50 @@ export default class ViewSummary {
       gResult = infoSummary.rcResults[i];
       row = this.rcResultGrid.getRowById('rc' + gResult.id);
 
-      this.rcResultGrid.updateDataCell(row, 2, gResult.violations);
-      this.rcResultGrid.updateDataCell(row, 3, gResult.warnings);
-      this.rcResultGrid.updateDataCell(row, 4, gResult.manual_checks);
-      this.rcResultGrid.updateDataCell(row, 5, gResult.passed);
+      rowName = row.textContent;
+
+      cellName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
+      rowName += ', ' + cellName;
+      this.rcResultGrid.updateDataCell(row, 2, gResult.violations, cellName);
+
+      cellName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel');
+      rowName += ', ' + cellName;
+      this.rcResultGrid.updateDataCell(row, 3, gResult.warnings, cellName);
+
+      cellName = this.getNameForNumber(gResult.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
+      rowName += ', ' + cellName;
+      this.rcResultGrid.updateDataCell(row, 4, gResult.manual_checks, cellName);
+
+      cellName += ', ' + gResult.passed + ' ' + getMessage('passedLabel');
+      rowName += ', ' + cellName;
+      this.rcResultGrid.updateDataCell(row, 5, gResult.passed, cellName);
+
+      row.setAttribute('aria-label', rowName);
     }
 
     for (i = 0; i < infoSummary.glResults.length; i += 1) {
       gResult = infoSummary.glResults[i];
       row = this.glResultGrid.getRowById('gl' + gResult.id);
 
-      this.glResultGrid.updateDataCell(row, 2, gResult.violations);
-      this.glResultGrid.updateDataCell(row, 3, gResult.warnings);
-      this.glResultGrid.updateDataCell(row, 4, gResult.manual_checks);
-      this.glResultGrid.updateDataCell(row, 5, gResult.passed);
+      rowName = row.textContent;
+
+      cellName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
+      rowName += ', ' + cellName;
+      this.glResultGrid.updateDataCell(row, 2, gResult.violations, cellName);
+
+      cellName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel')
+      rowName += ', ' + cellName;
+      this.glResultGrid.updateDataCell(row, 3, gResult.warnings, cellName);
+
+      cellName = this.getNameForNumber(gResult.warnings, 'manualCheckLabel', 'manualChecksLabel')
+      rowName += ', ' + cellName;
+      this.glResultGrid.updateDataCell(row, 4, gResult.manual_checks, cellName);
+
+      cellName = ', ' + gResult.passed + ' ' + getMessage('passedLabel');
+      rowName += ', ' + cellName;
+      this.glResultGrid.updateDataCell(row, 5, gResult.passed, cellName);
+
+      row.setAttribute('aria-label', rowName);
     }
   }
 

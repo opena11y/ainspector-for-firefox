@@ -141,6 +141,7 @@ export default class ResultGrid extends HTMLElement {
     this.theadTr.appendChild(th);
     this.theadTr.addEventListener('keydown', this.onRowKeydown.bind(this));
     th.addEventListener('keydown', this.onCellKeydown.bind(this));
+    return th;
   }
 
   getNumberOfColumns () {
@@ -203,15 +204,19 @@ export default class ResultGrid extends HTMLElement {
     return td;
   }
 
-  updateDataCell (row, pos, txt, style, sortValue) {
+  updateDataCell (row, pos, txt, name, style, sortValue) {
     let cell = this.getCellByPosition(row, pos);
     cell.textContent = txt;
+    if (name) {
+      cell.setAttribute('aria-label', name);
+    }
     if (style) {
       cell.className = style;
     }
     if (sortValue) {
       cell.attribute('data-sort-value', sortValue);
     }
+    return cell;
   }
 
   clearRow (id) {
