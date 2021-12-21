@@ -282,12 +282,6 @@ var highlightModule = highlightModule || {
     if (first_visible_node) {
       // scroll into view aligned with top of viewport
       first_visible_node.scrollIntoView(true);
-
-      // add an offset between top of viewport and div border
-//      if (window.content.scrollY) {
-//        let offset = window.content.scrollY - 10;
-//        window.content.scroll(0, offset);
-//      }
     }
 
     if (off_screen_elements.length > 0) {

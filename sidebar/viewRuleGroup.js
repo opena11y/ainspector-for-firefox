@@ -172,6 +172,8 @@ export default class ViewRuleGroup {
           rowAccName += rr.required ? ', ' + cellAccName : '';
           this.ruleResultGrid.addDataCell(row, value, cellAccName, 'required', sortValue);
 
+          row.setAttribute('aria-label', rowAccName);
+
           this.detailsActions[rr.ruleId] = Object.assign(rr.detailsAction);
           count += 1;
         }

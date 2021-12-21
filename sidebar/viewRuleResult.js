@@ -142,7 +142,7 @@ export default class ViewRuleResult {
           // Add position information cell (column 3)
           cellAccName = er.position + ' ' + getMessage('domPositionLabel');
           rowAccName += ', ' + cellAccName;
-          this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', er.position);
+          this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', (-1 * er.position));
 
           // Add action information cell (column 4)
           rowAccName += ', ' + er.actionMessage;

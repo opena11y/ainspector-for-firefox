@@ -40,15 +40,17 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 
 ## Major To Do's for Version 2.0
 
-* ViewsMenu: Using web component
-* Preferences: Using storage
-* Delay feature for re-run button
-* Element highlight feature
-* Resizing and positioning of controls based on sidebar dimensions
-* Adding accessible names to grid rows and cells
-* Supporting event model used in a11ytools/addons/structure-3
-* Using a messaging port to talk to the content scripts
-* Using A11y Evaluation Library 1.3
+| Implemented  | Tested  | Feature |
+|--------------|:-------:|---------|
+|   Yes        |   Yes   |  Supporting event and direct port model used in a11ytools/addons/structure-3
+|   Yes        |   Yes   |  Using A11y Evaluation Library 1.3
+|   Yes        |   Yes   | ViewsMenu: Using web component
+|   Yes        |   Yes   | Preferences: Using storage
+|   Yes        |   Yes   | Delay feature for re-run button
+|   Yes        | Partial | Resizing and positioning of controls based on sidebar dimensions
+|   Partial    | Partial | Element highlight feature
+|   Initial    | Partial | Adding accessible names to grid rows and cells
+|   no         |   no    | Export view as a CSV file
 
 ## Code Documentation
 
