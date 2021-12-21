@@ -98,6 +98,14 @@ export default class RerunEvaluationButton extends HTMLElement {
 
   }
 
+  set disabled (value) {
+    this.rerunButton.disabled = value;
+  }
+
+  get disabled () {
+    return this.rerunButton.disabled;
+  }
+
   setActivationCallback (callback) {
     this.callback = callback;
   }

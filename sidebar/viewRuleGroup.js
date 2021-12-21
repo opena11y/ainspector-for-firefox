@@ -54,7 +54,7 @@ export default class ViewRuleGroup {
     this.resultRuleInfo.resize(h);
   }
 
-  getResultStyle(result) {
+  getResultStyle (result) {
     let style = 'not-applicable';
 
     switch (result){
@@ -77,12 +77,12 @@ export default class ViewRuleGroup {
   }
 
   // returns a number for the sorting the result value
-  getResultSortingValue(result) {
+  getResultSortingValue (result) {
     return ['', 'N/A', 'P', 'MC', 'W', 'V'].indexOf(result);
   }
 
   // returns a number used for representing SC for sorting
-  getSCSortingValue(sc) {
+  getSCSortingValue (sc) {
     let parts = sc.split('.');
     let p = parseInt(parts[0]);
     let g = parseInt(parts[1]);
@@ -91,17 +91,39 @@ export default class ViewRuleGroup {
   }
 
   // returns a number used for representing level value for sorting
-  getLevelSortingValue(level) {
+  getLevelSortingValue (level) {
     return ['', 'AAA', 'AA', 'A'].indexOf(level);
   }
 
   // returns a number used for representing required value for sorting
-  getRequiredSortingValue(required) {
+  getRequiredSortingValue (required) {
     return required ? 2 : 1;
   }
 
+  getResultAccessibleName (result) {
+    let accName = getMessage('notApplicableLabel');
+
+    switch (result){
+      case 'MC':
+        accName = getMessage('manualCheckLabel');
+        break;
+      case 'P':
+        accName = getMessage('passedLabel');
+        break;
+      case 'V':
+        accName = getMessage('violationLabel');
+        break;
+      case 'W':
+        accName = getMessage('warningLabel');
+        break;
+      default:
+        break;
+    }
+    return accName;
+  }
+
   update (infoRuleGroup) {
-    let i, rr, row, style, value, sortValue, label;
+    let i, rr, row, style, value, sortValue, rowAccName, cellAccName, label;
     let count = 0;
 
     this.detailsActions = {};
@@ -123,21 +145,32 @@ export default class ViewRuleGroup {
 
           row = this.ruleResultGrid.addRow(rr.ruleId);
 
-          this.ruleResultGrid.addDataCell(row, rr.summary, 'rule text');
+          cellAccName = '';
+          this.ruleResultGrid.addDataCell(row, rr.summary, cellAccName, 'rule text');
+
+          rowAccName = cellAccName;
 
           style = 'result ' + this.getResultStyle(rr.result);
           sortValue = this.getResultSortingValue(rr.result);
-          this.ruleResultGrid.addDataCell(row, rr.result, style, sortValue);
+          cellAccName = this.getResultAccessibleName(rr.result);
+          rowAccName += ', ' + cellAccName;
+          this.ruleResultGrid.addDataCell(row, rr.result, cellAccName, style, sortValue);
 
           sortValue = this.getSCSortingValue(rr.wcag);
-          this.ruleResultGrid.addDataCell(row, rr.wcag, 'sc', sortValue);
+          cellAccName = getMessage('successCriteriaLabel') + ' ' + rr.wcag;
+          rowAccName += ', ' + cellAccName;
+          this.ruleResultGrid.addDataCell(row, rr.wcag, cellAccName, 'sc', sortValue);
 
           sortValue = this.getLevelSortingValue(rr.level);
-          this.ruleResultGrid.addDataCell(row, rr.level, 'level', sortValue);
+          cellAccName = rr.level === 'A' ? getMessage('singleALabel') : getMessage('doubleALabel');
+          rowAccName += ', ' + cellAccName;
+          this.ruleResultGrid.addDataCell(row, rr.level, cellAccName, 'level', sortValue);
 
           value = rr.required ? getMessage('requiredValue') : '';
           sortValue = this.getRequiredSortingValue(rr.required);
-          this.ruleResultGrid.addDataCell(row, value, 'required', sortValue);
+          cellAccName = rr.required ? getMessage('requiredLabel') : '';
+          rowAccName += rr.required ? ', ' + cellAccName : '';
+          this.ruleResultGrid.addDataCell(row, value, cellAccName, 'required', sortValue);
 
           this.detailsActions[rr.ruleId] = Object.assign(rr.detailsAction);
           count += 1;

@@ -25,8 +25,10 @@ customElements.define('highlight-select',  HighlightSelect);
 customElements.define('views-menu-button', ViewsMenuButton);
 customElements.define('rerun-evaluation-button', RerunEvaluationButton);
 
+var contentPort;
 var myWindowId;
 var logInfo = true;
+var debug = true;
 
 var vSummary;
 var vRuleGroup;
@@ -39,6 +41,12 @@ var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
 var sidebarElementPosition = 0;
 var sidebarHighlightOnly   = false;
+
+var backButton;
+var viewsMenuButton;
+var preferencesButton;
+var exportButton;
+var rerunEvaluationButton;
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -131,19 +139,19 @@ function initControls () {
 
   window.addEventListener('resize', resizeView);
 
-  const backButton = document.getElementById('back-button');
+  backButton = document.getElementById('back-button');
   backButton.addEventListener('click', onBackButton);
 
-  const viewsMenuButton = document.querySelector('views-menu-button');
+  viewsMenuButton = document.querySelector('views-menu-button');
   viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
 
-  const preferencesButton = document.getElementById('preferences-button');
+  preferencesButton = document.getElementById('preferences-button');
   preferencesButton.addEventListener('click', onPreferencesClick);
 
-  const exportButton = document.getElementById('export-button');
+  exportButton = document.getElementById('export-button');
   exportButton.addEventListener('click', onExportClick);
 
-  const rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
+  rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
   rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
 
   vSummary    = new ViewSummary('summary', callbackSummaryRowActivation);
@@ -155,14 +163,34 @@ function initControls () {
 }
 
 /*
-**  When the sidebar loads, store the ID of the current window and update
-**  the sidebar content.
+**  Set up listeners/handlers for connection and messages from content script
+*/
+browser.runtime.onConnect.addListener(connectionHandler);
+
+function connectionHandler (port) {
+  if (debug) console.log(`port.name: ${port.name}`);
+  contentPort = port;
+  contentPort.onMessage.addListener(portMessageHandler);
+  contentPort.postMessage({ id: 'getInfo' });
+}
+
+function portMessageHandler (message) {
+  switch (message.id) {
+    case 'info':
+      updateSidebar(message);
+      break;
+  }
+}
+
+/*
+*   When the sidebar loads, store the ID of the current window; update sidebar
+*   labels and help content, and run content scripts to establish connection.
 */
 browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
   myWindowId = windowInfo.id;
   addLabelsAndHelpContent();
   initControls();
-  runContentScripts('onload');
+  runContentScripts('windows.getCurrent');
 });
 
 //--------------------------------------------------------------
@@ -277,6 +305,37 @@ function showView (id) {
   resizeView();
 }
 
+function updateBackButton () {
+
+  if (sidebarView === 'summary') {
+    backButton.disabled = true;
+  } else {
+    backButton.disabled = false;
+  }
+}
+
+function disableButtons() {
+  console.log('[disableButtons]');
+
+  viewsMenuButton.disabled = true;
+  exportButton.disabled = true
+  rerunEvaluationButton.disabled = true;
+  vSummary.disabled = true;
+
+  updateBackButton();
+}
+
+function enableButtons() {
+  console.log('[enableButtons]');
+
+  viewsMenuButton.disabled = false;
+  exportButton.disabled = false;
+  rerunEvaluationButton.disabled = false;
+  vSummary.disabled = false;
+
+  updateBackButton();
+}
+
 /*
 **  Show and hide views.
 */
@@ -322,24 +381,28 @@ function updateSidebar (info) {
     if (typeof info.infoSummary === 'object') {
       viewTitle.textContent = getMessage("viewTitleSummaryLabel");
       vSummary.update(info.infoSummary);
+      enableButtons();
     }
     else {
       if (typeof info.infoRuleGroup === 'object') {
         viewTitle.textContent = info.infoRuleGroup.groupLabel;
         vRuleGroup.update(info.infoRuleGroup);
+        enableButtons();
       }
       else {
         if (info.infoRuleResult) {
           viewTitle.textContent = 'Rule Result';
           vRuleResult.update(info.infoRuleResult);
+          enableButtons();
         }
         else {
           if (info.infoHighlight) {
-            console.log('[updateSidebar][infoHighlight]');
+            enableButtons();
           } else {
             vSummary.clear();
             vRuleGroup.clear();
             vRuleResult.clear();
+            disableButtons();
           }
         }
       }
@@ -357,26 +420,9 @@ function updateSidebar (info) {
     vSummary.clear();
     vRuleGroup.clear();
     vRuleResult.clear();
+    disableButtons();
   }
 }
-
-//------------------------------------------------------
-//  Functions that run the content script and initiate
-//  processing of the data it sends via messaging
-//------------------------------------------------------
-
-/*
-*   Listen for message from content script
-*/
-browser.runtime.onMessage.addListener(
-  function (message, sender) {
-    switch (message.id) {
-      case 'info':
-        updateSidebar(message);
-        break;
-    }
-  }
-);
 
 //------------------------------------------------------
 //  Functions that run the content scripts to initiate
@@ -390,9 +436,7 @@ browser.runtime.onMessage.addListener(
 *   the handler calls the updateSidebar function with the structure info.
 */
 function runContentScripts (callerfn) {
-    console.log('[runContentScripts]: ' + sidebarHighlightOnly);
   if (!sidebarHighlightOnly) {
-    console.log('[runContentScripts][clearing]');
     vSummary.clear();
     vRuleGroup.clear();
     vRuleResult.clear();
@@ -405,19 +449,20 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `var infoAInspectorEvaluation = {};`});
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
-        // note sidebarGroupId is a number value
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId          = "${sidebarRuleId}";` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId       = "${options.rulesetId}";` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight       = "${options.highlight}";` });
+        // note the following properties are number and boolean values
+        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
-        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
-        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
-        browser.tabs.executeScript({ file: '../highlight.js' });
-        browser.tabs.executeScript({ file: '../evaluate.js' });
-        browser.tabs.executeScript({ file: '../content.js' })
+        browser.tabs.executeScript({ file: '../scripts/a11y-evaluation-library.js' })
+//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
+//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
+//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
+//        browser.tabs.executeScript({ file: '../highlight.js' });
+//        browser.tabs.executeScript({ file: '../evaluate.js' });
+//        browser.tabs.executeScript({ file: '../content.js' })
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
         });

@@ -84,7 +84,7 @@ footer .info .value {
 footer .footer-buttons {
   padding-top: 10px;
   display:  grid;
-  grid-template-columns: 120px 1fr 50px 1fr 50px 1fr 125px;
+  grid-template-columns: 120px 1fr 50px 1fr 125px;
 }
 
 footer button {

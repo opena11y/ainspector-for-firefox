@@ -36,16 +36,21 @@ export default class ResultGrid extends HTMLElement {
     this.tbody   = this.table.querySelector('tbody');
 
     this.lastSelectedRowId = '';
+    this.activationDisabled = false;
+  }
+
+  set disabled (value) {
+    this.activationDisabled = value;
+  }
+
+  get disabled () {
+    return this.activationDisabled;
   }
 
   resize (size) {
     const headHeight = this.thead.offsetHeight;
     const h = size - headHeight;
-
-    console.log('[resultGrid][resize][ size]: ' + size + ' [h]: ' + h);
     this.tbody.style.height = h + 'px';
-    console.log('[resultGrid][resize][tbody]: ' + this.tbody.offsetHeight);
-
   }
 
   addClassNameToTable (name) {
@@ -151,6 +156,7 @@ export default class ResultGrid extends HTMLElement {
   addNoResultsRow (message) {
     let row = document.createElement('tr');
     row.tabIndex = 0;
+    row.setAttribute('aria-label', message);
 
     let td = document.createElement('td');
     td.className = 'no-results';
@@ -177,20 +183,24 @@ export default class ResultGrid extends HTMLElement {
 
     if (this.onRowSelection) {
       row.addEventListener('click', this.onRowClick.bind(this));
-      row.addEventListener('dblclick', this.onRowActivation);
+      row.addEventListener('dblclick', this.tryHandleRowActivation.bind(this));
     } else {
       if (this.onRowActivation) {
-        row.addEventListener('click', this.onRowActivation);
+        row.addEventListener('click', this.tryHandleRowActivation.bind((this)));
       }
     }
     return row;
   }
 
-  addDataCell (row, txt, style, sortValue) {
+  addDataCell (row, txt, accName, style, sortValue) {
     let td = document.createElement('td');
     td.tabIndex = -1;
 
     td.textContent = txt;
+
+    if (accName) {
+      td.setAttribute('aria-label', accName);
+    }
 
     if (style) {
       td.className = style;
@@ -401,7 +411,8 @@ export default class ResultGrid extends HTMLElement {
   }
 
   tryHandleRowActivation (event) {
-    if (this.onRowActivation) {
+    console.log('[tryHandleRowActivation][activationDisabled]: ' + this.activationDisabled);
+    if (!this.activationDisabled && this.onRowActivation) {
       this.onRowActivation(event);
       return true;
     }

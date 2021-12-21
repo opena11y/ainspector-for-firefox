@@ -249,6 +249,11 @@
     "description": "Label for pass results"
   },
 
+  "notApplicablelabel": {
+    "message": "Not Applicable",
+    "description": "Label for not applicable results"
+  },
+
   "ruleCategoriesLabel": {
     "message": "Rule Categories",
     "description": "Label for the rule category group"
@@ -275,8 +280,18 @@
   },
 
   "successCriteriaLabel": {
-    "message": "WCAG Success Criteria",
+    "message": "Success Criteria",
     "description": "WCAG Success Criteria"
+  },
+
+  "singleALabel": {
+    "message": "Single A",
+    "description": "WCAG Single A Success Criteria"
+  },
+
+  "doubleALabel": {
+    "message": "Double A",
+    "description": "WCAG Double A Success Criteria"
   },
 
   "noResultsMsg": {
@@ -377,6 +392,11 @@
   "positionLabel": {
     "message": "Position",
     "description": "Position column label in grid for rule results view"
+  },
+
+  "domPositionLabel": {
+    "message": ", index of dom position",
+    "description": "Element DOM position label in grid for rule results view"
   },
 
   "actionLabel": {

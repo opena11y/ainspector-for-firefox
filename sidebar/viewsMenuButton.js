@@ -59,6 +59,14 @@ export default class ViewsMenuButton extends HTMLElement {
     this.initMenu();
   }
 
+  set disabled (value) {
+    this.button.disabled = value;
+  }
+
+  get disabled () {
+    return this.button.disabled;
+  }
+
   setActivationCallback (callback) {
     this.callback = callback;
   }
@@ -125,11 +133,9 @@ export default class ViewsMenuButton extends HTMLElement {
           this.addMenuitem('gl' + glId, msgId);
         }
       }
+      this.addSeparator();
+      this.addMenuitem('all-rules', 'allRulesLabel');
     })
-
-
-    this.addSeparator();
-    this.addMenuitem('all-rules', 'allRulesLabel');
 
     this.closePopup();
 
@@ -385,7 +391,6 @@ export default class ViewsMenuButton extends HTMLElement {
 
   onMenuitemClick(event) {
     var tgt = event.currentTarget;
-    console.log('[onMenuitemClick]: ' + tgt.id);
     this.closePopup();
     this.button.focus();
     this.performMenuAction(tgt);

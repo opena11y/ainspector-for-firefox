@@ -91,8 +91,30 @@ export default class ViewRuleResult {
     return id.subString(3, id.length);
   }
 
+  getResultAccessibleName (result) {
+    let accName = getMessage('notApplicableLabel');
+
+    switch (result){
+      case 'MC':
+        accName = getMessage('manualCheckLabel');
+        break;
+      case 'P':
+        accName = getMessage('passedLabel');
+        break;
+      case 'V':
+        accName = getMessage('violationLabel');
+        break;
+      case 'W':
+        accName = getMessage('warningLabel');
+        break;
+      default:
+        break;
+    }
+    return accName;
+  }
+
   update (infoRuleResult) {
-    let i, id, row, er, style, sortValue, label;
+    let i, id, row, er, style, sortValue, label, rowAccName, cellAccName = '';
     let count = 0;
 
     this.elementResultGrid.deleteDataRows();
@@ -106,15 +128,27 @@ export default class ViewRuleResult {
             (['', 'V', 'W', 'MC'].indexOf(er.result) > 0)) {
           row = this.elementResultGrid.addRow(this.getRowId(er.position));
 
-          this.elementResultGrid.addDataCell(row, er.element, 'element');
+          // Add element information cell (column 1)
+          rowAccName = er.element;
+          this.elementResultGrid.addDataCell(row, er.element, '', 'element');
 
+          // Add result information cell (column 2)
           style = 'result ' + this.getResultStyle(er.result);
           sortValue = this.getResultSortingValue(er.result);
-          this.elementResultGrid.addDataCell(row, er.result, style, sortValue);
+          cellAccName = this.getResultAccessibleName(er.result);
+          rowAccName += ', ' + cellAccName;
+          this.elementResultGrid.addDataCell(row, er.result, cellAccName, style, sortValue);
 
-          this.elementResultGrid.addDataCell(row, er.position, 'position');
+          // Add position information cell (column 3)
+          cellAccName = er.position + ' ' + getMessage('domPositionLabel');
+          rowAccName += ', ' + cellAccName;
+          this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', er.position);
 
-          this.elementResultGrid.addDataCell(row, er.actionMessage, 'action');
+          // Add action information cell (column 4)
+          rowAccName += ', ' + er.actionMessage;
+          this.elementResultGrid.addDataCell(row, er.actionMessage, '', 'action');
+          row.setAttribute('aria-label', rowAccName);
+
           count += 1;
         }
       }
@@ -144,7 +178,6 @@ export default class ViewRuleResult {
     let position = false;
     if (id) {
       position = parseInt(id.substring(3));
-      console.log('[onRowSelection]: ' + position + ' ' + typeof position);
       if (position && typeof position === 'number') {
         if (this.handleRowSelection) {
           this.handleRowSelection(position);

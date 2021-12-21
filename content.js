@@ -3,10 +3,25 @@
 */
 
 /*
+**  Connect to panel.js script and set up listener/handler
+*/
+var panelPort = browser.runtime.connect({ name: 'content' });
+
+panelPort.onMessage.addListener(messageHandler);
+
+function messageHandler (message) {
+  switch (message.id) {
+    case 'getInfo':
+      getEvaluationInfo(panelPort);
+      break;
+  }
+}
+
+/*
 *   Send 'info' message with evaluation information to sidebar script.
 */
 
-(function () {
+function getEvaluationInfo(panelPort) {
 
   let view      = infoAInspectorEvaluation.view;
   let groupType = infoAInspectorEvaluation.groupType;
@@ -19,6 +34,7 @@
   let removeHighlight = infoAInspectorEvaluation.removeHighlight;
 
   console.log('[content.js][           view]: ' + view);
+/*
   console.log('[content.js][      groupType]: ' + groupType);
   console.log('[content.js][        groupId]: ' + groupId + ' (' + typeof groupId + ')');
   console.log('[content.js][         ruleId]: ' + ruleId);
@@ -26,6 +42,7 @@
   console.log('[content.js][      highlight]: ' + highlight+ ' (' + typeof highlight + ')');
   console.log('[content.js][  highlightOnly]: ' + highlightOnly + ' (' + typeof highlightOnly + ')');
   console.log('[content.js][       position]: ' + position + ' (' + typeof position + ')');
+*/
 
   let info = {};
   info.id       = 'info';
@@ -58,9 +75,8 @@
       break;
   }
 
-  browser.runtime.sendMessage(info);
-
-})();
+  panelPort.postMessage(info);
+}
 
 /*
 *  This message handler is used to remove element highlighting

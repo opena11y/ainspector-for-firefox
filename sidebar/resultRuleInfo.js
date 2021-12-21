@@ -69,9 +69,6 @@ export default class ResultRuleInfo extends HTMLElement {
   }
 
   resize (size) {
-
-    console.log('[ResultRuleInfo][resize][size]: ' + size);
-
     this.resultRuleInfoDiv.style.height = size + 'px';
   }
 

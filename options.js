@@ -66,8 +66,6 @@ function updateOptionsForm() {
   setFormLabels();
 
   function updateForm (options) {
-    console.log('updateForm: ', options);
-
     // Set form element values and states
     inclWcagGl.checked     = options.viewsMenuIncludeGuidelines;
     noDelay.checked        = !options.rerunDelayEnabled;
