@@ -45,6 +45,12 @@ export default class ViewRuleGroup {
 
   }
 
+  toCSV () {
+    let csv = '';
+    csv += this.ruleResultGrid.toCSV();
+    return csv
+  }
+
   resize (size) {
     const adjustment = 80;
     const ruleSummaryHeight = this.resultSummary.offsetHeight;

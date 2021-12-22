@@ -67,6 +67,12 @@ div {
   padding-left:  2px;
   padding-right:  2px;
   border-width: 2px;
-  outline: none;
+  outline:  none;
 }
+
+.views-menu-button button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 

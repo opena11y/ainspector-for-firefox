@@ -1,5 +1,10 @@
 /* resultGrid.css */
 
+.sr-only {
+  position: absolute;
+  top: -30em;
+}
+
 table {
   width: 100%;
   cell-spacing: 0;

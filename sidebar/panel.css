@@ -84,7 +84,7 @@ footer .info .value {
 footer .footer-buttons {
   padding-top: 10px;
   display:  grid;
-  grid-template-columns: 120px 1fr 50px 1fr 125px;
+  grid-template-columns: 120px 1fr 60px 1fr 125px;
 }
 
 footer button {
@@ -94,10 +94,13 @@ footer button {
 
 footer button#copy-button,
 footer button#export-button {
-  width: 50px;
+  width: 60px;
 }
 
-
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
 
 
 

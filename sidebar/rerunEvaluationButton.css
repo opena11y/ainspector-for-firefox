@@ -51,3 +51,8 @@ button#rerun-button {
   text-align:  center;
   width: 120px;
 }
+
+button#rerun-button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}

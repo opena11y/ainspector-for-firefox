@@ -1,4 +1,4 @@
-/* highlightSelect.js */
+  /* highlightSelect.js */
 
 const getMessage = browser.i18n.getMessage;
 

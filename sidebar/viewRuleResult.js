@@ -28,16 +28,21 @@ export default class ViewRuleResult {
     this.initGrid();
   }
 
+  toCSV () {
+    let csv = '';
+    csv += this.elementResultGrid.toCSV();
+    return csv
+  }
+
   resize (size) {
     const adjustment = 80;
     const highlightHeight = this.highlightSelect.offsetHeight;
     const h = (size - highlightHeight - adjustment);
 
     this.elementResultGrid.resize(h);
+    this.resultRuleInfo.resize(h);
 
   }
-
-
 
   initGrid () {
 

@@ -31,6 +31,15 @@ export default class ViewSummary {
 
   }
 
+  toCSV () {
+    let csv = '';
+    if (!this.disabled) {
+      csv += this.rcResultGrid.toCSV();
+      csv += this.glResultGrid.toCSV();
+    }
+    return csv
+  }
+
   set disabled (value) {
     console.log('[ViewSummary][set][disabled]: ' + value);
     this.rcResultGrid.disabled = value;

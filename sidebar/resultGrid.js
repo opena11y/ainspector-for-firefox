@@ -1,5 +1,7 @@
 /* resultGrid.js */
 
+import { formatItemForCSV } from '../utilities.js';
+
 const template = document.createElement('template');
 template.innerHTML = `
     <table role="grid" class="result-grid">
@@ -39,18 +41,63 @@ export default class ResultGrid extends HTMLElement {
     this.activationDisabled = false;
   }
 
+  resize (size) {
+    const headHeight = this.thead.offsetHeight;
+    const h = size - headHeight;
+    this.tbody.style.height = h + 'px';
+  }
+
+  toCSV () {
+    let csv = '';
+    let item;
+    let last;
+    const headers = Array.from(this.theadTr.querySelectorAll('th, td'));
+
+    console.log('[CSV][headers][length]: ' + headers.length);
+
+    headers.forEach( (cell, index, array) => {
+      if (cell.title) {
+        item = cell.title;
+      } else {
+        item = cell.textContent;
+      }
+      last = (index === (array.length-1));
+      csv += formatItemForCSV(item, last);
+    })
+    csv += '\n';
+
+    console.log('[CSV][headers]: ' + csv);
+
+    const rows = Array.from(this.tbody.querySelectorAll('tr'));
+
+    console.log('[CSV][rows][length]: ' + rows.length);
+
+    rows.forEach( (row) => {
+      const cells = Array.from(row.querySelectorAll('th, td'));
+      console.log('[CSV][cells][length]: ' + cells.length);
+      cells.forEach( (cell, index, array) => {
+        last = (index === (array.length-1));
+        const span = cell.querySelector('[aria-hidden]');
+        if (span) {
+          csv += formatItemForCSV(span.textContent, last);
+        } else {
+          csv += formatItemForCSV(cell.textContent, last);
+        }
+      });
+      csv += '\n';
+    });
+
+    console.log('[CSV][all]: ' + csv);
+
+    return csv;
+  }
+
   set disabled (value) {
     this.activationDisabled = value;
   }
 
   get disabled () {
     return this.activationDisabled;
-  }
-
-  resize (size) {
-    const headHeight = this.thead.offsetHeight;
-    const h = size - headHeight;
-    this.tbody.style.height = h + 'px';
   }
 
   addClassNameToTable (name) {
@@ -193,13 +240,23 @@ export default class ResultGrid extends HTMLElement {
   }
 
   addDataCell (row, txt, accName, style, sortValue) {
+    let span1, span2;
     let td = document.createElement('td');
     td.tabIndex = -1;
 
-    td.textContent = txt;
-
     if (accName) {
-      td.setAttribute('aria-label', accName);
+      // Hide the visually rendered text content from AT
+      span1 = document.createElement('span');
+      span1.textContent = txt;
+      span1.setAttribute('aria-hidden', 'true');
+      td.appendChild(span1);
+      // Hide the content available to AT from visual rendering
+      span2 = document.createElement('span');
+      span2.textContent = accName;
+      span2.className = 'sr-only';
+      td.appendChild(span2);
+    } else {
+      td.textContent = txt;
     }
 
     if (style) {
@@ -240,8 +297,6 @@ export default class ResultGrid extends HTMLElement {
   }
 
   deleteDataRows () {
-    let cs1 = window.getComputedStyle(this.table);
-    let cs2 = window.getComputedStyle(this.tbody);
     while (this.tbody.firstChild) {
       this.tbody.firstChild.remove();
     }

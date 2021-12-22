@@ -35,6 +35,7 @@ var vRuleGroup;
 var vRuleResult;
 var views;
 
+var sidebarViews;  // Array of elements containing the sidebar views
 var sidebarView      = 'summary';  // other options 'group' or 'rule'
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
@@ -158,7 +159,7 @@ function initControls () {
   vRuleGroup  = new ViewRuleGroup('rule-group', callbackRuleGroupRowActivation);
   vRuleResult = new ViewRuleResult('rule-result', callbackUpdateHighlight);
 
-  views = document.querySelectorAll('main .view');
+  sidebarViews = document.querySelectorAll('main .view');
   showView(sidebarView);
 }
 
@@ -227,7 +228,31 @@ function onPreferencesClick (event) {
 }
 
 function onExportClick (event) {
-  download('test.csv', '"Landmarks","2","3","0","5"');
+  let fname = '', csv = '';
+
+  switch (sidebarView) {
+
+    case 'summary':
+      fname = 'summary.csv';
+      csv = vSummary.toCSV();
+      break;
+
+    case 'rule-group':
+      fname = 'rule-group.csv';
+      csv = vRuleGroup.toCSV();
+      break;
+
+    case 'rule-result':
+      fname = 'rule-result.csv';
+      csv = vRuleResult.toCSV();
+      break;
+
+    default:
+      break;
+  }
+  if (fname && csv) {
+    download(fname, csv);
+  }
 }
 
 
@@ -290,12 +315,12 @@ function handleWindowFocusChanged (windowId) {
 //---------------------------------------------------------------
 
 /*
-**  Show and hide views.
+**  Show and hide sidebar views
 */
 
 function showView (id) {
-  for (let i = 0; i < views.length; i++) {
-    let view = views[i];
+  for (let i = 0; i < sidebarViews.length; i++) {
+    let view = sidebarViews[i];
     if (view.id === id) {
       view.classList.add('show');
     } else {
@@ -337,7 +362,7 @@ function enableButtons() {
 }
 
 /*
-**  Show and hide views.
+**  Resize sidebar components
 */
 
 function resizeView () {
@@ -456,7 +481,7 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../scripts/a11y-evaluation-library.js' })
+        browser.tabs.executeScript({ file: '../scripts/a11y-content.js' })
 //        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
 //        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
 //        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
@@ -497,6 +522,7 @@ window.addEventListener ("load", function (e) {
   browser.tabs.onUpdated.addListener(handleTabUpdated, { properties: ["status"] });
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.windows.onFocusChanged.addListener(handleWindowFocusChanged);
+  resizeView();
 });
 
 /*
