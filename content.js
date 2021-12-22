@@ -33,8 +33,8 @@ function getEvaluationInfo(panelPort) {
   let highlightOnly   = infoAInspectorEvaluation.highlightOnly;
   let removeHighlight = infoAInspectorEvaluation.removeHighlight;
 
-  console.log('[content.js][           view]: ' + view);
 /*
+  console.log('[content.js][           view]: ' + view);
   console.log('[content.js][      groupType]: ' + groupType);
   console.log('[content.js][        groupId]: ' + groupId + ' (' + typeof groupId + ')');
   console.log('[content.js][         ruleId]: ' + ruleId);

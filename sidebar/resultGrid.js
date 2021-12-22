@@ -53,8 +53,6 @@ export default class ResultGrid extends HTMLElement {
     let last;
     const headers = Array.from(this.theadTr.querySelectorAll('th, td'));
 
-    console.log('[CSV][headers][length]: ' + headers.length);
-
     headers.forEach( (cell, index, array) => {
       if (cell.title) {
         item = cell.title;
@@ -66,15 +64,10 @@ export default class ResultGrid extends HTMLElement {
     })
     csv += '\n';
 
-    console.log('[CSV][headers]: ' + csv);
-
     const rows = Array.from(this.tbody.querySelectorAll('tr'));
-
-    console.log('[CSV][rows][length]: ' + rows.length);
 
     rows.forEach( (row) => {
       const cells = Array.from(row.querySelectorAll('th, td'));
-      console.log('[CSV][cells][length]: ' + cells.length);
       cells.forEach( (cell, index, array) => {
         last = (index === (array.length-1));
         const span = cell.querySelector('[aria-hidden]');
@@ -86,8 +79,6 @@ export default class ResultGrid extends HTMLElement {
       });
       csv += '\n';
     });
-
-    console.log('[CSV][all]: ' + csv);
 
     return csv;
   }
@@ -466,7 +457,6 @@ export default class ResultGrid extends HTMLElement {
   }
 
   tryHandleRowActivation (event) {
-    console.log('[tryHandleRowActivation][activationDisabled]: ' + this.activationDisabled);
     if (!this.activationDisabled && this.onRowActivation) {
       this.onRowActivation(event);
       return true;

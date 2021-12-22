@@ -7,7 +7,6 @@
 **  Cleans text for use with exporting as CSV
 */
 export function formatItemForCSV (item, last) {
-  console.log('\n[formatItemForCSV][A]: ' + item);
   item = item.trim();
   item = item.replace('"', '\"');
   item = item.replace('\n', '');
@@ -16,6 +15,5 @@ export function formatItemForCSV (item, last) {
   if (!last) {
     item += ',';
   }
-  console.log('[formatItemForCSV][B]: ' + item);
   return item
 }

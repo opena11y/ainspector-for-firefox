@@ -96,8 +96,6 @@ function getGuidelineResults (evalResult) {
 */
 function getSummaryInfo () {
 
-  console.log('[getSummaryInfo]: starting');
-
   let info = {};
 
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
@@ -116,8 +114,6 @@ function getSummaryInfo () {
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
-
-  console.log('[getSummaryInfo]: ending');
 
   return info;
 }
@@ -153,8 +149,6 @@ function getRuleGroupItem(ruleResult) {
 */
 function getRuleGroupInfo (groupType, groupId) {
 
-  console.log('[getRuleGroupInfo]: starting ');
-
   let info = {};
 
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
@@ -183,8 +177,6 @@ function getRuleGroupInfo (groupType, groupId) {
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
   }
-
-  console.log('[getRuleGroupInfo]: ending');
 
   return info;
 }
@@ -259,8 +251,6 @@ function getElementResultInfo(ruleResult) {
 
 function getRuleResultInfo(ruleId, highlight, position) {
 
-  console.log('[getRuleInfo]: starting ');
-
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
   let ruleResult = evaluationResult.getRuleResult(ruleId);
 
@@ -272,8 +262,6 @@ function getRuleResultInfo(ruleId, highlight, position) {
 
   // Save reference to rule results for highlighting elements
   ainspectorSidebarRuleResult = ruleResult;
-
-  console.log('[getRuleInfo]: ending ');
 
   return info;
 }

@@ -340,8 +340,6 @@ function updateBackButton () {
 }
 
 function disableButtons() {
-  console.log('[disableButtons]');
-
   viewsMenuButton.disabled = true;
   exportButton.disabled = true
   rerunEvaluationButton.disabled = true;
@@ -351,8 +349,6 @@ function disableButtons() {
 }
 
 function enableButtons() {
-  console.log('[enableButtons]');
-
   viewsMenuButton.disabled = false;
   exportButton.disabled = false;
   rerunEvaluationButton.disabled = false;
