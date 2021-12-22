@@ -41,15 +41,17 @@ export default class ViewSummary {
     return csv
   }
 
+  resize (size) {
+
+  }
+
   set disabled (value) {
-    console.log('[ViewSummary][set][disabled]: ' + value);
     this.rcResultGrid.disabled = value;
     this.glResultGrid.disabled = value;
   }
 
   get disabled () {
     let value = this.rcResultGrid.disabled && this.glResultGrid.disabled;
-    console.log('[ViewSummary][get][disabled]: ' + value);
     return value;
   }
 
@@ -132,7 +134,6 @@ export default class ViewSummary {
 
       cell = this.rcResultGrid.getCellByPosition(row, 1);
       rowAccName = cell.textContent;
-      console.log('[rowAccName]: ' + rowAccName)
 
       celAcclName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
       rowAccName += ', ' + celAcclName;
@@ -180,10 +181,6 @@ export default class ViewSummary {
       // Add accessible name describing the row content
       row.setAttribute('aria-label', rowAccName);
     }
-  }
-
-  resize () {
-
   }
 
   clear () {

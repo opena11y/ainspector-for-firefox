@@ -218,14 +218,9 @@ export default class ResultGrid extends HTMLElement {
     this.tbody.appendChild(row);
 
     row.addEventListener('keydown', this.onRowKeydown.bind(this));
-
-    if (this.onRowSelection) {
-      row.addEventListener('click', this.onRowClick.bind(this));
-      row.addEventListener('dblclick', this.tryHandleRowActivation.bind(this));
-    } else {
-      if (this.onRowActivation) {
-        row.addEventListener('click', this.tryHandleRowActivation.bind((this)));
-      }
+    row.addEventListener('click', this.onRowClick.bind(this));
+    if (this.onRowActivation) {
+      row.addEventListener('dblclick', this.tryHandleRowActivation.bind((this)));
     }
     return row;
   }
@@ -468,10 +463,11 @@ export default class ResultGrid extends HTMLElement {
 
   onRowClick (event) {
     let tgt = event.currentTarget;
-    if (this.tryHandleRowSelection(tgt.id)) {
-      tgt.focus();
-      this.setSelectedRow(tgt);
-    }
+    console.log('[onRowClick][tagName]' + tgt.tagName);
+    this.tryHandleRowSelection(tgt.id);
+    tgt.focus();
+    this.setSelectedRow(tgt);
+
     event.preventDefault();
     event.stopPropagation();
   }

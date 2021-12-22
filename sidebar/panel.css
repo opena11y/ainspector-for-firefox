@@ -84,7 +84,7 @@ footer .info .value {
 footer .footer-buttons {
   padding-top: 10px;
   display:  grid;
-  grid-template-columns: 120px 1fr 60px 1fr 125px;
+  grid-template-columns: 1fr 60px 5fr 125px 3fr 100px;
 }
 
 footer button {
@@ -92,9 +92,12 @@ footer button {
   width: 120px;
 }
 
-footer button#copy-button,
 footer button#export-button {
   width: 60px;
+}
+
+footer button#preferences-button {
+  width: 90px;
 }
 
 button:focus {

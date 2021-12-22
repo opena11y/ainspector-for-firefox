@@ -360,7 +360,11 @@ function enableButtons() {
 */
 
 function resizeView () {
-  const minMainHeight = 650;
+  let  minMainHeight = 650;
+
+  if (sidebarView === 'summary') {
+    minMainHeight = 450;
+  }
 
   const height = window.innerHeight;
   const width = window.innerWidth;
