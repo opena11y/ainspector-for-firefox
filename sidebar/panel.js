@@ -1,6 +1,4 @@
-/*
-*   panel.js
-*/
+/* panel.js  */
 
 import { getOptions } from '../storage.js';
 

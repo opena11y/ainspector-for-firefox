@@ -1,4 +1,4 @@
-  /* highlightSelect.js */
+/* viewMenuButton.js */
 
 const getMessage = browser.i18n.getMessage;
 

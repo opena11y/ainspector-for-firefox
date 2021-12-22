@@ -1,6 +1,4 @@
-// Evaluates current document using evaluation library
-
-// Evaulate the web page
+ /* evaluate.js */
 
 var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
 

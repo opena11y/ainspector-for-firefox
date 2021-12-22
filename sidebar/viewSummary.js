@@ -1,3 +1,4 @@
+/* viewSummary.js */
 
 const getMessage  = browser.i18n.getMessage;
 const sendMessage = browser.runtime.sendMessage;

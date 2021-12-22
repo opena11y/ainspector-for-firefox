@@ -1,4 +1,4 @@
-/* ruleSummary.js */
+/* ruleResultInfo.js */
 
 const getMessage = browser.i18n.getMessage;
 

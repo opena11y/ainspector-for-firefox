@@ -1,4 +1,4 @@
-/* highlightSelect.js */
+/* rerunEvaluationButton.js */
 
 const getMessage = browser.i18n.getMessage;
 
