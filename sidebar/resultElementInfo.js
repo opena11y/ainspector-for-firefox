@@ -4,7 +4,8 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div class="result-element-info">
+    <div id="message"></div>
+    <div class="result-element-info" class="hide">
       <h3  id="action-label" class="first">Action</h3>
       <div id="action"></div>
 
@@ -55,7 +56,7 @@ template.innerHTML = `
         <tbody id="attrs-content">
         </tbody>
       </table>
-
+    </div>
 `;
 
 export default class ResultElementInfo extends HTMLElement {
@@ -76,6 +77,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.setHeading('#action-label',     'ruleActionLabel');
 
     // Create content references
+    this.messageDiv = this.shadowRoot.querySelector('#message');
     this.infoDiv = this.shadowRoot.querySelector('.result-element-info');
 
     this.actionDiv   = this.shadowRoot.querySelector('#action');
@@ -192,7 +194,6 @@ export default class ResultElementInfo extends HTMLElement {
     let hasInfo = false;
 
     this.clearContent(this.ccrInfoTbody);
-    console.log('[update][ccrInfo]' + elementInfo.ccrInfo);
     let ccrInfo = JSON.parse(elementInfo.ccrInfo);
     hasInfo = this.renderContent(this.ccrInfoTbody, ccrInfo);
 
@@ -248,10 +249,15 @@ export default class ResultElementInfo extends HTMLElement {
 
     // Attribute information
     this.updateAttributeInformation(elementInfo);
+
+    this.messageDiv.classList.add('hide');
+    this.infoDiv.classList.remove('hide');
   }
 
   clear () {
     let msg = getMessage('tabIsLoading');
-    this.renderContent(this.actionDiv,     msg);
+    this.renderContent(this.messageDiv, msg);
+    this.messageDiv.classList.remove('hide');
+    this.infoDiv.classList.add('hide');
   }
 }

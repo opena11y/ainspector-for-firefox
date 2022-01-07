@@ -197,6 +197,7 @@ export default class ViewRuleResult {
         }
         this.elementResultGrid.addNoResultsRow(label);
         this.resultRuleInfo.clear();
+        this.resultElementInfo.clear();
       }
     });
   }
@@ -204,6 +205,7 @@ export default class ViewRuleResult {
   clear () {
     this.elementResultGrid.deleteDataRows();
     this.resultRuleInfo.clear();
+    this.resultElementInfo.clear();
   }
 
   onRowSelectionCallback (id) {
