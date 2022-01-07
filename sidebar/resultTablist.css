@@ -33,7 +33,7 @@
 
 [role="tabpanel"] {
   display:  none;
-  border: 1px solid #aaa;
+  border-top: 1px solid #aaa;
 }
 
 [role="tabpanel"].show {
@@ -44,4 +44,12 @@
 [role="tablist"] [role="tab"]:hover span {
   padding: 2px;
   border: 2px solid currentColor;
+}
+
+h2.selected {
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+  font-size: 110%;
+  font-weight: bold;
 }

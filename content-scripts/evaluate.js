@@ -208,13 +208,28 @@ function getElementResultInfo(ruleResult) {
 
   function addElementResult(elementResult) {
 
+    let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
+    let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
+    let visibilityInfo = JSON.stringify(elementResult.getVisibilityInfo());
+    let htmlAttrs      = JSON.stringify(elementResult.getHTMLAttributes());
+    let ariaAttrs      = JSON.stringify(elementResult.getAriaAttributes());
+
     let item = {
-      'element'       : elementResult.getElementIdentifier(),
-      'position'      : elementResult.getOrdinalPosition(),
-      'result'        : elementResult.getResultValueNLS(),
-      'resultValue'   : elementResult.getResultValue(),
-      'actionMessage' : elementResult.getResultMessage()
+      'tagName'        : elementResult.getTagName(),
+      'role'           : elementResult.getRole(),
+      'position'       : elementResult.getOrdinalPosition(),
+      'result'         : elementResult.getResultValueNLS(),
+      'resultValue'    : elementResult.getResultValue(),
+      'actionMessage'  : elementResult.getResultMessage(),
+      'accNameInfo'    : accNameInfo,
+      'ccrInfo'        : ccrInfo,
+      'visibilityInfo' : visibilityInfo,
+      'htmlAttrs'      : htmlAttrs,
+      'ariaAttrs'      : ariaAttrs
     };
+
+//    console.log('[addElementResult][       ccrInfo]: ' + ccrInfo);
+//    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
 
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
@@ -225,9 +240,7 @@ function getElementResultInfo(ruleResult) {
         item.resultValue = 2;
       }
     }
-
     elementResults.push(item);
-
   }
 
   var elementResults = [];

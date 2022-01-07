@@ -1,6 +1,11 @@
 /* resultRuleInfo.css */
 
+.hide {
+  display: none;
+}
+
 .result-element-info {
+  margin: 0;
   border: 1px solid #aaa;
   padding: 2px;
   display: block;
@@ -18,7 +23,7 @@
   font-weight: bold;
 }
 
-.result-element-info h3:first-child {
+.result-element-info h3.first {
   margin-top: 0;
 }
 
@@ -33,3 +38,67 @@
   margin-left:  1em;
   line-spacing: 1.25em;
 }
+
+.result-element-info table.ccr-info,
+.result-element-info table.visibility-info {
+  margin: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.result-element-info table.ccr-info th,
+.result-element-info table.visibility-info th {
+  font-weight: normal;
+  padding-right: 4px;
+  text-align: right;
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-element-info table.ccr-info th:after,
+.result-element-info table.visibility-info th:after {
+  content: ':';
+}
+
+.result-element-info tableccr-info td,
+.result-element-info table.visibility-info td {
+  font-weight:  normal;
+  text-align: left;
+}
+
+.result-element-info table.attrs-info {
+  margin-top: 1em;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.result-element-info table.attrs-info tbody tr:nth-child(even) {
+  background: #ddd;
+}
+
+
+.result-element-info table.attrs-info thead th {
+  text-align: left;
+}
+
+.result-element-info table.attrs-info tbody th {
+  padding-right: 0.25em;
+  font-weight:  normal;
+  text-align: right;
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-element-info table.attrs-info tbody th:after {
+  content: ':';
+}
+
+.result-element-info table.attrs-info tbody td.value {
+  font-weight:  normal;
+  text-align: left;
+}
+

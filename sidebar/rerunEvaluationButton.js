@@ -9,7 +9,8 @@ template.innerHTML = `
     <div class="rerun-evaluation-button">
       <button id="rerun-button"
         aria-haspop="true"
-        aria-controls="dialog">
+        aria-controls="dialog"
+        aria-live="off">
         Rerun Evaluation
       </button>
       <div role="dialog"
@@ -137,6 +138,7 @@ export default class RerunEvaluationButton extends HTMLElement {
 
   checkTimeout() {
     if (this.timerValue < 1) {
+      this.rerunButton.setAttribute('aria-live', 'off');
       this.rerunButton.textContent = getMessage('rerunEvalButtonLabel');;
       this.callback();
     } else {
@@ -154,6 +156,7 @@ export default class RerunEvaluationButton extends HTMLElement {
   onRerunButtonClick () {
     getOptions().then( (options) => {
       if (options.rerunDelayEnabled) {
+        this.rerunButton.setAttribute('aria-live', 'polite');
         if (this.promptForDelay) {
           this.openDialog();
         } else {

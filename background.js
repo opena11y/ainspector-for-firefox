@@ -48,3 +48,6 @@ function removeHighlight() {
   }).then(sendMessageToTabs).catch(onError);
 };
 
+function onError(err) {
+  console.error('[BACKGROUND][ERROR]: ' + err);
+}

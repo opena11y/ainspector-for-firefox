@@ -30,7 +30,10 @@ table.group {
   border: 1px solid #aaa;
 }
 
+table.summary,
 table.rule {
+  border-left: 1px solid #aaa;
+  border-right: 1px solid #aaa;
   border-bottom: 1px solid #aaa;
 }
 
@@ -93,6 +96,8 @@ table td.rule {
   width: auto;
 }
 
+table th.element-info,
+table td.element-info,
 table th.result,
 table td.result,
 table th.sc,
@@ -103,13 +108,38 @@ table th.required,
 table td.required {
   width: 12%;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table th.result,
+table td.result {
+  width: 10%;
 }
 
 table th.position,
 table td.position {
-  width: 12%;
+  width: 9%;
   text-align: right;
   padding-right: 8px;
+}
+
+table th.element-info,
+table td.element-info {
+  width: 25%;
+  padding-left: 4px;
+  text-align: left;
+}
+
+table td.element-info {
+  text-transform: lowercase;
+}
+
+table td.action {
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
 }
 
 table td.no-results {

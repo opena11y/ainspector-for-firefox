@@ -5,31 +5,57 @@ const getMessage = browser.i18n.getMessage;
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="result-element-info">
-      <h3  id="definition-label">Definition</h3>
-      <div id="definition-content"></div>
+      <h3  id="action-label" class="first">Action</h3>
+      <div id="action"></div>
 
-      <h3  id="action-label">Action</h3>
-      <div id="action-content"></div>
+      <h3  id="tagname-label">Tag Name</h3>
+      <div id="tagname"></div>
 
-      <h3  id="purpose-label">Purpose</h3>
-      <div id="purpose-content"></div>
+      <div id="accname-info">
+        <h3 id="accname-info-label">Accessible Name</h3>
+        <div id="accname"></div>
+        <div>Source: <span id="accname-source"><span></div>
+      </div>
 
-      <h3  id="techniques-label">Techniques</h3>
-      <div id="techniques-content"></div>
+      <div id="accdesc-info">
+        <h3 id="accdesc-info-label">Accessible Description</h3>
+        <div id="accdesc"></div>
+        <div>Source: <span id="accdesc-source"><span></div>
+      </div>
 
-      <h3  id="target-label">Target Elements</h3>
-      <div id="target-content"></div>
+      <div id="errordesc-info">
+        <h3 id="errordesc-info-label">Error Description</h3>
+        <div id="errordesc"></div>
+        <div>Source: <span id="errordesc-source"><span></div>
+      </div>
 
-      <h3  id="compliance-label">Compliance</h3>
-      <div id="compliance-content"></div>
+      <div id="ccr-info">
+        <h3 id="ccr-info-label">Color Contrast</h3>
+        <table  aria-labelledby="ccr-info-label" class="ccr-info">
+          <tbody id="ccr-content">
+          </tbody>
+        </table>
+      </div>
 
-      <h3  id="sc-label">WCAG Success Criteria</h3>
-      <div id="sc-content"></div>
+      <div id="visibility-info">
+        <h3 id="visibility-info-label">Visibility</h3>
+        <table  aria-labelledby="visibility-info-label" class="visibility-info">
+          <tbody id="visibility-content">
+          </tbody>
+        </table>
+      </div>
 
-      <h3  id="additional-label">Additional Information</h3>
-      <div id="additional-content"></div>
+      <table id="attrs-info" aria-label="Attribute Information" class="attrs-info">
+        <thead>
+          <tr>
+            <th id="attrs-info-name">Attribute</th>
+            <th id="attrs-info-value">Value</th>
+          </tr>
+        </thead>
+        <tbody id="attrs-content">
+        </tbody>
+      </table>
 
-    </div>
 `;
 
 export default class ResultElementInfo extends HTMLElement {
@@ -47,29 +73,39 @@ export default class ResultElementInfo extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // Initialize headings
-    this.setHeading('#definition-label', 'ruleDefinitionLabel');
     this.setHeading('#action-label',     'ruleActionLabel');
-    this.setHeading('#purpose-label',    'rulePurposeLabel');
-    this.setHeading('#techniques-label', 'ruleTechniquesLabel');
-    this.setHeading('#target-label',     'ruleTargetLabel');
-    this.setHeading('#compliance-label', 'ruleComplianceLabel');
-    this.setHeading('#sc-label',         'ruleSCLabel');
-    this.setHeading('#additional-label', 'ruleAdditionalLabel');
 
     // Create content references
-    this.resultRuleInfoDiv = this.shadowRoot.querySelector('.result-rule-info');
-    this.definitionDiv = this.shadowRoot.querySelector('#definition-content');
-    this.actionDiv     = this.shadowRoot.querySelector('#action-content');
-    this.purposeDiv    = this.shadowRoot.querySelector('#purpose-content');
-    this.techniquesDiv = this.shadowRoot.querySelector('#techniques-content');
-    this.targetDiv     = this.shadowRoot.querySelector('#target-content');
-    this.complianceDiv = this.shadowRoot.querySelector('#compliance-content');
-    this.scDiv         = this.shadowRoot.querySelector('#sc-content');
-    this.additionalDiv = this.shadowRoot.querySelector('#additional-content');
+    this.infoDiv = this.shadowRoot.querySelector('.result-element-info');
+
+    this.actionDiv   = this.shadowRoot.querySelector('#action');
+    this.tagNameDiv  = this.shadowRoot.querySelector('#tagname');
+
+
+    this.accNameInfoDiv    = this.shadowRoot.querySelector('#accname-info');
+    this.accNameDiv        = this.shadowRoot.querySelector('#accname');
+    this.accNameSourceSpan = this.shadowRoot.querySelector('#accname-source');
+
+    this.accDescInfoDiv    = this.shadowRoot.querySelector('#accdesc-info');
+    this.accDescDiv        = this.shadowRoot.querySelector('#accdesc');
+    this.accDescSourceSpan = this.shadowRoot.querySelector('#accdesc-source');
+
+    this.errorDescInfoDiv    = this.shadowRoot.querySelector('#errordesc-info');
+    this.errorDescDiv        = this.shadowRoot.querySelector('errordesc');
+    this.errorDescSourceSpan = this.shadowRoot.querySelector('#errordesc-source');
+
+    this.ccrInfoDiv    = this.shadowRoot.querySelector('#ccr-info');
+    this.ccrInfoTbody  = this.shadowRoot.querySelector('#ccr-content');
+
+    this.visInfoDiv    = this.shadowRoot.querySelector('#visibility-info');
+    this.visInfoTbody  = this.shadowRoot.querySelector('#visibility-content');
+
+    this.attrsInfoTable = this.shadowRoot.querySelector('#attrs-info');
+    this.attrsTbody     = this.shadowRoot.querySelector('#attrs-content');
   }
 
   resize (size) {
-    this.resultRuleInfoDiv.style.height = size + 'px';
+    this.infoDiv.style.height = size + 'px';
   }
 
   setHeading (headingId, messageId) {
@@ -80,56 +116,142 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  // if the info is a string just use textContent
-  // if the info is an array, create a list of items
-  // Some items maybe an object containing a 'url' and 'title' properties
+  // Renders string or object containing attribute name and values
   renderContent(elem, info) {
-    let i, ul, li, a, item;
-    if (!info) return;
+    let tr, th, td, a, item, hasContent = false;
     if (typeof info === 'string') {
       elem.textContent = info;
-    } else {
       if (info.length) {
-        elem.innerHTML = '';
-        ul = document.createElement('ul');
-        for (i = 0; i < info.length; i += 1) {
-          li = document.createElement('li');
-          item = info[i];
-          if (typeof item === 'string') {
-            li.textContent = item;
-          } else {
-            a = document.createElement('a');
-            a.href = item.url;
-            a.textContent = item.title;
-            li.appendChild(a);
-          }
-          ul.appendChild(li);
-        }
-        elem.appendChild(ul);
+        hasContent = true;
       }
+    } else {
+      if (typeof info === 'object') {
+        for (const property in info) {
+          tr = document.createElement('tr');
+          elem.appendChild(tr);
+          th = document.createElement('th');
+          item = property.replaceAll('_', ' ');
+          th.textContent = item;
+          tr.appendChild(th);
+          td = document.createElement('td');
+          td.textContent = info[property];
+          tr.appendChild(td);
+          hasContent = true;
+        }
+      }
+    }
+    return hasContent;
+  }
+
+  clearContent(elem) {
+    while (elem.firstChild) {
+       elem.removeChild(elem.firstChild);
     }
   }
 
-  update(ruleInfo) {
-    this.renderContent(this.definitionDiv, ruleInfo.definition);
-    this.renderContent(this.actionDiv,     ruleInfo.action);
-    this.renderContent(this.purposeDiv,    ruleInfo.purpose);
-    this.renderContent(this.techniquesDiv, ruleInfo.techniques);
-    this.renderContent(this.targetDiv,     ruleInfo.targets);
-    this.renderContent(this.complianceDiv, ruleInfo.compliance);
-    this.renderContent(this.scDiv,         ruleInfo.sc);
-    this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
+  updateActionAndTagName(elementInfo) {
+    let tagName = elementInfo.tagName;
+    if (elementInfo.role) {
+      tagName += '[role=' + elementInfo.role + ']';
+    }
+    this.renderContent(this.actionDiv, elementInfo.actionMessage);
+    this.renderContent(this.tagNameDiv, tagName);
+  }
+
+  updateAccessibleNameInfo(elementInfo) {
+    let accNameInfo = JSON.parse(elementInfo.accNameInfo);
+
+    // Accessible name information
+    if (accNameInfo.name) {
+      this.accNameInfoDiv.classList.remove('hide');
+      this.accNameDiv.textContent = accNameInfo.name;
+      this.accNameSourceSpan.textContent = accNameInfo.name_source;
+    } else {
+      this.accNameInfoDiv.classList.add('hide');
+    }
+
+    if (accNameInfo.desc) {
+      this.accDescInfoDiv.classList.remove('hide');
+      this.accDescDiv.textContent = accNameInfo.desc;
+      this.accDescSourceSpan.textContent = accNameInfo.desc_source;
+    } else {
+      this.accDescInfoDiv.classList.add('hide');
+    }
+
+    if (accNameInfo.error_desc) {
+      this.errorDescInfoDiv.classList.remove('hide');
+      this.errorDescDiv.textContent = accNameInfo.error_desc;
+      this.errorDescSourceSpan.textContent = accNameInfo.error_desc_source;
+    } else {
+      this.errorDescInfoDiv.classList.add('hide');
+    }
+
+  }
+
+  updateCCRInfo(elementInfo) {
+    let hasInfo = false;
+
+    this.clearContent(this.ccrInfoTbody);
+    console.log('[update][ccrInfo]' + elementInfo.ccrInfo);
+    let ccrInfo = JSON.parse(elementInfo.ccrInfo);
+    hasInfo = this.renderContent(this.ccrInfoTbody, ccrInfo);
+
+    if (hasInfo) {
+      this.ccrInfoDiv.classList.remove('hide');
+    } else {
+      this.ccrInfoDiv.classList.add('hide');
+    }
+  }
+
+  updateVisibilityInfo(elementInfo) {
+    let hasInfo = false;
+
+    this.clearContent(this.visInfoTbody);
+    let visInfo = JSON.parse(elementInfo.visibilityInfo);
+    hasInfo = this.renderContent(this.visInfoTbody, visInfo);
+
+    if (hasInfo) {
+      this.visInfoDiv.classList.remove('hide');
+    } else {
+      this.visInfoDiv.classList.add('hide');
+    }
+  }
+
+  updateAttributeInformation(elementInfo) {
+    let hasAttrs = false;
+
+    this.clearContent(this.attrsTbody);
+    let htmlAttrs = JSON.parse(elementInfo.htmlAttrs);
+    hasAttrs = this.renderContent(this.attrsTbody, htmlAttrs);
+    let ariaAttrs = JSON.parse(elementInfo.ariaAttrs);
+    hasAttrs = hasAttrs || this.renderContent(this.attrsTbody, ariaAttrs);
+
+    if (hasAttrs) {
+      this.attrsInfoTable.classList.remove('hide');
+    } else {
+      this.attrsInfoTable.classList.add('hide');
+    }
+  }
+
+  update(elementInfo) {
+    // Action and tag name Information
+    this.updateActionAndTagName(elementInfo);
+
+    // Accessible name and description information
+    this.updateAccessibleNameInfo(elementInfo);
+
+    // Color contrast information
+    this.updateCCRInfo(elementInfo);
+
+    // Visibility information
+    this.updateVisibilityInfo(elementInfo);
+
+    // Attribute information
+    this.updateAttributeInformation(elementInfo);
   }
 
   clear () {
     let msg = getMessage('tabIsLoading');
-    this.renderContent(this.definitionDiv, msg);
     this.renderContent(this.actionDiv,     msg);
-    this.renderContent(this.purposeDiv,    msg);
-    this.renderContent(this.techniquesDiv, msg);
-    this.renderContent(this.targetDiv,     msg);
-    this.renderContent(this.complianceDiv, msg);
-    this.renderContent(this.scDiv,         msg);
-    this.renderContent(this.additionalDiv, msg);
   }
 }

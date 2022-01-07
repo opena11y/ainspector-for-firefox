@@ -26,6 +26,21 @@ export default class ViewRuleResult {
     this.highlightSelect.setChangeEventCallback(this.onSelectChangeCallback.bind(this));
     this.resultTablist.tabpanel2.appendChild(this.highlightSelect);
 
+    // Create container DIV with heading for rule information
+    const div = document.createElement('div');
+    div.className = 'element-info';
+    this.resultTablist.tabpanel2.appendChild(div);
+
+    const h2 = document.createElement('h2');
+    h2.className = 'selected';
+    h2.textContent = getMessage('elementSelectedLabel');
+    div.appendChild(h2);
+
+    this.resultElementInfo = document.createElement('result-element-info');
+    div.appendChild(this.resultElementInfo);
+
+    this.elementResults = {};
+
     this.initGrid();
   }
 
@@ -35,14 +50,14 @@ export default class ViewRuleResult {
     return csv
   }
 
-  resize (size) {
-    const adjustment = 80;
+  resize (mainHeight) {
+    const adjustment = 130;
     const highlightHeight = this.highlightSelect.offsetHeight;
-    const h = (size - highlightHeight - adjustment);
+    const h = (mainHeight - highlightHeight - adjustment);
 
-    this.elementResultGrid.resize(h);
+    this.elementResultGrid.resize((h/2));
+    this.resultElementInfo.resize((h/2));
     this.resultRuleInfo.resize(h);
-
   }
 
   initGrid () {
@@ -120,9 +135,10 @@ export default class ViewRuleResult {
   }
 
   update (infoRuleResult) {
-    let i, id, row, er, style, sortValue, label, rowAccName, cellAccName = '';
+    let i, id, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
+    this.elementsResultInfo = {};
     this.elementResultGrid.deleteDataRows();
 
     getOptions().then( (options) => {
@@ -132,11 +148,21 @@ export default class ViewRuleResult {
         // check to exclude pass and not applicable rules
         if (options.resultsIncludePassNa ||
             (['', 'V', 'W', 'MC'].indexOf(er.result) > 0)) {
-          row = this.elementResultGrid.addRow(this.getRowId(er.position));
+
+          rowId = this.getRowId(er.position);
+
+          this.elementResults[rowId] = er;
+          row = this.elementResultGrid.addRow(rowId);
 
           // Add element information cell (column 1)
-          rowAccName = er.element;
-          this.elementResultGrid.addDataCell(row, er.element, '', 'element');
+
+          elemName = er.element;
+          if (er.tagName) {
+            elemName = er.tagName;
+          }
+
+          rowAccName = elemName;
+          this.elementResultGrid.addDataCell(row, elemName, '', 'element-info');
 
           // Add result information cell (column 2)
           style = 'result ' + this.getResultStyle(er.result);
@@ -183,6 +209,7 @@ export default class ViewRuleResult {
   onRowSelectionCallback (id) {
     let position = false;
     if (id) {
+      this.resultElementInfo.update(this.elementResults[id]);
       position = parseInt(id.substring(3));
       if (position && typeof position === 'number') {
         if (this.handleRowSelection) {

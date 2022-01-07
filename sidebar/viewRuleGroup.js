@@ -5,9 +5,7 @@ const getMessage = browser.i18n.getMessage;
 import { getOptions } from '../storage.js';
 
 export default class ViewRuleGroup {
-  constructor(id, handleRowActivation) {
-    let div, h2;
-
+  constructor(id, handleRowActivation) {0
     this.ruleGroupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.ruleGroupNode.appendChild(this.resultSummary);
@@ -19,12 +17,12 @@ export default class ViewRuleGroup {
     this.ruleGroupNode.appendChild(this.ruleResultGrid);
 
     // Create container DIV with heading for rule information
-    div = document.createElement('div');
+    const div = document.createElement('div');
     div.className = 'rule-info';
     this.ruleGroupNode.appendChild(div);
 
-    h2 = document.createElement('h2');
-    h2.className = 'selected-rule';
+    const h2 = document.createElement('h2');
+    h2.className = 'selected';
     h2.textContent = getMessage('ruleSelectedLabel');
     div.appendChild(h2);
 

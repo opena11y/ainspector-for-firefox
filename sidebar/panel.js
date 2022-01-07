@@ -6,27 +6,29 @@ import ViewSummary     from './viewSummary.js';
 import ViewRuleGroup   from './viewRuleGroup.js';
 import ViewRuleResult  from './viewRuleResult.js';
 
-import ResultSummary   from './resultSummary.js';
-import ResultTablist   from './resultTablist.js';
-import ResultGrid      from './resultGrid.js';
-import ResultRuleInfo  from './resultRuleInfo.js';
+import ResultSummary     from './resultSummary.js';
+import ResultTablist     from './resultTablist.js';
+import ResultGrid        from './resultGrid.js';
+import ResultElementInfo from './resultElementInfo.js';
+import ResultRuleInfo    from './resultRuleInfo.js';
 
 import HighlightSelect from './highlightSelect.js';
 import ViewsMenuButton from './viewsMenuButton.js';
 import RerunEvaluationButton from './rerunEvaluationButton.js';
 
-customElements.define('result-summary',    ResultSummary);
-customElements.define('result-tablist',    ResultTablist);
-customElements.define('result-grid',       ResultGrid);
-customElements.define('result-rule-info',  ResultRuleInfo);
-customElements.define('highlight-select',  HighlightSelect);
-customElements.define('views-menu-button', ViewsMenuButton);
+customElements.define('result-summary',      ResultSummary);
+customElements.define('result-tablist',      ResultTablist);
+customElements.define('result-grid',         ResultGrid);
+customElements.define('result-element-info', ResultElementInfo);
+customElements.define('result-rule-info',    ResultRuleInfo);
+customElements.define('highlight-select',    HighlightSelect);
+customElements.define('views-menu-button',   ViewsMenuButton);
 customElements.define('rerun-evaluation-button', RerunEvaluationButton);
 
 var contentPort;
 var myWindowId;
-var logInfo = true;
-var debug = true;
+var logInfo = false;
+var debug = false;
 
 var vSummary;
 var vRuleGroup;
@@ -479,13 +481,7 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../scripts/a11y-content.js' })
-//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_evaluation.js' });
-//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rules.js' });
-//        browser.tabs.executeScript({ file: '../scripts/oaa_a11y_rulesets.js' });
-//        browser.tabs.executeScript({ file: '../highlight.js' });
-//        browser.tabs.executeScript({ file: '../evaluate.js' });
-//        browser.tabs.executeScript({ file: '../content.js' })
+        browser.tabs.executeScript({ file: '../content-scripts/a11y-content.js' })
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
         });

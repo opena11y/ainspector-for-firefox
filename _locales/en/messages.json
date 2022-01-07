@@ -429,6 +429,11 @@
     "description": "All option in the highlight select box"
   },
 
+  "elementSelectedLabel": {
+    "message": "Selected Element",
+    "description": "Selected element details label for rule information"
+  },
+
   "viewsMenuButtonLabel": {
     "message": "Views",
     "description": "Label for button in views menu button"

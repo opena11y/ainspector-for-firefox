@@ -463,7 +463,6 @@ export default class ResultGrid extends HTMLElement {
 
   onRowClick (event) {
     let tgt = event.currentTarget;
-    console.log('[onRowClick][tagName]' + tgt.tagName);
     this.tryHandleRowSelection(tgt.id);
     tgt.focus();
     this.setSelectedRow(tgt);
