@@ -34624,11 +34624,11 @@ OpenAjax.a11y.ElementResult.prototype.getColorContrastInfo = function () {
       this.dom_element) {
     cs = this.dom_element.computed_style;
     if (cs) {
+      info.color_contrast_ratio  = cs.color_contrast_ratio;
       info.color                 = cs.color;
       info.color_hex             = '#' + cs.color_hex;
       info.background_color      = cs.background_color;
       info.background_color_hex  = '#' + cs.background_color_hex;
-      info.color_contrast_ratio  = cs.color_contrast_ratio;
       info.large_font            = cs.is_large_font;
       info.background_image      = cs.background_image;
       info.background_repeat     = cs.background_repeat;
@@ -62733,10 +62733,24 @@ function getElementResultInfo(ruleResult) {
 
 function getRuleResultInfo(ruleId, highlight, position) {
 
-  let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
-  let ruleResult = evaluationResult.getRuleResult(ruleId);
+  const evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
+  const ruleResult = evaluationResult.getRuleResult(ruleId);
+  const elemSummaryResult = ruleResult.getElementResultsSummary();
+
+  const rule = ruleResult.getRule();
+  const required = ruleResult.isRuleRequired()
+  const title = rule.getSummary(required);
 
   let info = {};
+
+  info.title          = title;
+
+  console.log('[elemSummaryResult][violations]: ' + elemSummaryResult.violations);
+  info.violations     = elemSummaryResult.violations;
+  info.warnings       = elemSummaryResult.warnings;
+  info.manual_checks  = elemSummaryResult.manual_checks;
+  info.passed         = elemSummaryResult.passed;
+  info.hidden         = elemSummaryResult.hidden;
 
   info.detailsAction  = getDetailsAction(ruleResult);
   info.ruleResult     = getResultInfo(ruleResult);

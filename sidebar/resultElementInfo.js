@@ -4,58 +4,63 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div id="message"></div>
-    <div class="result-element-info" class="hide">
-      <h3  id="action-label" class="first">Action</h3>
-      <div id="action"></div>
-
-      <h3  id="tagname-label">Tag Name</h3>
-      <div id="tagname"></div>
-
-      <div id="accname-info">
-        <h3 id="accname-info-label">Accessible Name</h3>
-        <div id="accname"></div>
-        <div>Source: <span id="accname-source"><span></div>
+    <div class="result-element-info">
+      <div id="messages">
+        <div id="message1" class="message"></div>
+        <div id="message2" class="message"></div>
       </div>
+      <div id="info" class="hide">
+        <h3  id="action-label" class="first">Action</h3>
+        <div id="action"></div>
 
-      <div id="accdesc-info">
-        <h3 id="accdesc-info-label">Accessible Description</h3>
-        <div id="accdesc"></div>
-        <div>Source: <span id="accdesc-source"><span></div>
-      </div>
+        <h3  id="tagname-label">Tag Name</h3>
+        <div id="tagname"></div>
 
-      <div id="errordesc-info">
-        <h3 id="errordesc-info-label">Error Description</h3>
-        <div id="errordesc"></div>
-        <div>Source: <span id="errordesc-source"><span></div>
-      </div>
+        <div id="accname-info">
+          <h3 id="accname-info-label">Accessible Name</h3>
+          <div id="accname"></div>
+          <div>Source: <span id="accname-source"><span></div>
+        </div>
 
-      <div id="ccr-info">
-        <h3 id="ccr-info-label">Color Contrast</h3>
-        <table  aria-labelledby="ccr-info-label" class="ccr-info">
-          <tbody id="ccr-content">
+        <div id="accdesc-info">
+          <h3 id="accdesc-info-label">Accessible Description</h3>
+          <div id="accdesc"></div>
+          <div>Source: <span id="accdesc-source"><span></div>
+        </div>
+
+        <div id="errordesc-info">
+          <h3 id="errordesc-info-label">Error Description</h3>
+          <div id="errordesc"></div>
+          <div>Source: <span id="errordesc-source"><span></div>
+        </div>
+
+        <div id="ccr-info">
+          <h3 id="ccr-info-label">Color Contrast</h3>
+          <table  aria-labelledby="ccr-info-label" class="ccr-info">
+            <tbody id="ccr-content">
+            </tbody>
+          </table>
+        </div>
+
+        <div id="visibility-info">
+          <h3 id="visibility-info-label">Visibility</h3>
+          <table  aria-labelledby="visibility-info-label" class="visibility-info">
+            <tbody id="visibility-content">
+            </tbody>
+          </table>
+        </div>
+
+        <table id="attrs-info" aria-label="Attribute Information" class="attrs-info">
+          <thead>
+            <tr>
+              <th id="attrs-info-name">Attribute</th>
+              <th id="attrs-info-value">Value</th>
+            </tr>
+          </thead>
+          <tbody id="attrs-content">
           </tbody>
         </table>
       </div>
-
-      <div id="visibility-info">
-        <h3 id="visibility-info-label">Visibility</h3>
-        <table  aria-labelledby="visibility-info-label" class="visibility-info">
-          <tbody id="visibility-content">
-          </tbody>
-        </table>
-      </div>
-
-      <table id="attrs-info" aria-label="Attribute Information" class="attrs-info">
-        <thead>
-          <tr>
-            <th id="attrs-info-name">Attribute</th>
-            <th id="attrs-info-value">Value</th>
-          </tr>
-        </thead>
-        <tbody id="attrs-content">
-        </tbody>
-      </table>
     </div>
 `;
 
@@ -77,12 +82,15 @@ export default class ResultElementInfo extends HTMLElement {
     this.setHeading('#action-label',     'ruleActionLabel');
 
     // Create content references
-    this.messageDiv = this.shadowRoot.querySelector('#message');
-    this.infoDiv = this.shadowRoot.querySelector('.result-element-info');
+    this.resultElemInfoDiv = this.shadowRoot.querySelector('.result-element-info');
 
+    this.messagesDiv = this.shadowRoot.querySelector('#messages');
+    this.message1Div = this.shadowRoot.querySelector('#message1');
+    this.message2Div = this.shadowRoot.querySelector('#message2');
+
+    this.infoDiv = this.shadowRoot.querySelector('#info');
     this.actionDiv   = this.shadowRoot.querySelector('#action');
     this.tagNameDiv  = this.shadowRoot.querySelector('#tagname');
-
 
     this.accNameInfoDiv    = this.shadowRoot.querySelector('#accname-info');
     this.accNameDiv        = this.shadowRoot.querySelector('#accname');
@@ -107,7 +115,7 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   resize (size) {
-    this.infoDiv.style.height = size + 'px';
+    this.resultElemInfoDiv.style.height = size + 'px';
   }
 
   setHeading (headingId, messageId) {
@@ -235,6 +243,9 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   update(elementInfo) {
+    this.messagesDiv.classList.add('hide');
+    this.infoDiv.classList.remove('hide');
+
     // Action and tag name Information
     this.updateActionAndTagName(elementInfo);
 
@@ -249,15 +260,19 @@ export default class ResultElementInfo extends HTMLElement {
 
     // Attribute information
     this.updateAttributeInformation(elementInfo);
-
-    this.messageDiv.classList.add('hide');
-    this.infoDiv.classList.remove('hide');
   }
 
-  clear () {
-    let msg = getMessage('tabIsLoading');
-    this.renderContent(this.messageDiv, msg);
-    this.messageDiv.classList.remove('hide');
+  clear (message1, message2) {
+    this.messagesDiv.classList.remove('hide');
     this.infoDiv.classList.add('hide');
+    this.message1Div.textContent = '';
+    this.message2Div.textContent = '';
+
+    if (typeof message1 === 'string') {
+      this.message1Div.textContent = message1;
+    }
+    if (typeof message2 === 'string') {
+      this.message2Div.textContent = message2;
+    }
   }
 }

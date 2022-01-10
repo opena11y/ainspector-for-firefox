@@ -10,6 +10,8 @@ export default class ViewRuleResult {
     this.handleRowSelection = handleRowSelection;
 
     this.ruleResultDiv = document.getElementById(id);
+    this.elementSummary = document.createElement('element-summary');
+    this.ruleResultDiv.appendChild(this.elementSummary);
 
     this.resultTablist = document.createElement('result-tablist');
     this.ruleResultDiv.appendChild(this.resultTablist);
@@ -51,7 +53,7 @@ export default class ViewRuleResult {
   }
 
   resize (mainHeight) {
-    const adjustment = 130;
+    const adjustment = 160;
     const highlightHeight = this.highlightSelect.offsetHeight;
     const h = (mainHeight - highlightHeight - adjustment);
 
@@ -108,10 +110,6 @@ export default class ViewRuleResult {
     return 'er-' + position;
   }
 
-  getPositionFromId(id) {
-    return id.subString(3, id.length);
-  }
-
   getResultAccessibleName (result) {
     let accName = getMessage('notApplicableLabel');
 
@@ -135,10 +133,18 @@ export default class ViewRuleResult {
   }
 
   update (infoRuleResult) {
-    let i, id, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
+    let i, id, pos, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
-    this.elementsResultInfo = {};
+
+    this.elementsResults = {};
+
+    this.elementSummary.violations   = infoRuleResult.violations;
+    this.elementSummary.warnings     = infoRuleResult.warnings;
+    this.elementSummary.manualChecks = infoRuleResult.manual_checks;
+    this.elementSummary.passed       = infoRuleResult.passed;
+    this.elementSummary.hidden       = infoRuleResult.hidden;
+
     this.elementResultGrid.deleteDataRows();
 
     getOptions().then( (options) => {
@@ -187,7 +193,8 @@ export default class ViewRuleResult {
 
       if (count > 0) {
         this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
-        const id = this.elementResultGrid.setSelectedRowUsingLastId();
+        id = this.elementResultGrid.setSelectedRowUsingLastId();
+        this.resultElementInfo.update(this.elementResults[id]);
         this.resultRuleInfo.update(infoRuleResult.detailsAction);
       } else {
         if (infoRuleResult.elementResults.length === 0) {
@@ -195,17 +202,18 @@ export default class ViewRuleResult {
         } else {
           label = getMessage('noViolationsWarningsMCResultsMsg');
         }
-        this.elementResultGrid.addNoResultsRow(label);
-        this.resultRuleInfo.clear();
-        this.resultElementInfo.clear();
+        console.log('[label]: ' + label);
+        this.elementResultGrid.deleteDataRows(label);
+        this.resultRuleInfo.clear(label);
+        this.resultElementInfo.clear(label);
       }
     });
   }
 
-  clear () {
-    this.elementResultGrid.deleteDataRows();
-    this.resultRuleInfo.clear();
-    this.resultElementInfo.clear();
+  clear (message1, message2) {
+    this.elementResultGrid.deleteDataRows(message1, message2);
+    this.resultRuleInfo.clear(message1, message2);
+    this.resultElementInfo.clear(message1, message2);
   }
 
   onRowSelectionCallback (id) {

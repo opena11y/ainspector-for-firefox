@@ -4,6 +4,10 @@
   display: none;
 }
 
+.message {
+  font-style: italic;
+}
+
 .result-element-info {
   margin: 0;
   border: 1px solid #aaa;

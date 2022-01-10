@@ -1,5 +1,13 @@
 /* resultRuleInfo.css */
 
+.hide {
+  display: none;
+}
+
+.message {
+  font-style: italic;
+}
+
 .result-rule-info {
   border: 1px solid #aaa;
   padding: 2px;

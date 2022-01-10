@@ -9,6 +9,7 @@ import ViewRuleResult  from './viewRuleResult.js';
 import ResultSummary     from './resultSummary.js';
 import ResultTablist     from './resultTablist.js';
 import ResultGrid        from './resultGrid.js';
+import ElementSummary    from './elementSummary.js';
 import ResultElementInfo from './resultElementInfo.js';
 import ResultRuleInfo    from './resultRuleInfo.js';
 
@@ -19,6 +20,7 @@ import RerunEvaluationButton from './rerunEvaluationButton.js';
 customElements.define('result-summary',      ResultSummary);
 customElements.define('result-tablist',      ResultTablist);
 customElements.define('result-grid',         ResultGrid);
+customElements.define('element-summary',     ElementSummary);
 customElements.define('result-element-info', ResultElementInfo);
 customElements.define('result-rule-info',    ResultRuleInfo);
 customElements.define('highlight-select',    HighlightSelect);
@@ -55,6 +57,8 @@ const getMessage = browser.i18n.getMessage;
 const emptyContent         = getMessage("emptyContent");
 const tabIsLoading         = getMessage("tabIsLoading");
 const protocolNotSupported = getMessage("protocolNotSupported");
+const ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
+const ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
 
 function addLabelsAndHelpContent () {
   // Header titles and labels
@@ -400,7 +404,12 @@ function updateSidebar (info) {
     // Update the page information footer
     infoTitle.textContent    = info.title;
     infoLocation.textContent = info.location;
-    infoRuleset.textContent  = info.ruleset;
+    if (info.ruleset === 'ARIA_STRICT') {
+      infoRuleset.textContent  = ariaStrictRulesetLabel;
+    } else {
+      infoRuleset.textContent  = ariaTransLRulesetLabel;
+    }
+
 
     // Update the headings box
     if (typeof info.infoSummary === 'object') {
@@ -416,7 +425,7 @@ function updateSidebar (info) {
       }
       else {
         if (info.infoRuleResult) {
-          viewTitle.textContent = 'Rule Result';
+          viewTitle.textContent = info.infoRuleResult.title;
           vRuleResult.update(info.infoRuleResult);
           enableButtons();
         }
@@ -438,13 +447,22 @@ function updateSidebar (info) {
     if (parts.length == 1) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;
+      vSummary.clear(info);
+      vRuleGroup.clear(info);
+      vRuleResult.clear(info);
     } else {
-      infoLocation.textContent = parts[0];
-      infoTitle.textContent = parts[1];
+      if (parts.length == 2) {
+        infoLocation.textContent = parts[0];
+        infoTitle.textContent = parts[1];
+        vSummary.clear(parts[0], parts[1]);
+        vRuleGroup.clear(parts[0], parts[1]);
+        vRuleResult.clear(parts[0], parts[1]);
+      } else {
+        vSummary.clear();
+        vRuleGroup.clear();
+        vRuleResult.clear();
+      }
     }
-    vSummary.clear();
-    vRuleGroup.clear();
-    vRuleResult.clear();
     disableButtons();
   }
 }
@@ -462,9 +480,7 @@ function updateSidebar (info) {
 */
 function runContentScripts (callerfn) {
   if (!sidebarHighlightOnly) {
-    vSummary.clear();
-    vRuleGroup.clear();
-    vRuleResult.clear();
+    updateSidebar (tabIsLoading);
     showView(sidebarView);
   }
 

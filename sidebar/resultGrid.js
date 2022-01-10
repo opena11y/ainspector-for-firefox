@@ -191,38 +191,38 @@ export default class ResultGrid extends HTMLElement {
     return this.theadTr.querySelectorAll('th').length;
   }
 
-  addNoResultsRow (message) {
-    let row = document.createElement('tr');
-    row.tabIndex = 0;
-    row.setAttribute('aria-label', message);
+  addMessageRow (message) {
+    let tr = document.createElement('tr');
+    tr.tabIndex = 0;
+    tr.setAttribute('aria-label', message);
 
     let td = document.createElement('td');
-    td.className = 'no-results';
+    td.className = 'message';
     td.setAttribute('colspan', this.getNumberOfColumns());
     td.textContent = message;
-    row.appendChild(td);
-    this.tbody.appendChild(row);
+    tr.appendChild(td);
+    this.tbody.appendChild(tr);
   }
 
   // The id is used by event handlers for actions related to the row content
   addRow (id) {
-    let row = document.createElement('tr');
+    let tr = document.createElement('tr');
     let rowCount = this.getRowCount();
     // first data row by default gets tabindex=0 to be part of tab sequence of page
-    row.tabIndex = (rowCount === 1) ? 0 : -1;
-    if (row.tabIndex === 0) {
-      row.setAttribute('aria-selected', 'true');
+    tr.tabIndex = (rowCount === 1) ? 0 : -1;
+    if (tr.tabIndex === 0) {
+      tr.setAttribute('aria-selected', 'true');
     }
 
-    row.id = id;
-    this.tbody.appendChild(row);
+    tr.id = id;
+    this.tbody.appendChild(tr);
 
-    row.addEventListener('keydown', this.onRowKeydown.bind(this));
-    row.addEventListener('click', this.onRowClick.bind(this));
+    tr.addEventListener('keydown', this.onRowKeydown.bind(this));
+    tr.addEventListener('click', this.onRowClick.bind(this));
     if (this.onRowActivation) {
-      row.addEventListener('dblclick', this.tryHandleRowActivation.bind((this)));
+      tr.addEventListener('dblclick', this.tryHandleRowActivation.bind((this)));
     }
-    return row;
+    return tr;
   }
 
   addDataCell (row, txt, accName, style, sortValue) {
@@ -282,10 +282,26 @@ export default class ResultGrid extends HTMLElement {
     }
   }
 
-  deleteDataRows () {
+  // messages provide status feedback
+  deleteDataRows (message1, message2) {
+    if (typeof message1 !== 'string') {
+      message1 = '';
+    }
+    if (typeof message2 !== 'string') {
+      message2 = '';
+    }
     while (this.tbody.firstChild) {
       this.tbody.firstChild.remove();
     }
+
+    if (message1) {
+      this.addMessageRow(message1);
+    }
+
+    if (message2) {
+      this.addMessageRow(message2);
+    }
+
   }
 
   // sorts table rows using the data-sort attribute
@@ -414,9 +430,9 @@ export default class ResultGrid extends HTMLElement {
   }
 
   setSelectedRowUsingLastId () {
-    let tr, id = '';
-    if (this.lastSelectedRowId) {
-      tr = this.table.querySelector('tr[id=' + this.lastSelectedRowId + ']')
+    let tr, id = this.lastSelectedRowId;
+    if (id) {
+      tr = this.table.querySelector('tr[id=' + id + ']')
     } else {
       tr = this.tbody.firstElementChild;
     }

@@ -5,30 +5,35 @@ const getMessage = browser.i18n.getMessage;
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="result-rule-info">
-      <h3  id="definition-label">Definition</h3>
-      <div id="definition-content"></div>
+      <div id="messages">
+        <div id="message1" class="message"></div>
+        <div id="message2" class="message"></div>
+      </div>
+      <div id="info">
+        <h3  id="definition-label">Definition</h3>
+        <div id="definition-content"></div>
 
-      <h3  id="action-label">Action</h3>
-      <div id="action-content"></div>
+        <h3  id="action-label">Action</h3>
+        <div id="action-content"></div>
 
-      <h3  id="purpose-label">Purpose</h3>
-      <div id="purpose-content"></div>
+        <h3  id="purpose-label">Purpose</h3>
+        <div id="purpose-content"></div>
 
-      <h3  id="techniques-label">Techniques</h3>
-      <div id="techniques-content"></div>
+        <h3  id="techniques-label">Techniques</h3>
+        <div id="techniques-content"></div>
 
-      <h3  id="target-label">Target Elements</h3>
-      <div id="target-content"></div>
+        <h3  id="target-label">Target Elements</h3>
+        <div id="target-content"></div>
 
-      <h3  id="compliance-label">Compliance</h3>
-      <div id="compliance-content"></div>
+        <h3  id="compliance-label">Compliance</h3>
+        <div id="compliance-content"></div>
 
-      <h3  id="sc-label">WCAG Success Criteria</h3>
-      <div id="sc-content"></div>
+        <h3  id="sc-label">WCAG Success Criteria</h3>
+        <div id="sc-content"></div>
 
-      <h3  id="additional-label">Additional Information</h3>
-      <div id="additional-content"></div>
-
+        <h3  id="additional-label">Additional Information</h3>
+        <div id="additional-content"></div>
+      </div>
     </div>
 `;
 
@@ -58,6 +63,12 @@ export default class ResultRuleInfo extends HTMLElement {
 
     // Create content references
     this.resultRuleInfoDiv = this.shadowRoot.querySelector('.result-rule-info');
+
+    this.messagesDiv    = this.shadowRoot.querySelector('#messages');
+    this.message1Div    = this.shadowRoot.querySelector('#message1');
+    this.message2Div    = this.shadowRoot.querySelector('#message2');
+
+    this.infoDiv       = this.shadowRoot.querySelector('#info');
     this.definitionDiv = this.shadowRoot.querySelector('#definition-content');
     this.actionDiv     = this.shadowRoot.querySelector('#action-content');
     this.purposeDiv    = this.shadowRoot.querySelector('#purpose-content');
@@ -111,6 +122,8 @@ export default class ResultRuleInfo extends HTMLElement {
   }
 
   update(ruleInfo) {
+    this.messagesDiv.classList.add('hide');
+    this.infoDiv.classList.remove('hide');
     this.renderContent(this.definitionDiv, ruleInfo.definition);
     this.renderContent(this.actionDiv,     ruleInfo.action);
     this.renderContent(this.purposeDiv,    ruleInfo.purpose);
@@ -121,15 +134,26 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
   }
 
-  clear () {
-    let msg = getMessage('tabIsLoading');
-    this.renderContent(this.definitionDiv, msg);
-    this.renderContent(this.actionDiv,     msg);
-    this.renderContent(this.purposeDiv,    msg);
-    this.renderContent(this.techniquesDiv, msg);
-    this.renderContent(this.targetDiv,     msg);
-    this.renderContent(this.complianceDiv, msg);
-    this.renderContent(this.scDiv,         msg);
-    this.renderContent(this.additionalDiv, msg);
+  clear (message1, message2) {
+    this.messagesDiv.classList.remove('hide');
+    this.infoDiv.classList.add('hide');
+    this.message1Div.textContent = '';
+    this.message2Div.textContent = '';
+
+    if (typeof message1 === 'string') {
+      this.message1Div.textContent = message1;
+    }
+    if (typeof message2 === 'string') {
+      this.message2Div.textContent = message2;
+    }
+
+    this.renderContent(this.definitionDiv, '');
+    this.renderContent(this.actionDiv,     '');
+    this.renderContent(this.purposeDiv,    '');
+    this.renderContent(this.techniquesDiv, '');
+    this.renderContent(this.targetDiv,     '');
+    this.renderContent(this.complianceDiv, '');
+    this.renderContent(this.scDiv,         '');
+    this.renderContent(this.additionalDiv, '');
   }
 }

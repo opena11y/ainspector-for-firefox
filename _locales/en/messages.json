@@ -244,9 +244,19 @@
     "description": "Abbreviation for passed"
   },
 
-  "passedlabel": {
+  "passedLabel": {
     "message": "Passed",
     "description": "Label for pass results"
+  },
+
+  "hiddenAbbrev": {
+    "message": "H",
+    "description": "Abbreviation for hidden"
+  },
+
+  "hiddenLabel": {
+    "message": "Hidden",
+    "description": "Label for hidden results"
   },
 
   "notApplicablelabel": {

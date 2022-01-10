@@ -5,6 +5,10 @@
   top: -30em;
 }
 
+.message {
+  font-style: italic;
+}
+
 table {
   width: 100%;
   cell-spacing: 0;
@@ -142,9 +146,8 @@ table td.action {
  white-space: nowrap;
 }
 
-table td.no-results {
+table td.message {
   font-style: italic;
-  font-weight: bold;
 }
 
 /* Result brackground colors */

@@ -262,10 +262,24 @@ function getElementResultInfo(ruleResult) {
 
 function getRuleResultInfo(ruleId, highlight, position) {
 
-  let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
-  let ruleResult = evaluationResult.getRuleResult(ruleId);
+  const evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
+  const ruleResult = evaluationResult.getRuleResult(ruleId);
+  const elemSummaryResult = ruleResult.getElementResultsSummary();
+
+  const rule = ruleResult.getRule();
+  const required = ruleResult.isRuleRequired()
+  const title = rule.getSummary(required);
 
   let info = {};
+
+  info.title          = title;
+
+  console.log('[elemSummaryResult][hidden]: ' + elemSummaryResult.hidden);
+  info.violations     = elemSummaryResult.violations;
+  info.warnings       = elemSummaryResult.warnings;
+  info.manual_checks  = elemSummaryResult.manual_checks;
+  info.passed         = elemSummaryResult.passed;
+  info.hidden         = elemSummaryResult.hidden;
 
   info.detailsAction  = getDetailsAction(ruleResult);
   info.ruleResult     = getResultInfo(ruleResult);

@@ -5,7 +5,7 @@ const getMessage = browser.i18n.getMessage;
 import { getOptions } from '../storage.js';
 
 export default class ViewRuleGroup {
-  constructor(id, handleRowActivation) {0
+  constructor(id, handleRowActivation) {
     this.ruleGroupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.ruleGroupNode.appendChild(this.resultSummary);
@@ -205,17 +205,17 @@ export default class ViewRuleGroup {
         } else {
           label = getMessage('noViolationsWarningsMCResultsMsg');
         }
-        this.ruleResultGrid.addNoResultsRow(label);
-        this.resultRuleInfo.clear();
+        this.ruleResultGrid.addMessageRow(label);
+        this.resultRuleInfo.clear(label);
       }
 
     })
   }
 
-  clear () {
+  clear (message1, message2) {
     this.resultSummary.clear();
-    this.ruleResultGrid.deleteDataRows();
-    this.resultRuleInfo.clear();
+    this.ruleResultGrid.deleteDataRows(message1, message2);
+    this.resultRuleInfo.clear(message1, message2);
   }
 
   handleRowSelection (id) {
