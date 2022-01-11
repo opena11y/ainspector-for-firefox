@@ -1,6 +1,7 @@
 /* viewRuleResult.js */
 
 const getMessage = browser.i18n.getMessage;
+const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
 import { getOptions } from '../storage.js';
 
@@ -46,9 +47,88 @@ export default class ViewRuleResult {
     this.initGrid();
   }
 
-  toCSV () {
+  getAccNameProps () {
+    let props = [];
+    for (let er in this.elementResults) {
+      let info = this.elementResults[er];
+      if (info.accNameInfo) {
+        if (info.accNameInfo.name) {
+          if (props.indexOf('name') < 0) {
+            props.push('name');
+            props.push('name_source');
+          }
+        }
+
+        if (info.accNameInfo.desc) {
+          if (props.indexOf('desc') < 0) {
+            props.push('desc');
+            props.push('desc_source');
+          }
+        }
+
+        if (info.accNameInfo.error_desc) {
+          if (props.indexOf('error_desc') < 0) {
+            props.push('error_desc');
+            props.push('error_desc_source');
+          }
+        }
+      }
+    }
+    return props;
+  }
+
+  getVisibilityProps () {
+    return [''];
+  }
+
+  getColorContrastProps () {
+    return [];
+  }
+
+  getHTMLAttributeProps () {
+    return [];
+  }
+
+  getARIAAttributeProps () {
+    return [];
+  }
+
+  addCSVColumnHeaders(props, flag) {
+    if (typeof flag !== 'boolean') {
+      flag = true;
+    }
     let csv = '';
-    csv += this.elementResultGrid.toCSV();
+    for (let i = 0; i < props.length; i += 1) {
+      if ((i !== 0) || flag) {
+        csv += ',';
+      }
+      csv += '"' + props[i] + '"';
+    }
+    console.log('[addSCVColumnHeader][csv]: ' + csv);
+    return csv;
+  }
+
+  toCSV () {
+
+    let accNameProps = this.getAccNameProps();
+    let ccrProps     = this.getColorContrastProps();
+    let visProps     = this.getVisibilityProps();
+    let htmlAttrProps    = this.getHTMLAttributeProps();
+    let ariaAttrProps    = this.getARIAAttributeProps();
+
+    let csv = '';
+    csv += this.addCSVColumnHeaders(basicProps, false);
+    csv += this.addCSVColumnHeaders(accNameProps);
+    csv += this.addCSVColumnHeaders(ccrProps);
+    csv += this.addCSVColumnHeaders(visProps);
+    csv += this.addCSVColumnHeaders(htmlAttrProps);
+    csv += this.addCSVColumnHeaders(ariaAttrProps);
+    csv += '\n';
+
+    for (let er in this.elementResults) {
+      let info = this.elementResults[er];
+      csv += this.resultElementInfo.toCSV(info, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps);
+    }
     return csv
   }
 
@@ -157,6 +237,30 @@ export default class ViewRuleResult {
 
           rowId = this.getRowId(er.position);
 
+          // convert JSON strings to objects
+          if (er.accNameInfo) {
+            er.accNameInfo = JSON.parse(er.accNameInfo);
+          }
+          if (er.crrInfo) {
+            er.ccrInfo = JSON.parse(er.ccrInfo);
+          }
+          if (er.ccrInfo) {
+            er.ccrInfo = JSON.parse(er.ccrInfo);
+          }
+
+          if (er.visibilityInfo) {
+            er.visibilityInfo = JSON.parse(er.visibilityInfo);
+          }
+
+          if (er.htmlAttrInfo) {
+            er.htmlAttrInfo = JSON.parse(er.htmlAttrInfo);
+          }
+
+          if (er.ariaAttrInfo) {
+            er.ariaAttrInfo = JSON.parse(er.ariaAttrInfo);
+          }
+
+          // Save element result object
           this.elementResults[rowId] = er;
           row = this.elementResultGrid.addRow(rowId);
 

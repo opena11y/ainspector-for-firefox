@@ -43,6 +43,15 @@
   line-spacing: 1.25em;
 }
 
+.result-element-info .source {
+  margin-top:  0.5em;
+}
+
+.result-element-info .source span:first-child {
+  font-style: italic;
+}
+
+
 .result-element-info table.ccr-info,
 .result-element-info table.visibility-info {
   margin: 0;

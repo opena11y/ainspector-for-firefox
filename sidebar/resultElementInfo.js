@@ -19,19 +19,19 @@ template.innerHTML = `
         <div id="accname-info">
           <h3 id="accname-info-label">Accessible Name</h3>
           <div id="accname"></div>
-          <div>Source: <span id="accname-source"><span></div>
+          <div class="source"><span>Source:</span> <span id="accname-source"><span></div>
         </div>
 
         <div id="accdesc-info">
           <h3 id="accdesc-info-label">Accessible Description</h3>
           <div id="accdesc"></div>
-          <div>Source: <span id="accdesc-source"><span></div>
+          <div class="source"><span>Source:</span> <span id="accdesc-source"><span></div>
         </div>
 
         <div id="errordesc-info">
           <h3 id="errordesc-info-label">Error Description</h3>
           <div id="errordesc"></div>
-          <div>Source: <span id="errordesc-source"><span></div>
+          <div class="source"><span>Source:</span> <span id="errordesc-source"><span></div>
         </div>
 
         <div id="ccr-info">
@@ -118,6 +118,38 @@ export default class ResultElementInfo extends HTMLElement {
     this.resultElemInfoDiv.style.height = size + 'px';
   }
 
+  getCSVFromObject (info, props, flag) {
+    if (typeof flag !== 'boolean') {
+      flag = true;
+    }
+    let csv = '', value;
+    for (let i = 0; i < props.length; i += 1) {
+      if (info) {
+        value = info[props[i]];
+        if (i != 0 || flag) {
+          csv += ',';
+        }
+      }
+      if (!value) {
+        value = '';
+      }
+      csv += '"' + value + '"';
+      value = '';
+    }
+    return csv;
+  }
+
+  toCSV (elementInfo, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps) {
+    let csv = '';
+    csv += this.getCSVFromObject(elementInfo, basicProps, false);
+    csv += this.getCSVFromObject(elementInfo.accNameInfo, accNameProps);
+    csv += this.getCSVFromObject(elementInfo.ccrInfo, ccrProps);
+    csv += this.getCSVFromObject(elementInfo.visibilityInfo, visProps);
+    csv += this.getCSVFromObject(elementInfo.htmlAttrInfo, htmlAttrProps);
+    csv += this.getCSVFromObject(elementInfo.ariaAttrInfo, ariaAttrProps);
+    return csv + '\n';
+  }
+
   setHeading (headingId, messageId) {
     let h = this.shadowRoot.querySelector(headingId);
     let m = getMessage(messageId)
@@ -169,7 +201,7 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   updateAccessibleNameInfo(elementInfo) {
-    let accNameInfo = JSON.parse(elementInfo.accNameInfo);
+    let accNameInfo = elementInfo.accNameInfo;
 
     // Accessible name information
     if (accNameInfo.name) {
@@ -202,7 +234,7 @@ export default class ResultElementInfo extends HTMLElement {
     let hasInfo = false;
 
     this.clearContent(this.ccrInfoTbody);
-    let ccrInfo = JSON.parse(elementInfo.ccrInfo);
+    let ccrInfo = elementInfo.ccrInfo;
     hasInfo = this.renderContent(this.ccrInfoTbody, ccrInfo);
 
     if (hasInfo) {
@@ -212,11 +244,10 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  updateVisibilityInfo(elementInfo) {
-    let hasInfo = false;
+  updateVisibilityInfo(elementInfo) {let hasInfo = false;
 
     this.clearContent(this.visInfoTbody);
-    let visInfo = JSON.parse(elementInfo.visibilityInfo);
+    let visInfo = elementInfo.visibilityInfo;
     hasInfo = this.renderContent(this.visInfoTbody, visInfo);
 
     if (hasInfo) {
@@ -230,10 +261,10 @@ export default class ResultElementInfo extends HTMLElement {
     let hasAttrs = false;
 
     this.clearContent(this.attrsTbody);
-    let htmlAttrs = JSON.parse(elementInfo.htmlAttrs);
-    hasAttrs = this.renderContent(this.attrsTbody, htmlAttrs);
-    let ariaAttrs = JSON.parse(elementInfo.ariaAttrs);
-    hasAttrs = hasAttrs || this.renderContent(this.attrsTbody, ariaAttrs);
+    let htmlAttrInfo = elementInfo.htmlAttrInfo;
+    hasAttrs = this.renderContent(this.attrsTbody, htmlAttrInfo);
+    let ariaAttrInfo = elementInfo.ariaAttrInfo;
+    hasAttrs = hasAttrs || this.renderContent(this.attrsTbody, ariaAttrInfo);
 
     if (hasAttrs) {
       this.attrsInfoTable.classList.remove('hide');

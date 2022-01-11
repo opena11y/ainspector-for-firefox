@@ -62682,8 +62682,8 @@ function getElementResultInfo(ruleResult) {
     let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
     let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
     let visibilityInfo = JSON.stringify(elementResult.getVisibilityInfo());
-    let htmlAttrs      = JSON.stringify(elementResult.getHTMLAttributes());
-    let ariaAttrs      = JSON.stringify(elementResult.getAriaAttributes());
+    let htmlAttrInfo   = JSON.stringify(elementResult.getHTMLAttributes());
+    let ariaAttrInfo   = JSON.stringify(elementResult.getAriaAttributes());
 
     let item = {
       'tagName'        : elementResult.getTagName(),
@@ -62695,12 +62695,12 @@ function getElementResultInfo(ruleResult) {
       'accNameInfo'    : accNameInfo,
       'ccrInfo'        : ccrInfo,
       'visibilityInfo' : visibilityInfo,
-      'htmlAttrs'      : htmlAttrs,
-      'ariaAttrs'      : ariaAttrs
+      'htmlAttrInfo'   : htmlAttrInfo,
+      'ariaAttrInfo'   : ariaAttrInfo
     };
 
 //    console.log('[addElementResult][       ccrInfo]: ' + ccrInfo);
-//    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
+    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
 
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
@@ -62745,7 +62745,7 @@ function getRuleResultInfo(ruleId, highlight, position) {
 
   info.title          = title;
 
-  console.log('[elemSummaryResult][violations]: ' + elemSummaryResult.violations);
+  console.log('[elemSummaryResult][hidden]: ' + elemSummaryResult.hidden);
   info.violations     = elemSummaryResult.violations;
   info.warnings       = elemSummaryResult.warnings;
   info.manual_checks  = elemSummaryResult.manual_checks;
