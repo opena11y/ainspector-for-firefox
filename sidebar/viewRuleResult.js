@@ -78,19 +78,65 @@ export default class ViewRuleResult {
   }
 
   getVisibilityProps () {
-    return [''];
+    let props = [];
+    if (this.elementResults) {
+      let id = Object.keys(this.elementResults)[0]
+      if (id) {
+        let info = this.elementResults[id];
+        if (info) {
+          for (let item in info.visibilityInfo) {
+            props.push(item);
+          }
+        }
+      }
+    }
+    return props;
   }
 
   getColorContrastProps () {
-    return [];
+    let props = [];
+    if (this.elementResults) {
+      let id = Object.keys(this.elementResults)[0]
+      if (id) {
+        let info = this.elementResults[id];
+        if (info) {
+          for (let item in info.ccrInfo) {
+            props.push(item);
+          }
+        }
+      }
+    }
+    return props;
   }
 
   getHTMLAttributeProps () {
-    return [];
+    let props = [];
+    for (let id in this.elementResults) {
+      let info = this.elementResults[id];
+      if (info.htmlAttrInfo) {
+        for (let item in info.htmlAttrInfo) {
+          if (props.indexOf(item) < 0) {
+            props.push(item);
+          }
+        }
+      }
+    }
+    return props;
   }
 
   getARIAAttributeProps () {
-    return [];
+    let props = [];
+    for (let id in this.elementResults) {
+      let info = this.elementResults[id];
+      if (info.ariaAttrInfo) {
+        for (let item in info.ariaAttrInfo) {
+          if (props.indexOf(item) < 0) {
+            props.push(item);
+          }
+        }
+      }
+    }
+    return props;
   }
 
   addCSVColumnHeaders(props, flag) {
