@@ -85,21 +85,18 @@ footer .info .value {
 
 footer .footer-buttons {
   padding-top: 10px;
-  display:  grid;
-  grid-template-columns: 1fr 60px 5fr 125px 3fr 100px;
+  display: flex;
+  justify-content: space-evenly;
+  align-content: space-between;
+  flex-flow: row wrap;
+  row-gap: 0.5rem;
+  margin-top: 1.25rem;
 }
 
 footer button {
+  padding-left: 1em;
+  padding-right: 1em;
   text-align: center;
-  width: 120px;
-}
-
-footer button#export-button {
-  width: 60px;
-}
-
-footer button#preferences-button {
-  width: 90px;
 }
 
 button:focus {
