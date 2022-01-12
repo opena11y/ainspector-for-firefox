@@ -47,6 +47,9 @@ export default class ViewRuleResult {
     this.initGrid();
   }
 
+  // Not all element information objects
+  // will define accessible names, descriptions
+  // or error descriptions
   getAccNameProps () {
     let props = [];
     for (let er in this.elementResults) {
@@ -77,6 +80,9 @@ export default class ViewRuleResult {
     return props;
   }
 
+  // If one element information object has
+  // CCR information all element information
+  // objects will
   getVisibilityProps () {
     let props = [];
     if (this.elementResults) {
@@ -93,6 +99,9 @@ export default class ViewRuleResult {
     return props;
   }
 
+  // If one element information object has
+  // visibility information all
+  // element information objects will
   getColorContrastProps () {
     let props = [];
     if (this.elementResults) {
@@ -109,6 +118,9 @@ export default class ViewRuleResult {
     return props;
   }
 
+  // Check all element information objects,
+  // since not all elements use the same
+  // HTML attributes
   getHTMLAttributeProps () {
     let props = [];
     for (let id in this.elementResults) {
@@ -124,6 +136,9 @@ export default class ViewRuleResult {
     return props;
   }
 
+  // Check all element information objects,
+  // since not all elements use the same
+  // ARIA attributes
   getARIAAttributeProps () {
     let props = [];
     for (let id in this.elementResults) {
