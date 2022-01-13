@@ -84,20 +84,16 @@ function addLabelsAndHelpContent () {
 
 // Callback functions used by views for activation or selection of rows
 
-function callbackSummaryRowActivation (event) {
-  const tgt = event.currentTarget;
-
+function callbackSummaryRowActivation (id) {
   sidebarView      = 'rule-group';
-  sidebarGroupType = tgt.id.substring(0,2);
-  sidebarGroupId   = parseInt(tgt.id.substring(2));
+  sidebarGroupType = id.substring(0,2);
+  sidebarGroupId   = parseInt(id.substring(2));
   runContentScripts('handleSummaryRowClick');
 }
 
-function callbackRuleGroupRowActivation (event) {
-  const tgt = event.currentTarget;
-
+function callbackRuleGroupRowActivation (id) {
   sidebarView   = 'rule-result';
-  sidebarRuleId = tgt.id;
+  sidebarRuleId = id;
   runContentScripts('callbackSummaryRowActivation');
 }
 
@@ -366,10 +362,10 @@ function enableButtons() {
 */
 
 function resizeView () {
-  let  minMainHeight = 650;
+  let  minMainHeight = 630;
 
   if (sidebarView === 'summary') {
-    minMainHeight = 450;
+    minMainHeight = minMainHeight - 200;
   }
 
   const height = window.innerHeight;
@@ -414,18 +410,21 @@ function updateSidebar (info) {
     // Update the headings box
     if (typeof info.infoSummary === 'object') {
       viewTitle.textContent = getMessage("viewTitleSummaryLabel");
+        viewTitle.title = '';
       vSummary.update(info.infoSummary);
       enableButtons();
     }
     else {
       if (typeof info.infoRuleGroup === 'object') {
         viewTitle.textContent = info.infoRuleGroup.groupLabel;
+        viewTitle.title = '';
         vRuleGroup.update(info.infoRuleGroup);
         enableButtons();
       }
       else {
         if (info.infoRuleResult) {
           viewTitle.textContent = info.infoRuleResult.title;
+          viewTitle.title = info.infoRuleResult.title;
           vRuleResult.update(info.infoRuleResult);
           enableButtons();
         }

@@ -16045,8 +16045,6 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
 
   this.attributes = attributes;
 
-  console.log('[' + node.tagName + '][attributes]: ' + typeof attributes + ' ' + attributes.length);
-
   this.class_name = "";
 
   if (typeof node.className === 'string') this.class_name = node.className;
@@ -34450,9 +34448,8 @@ OpenAjax.a11y.ElementResult = function (rule_result, result_value, cache_item, m
   }
   this.dom_node = cache_item.node;
 
-  console.log('[get attributes]: ' + typeof this.dom_element.attributes);
   if (this.dom_element && this.dom_element.attributes) {
-    console.log('[' + this.dom_element.tag_name + '][attributes]: ' + this.dom_element.attributes)
+//    console.log('[' + this.dom_element.tag_name + '][attributes]: ' + this.dom_element.attributes)
     for (var i = 0; i < this.dom_element.attributes.length; i += 1) {
       var attr = this.dom_element.attributes[i];
       var name = attr.name.trim();
@@ -62731,7 +62728,6 @@ function getRuleResultInfo(ruleId, highlight, position) {
 
   info.title          = title;
 
-  console.log('[elemSummaryResult][hidden]: ' + elemSummaryResult.hidden);
   info.violations     = elemSummaryResult.violations;
   info.warnings       = elemSummaryResult.warnings;
   info.manual_checks  = elemSummaryResult.manual_checks;

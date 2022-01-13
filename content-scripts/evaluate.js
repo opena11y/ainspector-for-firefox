@@ -274,7 +274,6 @@ function getRuleResultInfo(ruleId, highlight, position) {
 
   info.title          = title;
 
-  console.log('[elemSummaryResult][hidden]: ' + elemSummaryResult.hidden);
   info.violations     = elemSummaryResult.violations;
   info.warnings       = elemSummaryResult.warnings;
   info.manual_checks  = elemSummaryResult.manual_checks;

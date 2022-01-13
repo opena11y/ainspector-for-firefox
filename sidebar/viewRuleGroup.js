@@ -6,6 +6,9 @@ import { getOptions } from '../storage.js';
 
 export default class ViewRuleGroup {
   constructor(id, handleRowActivation) {
+
+    this.handleRowActivation = handleRowActivation;
+
     this.ruleGroupNode     = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.ruleGroupNode.appendChild(this.resultSummary);
@@ -25,6 +28,12 @@ export default class ViewRuleGroup {
     h2.className = 'selected';
     h2.textContent = getMessage('ruleSelectedLabel');
     div.appendChild(h2);
+
+    const button = document.createElement('button');
+    button.id = 'rule-group-details';
+    button.textContent = getMessage('detailsLabel');
+    button.addEventListener('click', this.onDetailsButtonClick.bind(this));
+    div.appendChild(button);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
     div.appendChild(this.resultRuleInfo);
@@ -57,6 +66,13 @@ export default class ViewRuleGroup {
 
     this.ruleResultGrid.resize(h);
     this.resultRuleInfo.resize(h);
+  }
+
+  onDetailsButtonClick () {
+    let rowId = this.ruleResultGrid.getSelectedRowId();
+    if (this.handleRowActivation && rowId) {
+      this.handleRowActivation(rowId);
+    }
   }
 
   getResultStyle (result) {

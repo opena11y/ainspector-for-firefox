@@ -24,6 +24,11 @@
     "description": "Label for back button"
   },
 
+  "detailsLabel": {
+    "message": "Details",
+    "description": "Label for details button"
+  },
+
   "viewsButtonLabel": {
     "message": "Views",
     "description": "Label for views button"

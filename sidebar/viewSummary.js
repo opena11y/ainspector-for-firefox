@@ -10,6 +10,8 @@ import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabe
 export default class ViewSummary {
   constructor (id, handleRowActivation) {
 
+    this.handleRowActivation = handleRowActivation;
+
     this.summaryNode   = document.getElementById(id);
 
     this.resultSummary = document.createElement('result-summary');
@@ -23,10 +25,22 @@ export default class ViewSummary {
     this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
     this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
+    const button1 = document.createElement('button');
+    button1.id = 'rc-details';
+    button1.textContent = getMessage('detailsLabel');
+    button1.addEventListener('click', this.onDetailsButtonClick.bind(this));
+    this.resultTablist.tabpanel1.appendChild(button1);
+
     this.glResultGrid = document.createElement('result-grid');
     this.glResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
+
+    const button2 = document.createElement('button');
+    button2.id = 'gl-details';
+    button2.textContent = getMessage('detailsLabel');
+    button2.addEventListener('click', this.onDetailsButtonClick.bind(this));
+    this.resultTablist.tabpanel2.appendChild(button2);
 
     this.initGrids();
 
@@ -55,21 +69,24 @@ export default class ViewSummary {
     return value;
   }
 
-  handleRowClick (event) {
+  onDetailsButtonClick (event) {
     let tgt = event.currentTarget;
-    let info = {};
-    info.id = 'eval';
-    info.view = 'group';
-    info.groupId = parseInt(tgt.id.substring(2));
-    info.groupType = tgt.id.substring(0,2);
+    let rowId = '';
 
-    browser.runtime.sendMessage(info);
+    if (tgt.id) {
+      if (tgt.id.indexOf('rc') >= 0) {
+        rowId = this.rcResultGrid.getSelectedRowId();
+      } else {
+        rowId = this.glResultGrid.getSelectedRowId();
+      }
+      if (this.handleRowActivation && rowId) {
+        this.handleRowActivation(rowId);
+      }
+    }
   }
 
   initGrids () {
     let i, id, label, row;
-
-    let handleRowClick = this.handleRowClick.bind(this);
 
     this.resultTablist.tabLabel1 = getMessage("ruleCategoriesLabel");
 

@@ -59,7 +59,7 @@ export default class ResultGrid extends HTMLElement {
       } else {
         item = cell.textContent;
       }
-      last = (index === (array.length-1));
+      last = (index === (array.length - 1));
       csv += formatItemForCSV(item, last);
     })
     csv += '\n';
@@ -219,9 +219,7 @@ export default class ResultGrid extends HTMLElement {
 
     tr.addEventListener('keydown', this.onRowKeydown.bind(this));
     tr.addEventListener('click', this.onRowClick.bind(this));
-    if (this.onRowActivation) {
-      tr.addEventListener('dblclick', this.tryHandleRowActivation.bind((this)));
-    }
+    tr.addEventListener('dblclick', this.onRowDoubleClick.bind(this));
     return tr;
   }
 
@@ -459,6 +457,10 @@ export default class ResultGrid extends HTMLElement {
     return '';
   }
 
+  getSelectedRowId () {
+    return this.lastSelectedRowId;
+  }
+
   tryHandleRowSelection (id) {
     if (this.onRowSelection) {
       this.onRowSelection(id);
@@ -467,9 +469,9 @@ export default class ResultGrid extends HTMLElement {
     return false;
   }
 
-  tryHandleRowActivation (event) {
+  tryHandleRowActivation (id) {
     if (!this.activationDisabled && this.onRowActivation) {
-      this.onRowActivation(event);
+      this.onRowActivation(id);
       return true;
     }
     return false;
@@ -487,6 +489,16 @@ export default class ResultGrid extends HTMLElement {
     event.stopPropagation();
   }
 
+  onRowDoubleClick (event) {
+    let tgt = event.currentTarget;
+    tgt.focus();
+    this.setSelectedRow(tgt);
+    this.tryHandleRowActivation(tgt.id);
+
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   onRowKeydown (event) {
     let nextItem = null;
     let flag = false;
@@ -497,7 +509,7 @@ export default class ResultGrid extends HTMLElement {
     switch(event.key) {
       case 'Enter':
         if (tgt.id) {
-          this.tryHandleRowActivation(event);
+          this.tryHandleRowActivation(tgt.id);
           flag = true;
         }
         break;
@@ -550,7 +562,7 @@ export default class ResultGrid extends HTMLElement {
     switch(event.key) {
       case 'Enter':
         if (tgtTr.id) {
-          this.tryHandleRowActivation(event);
+          this.tryHandleRowActivation(tgtTr.id);
           flag = true;
         }
         break;

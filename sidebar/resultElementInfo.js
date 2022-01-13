@@ -118,38 +118,6 @@ export default class ResultElementInfo extends HTMLElement {
     this.resultElemInfoDiv.style.height = size + 'px';
   }
 
-  getCSVFromObject (info, props, flag) {
-    if (typeof flag !== 'boolean') {
-      flag = true;
-    }
-    let csv = '', value;
-    for (let i = 0; i < props.length; i += 1) {
-      if (info) {
-        value = info[props[i]];
-        if (i != 0 || flag) {
-          csv += ',';
-        }
-      }
-      if (!value) {
-        value = '';
-      }
-      csv += '"' + value + '"';
-      value = '';
-    }
-    return csv;
-  }
-
-  toCSV (elementInfo, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps) {
-    let csv = '';
-    csv += this.getCSVFromObject(elementInfo, basicProps, false);
-    csv += this.getCSVFromObject(elementInfo.accNameInfo, accNameProps);
-    csv += this.getCSVFromObject(elementInfo.ccrInfo, ccrProps);
-    csv += this.getCSVFromObject(elementInfo.visibilityInfo, visProps);
-    csv += this.getCSVFromObject(elementInfo.htmlAttrInfo, htmlAttrProps);
-    csv += this.getCSVFromObject(elementInfo.ariaAttrInfo, ariaAttrProps);
-    return csv + '\n';
-  }
-
   setHeading (headingId, messageId) {
     let h = this.shadowRoot.querySelector(headingId);
     let m = getMessage(messageId)
