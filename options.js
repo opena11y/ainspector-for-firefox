@@ -15,6 +15,9 @@ const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]'
 const exportCSV      = document.querySelector('input[id="options-export-csv"]');
 const exportJSON     = document.querySelector('input[id="options-export-json"]');
 const exportPrefix   = document.querySelector('#options-export-prefix');
+const exportDate     = document.querySelector('#options-export-date');
+const exportTime     = document.querySelector('#options-export-time');
+
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
@@ -75,10 +78,14 @@ function saveFormOptions (e) {
   const options = {
     rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
+
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
+
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
-    filenamePrefix:    exportPrefix.value
+    filenamePrefix: exportPrefix.value,
+    includeDate:    exportDate.checked,
+    includeTime:    exportTime.checked
   }
 
   if (debug) console.log(options);
@@ -98,8 +105,10 @@ function updateForm (options) {
 
   exportCSV.checked      = options.exportFormat === 'CSV';
   exportJSON.checked     = options.exportFormat === 'JSON';
+  exportPrefix.value     = options.filenamePrefix;
+  exportDate.checked     = options.includeDate;
+  exportTime.checked     = options.includeTime;
 
-  exportPrefix.value    = options.filenamePrefix;
 }
 
 function updateOptionsForm() {
@@ -125,6 +134,9 @@ inclPassNa.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);
 exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
+exportDate.addEventListener('change', saveFormOptions);
+exportTime.addEventListener('change', saveFormOptions);
+
 
 resetDefaults.addEventListener('click', saveDefaultOptions);
 

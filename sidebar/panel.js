@@ -234,37 +234,41 @@ function onPreferencesClick (event) {
 
 function getCSVFileName (fname, options) {
   // get group ID
-  let groupId;
+  let groupId, date = '', time = '', dd, mm, yyyy, hh, ss, ruleId, parts, ruleNum;
   if (sidebarGroupType === 'rc') {
-    groupId = getRuleCategoryFilenameId(options.groupId);
+    groupId = getRuleCategoryFilenameId(sidebarGroupId);
   } else {
-    groupId = getGuidelineFilenameId(options.groupId);
+    groupId = getGuidelineFilenameId(sidebarGroupId);
   }
 
   // get today's date
   let today = new Date();
-  let dd = String(today.getDate()).padStart(2, '0');
-  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  let yyyy = today.getFullYear();
-  const date = yyyy + '-' + mm + '-' + dd;
+  if (options.includeDate) {
+    dd = String(today.getDate()).padStart(2, '0');
+    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    yyyy = today.getFullYear();
+    date = '-' + yyyy + '-' + mm + '-' + dd;
+  }
 
   // get time of day
-  let hh = today.getHours();
-  mm = today.getMinutes();
-  let ss = today.getSeconds();
-  hh = hh < 10 ? "0" + hh : hh;
-  mm = mm < 10 ? "0" + mm : mm;
-  ss = ss < 10 ? "0" + ss : ss;
-  const time = hh + "h-" + mm + 'm-' + ss + 's';
+  if (options.includeTime) {
+    hh = today.getHours();
+    mm = today.getMinutes();
+    ss = today.getSeconds();
+    hh = hh < 10 ? "0" + hh : hh;
+    mm = mm < 10 ? "0" + mm : mm;
+    ss = ss < 10 ? "0" + ss : ss;
+    time = '-' + hh + "h-" + mm + 'm-' + ss + 's';
+  }
 
   // format rule id
-  let ruleId = '';
-  if (options.ruleId && typeof options.ruleId === 'string') {
-    let parts = options.ruleId.split('_');
+  ruleId = '';
+  if (sidebarRuleId && typeof sidebarRuleId === 'string') {
+    parts = sidebarRuleId.split('_');
     if (parts.length == 2) {
-      let ruleNum = parseInt(parts[1]);
+      ruleNum = parseInt(parts[1]);
       ruleNum = ruleNum < 10 ? '0' + ruleNum : ruleNum;
-      ruleId = parts[0] + '-' + ruleNum;
+      ruleId = parts[0].toLowerCase() + '-' + ruleNum;
     }
   }
 
@@ -434,7 +438,7 @@ function updateBackButton () {
 
 function disableButtons() {
   viewsMenuButton.disabled = true;
-  exportButton.disabled = true
+  exportButton.disabled = true;
   rerunEvaluationButton.disabled = true;
   vSummary.disabled = true;
 
@@ -638,12 +642,28 @@ window.addEventListener ("load", function (e) {
 **  Export report download function
 */
 
-function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+
+function onStartedDownload(id) {
+//  console.log(`Started downloading: ${id}`);
 }
+
+function onFailed(error) {
+  console.log(`Download failed: ${error}`);
+}
+
+function download(filename, text) {
+
+  let blob = new Blob([text], {
+   type: "text/plain;charset=utf-8"
+  });
+
+  let downloading = browser.downloads.download({
+    url : URL.createObjectURL(blob),
+    filename : filename,
+    saveAs: true,
+    conflictAction : 'uniquify'
+  });
+  downloading.then(onStartedDownload, onFailed);
+
+}
+

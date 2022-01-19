@@ -22,8 +22,8 @@ export default class commonCSV {
 
   getCSV (options, title, location) {
     let csv = '';
-    csv += `\n"Page Title:","this.clean(${title})"\n`;
-    csv += `"Page URL:","this.clean(${location})"\n`;
+    csv += `\n"Page Title:","${this.clean(title)}"\n`;
+    csv += `"Page URL:","${this.clean(location)}"\n`;
     csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n\n`;
     return csv
   }

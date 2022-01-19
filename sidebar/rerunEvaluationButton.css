@@ -49,7 +49,7 @@
 
 button#rerun-button {
   text-align:  center;
-  width: 120px;
+  width: 10em;
 }
 
 button#rerun-button:focus {

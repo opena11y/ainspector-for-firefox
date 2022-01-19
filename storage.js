@@ -14,9 +14,11 @@ export const defaultOptions = {
   evaluatorName: '',
   exportFormat: 'CSV',  // other option is JSON
   filenamePrefix: '',
-  filenameSummary: 'ai-summary-{date}-{time}',
-  filenameRuleGroup: 'ai-rule-group-{date}-{time}-{group}',
-  filenameRuleResult: 'ai-rule-{date}-{time}-{rule}'
+  filenameSummary: 'ai-summary{date}{time}',
+  filenameRuleGroup: 'ai-rule-group{date}{time}-{group}',
+  filenameRuleResult: 'ai-rule-result{date}{time}-{rule}',
+  includeDate: true,
+  includeTime: true
 };
 
 /*

@@ -56,17 +56,11 @@ export default class ViewSummary {
     this.resultTablist.tabpanel2.appendChild(div2);
     this.glResultGrid.setDetailsButton(button2);
 
+    this.rcResults = [];
+    this.glResults = [];
+
     this.initGrids();
 
-  }
-
-  toCSV () {
-    let csv = '';
-    if (!this.disabled) {
-      csv += this.rcResultGrid.toCSV();
-      csv += this.glResultGrid.toCSV();
-    }
-    return csv
   }
 
   toCSV (options, title, location
@@ -168,8 +162,10 @@ export default class ViewSummary {
     this.resultSummary.manualChecks = infoSummary.manual_checks;
     this.resultSummary.passed       = infoSummary.passed;
 
-    for (i = 0; i < infoSummary.rcResults.length; i += 1) {
-      gResult = infoSummary.rcResults[i];
+    this.rcResults = infoSummary.rcResults;
+
+    for (i = 0; i < this.rcResults.length; i += 1) {
+      gResult = this.rcResults[i];
       row = this.rcResultGrid.getRowById('rc' + gResult.id);
 
       cell = this.rcResultGrid.getCellByPosition(row, 1);
@@ -195,8 +191,10 @@ export default class ViewSummary {
       row.setAttribute('aria-label', rowAccName);
     }
 
-    for (i = 0; i < infoSummary.glResults.length; i += 1) {
-      gResult = infoSummary.glResults[i];
+    this.glResults = infoSummary.glResults;
+
+    for (i = 0; i < this.glResults.length; i += 1) {
+      gResult = this.glResults[i];
       row = this.glResultGrid.getRowById('gl' + gResult.id);
 
       cell = this.glResultGrid.getCellByPosition(row, 1)

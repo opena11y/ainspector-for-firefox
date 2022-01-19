@@ -13,7 +13,8 @@
     "<all_urls>",
     "find",
     "storage",
-    "tabs"
+    "tabs",
+    "downloads"
   ],
 
   "background": {

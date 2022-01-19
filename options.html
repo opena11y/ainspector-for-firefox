@@ -48,14 +48,14 @@
       <fieldset>
         <legend id="options-rule-results-legend">Rule Results</legend>
         <label>
-          <input type="Checkbox" checked id="options-incl-pass-na"/>
+          <input type="checkbox" checked id="options-incl-pass-na"/>
           <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
         </label>
       </fieldset>
 
       <h2 id="options-export-heading">Export Evaluation Results</h2>
 
-      <fieldset>
+        <fieldset>
         <legend id="options-export-format-legend">Export Format</legend>
         <label>
           <input type="radio" name="export-format" id="options-export-csv" checked/>
@@ -67,12 +67,28 @@
         </label>
       </fieldset>
 
-      <label id="options-export-prefix-label"
-        for="options-export-prefix">
-        Export File Prefix (up to 16 characters)
-      </label>
-      <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
-      <div class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div>
+
+      <fieldset>
+        <legend id="options-filename-legend">Default Filename Options</legend>
+
+        <label id="options-export-prefix-label"
+          for="options-export-prefix">
+          Export File Prefix (up to 16 characters)
+        </label>
+        <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
+        <div class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div>
+
+        <label>
+          <input type="checkbox" checked id="options-export-date"/>
+          <span id="options-export-date-label">Include date in default file name (e.g. yyyy-mm-dd).</span>
+        </label>
+
+        <label>
+          <input type="checkbox" checked id="options-export-time"/>
+          <span id="options-export-time-label">Include time in default file name  (e.g. XXh-YYm-ZZs).</span>
+        </label>
+
+      </fieldset>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
 
