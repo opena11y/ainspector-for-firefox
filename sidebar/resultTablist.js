@@ -131,6 +131,16 @@ export default class ResultTablist extends HTMLElement {
         flag = true;
         break;
 
+      case 'Home':
+        this.showTabpanel(this.tabpanelDiv1.id);
+        flag = true;
+        break;
+
+      case 'End':
+        this.showTabpanel(this.tabpanelDiv2.id);
+        flag = true;
+        break;
+
       default:
         break;
     }

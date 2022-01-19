@@ -109,10 +109,15 @@ export default class ResultRuleInfo extends HTMLElement {
           if (typeof item === 'string') {
             li.textContent = item;
           } else {
-            a = document.createElement('a');
-            a.href = item.url;
-            a.textContent = item.title;
-            li.appendChild(a);
+            if (item.url) {
+              a = document.createElement('a');
+              a.href = item.url;
+              a.textContent = item.title;
+              a.target="_ai_reference"
+              li.appendChild(a);
+            } else {
+              li.textContent = item.title;
+            }
           }
           ul.appendChild(li);
         }

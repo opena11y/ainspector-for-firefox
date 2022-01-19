@@ -63,7 +63,7 @@ table tr td:first-child {
   padding-left: 8px;
 }
 
-table.show-selection tr[aria-selected] {
+table tr[aria-selected] {
   outline-offset:  -2px;
   outline: currentColor 2px dotted;
 }

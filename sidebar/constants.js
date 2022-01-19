@@ -110,7 +110,38 @@ export function getRuleCategoryLabelId (id) {
   case RULE_CATEGORIES.SITE_NAVIGATION:
     return 'siteNavigationLabel'
   default:
-    return RULE_CATEGORIES.UNDEFINED;
+    return '';
+  }
+};
+
+export function getRuleCategoryFilenameId (id) {
+  switch (id) {
+  case RULE_CATEGORIES.LANDMARKS:
+    return 'landmarks';
+  case RULE_CATEGORIES.HEADINGS:
+    return 'headings';
+  case RULE_CATEGORIES.STYLES_READABILITY:
+    return 'styles-content';
+  case RULE_CATEGORIES.IMAGES:
+    return 'images';
+  case RULE_CATEGORIES.LINKS:
+    return 'links';
+  case RULE_CATEGORIES.FORMS:
+    return 'tables';
+  case RULE_CATEGORIES.TABLES:
+    return 'forms';
+  case RULE_CATEGORIES.WIDGETS_SCRIPTS:
+    return 'widgets-scripts';
+  case RULE_CATEGORIES.AUDIO_VIDEO:
+    return 'audio-video';
+  case RULE_CATEGORIES.KEYBOARD_SUPPORT:
+    return 'keyboard';
+  case RULE_CATEGORIES.TIMING:
+    return 'timing';
+  case RULE_CATEGORIES.SITE_NAVIGATION:
+    return 'site-navigation'
+  default:
+    return 'undefined';
   }
 };
 
@@ -144,6 +175,43 @@ export function getGuidelineLabelId (id) {
     return 'g3.3';
   case GUIDELINES.G_4_1:
     return 'g4.1';
+
+  default:
+    return GUIDELINES.UNDEFINED;
+
+  }
+};
+
+export function getGuidelineFilenameId (id) {
+
+  switch(id) {
+
+  case GUIDELINES.G_1_1:
+    return 'g1-1';
+  case GUIDELINES.G_1_2:
+    return 'g1-2';
+  case GUIDELINES.G_1_3:
+    return 'g1-3';
+  case GUIDELINES.G_1_4:
+    return 'g1-4';
+  case GUIDELINES.G_2_1:
+    return 'g2-1';
+  case GUIDELINES.G_2_2:
+    return 'g2-2';
+  case GUIDELINES.G_2_3:
+    return 'g2-3';
+  case GUIDELINES.G_2_4:
+    return 'g2-4';
+  case GUIDELINES.G_2_5:
+    return 'g2-5';
+  case GUIDELINES.G_3_1:
+    return 'g3-1';
+  case GUIDELINES.G_3_2:
+    return 'g3-2';
+  case GUIDELINES.G_3_3:
+    return 'g3-3';
+  case GUIDELINES.G_4_1:
+    return 'g4-1';
 
   default:
     return GUIDELINES.UNDEFINED;

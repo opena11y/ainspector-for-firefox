@@ -8,7 +8,14 @@ export const defaultOptions = {
   viewsMenuIncludeGuidelines: true,
   rerunDelayEnabled: false,
   resultsIncludePassNa: true,
-  highlight: 'selected'
+  highlight: 'selected',
+  // Properties for exporting reports
+  projectTitle: '',
+  evaluatorName: '',
+  filenameProject: 'proj-',
+  filenameSummary: '{project}ai-summary-{date}-{time}',
+  filenameRuleGroup: '{project}ai-rule-group-{date}-{time}-{group}',
+  filenameRuleResult: '{project}ai-rule-{date}-{time}-{rule}'
 };
 
 /*

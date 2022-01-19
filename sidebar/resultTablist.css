@@ -4,6 +4,8 @@
   margin:  0;
   margin-top: 1em;
   padding:  0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 [role="tablist"] [role="tab"] {
@@ -52,4 +54,17 @@ h2.selected {
   margin-top: 1em;
   font-size: 110%;
   font-weight: bold;
+}
+
+.buttons {
+  margin-top: 0.5em;
+  display: flex;
+  justify-content: right;
+}
+
+button.details:after {
+  content: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' class='down' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolygon points='1 1, 1 11, 11 6' fill='currentColor' /%3E%3C/svg%3E");
+  position: relative;
+  top:  1px;
+  padding-left:  4px;
 }

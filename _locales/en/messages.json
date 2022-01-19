@@ -547,5 +547,40 @@
   "optionsResetDefaults": {
     "message": "Reset Defaults",
     "description": "Label for reset defaults in the options page"
+  },
+
+  "optionsExportHeading": {
+    "message": "Export Evaluation Options",
+    "description": "Label for file name legend in the export section of the options page"
+  },
+
+  "optionsExportFilenameLegend": {
+    "message": "File Name Options",
+    "description": "Label for file name legend in the export section of the options page"
+  },
+
+  "optionsExportFilenameProjectLabel": {
+    "message": "Project Name",
+    "description": "Label for project name input in the export section of the options page"
+  },
+
+  "optionsExportFilenameProjectDesc": {
+    "message": "Used in file name templates to customize file names (e.g. {project}).",
+    "description": "Description of project name input in the export section of the options page"
+  },
+
+  "optionsExportFilenameSummaryLabel": {
+    "message": "Summary View Export Filename Template",
+    "description": "Label for summary file name input in the export section of the options page"
+  },
+
+  "optionsExportFilenameRuleGroupLabel": {
+    "message": "Rule Group View Export Filename Template",
+    "description": "Label for rule group file name input in the export section of the options page"
+  },
+
+  "optionsExportFilenameRuleResultLabel": {
+    "message": "Rule Result View Export Filename Template",
+    "description": "Label for rule result file name input in the export section of the options page"
   }
 }

@@ -4,6 +4,8 @@ const getMessage  = browser.i18n.getMessage;
 const sendMessage = browser.runtime.sendMessage;
 
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+import ViewSummaryCSV  from './viewSummaryCSV.js';
+
 
 // The summary view for AInspector WCAG
 
@@ -25,22 +27,34 @@ export default class ViewSummary {
     this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
     this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
+    const div1 = document.createElement('div');
+    div1.className = 'buttons';
     const button1 = document.createElement('button');
     button1.id = 'rc-details';
+    button1.className = 'details';
     button1.textContent = getMessage('detailsLabel');
     button1.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    this.resultTablist.tabpanel1.appendChild(button1);
+    button1.disabled = true;
+    div1.appendChild(button1)
+    this.resultTablist.tabpanel1.appendChild(div1);
+    this.rcResultGrid.setDetailsButton(button1);
 
     this.glResultGrid = document.createElement('result-grid');
     this.glResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
+    const div2 = document.createElement('div');
+    div2.className = 'buttons';
     const button2 = document.createElement('button');
     button2.id = 'gl-details';
+    button2.className = 'details';
     button2.textContent = getMessage('detailsLabel');
     button2.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    this.resultTablist.tabpanel2.appendChild(button2);
+    button2.disabled = true;
+    div2.appendChild(button2)
+    this.resultTablist.tabpanel2.appendChild(div2);
+    this.glResultGrid.setDetailsButton(button2);
 
     this.initGrids();
 
@@ -53,6 +67,12 @@ export default class ViewSummary {
       csv += this.glResultGrid.toCSV();
     }
     return csv
+  }
+
+  toCSV (options, title, location
+    ) {
+    let viewCSV = new ViewSummaryCSV(this.rcResults, this.glResults);
+    return viewCSV.getCSV(options, title, location);
   }
 
   resize (size) {
@@ -140,6 +160,9 @@ export default class ViewSummary {
   update (infoSummary) {
     let i, gResult, row, rowAccName, cell, celAcclName;
 
+    this.rcResultGrid.enable();
+    this.glResultGrid.enable();
+
     this.resultSummary.violations   = infoSummary.violations;
     this.resultSummary.warnings     = infoSummary.warnings;
     this.resultSummary.manualChecks = infoSummary.manual_checks;
@@ -203,10 +226,12 @@ export default class ViewSummary {
   clear () {
     this.resultSummary.clear();
 
+    this.rcResultGrid.disable();
     ruleCategoryIds.forEach( (id) => {
       this.rcResultGrid.clearRow('rc' + id)
     });
 
+    this.glResultGrid.disable();
     guidelineIds.forEach( (id) => {
       this.glResultGrid.clearRow('gl' + id);
     });

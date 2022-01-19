@@ -104,6 +104,32 @@ export default class ResultGrid extends HTMLElement {
     this.onRowSelection = handler;
   }
 
+  disable () {
+    this.table.setAttribute('aria-disabled', 'true');
+    this.disabled = true;
+    this.setDetailsButtonDisabled (true);
+  }
+
+  enable () {
+    this.table.setAttribute('aria-disabled', 'false');
+    this.disabled = false;
+    this.setDetailsButtonDisabled (false);
+  }
+
+  setDetailsButton (button) {
+    this.detailsButton = button;
+  }
+
+  setDetailsButtonDisabled (value) {
+    if (typeof value !== 'boolean') {
+      value = true;
+    }
+    value = this.disabled ? true : value;
+    if (this.detailsButton) {
+      this.detailsButton.disabled = value;
+    }
+  }
+
   getRowCount () {
     return this.table.querySelectorAll('tr').length;
   }
@@ -210,12 +236,11 @@ export default class ResultGrid extends HTMLElement {
     let rowCount = this.getRowCount();
     // first data row by default gets tabindex=0 to be part of tab sequence of page
     tr.tabIndex = (rowCount === 1) ? 0 : -1;
-    if (tr.tabIndex === 0) {
-      tr.setAttribute('aria-selected', 'true');
-    }
-
     tr.id = id;
     this.tbody.appendChild(tr);
+    if (tr.tabIndex === 0) {
+      this.setSelectedRow(tr);
+    }
 
     tr.addEventListener('keydown', this.onRowKeydown.bind(this));
     tr.addEventListener('click', this.onRowClick.bind(this));
@@ -300,6 +325,7 @@ export default class ResultGrid extends HTMLElement {
       this.addMessageRow(message2);
     }
 
+    this.setDetailsButtonDisabled(true);
   }
 
   // sorts table rows using the data-sort attribute
@@ -409,6 +435,7 @@ export default class ResultGrid extends HTMLElement {
 
   setSelectedRow (node) {
     let n = node;
+    this.setDetailsButtonDisabled(true);
     if (node.tagName !== 'TR') {
       n = node.parentNode;
     }
@@ -419,6 +446,7 @@ export default class ResultGrid extends HTMLElement {
         if (tr === n) {
           tr.tabIndex = (n === node) ? 0 : -1;
           tr.setAttribute('aria-selected', 'true');
+          this.setDetailsButtonDisabled(false);
         } else {
           tr.removeAttribute('aria-selected');
           tr.tabIndex = -1;
@@ -470,7 +498,9 @@ export default class ResultGrid extends HTMLElement {
   }
 
   tryHandleRowActivation (id) {
-    if (!this.activationDisabled && this.onRowActivation) {
+    if (!this.activationDisabled &&
+        this.onRowActivation &&
+        !this.disabled) {
       this.onRowActivation(id);
       return true;
     }

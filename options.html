@@ -37,11 +37,11 @@
         <legend id="options-ruleset-legend">Ruleset</legend>
         <label>
           <input type="radio" name="ruleset" id="ARIA_STRICT" checked/>
-          <span id="option-ruleset-strict-label">HTML5 and ARIA Techniques</span>
+          <span id="options-ruleset-strict-label">HTML5 and ARIA Techniques</span>
         </label>
         <label>
           <input type="radio" name="ruleset" id="ARIA_TRANS"/>
-          <span id="option-ruleset-trans-label">HTML4 Legacy Techniques</span>
+          <span id="options-ruleset-trans-label">HTML4 Legacy Techniques</span>
         </label>
       </fieldset>
 
@@ -51,6 +51,37 @@
           <input type="Checkbox" checked id="options-incl-pass-na"/>
           <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
         </label>
+      </fieldset>
+
+      <h2 id="options-export-heading">Export Evaluation Results</h2>
+
+      <fieldset>
+        <legend id="options-export-legend">File Names</legend>
+        <label id="options-export-filename-project-label"
+          for="options-export-filename-project">
+          Project Name
+        </label>
+        <input id="options-export-filename-project" type="text" size="15" aria-describedby="option-export-filename-project-desc"/>
+        <div id="options-export-filename-project-desc">Used in file name templates to customize file names (e.g. {project}).</div>
+
+        <label id="options-export-filename-summary-label"
+          for="options-export-filename-summary">
+          Summary View Export Filename Template
+        </label>
+        <input id="options-export-filename-summary" type="text" size="40"/>
+
+        <label id="options-export-filename-rule-group-label"
+          for="options-export-filename-rule-group">
+          Rule Group View Export Filename Template
+        </label>
+        <input id="options-export-filename-rule-group" type="text" size="40"/>
+
+        <label id="options-export-filename-rule-result-label"
+          for="options-export-filename-rule-result">
+          Rule Result View Export Filename Template
+        </label>
+        <input id="options-export-filename-rule-result" type="text" size="40"/>
+
       </fieldset>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>

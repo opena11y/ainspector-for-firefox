@@ -1,12 +1,13 @@
 /* viewRuleResultCSV.js */
 
-import { getOptions } from '../storage.js';
+import commonCSV from './commonCSV.js';
 
 const getMessage = browser.i18n.getMessage;
 const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
-export default class ViewRuleResultCSV {
+export default class ViewRuleResultCSV extends commonCSV{
   constructor(elementResults) {
+    super();
     this.elementResults = elementResults;
   }
 
@@ -165,7 +166,7 @@ export default class ViewRuleResultCSV {
     return csv + '\n';
   }
 
-  getCSV () {
+  getCSV (options, title, location) {
 
     let accNameProps = this.getAccNameProps();
     let ccrProps     = this.getColorContrastProps();
@@ -173,7 +174,7 @@ export default class ViewRuleResultCSV {
     let htmlAttrProps    = this.getHTMLAttributeProps();
     let ariaAttrProps    = this.getARIAAttributeProps();
 
-    let csv = '';
+    let csv = super.getCSV(options, title, location);
     csv += this.addCSVColumnHeaders(basicProps, false);
     csv += this.addCSVColumnHeaders(accNameProps);
     csv += this.addCSVColumnHeaders(ccrProps);

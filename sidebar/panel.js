@@ -1,5 +1,7 @@
 /* panel.js  */
 
+import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
+
 import { getOptions } from '../storage.js';
 
 import ViewSummary     from './viewSummary.js';
@@ -44,6 +46,9 @@ var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
 var sidebarElementPosition = 0;
 var sidebarHighlightOnly   = false;
+
+var pageTitle = '';
+var pageLocation = '';
 
 var backButton;
 var viewsMenuButton;
@@ -227,32 +232,79 @@ function onPreferencesClick (event) {
    chrome.runtime.openOptionsPage();
 }
 
+function getCSVFileName (fname, options) {
+  // get group ID
+  let groupId;
+  if (sidebarGroupType === 'rc') {
+    groupId = getRuleCategoryFilenameId(options.groupId);
+  } else {
+    groupId = getGuidelineFilenameId(options.groupId);
+  }
+
+  // get today's date
+  let today = new Date();
+  let dd = String(today.getDate()).padStart(2, '0');
+  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  let yyyy = today.getFullYear();
+  const date = yyyy + '-' + mm + '-' + dd;
+
+  // get time of day
+  let hh = today.getHours();
+  mm = today.getMinutes();
+  let ss = today.getSeconds();
+  hh = hh < 10 ? "0" + hh : hh;
+  mm = mm < 10 ? "0" + mm : mm;
+  ss = ss < 10 ? "0" + ss : ss;
+  const time = hh + "h-" + mm + 'm-' + ss + 's';
+
+  // format rule id
+  let ruleId = '';
+  if (options.ruleId && typeof options.ruleId === 'string') {
+    let parts = options.ruleId.split('_');
+    if (parts.length == 2) {
+      let ruleNum = parseInt(parts[1]);
+      ruleNum = ruleNum < 10 ? '0' + ruleNum : ruleNum;
+      ruleId = parts[0] + '-' + ruleNum;
+    }
+  }
+
+  fname = fname.replace('{date}', date);
+  fname = fname.replace('{time}', time);
+  fname = fname.replace('{group}', groupId);
+  fname = fname.replace('{rule}', ruleId);
+  fname = fname.replace('{project}', options.filenameProject);
+  return fname;
+}
+
 function onExportClick (event) {
   let fname = '', csv = '';
 
-  switch (sidebarView) {
+  getOptions().then( (options) => {
 
-    case 'summary':
-      fname = 'summary.csv';
-      csv = vSummary.toCSV();
-      break;
+    switch (sidebarView) {
 
-    case 'rule-group':
-      fname = 'rule-group.csv';
-      csv = vRuleGroup.toCSV();
-      break;
+      case 'summary':
+        fname = getCSVFileName(options.filenameSummary, options);
+        csv = vSummary.toCSV(options, pageTitle, pageLocation);
+        break;
 
-    case 'rule-result':
-      fname = 'rule-result.csv';
-      csv = vRuleResult.toCSV();
-      break;
+      case 'rule-group':
+        fname = getCSVFileName(options.filenameRuleGroup, options);
+        csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
+        break;
 
-    default:
-      break;
-  }
-  if (fname && csv) {
-    download(fname, csv);
-  }
+      case 'rule-result':
+        fname = getCSVFileName(options.filenameRuleResult, options);
+        csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
+        break;
+
+      default:
+        break;
+    }
+    if (fname && csv) {
+      download(fname, csv);
+    }
+  });
 }
 
 
@@ -362,10 +414,10 @@ function enableButtons() {
 */
 
 function resizeView () {
-  let  minMainHeight = 630;
+  let  minMainHeight = 650;
 
   if (sidebarView === 'summary') {
-    minMainHeight = minMainHeight - 200;
+    minMainHeight = minMainHeight - 160;
   }
 
   const height = window.innerHeight;
@@ -377,7 +429,9 @@ function resizeView () {
   const headerHeight = document.querySelector('header').offsetHeight;
   const footerHeight = footer.offsetHeight;
   const mainHeight   = Math.max((height - headerHeight - footerHeight), minMainHeight);
-  footer.style.top   = headerHeight + mainHeight + 'px';
+
+  const footerTop = headerHeight + mainHeight;
+  footer.style.top   = footerTop + 'px';
 
   vSummary.resize(mainHeight);
   vRuleGroup.resize(mainHeight);
@@ -399,7 +453,12 @@ function updateSidebar (info) {
 
     // Update the page information footer
     infoTitle.textContent    = info.title;
+    infoTitle.title          = info.title;
+    pageTitle = info.title;
+
     infoLocation.textContent = info.location;
+    pageLocation = info.location;
+
     if (info.ruleset === 'ARIA_STRICT') {
       infoRuleset.textContent  = ariaStrictRulesetLabel;
     } else {

@@ -1,7 +1,8 @@
 /* options.css */
 
 body {
-  padding: 0 4px;
+  margin: 4px;
+  padding: 4px;
 }
 
 h2 {
@@ -16,7 +17,19 @@ fieldset {
   border: none;
 }
 
+legend {
+  font-weight: bold;
+}
+
 label {
   display:  block;
   margin: 0.25em;
+}
+
+label[for] {
+  margin-top: 1em;
+}
+
+button[type=reset] {
+  margin-top:  2em;
 }

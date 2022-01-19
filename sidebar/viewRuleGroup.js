@@ -3,6 +3,7 @@
 const getMessage = browser.i18n.getMessage;
 
 import { getOptions } from '../storage.js';
+import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
 
 export default class ViewRuleGroup {
   constructor(id, handleRowActivation) {
@@ -24,20 +25,28 @@ export default class ViewRuleGroup {
     div.className = 'rule-info';
     this.ruleGroupNode.appendChild(div);
 
+    const div1 = document.createElement('div');
+    div1.className = 'selected-details';
+    div.appendChild(div1);
+
     const h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.textContent = getMessage('ruleSelectedLabel');
-    div.appendChild(h2);
+    div1.appendChild(h2);
 
     const button = document.createElement('button');
     button.id = 'rule-group-details';
+    button.className = 'details';
     button.textContent = getMessage('detailsLabel');
     button.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    div.appendChild(button);
+    div1.appendChild(button);
+    this.ruleResultGrid.setDetailsButton(button);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
     div.appendChild(this.resultRuleInfo);
 
+    this.groupTitle = 'Rule Group';
+    this.ruleResults = [];
     this.detailsActions = {};
 
     this.initGrid();
@@ -53,11 +62,11 @@ export default class ViewRuleGroup {
 
   }
 
-  toCSV () {
-    let csv = '';
-    csv += this.ruleResultGrid.toCSV();
-    return csv
+  toCSV (options, title, location) {
+    let viewCSV = new ViewRuleGroupCSV(this.groupTitle, this.ruleResults, this.detailsActions);
+    return viewCSV.getCSV(options, title, location);
   }
+
 
   resize (size) {
     const adjustment = 80;
@@ -147,6 +156,7 @@ export default class ViewRuleGroup {
     let i, rr, row, style, value, sortValue, rowAccName, cellAccName, label;
     let count = 0;
 
+    this.ruleResultGrid.enable();
     this.detailsActions = {};
 
     this.resultSummary.violations   = infoRuleGroup.violations;
@@ -155,6 +165,9 @@ export default class ViewRuleGroup {
     this.resultSummary.passed       = infoRuleGroup.passed;
 
     this.ruleResultGrid.deleteDataRows();
+
+    this.groupTitle = infoRuleGroup.groupLabel;
+    this.ruleResults = infoRuleGroup.ruleResults;
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
@@ -229,6 +242,11 @@ export default class ViewRuleGroup {
   }
 
   clear (message1, message2) {
+    this.ruleResults = [];
+    this.detailsActions = {};
+    this.groupTitle = '';
+
+    this.ruleResultGrid.disable();
     this.resultSummary.clear();
     this.ruleResultGrid.deleteDataRows(message1, message2);
     this.resultRuleInfo.clear(message1, message2);

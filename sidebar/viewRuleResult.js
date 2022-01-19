@@ -48,9 +48,9 @@ export default class ViewRuleResult {
 
   }
 
-  toCSV () {
+  toCSV (options, title, location) {
     let viewCSV = new ViewRuleResultCSV(this.elementResults);
-    return viewCSV.getCSV();
+    return viewCSV.getCSV(options, title, location);
   }
 
   resize (mainHeight) {
@@ -137,6 +137,7 @@ export default class ViewRuleResult {
     let i, id, pos, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
+    this.elementResultGrid.enable();
 
     this.elementsResults = {};
 
@@ -236,6 +237,7 @@ export default class ViewRuleResult {
   }
 
   clear (message1, message2) {
+    this.elementResultGrid.disable();
     this.elementResultGrid.deleteDataRows(message1, message2);
     this.resultRuleInfo.clear(message1, message2);
     this.resultElementInfo.clear(message1, message2);
