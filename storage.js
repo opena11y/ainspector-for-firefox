@@ -12,10 +12,11 @@ export const defaultOptions = {
   // Properties for exporting reports
   projectTitle: '',
   evaluatorName: '',
-  filenameProject: 'proj-',
-  filenameSummary: '{project}ai-summary-{date}-{time}',
-  filenameRuleGroup: '{project}ai-rule-group-{date}-{time}-{group}',
-  filenameRuleResult: '{project}ai-rule-{date}-{time}-{rule}'
+  exportFormat: 'CSV',  // other option is JSON
+  filenamePrefix: '',
+  filenameSummary: 'ai-summary-{date}-{time}',
+  filenameRuleGroup: 'ai-rule-group-{date}-{time}-{group}',
+  filenameRuleResult: 'ai-rule-{date}-{time}-{rule}'
 };
 
 /*

@@ -56,33 +56,23 @@
       <h2 id="options-export-heading">Export Evaluation Results</h2>
 
       <fieldset>
-        <legend id="options-export-legend">File Names</legend>
-        <label id="options-export-filename-project-label"
-          for="options-export-filename-project">
-          Project Name
+        <legend id="options-export-format-legend">Export Format</legend>
+        <label>
+          <input type="radio" name="export-format" id="options-export-csv" checked/>
+          <span id="options-export-csv-label">CSV</span>
         </label>
-        <input id="options-export-filename-project" type="text" size="15" aria-describedby="option-export-filename-project-desc"/>
-        <div id="options-export-filename-project-desc">Used in file name templates to customize file names (e.g. {project}).</div>
-
-        <label id="options-export-filename-summary-label"
-          for="options-export-filename-summary">
-          Summary View Export Filename Template
+        <label>
+          <input type="radio" name="export-format" id="options-export-json"/>
+          <span id="options-export-json-label">JSON</span>
         </label>
-        <input id="options-export-filename-summary" type="text" size="40"/>
-
-        <label id="options-export-filename-rule-group-label"
-          for="options-export-filename-rule-group">
-          Rule Group View Export Filename Template
-        </label>
-        <input id="options-export-filename-rule-group" type="text" size="40"/>
-
-        <label id="options-export-filename-rule-result-label"
-          for="options-export-filename-rule-result">
-          Rule Result View Export Filename Template
-        </label>
-        <input id="options-export-filename-rule-result" type="text" size="40"/>
-
       </fieldset>
+
+      <label id="options-export-prefix-label"
+        for="options-export-prefix">
+        Export File Prefix (up to 16 characters)
+      </label>
+      <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
+      <div class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
 

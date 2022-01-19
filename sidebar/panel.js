@@ -272,7 +272,24 @@ function getCSVFileName (fname, options) {
   fname = fname.replace('{time}', time);
   fname = fname.replace('{group}', groupId);
   fname = fname.replace('{rule}', ruleId);
-  fname = fname.replace('{project}', options.filenameProject);
+
+  if (options.filenamePrefix) {
+    const prefixLen = options.filenamePrefix.length;
+    if (options.filenamePrefix[prefixLen - 1] === '-') {
+      fname = options.filenamePrefix + fname;
+    } else {
+      fname = options.filenamePrefix + '-' + fname;
+    }
+  }
+
+  if (options.exportFormat === 'CSV') {
+    fname += '.csv';
+  }
+
+  if (options.exportFormat === 'JSON') {
+    fname += '.json';
+  }
+
   return fname;
 }
 
@@ -281,28 +298,52 @@ function onExportClick (event) {
 
   getOptions().then( (options) => {
 
-    switch (sidebarView) {
+    if (options.exportFormat === 'CSV') {
+      switch (sidebarView) {
 
-      case 'summary':
-        fname = getCSVFileName(options.filenameSummary, options);
-        csv = vSummary.toCSV(options, pageTitle, pageLocation);
-        break;
+        case 'summary':
+          fname = getCSVFileName(options.filenameSummary, options);
+          csv = vSummary.toCSV(options, pageTitle, pageLocation);
+          break;
 
-      case 'rule-group':
-        fname = getCSVFileName(options.filenameRuleGroup, options);
-        csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
-        break;
+        case 'rule-group':
+          fname = getCSVFileName(options.filenameRuleGroup, options);
+          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
+          break;
 
-      case 'rule-result':
-        fname = getCSVFileName(options.filenameRuleResult, options);
-        csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
-        break;
+        case 'rule-result':
+          fname = getCSVFileName(options.filenameRuleResult, options);
+          csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
+          break;
 
-      default:
-        break;
-    }
-    if (fname && csv) {
-      download(fname, csv);
+        default:
+          break;
+      }
+      if (fname && csv) {
+        download(fname, csv);
+      }
+    } else {
+
+      switch (sidebarView) {
+
+        case 'summary':
+          fname = getCSVFileName(options.filenameSummary, options);
+          break;
+
+        case 'rule-group':
+          fname = getCSVFileName(options.filenameRuleGroup, options);
+          break;
+
+        case 'rule-result':
+          fname = getCSVFileName(options.filenameRuleResult, options);
+          break;
+
+        default:
+          break;
+      }
+      if (fname) {
+        alert('file name: ' + fname);
+      }
     }
   });
 }
@@ -594,7 +635,7 @@ window.addEventListener ("load", function (e) {
 });
 
 /*
-**  Experimental export
+**  Export report download function
 */
 
 function download(filename, text) {

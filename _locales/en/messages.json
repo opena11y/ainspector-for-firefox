@@ -554,33 +554,29 @@
     "description": "Label for file name legend in the export section of the options page"
   },
 
-  "optionsExportFilenameLegend": {
-    "message": "File Name Options",
-    "description": "Label for file name legend in the export section of the options page"
+  "optionsExportFormatLegend": {
+    "message": "Export File Format",
+    "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
-  "optionsExportFilenameProjectLabel": {
-    "message": "Project Name",
-    "description": "Label for project name input in the export section of the options page"
+  "optionsExportCSVLabel": {
+    "message": "CSV",
+    "description": "Label for the CSV radio button option in the export section of the options page"
   },
 
-  "optionsExportFilenameProjectDesc": {
-    "message": "Used in file name templates to customize file names (e.g. {project}).",
-    "description": "Description of project name input in the export section of the options page"
+  "optionsExportJSONLabel": {
+    "message": "JSON",
+    "description": "Label for the JSON radio button option in the export section of the options page"
   },
 
-  "optionsExportFilenameSummaryLabel": {
-    "message": "Summary View Export Filename Template",
-    "description": "Label for summary file name input in the export section of the options page"
+  "optionsExportPrefixLabel": {
+    "message": "Prefix for export file name (up to 16 character long)",
+    "description": "Label for prefix string input in the export section of the options page"
   },
 
-  "optionsExportFilenameRuleGroupLabel": {
-    "message": "Rule Group View Export Filename Template",
-    "description": "Label for rule group file name input in the export section of the options page"
-  },
-
-  "optionsExportFilenameRuleResultLabel": {
-    "message": "Rule Result View Export Filename Template",
-    "description": "Label for rule result file name input in the export section of the options page"
+  "optionsExportPrefixDesc": {
+    "message": "Can be used to customize export file names for specific projects.",
+    "description": "Description of pottenial use of the prefix string in the export section of the options page"
   }
+
 }

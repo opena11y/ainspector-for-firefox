@@ -12,10 +12,9 @@ const rulesetStrict  = document.querySelector('input[id="ARIA_STRICT"]');
 const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
-const exportFilenameProject    = document.querySelector('#options-export-filename-project');
-const exportFilenameSummary    = document.querySelector('#options-export-filename-summary');
-const exportFilenameRuleGroup  = document.querySelector('#options-export-filename-rule-group');
-const exportFilenameRuleResult = document.querySelector('#options-export-filename-rule-result');
+const exportCSV      = document.querySelector('input[id="options-export-csv"]');
+const exportJSON     = document.querySelector('input[id="options-export-json"]');
+const exportPrefix   = document.querySelector('#options-export-prefix');
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
@@ -35,13 +34,12 @@ function setFormLabels () {
   const optionsRuleResultsLegend     = document.querySelector('#options-rule-results-legend');
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
-  const optionsExportHeading                 = document.querySelector('#options-export-heading');
-  const optionsExportFilenameLegend          = document.querySelector('#options-export-legend');
-  const optionsExportFilenameProjectLabel    = document.querySelector('#options-export-filename-project-label');
-  const optionsExportFilenameProjectDesc    = document.querySelector('#options-export-filename-project-desc');
-  const optionsExportFilenameSummaryLabel    = document.querySelector('#options-export-filename-summary-label');
-  const optionsExportFilenameRuleGroupLabel  = document.querySelector('#options-export-filename-rule-group-label');
-  const optionsExportFilenameRuleResultLabel = document.querySelector('#options-export-filename-rule-result-label');
+  const optionsExportHeading         = document.querySelector('#options-export-heading');
+  const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
+  const optionsExportCSVLabel        = document.querySelector('#options-export-csv-label');
+  const optionsExportJSONLabel       = document.querySelector('#options-export-json-label');
+  const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
+  const optionsExportPrefixDesc      = document.querySelector('#options-export-prefix-desc');
 
   const optionsResetDefaults         = document.querySelector('#options-reset-defaults');
 
@@ -59,13 +57,12 @@ function setFormLabels () {
   optionsRuleResultsLegend.textContent     = getMessage('optionsRuleResultsLegend');
   optionsInclPassNaLabel.textContent       = getMessage('optionsInclPassNaLabel');
 
-  optionsExportHeading.textContent                 = getMessage('optionsExportHeading');
-  optionsExportFilenameLegend.textContent          = getMessage('optionsExportFilenameLegend');
-  optionsExportFilenameProjectLabel.textContent    = getMessage('optionsExportFilenameProjectLabel');
-  optionsExportFilenameProjectDesc.textContent    = getMessage('optionsExportFilenameProjectDesc');
-  optionsExportFilenameSummaryLabel.textContent    = getMessage('optionsExportFilenameSummaryLabel');
-  optionsExportFilenameRuleGroupLabel.textContent  = getMessage('optionsExportFilenameRuleGroupLabel');
-  optionsExportFilenameRuleResultLabel.textContent = getMessage('optionsExportFilenameRuleResultLabel');
+  optionsExportHeading.textContent        = getMessage('optionsExportHeading');
+  optionsExportFormatLegend.textContent   = getMessage('optionsExportFormatLegend');
+  optionsExportCSVLabel.textContent       = getMessage('optionsExportCSVLabel');
+  optionsExportJSONLabel.textContent      = getMessage('optionsExportJSONLabel');
+  optionsExportPrefixLabel.textContent = getMessage('optionsExportPrefixLabel');
+  optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
 
   optionsResetDefaults.textContent         = getMessage('optionsResetDefaults');
 }
@@ -80,11 +77,8 @@ function saveFormOptions (e) {
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
-
-    filenameProject:    exportFilenameProject.value,
-    filenameSummary:    exportFilenameSummary.value,
-    filenameRuleGroup:  exportFilenameRuleGroup.value,
-    filenameRuleResult: exportFilenameRuleResult.value
+    exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
+    filenamePrefix:    exportPrefix.value
   }
 
   if (debug) console.log(options);
@@ -102,10 +96,10 @@ function updateForm (options) {
   rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
 
-  exportFilenameProject.value    = options.filenameProject;
-  exportFilenameSummary.value    = options.filenameSummary;
-  exportFilenameRuleGroup.value  = options.filenameRuleGroup;
-  exportFilenameRuleResult.value = options.filenameRuleResult;
+  exportCSV.checked      = options.exportFormat === 'CSV';
+  exportJSON.checked     = options.exportFormat === 'JSON';
+
+  exportPrefix.value    = options.filenamePrefix;
 }
 
 function updateOptionsForm() {
@@ -128,10 +122,9 @@ rulesetStrict.addEventListener('change', saveFormOptions);
 rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
 
-exportFilenameProject.addEventListener('change', saveFormOptions);
-exportFilenameSummary.addEventListener('change', saveFormOptions);
-exportFilenameRuleGroup.addEventListener('change', saveFormOptions);
-exportFilenameRuleResult.addEventListener('change', saveFormOptions);
+exportCSV.addEventListener('change', saveFormOptions);
+exportJSON.addEventListener('change', saveFormOptions);
+exportPrefix.addEventListener('change', saveFormOptions);
 
 resetDefaults.addEventListener('click', saveDefaultOptions);
 
