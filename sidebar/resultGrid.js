@@ -233,14 +233,8 @@ export default class ResultGrid extends HTMLElement {
   // The id is used by event handlers for actions related to the row content
   addRow (id) {
     let tr = document.createElement('tr');
-    let rowCount = this.getRowCount();
-    // first data row by default gets tabindex=0 to be part of tab sequence of page
-    tr.tabIndex = (rowCount === 1) ? 0 : -1;
     tr.id = id;
     this.tbody.appendChild(tr);
-    if (tr.tabIndex === 0) {
-      this.setSelectedRow(tr);
-    }
 
     tr.addEventListener('keydown', this.onRowKeydown.bind(this));
     tr.addEventListener('click', this.onRowClick.bind(this));
@@ -433,7 +427,11 @@ export default class ResultGrid extends HTMLElement {
     }
   }
 
-  setSelectedRow (node) {
+  // The flag is used to udpate the last user selected item
+  setSelectedRow (node, flag) {
+    if (typeof flag !== 'boolean') {
+      flag = true;
+    }
     let n = node;
     this.setDetailsButtonDisabled(true);
     if (node.tagName !== 'TR') {
@@ -441,7 +439,9 @@ export default class ResultGrid extends HTMLElement {
     }
     if (n) {
       let trs = this.table.querySelectorAll('tr');
-      this.lastSelectedRowId = n.id;
+      if (flag) {
+        this.lastSelectedRowId = n.id;
+      }
       trs.forEach( (tr) => {
         if (tr === n) {
           tr.tabIndex = (n === node) ? 0 : -1;
@@ -511,9 +511,9 @@ export default class ResultGrid extends HTMLElement {
 
   onRowClick (event) {
     let tgt = event.currentTarget;
-    this.tryHandleRowSelection(tgt.id);
-    tgt.focus();
     this.setSelectedRow(tgt);
+    tgt.focus();
+    this.tryHandleRowSelection(tgt.id);
 
     event.preventDefault();
     event.stopPropagation();

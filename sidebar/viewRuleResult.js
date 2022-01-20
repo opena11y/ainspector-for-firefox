@@ -228,11 +228,11 @@ export default class ViewRuleResult {
         } else {
           label = getMessage('noViolationsWarningsMCResultsMsg');
         }
-        console.log('[label]: ' + label);
         this.elementResultGrid.deleteDataRows(label);
         this.resultRuleInfo.clear(label);
         this.resultElementInfo.clear(label);
       }
+      this.elementResultGrid.setSelectedRowUsingLastId();
     });
   }
 

@@ -70,7 +70,7 @@ export default class ViewSummary {
   }
 
   resize (size) {
-
+    return false;
   }
 
   set disabled (value) {
@@ -191,6 +191,8 @@ export default class ViewSummary {
       row.setAttribute('aria-label', rowAccName);
     }
 
+    this.rcResultGrid.setSelectedRowUsingLastId();
+
     this.glResults = infoSummary.glResults;
 
     for (i = 0; i < this.glResults.length; i += 1) {
@@ -219,6 +221,9 @@ export default class ViewSummary {
       // Add accessible name describing the row content
       row.setAttribute('aria-label', rowAccName);
     }
+
+    this.glResultGrid.setSelectedRowUsingLastId();
+
   }
 
   clear () {

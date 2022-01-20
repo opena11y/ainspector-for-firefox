@@ -83,6 +83,7 @@ footer {
   padding: 0.25em;
   padding-bottom: 1em;
   position: absolute;
+  width: 100%;
 }
 
 footer .info {
