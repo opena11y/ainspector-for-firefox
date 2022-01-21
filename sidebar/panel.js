@@ -232,7 +232,7 @@ function onPreferencesClick (event) {
    chrome.runtime.openOptionsPage();
 }
 
-function getCSVFileName (fname, options) {
+function getExportFileName (fname, options) {
   // get group ID
   let groupId, date = '', time = '', dd, mm, yyyy, hh, ss, ruleId, parts, ruleNum;
   if (sidebarGroupType === 'rc') {
@@ -298,7 +298,7 @@ function getCSVFileName (fname, options) {
 }
 
 function onExportClick (event) {
-  let fname = '', csv = '';
+  let fname = '', csv = '', json = '';
 
   getOptions().then( (options) => {
 
@@ -306,17 +306,17 @@ function onExportClick (event) {
       switch (sidebarView) {
 
         case 'summary':
-          fname = getCSVFileName(options.filenameSummary, options);
+          fname = getExportFileName(options.filenameSummary, options);
           csv = vSummary.toCSV(options, pageTitle, pageLocation);
           break;
 
         case 'rule-group':
-          fname = getCSVFileName(options.filenameRuleGroup, options);
+          fname = getExportFileName(options.filenameRuleGroup, options);
           csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
           break;
 
         case 'rule-result':
-          fname = getCSVFileName(options.filenameRuleResult, options);
+          fname = getExportFileName(options.filenameRuleResult, options);
           csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
           break;
 
@@ -331,22 +331,27 @@ function onExportClick (event) {
       switch (sidebarView) {
 
         case 'summary':
-          fname = getCSVFileName(options.filenameSummary, options);
+          fname = getExportFileName(options.filenameSummary, options);
+          json = vSummary.toJSON();
           break;
 
         case 'rule-group':
-          fname = getCSVFileName(options.filenameRuleGroup, options);
+          fname = getExportFileName(options.filenameRuleGroup, options);
+          json = vRuleGroup.toJSON();
           break;
 
         case 'rule-result':
-          fname = getCSVFileName(options.filenameRuleResult, options);
+          fname = getExportFileName(options.filenameRuleResult, options);
+          json = vRuleResult.toJSON();
           break;
 
         default:
           break;
       }
-      if (fname) {
-        alert('file name: ' + fname);
+      if (fname && json) {
+        download(fname, json, 'JSON');
+      } else {
+        alert('JSON is not available for this view.')
       }
     }
   });
@@ -651,11 +656,22 @@ function onFailed(error) {
   console.log(`Download failed: ${error}`);
 }
 
-function download(filename, text) {
+function download(filename, content, format) {
+  let blob;
 
-  let blob = new Blob([text], {
-   type: "text/plain;charset=utf-8"
-  });
+  if (typeof format !== 'string') {
+    format = 'CSV';
+  }
+
+  if (format === 'CSV') {
+    blob = new Blob([content], {
+     type: "text/plain;charset=utf-8"
+    });
+  } else {
+    blob = new Blob([content], {
+     type: "application/json"
+    });
+  }
 
   let downloading = browser.downloads.download({
     url : URL.createObjectURL(blob),

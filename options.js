@@ -83,7 +83,7 @@ function saveFormOptions (e) {
     resultsIncludePassNa: inclPassNa.checked,
 
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
-    filenamePrefix: exportPrefix.value,
+    filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
     includeTime:    exportTime.checked
   }
@@ -93,6 +93,35 @@ function saveFormOptions (e) {
 }
 
 // Update HTML form values based on user options saved in storage.sync
+
+function isCharacterAllowed(c) {
+  if ((c <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
+    return false;
+  }
+  return true;
+}
+
+function validatePrefix (value) {
+
+  let value1 = '';
+
+  if (typeof value !== 'string') {
+    value = '';
+  }
+  if (value.length > 16) {
+    value = value.substring(0, 16);
+  }
+
+  for (let i = 0; i < value.length; i += 1) {
+    if (isCharacterAllowed(value[i])) {
+      value1 += value[i];
+    }
+  }
+
+  console.log('[validatePrefix]: "' + value + '" "' + value1 +'"');
+
+  return value1;
+}
 
 function updateForm (options) {
   // Set form element values and states
@@ -105,7 +134,7 @@ function updateForm (options) {
 
   exportCSV.checked      = options.exportFormat === 'CSV';
   exportJSON.checked     = options.exportFormat === 'JSON';
-  exportPrefix.value     = options.filenamePrefix;
+  exportPrefix.value     = validatePrefix(options.filenamePrefix);
   exportDate.checked     = options.includeDate;
   exportTime.checked     = options.includeTime;
 
@@ -121,6 +150,18 @@ function saveDefaultOptions () {
   saveOptions(defaultOptions).then(getOptions).then(updateForm);
 }
 
+function onKeyupValidatePrefix () {
+  let value = validatePrefix(exportPrefix.value);
+  if (value !== exportPrefix.value) {
+    if (exportPrefix.value) {
+      console.log("[PrefixError]: Prefix can only be 16 characters");
+    } else {
+      console.log("[PrefixError]: Character not allowed");
+    }
+  }
+  exportPrefix.value = validatePrefix(exportPrefix.value);
+}
+
 // Add event listeners for saving and restoring options
 
 document.addEventListener('DOMContentLoaded', updateOptionsForm);
@@ -134,6 +175,7 @@ inclPassNa.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);
 exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
+// exportPrefix.addEventListener('keyup', onKeyupValidate);
 exportDate.addEventListener('change', saveFormOptions);
 exportTime.addEventListener('change', saveFormOptions);
 

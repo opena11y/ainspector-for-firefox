@@ -34449,7 +34449,6 @@ OpenAjax.a11y.ElementResult = function (rule_result, result_value, cache_item, m
   this.dom_node = cache_item.node;
 
   if (this.dom_element && this.dom_element.attributes) {
-//    console.log('[' + this.dom_element.tag_name + '][attributes]: ' + this.dom_element.attributes)
     for (var i = 0; i < this.dom_element.attributes.length; i += 1) {
       var attr = this.dom_element.attributes[i];
       var name = attr.name.trim();
@@ -36573,13 +36572,14 @@ OpenAjax.a11y.RuleGroupResult.prototype.addRuleResult = function(rule_result) {
 
 OpenAjax.a11y.RuleGroupResult.prototype.toJSON = function(prefix, flag) {
 
-  if (typeof flag !== 'boolean') flag = true;
+  if (typeof prefix !== 'string') prefix = '';
+  if (typeof flag   !== 'boolean') flag = true;
+
+  var cleanForUTF8  = OpenAjax.a11y.util.cleanForUTF8;
 
   var rule_group_info = this.getRuleGroupInfo();
-
-  var ruleset_title   = this.evaluation_result.ruleset_title;
-  var ruleset_version = this.evaluation_result.ruleset_version;
-  var ruleset_id      = this.evaluation_result.ruleset_id;
+  var ruleset         = this.evaluation_result.getRuleset();
+  var ruleset_info    = ruleset.getRulesetInfo();
 
   var eval_title = this.evaluation_result.title;
   var eval_url   = this.evaluation_result.url;
@@ -36591,28 +36591,19 @@ OpenAjax.a11y.RuleGroupResult.prototype.toJSON = function(prefix, flag) {
 
   json += prefix + "{";
 
-  json += prefix + "  \"group_title\"   : " + JSON.stringify(rule_group_info.title) + ",";
-  json += prefix + "  \"group_url\"     : " + JSON.stringify(rule_group_info.url)   + ",";
+  json += prefix + "  \"eval_url\"                  : " + JSON.stringify(cleanForUTF8(eval_url))   + ",\n";
+  json += prefix + "  \"eval_url_encoded\"          : " + JSON.stringify(encodeURI(eval_url))      + ",\n";
+  json += prefix + "  \"eval_title\"                : " + JSON.stringify(cleanForUTF8(eval_title)) + ",\n";
 
-  json += prefix + "  \"ruleset_title\"   : " + JSON.stringify(ruleset_title)   + ",";
-  json += prefix + "  \"ruleset_version\" : " + JSON.stringify(ruleset_version) + ",";
-  json += prefix + "  \"ruleset_id\"      : \"" + ruleset_id + "\",";
+  json += prefix + "  \"ruleset_id\"                : " + JSON.stringify(ruleset.getId())         + ",\n";
+  json += prefix + "  \"ruleset_title\"             : " + JSON.stringify(ruleset_info.title)      + ",\n";
+  json += prefix + "  \"ruleset_abbrev\"            : " + JSON.stringify(ruleset_info.abbrev)     + ",\n";
+  json += prefix + "  \"ruleset_version\"           : " + JSON.stringify(ruleset_info.version)    + ",\n";
 
-  json += prefix + "  \"eval_title\"    : " + JSON.stringify(eval_title) + ",";
-  json += prefix + "  \"eval_url\"      : " + JSON.stringify(eval_url)   + ",";
-  json += prefix + "  \"eval_date\"     : " + JSON.stringify(eval_date)  + ",";
-  json += prefix + "  \"eval_time\"     : " + JSON.stringify(eval_time)  + ",";
+  json += prefix + "  \"group_title\"   : " + JSON.stringify(rule_group_info.title) + ",\n";
+  json += prefix + "  \"group_url\"     : " + JSON.stringify(rule_group_info.url)   + ",\n";
 
-  json += prefix + "  \"required_rules\"    : \"" + rule_group_info.required_rules    + "\",";
-  json += prefix + "  \"recommened_rules\"  : \"" + rule_group_info.recommended_rules + "\",";
-
-  json += prefix + "  \"has_results\"  : \"" + this.hasResults() + "\",";
-  json += prefix + "  \"has_rules\"    : \"" + this.hasRules()   + "\",";
-
-  json += prefix + "  \"implementation_score\" : \"" + this.rule_results_summary.implementation_score + "\",";
-  json += prefix + "  \"implementation_value\" : \"" + this.rule_results_summaryrs.implementation_value + "\",";
-
-  json += prefix + "  \"rule_results\" : [";
+  json += prefix + "  \"rule_results\" : [\n";
 
   var rule_results     = this.rule_results;
   var rule_results_len = rule_results.length;
@@ -62563,6 +62554,7 @@ function getSummaryInfo () {
 
   info.rcResults = getRuleCategoryResults(evaluationResult);
   info.glResults = getGuidelineResults(evaluationResult);
+  info.json = evaluationResult.toJSON();
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
@@ -62625,6 +62617,8 @@ function getRuleGroupInfo (groupType, groupId) {
   info.passed        = ruleSummaryResult.passed;
 
   info.ruleResults = [];
+
+  info.json = ruleGroupResult.toJSON('');
 
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
@@ -62737,6 +62731,9 @@ function getRuleResultInfo(ruleId, highlight, position) {
   info.detailsAction  = getDetailsAction(ruleResult);
   info.ruleResult     = getResultInfo(ruleResult);
   info.elementResults = getElementResultInfo(ruleResult);
+
+  // get JSON with element result details
+  info.json = ruleResult.toJSON('', true);
 
   // Save reference to rule results for highlighting elements
   ainspectorSidebarRuleResult = ruleResult;

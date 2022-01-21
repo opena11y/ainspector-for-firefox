@@ -49,6 +49,8 @@ export default class ViewRuleGroup {
     this.ruleResults = [];
     this.detailsActions = {};
 
+    this.json = '{}';
+
     this.initGrid();
   }
 
@@ -67,6 +69,9 @@ export default class ViewRuleGroup {
     return viewCSV.getCSV(options, title, location);
   }
 
+  toJSON () {
+    return this.json;
+  }
 
   resize (size) {
     const adjustment = 80;
@@ -163,6 +168,8 @@ export default class ViewRuleGroup {
     this.resultSummary.warnings     = infoRuleGroup.warnings;
     this.resultSummary.manualChecks = infoRuleGroup.manual_checks;
     this.resultSummary.passed       = infoRuleGroup.passed;
+
+    this.json = infoRuleGroup.json;
 
     this.ruleResultGrid.deleteDataRows();
 

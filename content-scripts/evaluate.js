@@ -109,6 +109,7 @@ function getSummaryInfo () {
 
   info.rcResults = getRuleCategoryResults(evaluationResult);
   info.glResults = getGuidelineResults(evaluationResult);
+  info.json = evaluationResult.toJSON();
 
   // Remove the evaluation library from the page,
   // otherwise get duplicate warnings for rulesest and rules being reloaded
@@ -171,6 +172,8 @@ function getRuleGroupInfo (groupType, groupId) {
   info.passed        = ruleSummaryResult.passed;
 
   info.ruleResults = [];
+
+  info.json = ruleGroupResult.toJSON('');
 
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
@@ -283,6 +286,9 @@ function getRuleResultInfo(ruleId, highlight, position) {
   info.detailsAction  = getDetailsAction(ruleResult);
   info.ruleResult     = getResultInfo(ruleResult);
   info.elementResults = getElementResultInfo(ruleResult);
+
+  // get JSON with element result details
+  info.json = ruleResult.toJSON('', true);
 
   // Save reference to rule results for highlighting elements
   ainspectorSidebarRuleResult = ruleResult;

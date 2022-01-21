@@ -18,7 +18,7 @@ export const defaultOptions = {
   filenameRuleGroup: 'ai-rule-group{date}{time}-{group}',
   filenameRuleResult: 'ai-rule-result{date}{time}-{rule}',
   includeDate: true,
-  includeTime: true
+  includeTime: false
 };
 
 /*
