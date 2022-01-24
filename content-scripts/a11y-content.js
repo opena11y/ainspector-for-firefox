@@ -16043,7 +16043,8 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
   attr = null;
   attributes = node.attributes;
 
-  this.attributes = attributes;
+  this.html_attrs = {};
+  this.aria_attrs = {};
 
   this.class_name = "";
 
@@ -16177,6 +16178,12 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
   for (i = 0; i < attributes.length; i++) {
 
     attr = attributes[i];
+
+    if (attr.name.toLowerCase().indexOf('aria-') === 0) {
+      this.aria_attrs[attr.name] = attr.value;
+    } else {
+      this.html_attrs[attr.name] = attr.value;
+    }
 
     var attr_value = OpenAjax.a11y.util.normalizeSpace(attr.value);
 
@@ -34447,19 +34454,6 @@ OpenAjax.a11y.ElementResult = function (rule_result, result_value, cache_item, m
     }
   }
   this.dom_node = cache_item.node;
-
-  if (this.dom_element && this.dom_element.attributes) {
-    for (var i = 0; i < this.dom_element.attributes.length; i += 1) {
-      var attr = this.dom_element.attributes[i];
-      var name = attr.name.trim();
-      var value = attr.value.trim();
-      if (name.indexOf('aria-') < 0) {
-        this.html_attrs[name] = value;
-      } else {
-        this.aria_attrs[name] = value;
-      }
-    }
-  }
 };
 
 
@@ -34564,7 +34558,10 @@ OpenAjax.a11y.ElementResult.prototype.checkForAttribute = function (attrs, attr,
  * @return {Object} see description
  */
 OpenAjax.a11y.ElementResult.prototype.getHTMLAttributes = function () {
-  return this.html_attrs;
+  if (this.dom_element.html_attrs) {
+    return this.dom_element.html_attrs;
+  }
+  return {};
 };
 
  /**
@@ -34578,7 +34575,10 @@ OpenAjax.a11y.ElementResult.prototype.getHTMLAttributes = function () {
  * @return {Object} see description
  */
 OpenAjax.a11y.ElementResult.prototype.getAriaAttributes = function () {
-  return this.aria_attrs;
+  if (this.dom_element.aria_attrs) {
+    return this.dom_element.aria_attrs;
+  }
+  return {};
 };
 
  /**
@@ -34639,9 +34639,12 @@ OpenAjax.a11y.ElementResult.prototype.getColorContrastInfo = function () {
     if (cs) {
       info.color_contrast_ratio  = cs.color_contrast_ratio;
       info.color                 = cs.color;
-      info.color_hex             = '#' + cs.color_hex;
+//      info.color_hex             = '#' + cs.color_hex;
       info.background_color      = cs.background_color;
-      info.background_color_hex  = '#' + cs.background_color_hex;
+//      info.background_color_hex  = '#' + cs.background_color_hex;
+      info.font_family           = cs.font_family;
+      info.font_size             = cs.font_size;
+      info.font_weight           = cs.font_weight;
       info.large_font            = cs.is_large_font;
       info.background_image      = cs.background_image;
       info.background_repeat     = cs.background_repeat;

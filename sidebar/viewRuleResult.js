@@ -172,9 +172,7 @@ export default class ViewRuleResult {
           if (er.accNameInfo) {
             er.accNameInfo = JSON.parse(er.accNameInfo);
           }
-          if (er.crrInfo) {
-            er.ccrInfo = JSON.parse(er.ccrInfo);
-          }
+
           if (er.ccrInfo) {
             er.ccrInfo = JSON.parse(er.ccrInfo);
           }

@@ -127,6 +127,62 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   // Renders string or object containing attribute name and values
+  isSpecialProperty (prop) {
+    let flag = false;
+
+    switch (prop) {
+      case 'color':
+      case 'background_color':
+      case 'font_weight':
+        flag = true;
+        console.log('[SPECIAL_PROP]');
+        break;
+
+      default:
+        break;
+    }
+
+    return flag;
+  }
+
+  getSpecialProperyContent (prop, value) {
+    let td = document.createElement('td');
+    let span = document.createElement('span');
+    let text = document.createTextNode(value);
+
+    switch (prop) {
+      case 'color':
+      case 'background_color':
+        span.textContent   = '■';
+        span.style.display = 'inline-block';
+        span.style.color   = value;
+        span.style.backgroundColor   = value;
+        span.style.border  = '1px solid black';
+        span.style.paddingLeft = '2px';
+        span.style.paddingRight = '2px';
+        span.style.marginRight = '4px';
+        span.setAttribute('aria-hidden', true);
+        td.appendChild(span);
+        td.appendChild(text);
+        break;
+
+      case 'font_weight':
+        td.textContent = value;
+        if (value === 400) {
+          td.textContent = value + ' (normal)';
+        }
+        if (value === 700) {
+          td.textContent = value + ' (bold)';
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return td;
+  }
+
   renderContent(elem, info) {
     let tr, th, td, a, item, hasContent = false;
     if (typeof info === 'string') {
@@ -144,7 +200,11 @@ export default class ResultElementInfo extends HTMLElement {
           th.textContent = item;
           tr.appendChild(th);
           td = document.createElement('td');
-          td.textContent = info[property];
+          if (this.isSpecialProperty(property)) {
+            td = this.getSpecialProperyContent(property, info[property]);
+          } else {
+            td.textContent = info[property];
+          }
           tr.appendChild(td);
           hasContent = true;
         }
@@ -226,15 +286,13 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   updateAttributeInformation(elementInfo) {
-    let hasAttrs = false;
-
     this.clearContent(this.attrsTbody);
     let htmlAttrInfo = elementInfo.htmlAttrInfo;
-    hasAttrs = this.renderContent(this.attrsTbody, htmlAttrInfo);
+    let hasAttrs1 = this.renderContent(this.attrsTbody, htmlAttrInfo);
     let ariaAttrInfo = elementInfo.ariaAttrInfo;
-    hasAttrs = hasAttrs || this.renderContent(this.attrsTbody, ariaAttrInfo);
+    let hasAttrs2 = this.renderContent(this.attrsTbody, ariaAttrInfo);
 
-    if (hasAttrs) {
+    if (hasAttrs1 || hasAttrs2) {
       this.attrsInfoTable.classList.remove('hide');
     } else {
       this.attrsInfoTable.classList.add('hide');
