@@ -62572,17 +62572,23 @@ function getSummaryInfo () {
 function getRuleGroupItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
+  let elemResults = ruleResult.getElementResultsSummary();
 
   let item = {
-    'ruleId'        : ruleId,
-    'summary'       : ruleResult.getRuleSummary(),
-    'required'      : ruleResult.isRuleRequired(),
-    'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
-    'result'        : ruleResult.getResultValueNLS(),
-    'resultValue'   : ruleResult.getResultValue(),
-    'level'         : ruleResult.getWCAG20LevelNLS(),
-    'messages'      : ruleResult.getResultMessagesArray(),
-    'detailsAction' : getDetailsAction(ruleResult)
+    'ruleId'         : ruleId,
+    'summary'        : ruleResult.getRuleSummary(),
+    'required'       : ruleResult.isRuleRequired(),
+    'wcag'           : ruleResult.getRule().getPrimarySuccessCriterion().id,
+    'result'         : ruleResult.getResultValueNLS(),
+    'resultValue'    : ruleResult.getResultValue(),
+    'level'          : ruleResult.getWCAG20LevelNLS(),
+    'messages'       : ruleResult.getResultMessagesArray(),
+    'detailsAction'  : getDetailsAction(ruleResult),
+    'elemViolations'   : elemResults.violations,
+    'elemWarnings'     : elemResults.warnings,
+    'elemManualChecks' : elemResults.manual_checks,
+    'elemPassed'       : elemResults.passed,
+    'elemHidden'       : elemResults.hidden
   };
 
   return item;
