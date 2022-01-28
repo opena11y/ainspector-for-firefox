@@ -35,12 +35,13 @@ template.innerHTML = `
           <fieldset>
             <legend id="options-filename-legend">Default Filename Options</legend>
 
-            <label id="options-export-prefix-label"
+            <label class="text"
+              id="options-export-prefix-label"
               for="options-export-prefix">
               Export File Prefix (up to 16 characters)
             </label>
             <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
-            <div class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div>
+            <!-- class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div -->
 
             <label class="checkbox">
               <input type="checkbox" checked id="options-export-date"/>
@@ -48,7 +49,7 @@ template.innerHTML = `
             </label>
           </fieldset>
 
-          <div class="no-feildset">
+          <div class="no-fieldset">
            <label class="checkbox">
             <input type="checkbox" id="options-export-prompt">
             <span id="options-export-prompt-for-options-label">Do not prompt me for export options.</span>
@@ -135,7 +136,7 @@ export default class ExportButton extends HTMLElement {
       this.exportJSON.checked    = options.exportFormat === 'JSON';
       this.exportPrefix.value    = options.filenamePrefix;
       this.exportDate.checked    = options.includeDate;
-      this.exportPrompt.checked  = options.promptForExportOptions;
+      this.exportPrompt.checked  = !options.promptForExportOptions;
     });
   }
 
@@ -153,8 +154,8 @@ export default class ExportButton extends HTMLElement {
     const optionsExportPrefixLabel     = this.shadowRoot.querySelector('#options-export-prefix-label');
     optionsExportPrefixLabel.textContent = getMessage('optionsExportPrefixLabel');
 
-    const optionsExportPrefixDesc      = this.shadowRoot.querySelector('#options-export-prefix-desc');
-    optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
+//    const optionsExportPrefixDesc      = this.shadowRoot.querySelector('#options-export-prefix-desc');
+//    optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
 
     const optionsExportIncludeDateLabel = this.shadowRoot.querySelector('#options-export-include-date-label');
     optionsExportIncludeDateLabel.textContent  = getMessage('optionsExportIncludeDate');
@@ -222,7 +223,7 @@ export default class ExportButton extends HTMLElement {
       filenamePrefix: validatePrefix(this.exportPrefix.value),
       includeDate: this.exportDate.checked,
       includeTime: this.exportDate.checked,
-      promptForExportOptions: this.exportPrompt.checked
+      promptForExportOptions: !this.exportPrompt.checked
     }
     saveOptions(options).then(this.tryActivationCallback());
   }

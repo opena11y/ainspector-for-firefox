@@ -595,13 +595,18 @@
   },
 
   "optionsExportIncludeDate": {
-    "message": "Include date and time (e.g. yyyy-mm-dd-XXh-YYm-ZZs).",
+    "message": "Include date and time.",
     "description": "Label for including date and time in the export export file name"
   },
 
+  "optionsExportIncludeDateDesc": {
+    "message": "(e.g. yyyy-mm-dd-XXh-YYm-ZZs)",
+    "description": "Additional information on format for including date and time in the export export file name"
+  },
+
   "optionsExportPromptForOptions": {
-    "message": "Do NOT prompt for export options.",
-    "description": "Label for disable promping users for export export file name options when activating the export button."
+    "message": "After this export, stop prompting for export options.",
+    "description": "Label for disable prompting for export export file name options when activating the export button."
   },
 
   "elementResultAction": {

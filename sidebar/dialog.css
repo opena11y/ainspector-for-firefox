@@ -53,6 +53,10 @@
   border: none;
 }
 
+[role="dialog"] fieldset input {
+  margin-left: 0.5em;
+}
+
 [role="dialog"] legend {
   font-weight:  bold;
 }
@@ -68,8 +72,17 @@
   margin: 6px;
 }
 
-[role="dialog"] input[type=text] {
+[role="dialog"] input[type="text"] {
   margin: 4px;
+  margin-left: 0.75em;
+}
+
+[role="dialog"] label.text {
+  margin-left: 0.75em;
+}
+
+[role="dialog"] .no-fieldset {
+  margin-left: 0.25em;
 }
 
 [role="dialog"] .buttons {
@@ -82,8 +95,9 @@
   width: 5em;
 }
 
-[role="dialog"] input[type=checkbox],
-[role="dialog"] input[type=radio] {
+[role="dialog"] select,
+[role="dialog"] input[type="checkbox"],
+[role="dialog"] input[type="radio"] {
   outline: none;
 }
 
@@ -93,6 +107,7 @@
   padding: 2px;
   border: 2px solid currentColor;
   background-color:  #eee;
+  border-radius: 5px;
 }
 
 [role="dialog"] div.select:hover,
@@ -103,9 +118,9 @@
   background-color:  #eee;
 }
 
-[role="dialog"] input[type=text]:focus,
+[role="dialog"] input[type="text"]:focus,
 [role="dialog"] button:focus,
-[role="dialog"] input[type=text]:hover,
+[role="dialog"] input[type="text"]:hover,
 [role="dialog"] button:hover {
   outline: 2px solid currentColor;
   outline-offset: 2px;

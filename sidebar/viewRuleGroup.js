@@ -74,7 +74,7 @@ export default class ViewRuleGroup {
   }
 
   resize (size) {
-    const adjustment = 80;
+    const adjustment = 100;
     const ruleSummaryHeight = this.resultSummary.offsetHeight;
     const h = (size - ruleSummaryHeight - adjustment) / 2;
 

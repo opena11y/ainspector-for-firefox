@@ -95,11 +95,6 @@ table th.num {
   text-align: right;
 }
 
-table th.rule,
-table td.rule {
-  width: auto;
-}
-
 table th.element-info,
 table td.element-info,
 table th.result,
@@ -112,6 +107,15 @@ table th.required,
 table td.required {
   width: 12%;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table th.rule,
+table td.rule {
+  width: auto;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

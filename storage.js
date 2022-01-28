@@ -13,7 +13,7 @@ export const defaultOptions = {
   projectTitle: '',
   evaluatorName: '',
   exportFormat: 'CSV',  // other option is JSON
-  filenamePrefix: 'ai',
+  filenamePrefix: 'ainspector',
   filenameSummary: 'summary{date}{time}',
   filenameRuleGroup: 'rule-group{date}{time}-{group}',
   filenameRuleResult: 'rule-result{date}{time}-{rule}',
