@@ -77,6 +77,8 @@ export default class ResultRuleInfo extends HTMLElement {
     this.complianceDiv = this.shadowRoot.querySelector('#compliance-content');
     this.scDiv         = this.shadowRoot.querySelector('#sc-content');
     this.additionalDiv = this.shadowRoot.querySelector('#additional-content');
+
+    this.copyText = '';
   }
 
   resize (size) {
@@ -126,6 +128,39 @@ export default class ResultRuleInfo extends HTMLElement {
     }
   }
 
+  // if the info is a string just use textContent
+  // if the info is an array, create a list of items
+  // Some items maybe an object containing a 'url' and 'title' properties
+  appendToCopyText(titleId, info, listChar) {
+    if (typeof listChar !== 'string') {
+      listChar = '';
+    }
+    if (!info) return;
+
+    this.copyText += getMessage(titleId) + '\n';
+
+    if (typeof info === 'string') {
+      this.copyText += info + '\n';
+    } else {
+      if (info.length) {
+        for (let i = 0; i < info.length; i += 1) {
+          let item = info[i];
+          if (typeof item === 'string') {
+            this.copyText += listChar + item + '\n';
+          } else {
+            if (item.url) {
+              this.copyText += listChar + item.title + ' (' + item.url+ ')\n';
+            } else {
+              this.copyText += listChar + item.title + '\n';
+            }
+          }
+        }
+      }
+    }
+    this.copyText += '\n';
+
+  }
+
   update(ruleInfo) {
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
@@ -137,6 +172,17 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.complianceDiv, ruleInfo.compliance);
     this.renderContent(this.scDiv,         ruleInfo.sc);
     this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
+
+    this.copyText = ruleInfo.ruleId.replace('_', ' ') + ': ' + ruleInfo.summary + '\n\n';
+    this.appendToCopyText('ruleDefinitionLabel', ruleInfo.definition);
+    this.appendToCopyText('ruleActionLabel',     ruleInfo.action);
+    this.appendToCopyText('rulePurposeLabel',    ruleInfo.purpose);
+    this.appendToCopyText('ruleTechniquesLabel', ruleInfo.techniques, '* ');
+    this.appendToCopyText('ruleTargetLabel',     ruleInfo.targets, '* ');
+    this.appendToCopyText('ruleComplianceLabel', ruleInfo.compliance);
+    this.appendToCopyText('ruleSCLabel',         ruleInfo.sc, '* ');
+    this.appendToCopyText('ruleAdditionalLabel', ruleInfo.additionalLinks, '* ');
+
   }
 
   clear (message1, message2) {
@@ -160,5 +206,11 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.complianceDiv, '');
     this.renderContent(this.scDiv,         '');
     this.renderContent(this.additionalDiv, '');
+
+    this.copyText = '';
+  }
+
+  getText () {
+    return this.copyText;
   }
 }

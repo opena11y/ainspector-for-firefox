@@ -418,6 +418,7 @@ function getDetailsAction(ruleResult) {
 
   let detailsAction = {
     'ruleId'             : rule.getId(),
+    'summary'            : rule.getSummary(required),
     'definition'         : rule.getDefinition(required),
     'action'             : ruleResult.getResultMessagesArray(),
     'purpose'            : rule.getPurpose(),

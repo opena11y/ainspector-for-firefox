@@ -34593,6 +34593,9 @@ OpenAjax.a11y.ElementResult.prototype.getAriaAttributes = function () {
 OpenAjax.a11y.ElementResult.prototype.getAccessibleNameInfo = function () {
   var info = {}, dp = false;
 
+  // If the results are dom_element object, they do not have names, like for CCR rule
+  info.name_possible = this.dom_element !== this.cache_item;
+
   if (this.dom_element) {
     if (this.dom_element.role) {
       dp = OpenAjax.a11y.aria.designPatterns[this.dom_element.role];
@@ -34621,12 +34624,18 @@ OpenAjax.a11y.ElementResult.prototype.getAccessibleNameInfo = function () {
     if (this.cache_item.computed_label) {
       info.name = this.cache_item.computed_label;
       info.name_source = this.nameSource[this.cache_item.computed_label_source];
+    } else {
+      // This option is for heading cache items
+      if (this.cache_item.name) {
+        info.name = this.cache_item.name;
+        info.name_source = this.nameSource[OpenAjax.a11y.SOURCE.TEXT_CONTENT];
+      }
     }
   }
 
   if (!info.name) {
-    info.name = 'none';
-    info.name_source = 'none'
+    info.name = '';
+    info.name_source = ''
   }
 
   if (this.cache_item.accessible_description) {

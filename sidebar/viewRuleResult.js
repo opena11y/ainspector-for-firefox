@@ -20,6 +20,14 @@ export default class ViewRuleResult {
     this.resultRuleInfo = document.createElement('result-rule-info');
     this.resultTablist.tabpanel1.appendChild(this.resultRuleInfo);
 
+    const copyButton = document.createElement('button');
+    copyButton.id = 'copy-rule-result-details';
+    copyButton.className = 'copy-rule-result';
+    copyButton.textContent = getMessage('copyRuleInfoLabel');
+    copyButton.addEventListener('click', this.onCopyButtonClick.bind(this));
+    copyButton.title = getMessage('copyRuleInfoDesc');
+    this.resultTablist.tabpanel1.appendChild(copyButton);
+
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
     this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
@@ -269,4 +277,16 @@ export default class ViewRuleResult {
       this.onRowSelectionCallback(id);
     }
   }
+
+  onCopyButtonClick () {
+    navigator.clipboard.writeText(this.resultRuleInfo.getText()).then(
+      function () {
+//          console.log('Copied to clipboard');
+      },
+      function () {
+        console.log('ERROR: Content not copied to clipboard');
+      }
+    );
+  }
+
 }

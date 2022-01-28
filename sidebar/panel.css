@@ -72,6 +72,13 @@ main .selected-details h2 {
   font-weight: bold;
 }
 
+main .selected-details button.copy-rule-group {
+  position: absolute;
+  top:  0.25em;
+  left: 9em;
+  font-size: 85%;
+}
+
 main .selected-details button.details {
   position: absolute;
   top:  0;

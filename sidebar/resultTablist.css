@@ -68,3 +68,9 @@ button.details:after {
   top:  1px;
   padding-left:  4px;
 }
+
+button.copy-rule-result {
+  margin:  0.5em;
+  font-size: 85%;
+}
+

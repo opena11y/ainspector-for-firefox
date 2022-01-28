@@ -1,5 +1,4 @@
 /* viewRuleGroup.js */
-
 const getMessage = browser.i18n.getMessage;
 
 import { getOptions } from '../storage.js';
@@ -34,13 +33,21 @@ export default class ViewRuleGroup {
     h2.textContent = getMessage('ruleSelectedLabel');
     div1.appendChild(h2);
 
-    const button = document.createElement('button');
-    button.id = 'rule-group-details';
-    button.className = 'details';
-    button.textContent = getMessage('detailsLabel');
-    button.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    div1.appendChild(button);
-    this.ruleResultGrid.setDetailsButton(button);
+    const copyButton = document.createElement('button');
+    copyButton.id = 'copy-rule-group-details';
+    copyButton.className = 'copy-rule-group';
+    copyButton.textContent = getMessage('copyRuleInfoLabel');
+    copyButton.addEventListener('click', this.onCopyButtonClick.bind(this));
+    copyButton.title = getMessage('copyRuleInfoDesc');
+    div1.appendChild(copyButton);
+
+    const detailsButton = document.createElement('button');
+    detailsButton.id = 'rule-group-details';
+    detailsButton.className = 'details';
+    detailsButton.textContent = getMessage('detailsLabel');
+    detailsButton.addEventListener('click', this.onDetailsButtonClick.bind(this));
+    div1.appendChild(detailsButton);
+    this.ruleResultGrid.setDetailsButton(detailsButton);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
     div.appendChild(this.resultRuleInfo);
@@ -80,13 +87,6 @@ export default class ViewRuleGroup {
 
     this.ruleResultGrid.resize(h);
     this.resultRuleInfo.resize(h);
-  }
-
-  onDetailsButtonClick () {
-    let rowId = this.ruleResultGrid.getSelectedRowId();
-    if (this.handleRowActivation && rowId) {
-      this.handleRowActivation(rowId);
-    }
   }
 
   getResultStyle (result) {
@@ -264,5 +264,24 @@ export default class ViewRuleGroup {
       this.resultRuleInfo.update(this.detailsActions[id]);
     }
   }
+
+  onDetailsButtonClick () {
+    let rowId = this.ruleResultGrid.getSelectedRowId();
+    if (this.handleRowActivation && rowId) {
+      this.handleRowActivation(rowId);
+    }
+  }
+
+  onCopyButtonClick () {
+    navigator.clipboard.writeText(this.resultRuleInfo.getText()).then(
+      function () {
+//          console.log('Copied to clipboard');
+      },
+      function () {
+        console.log('ERROR: Content not copied to clipboard');
+      }
+    );
+  }
+
 
 }
