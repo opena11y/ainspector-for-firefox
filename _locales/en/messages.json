@@ -454,9 +454,19 @@
     "description": "Label for button in views menu button"
   },
 
+  "exportButtonLabel": {
+    "message": "Export",
+    "description": "Label for rerun export button in the footer of the main panel"
+  },
+
+  "exportDialogTitle": {
+    "message": "Export Evaluation Options",
+    "description": "Title for export evalaution options dialog box"
+  },
+
   "rerunEvalButtonLabel": {
     "message": "Rerun Evaluation",
-    "description": "Label for rerun evalaution button in main panel"
+    "description": "Label for rerun evalaution button in the footer of the main panel"
   },
 
   "rerunEvalDialogTitle": {
@@ -469,7 +479,7 @@
     "description": "Label for select input in rerun evalaution dialog box"
   },
 
-  "rerunEvalCheckboxLabel": {
+  "rerunEvalPromptForDelayLabel": {
     "message": "After this evaluation, stop prompting for delay setting.",
     "description": "Label for checkbox input in rerun evalaution dialog box"
   },
@@ -554,18 +564,23 @@
     "description": "Label for file name legend in the export section of the options page"
   },
 
+  "optionsExportPrompt": {
+    "message": "Prompt for export options",
+    "description": "Prompt for export options when the export button is pressed"
+  },
+
   "optionsExportFormatLegend": {
     "message": "Export File Format",
     "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
   "optionsExportCSVLabel": {
-    "message": "CSV",
+    "message": "CSV (e.g. spreadsheets)",
     "description": "Label for the CSV radio button option in the export section of the options page"
   },
 
   "optionsExportJSONLabel": {
-    "message": "JSON",
+    "message": "JSON (e.g. databases and applications)",
     "description": "Label for the JSON radio button option in the export section of the options page"
   },
 
@@ -577,6 +592,71 @@
   "optionsExportPrefixDesc": {
     "message": "Can be used to customize export file names for specific projects.",
     "description": "Description of pottenial use of the prefix string in the export section of the options page"
+  },
+
+  "optionsExportIncludeDate": {
+    "message": "Include date and time (e.g. yyyy-mm-dd-XXh-YYm-ZZs).",
+    "description": "Label for including date and time in the export export file name"
+  },
+
+  "optionsExportPromptForOptions": {
+    "message": "Do NOT prompt for export options.",
+    "description": "Label for disable promping users for export export file name options when activating the export button."
+  },
+
+  "elementResultAction": {
+    "message": "Action",
+    "description": "Action heading in element results view."
+  },
+
+  "elementResultTagName": {
+    "message": "Tag Name",
+    "description": "Tag name heading in element results view."
+  },
+
+  "elementResultAccName": {
+    "message": "Accessible Name",
+    "description": "Accessible name heading in element results view."
+  },
+
+  "elementResultAccNameRequired": {
+    "message": "(Required)",
+    "description": "Required for accessible name heading in element results view."
+  },
+
+  "elementResultAccNameProhibited": {
+    "message": "(Prohibited)",
+    "description": "Prohibited for accessible name heading in element results view."
+  },
+
+  "elementResultAccDesc": {
+    "message": "Accessible Description",
+    "description": "Accessible name heading in element results view."
+  },
+
+  "elementResultErrorDesc": {
+    "message": "Error Description",
+    "description": "Error Description heading in element results view."
+  },
+
+  "elementResultCCR": {
+    "message": "Color Contrast Ratio",
+    "description": "Color Contrast Ratio heading in element results view."
+  },
+
+  "elementResultVisibility": {
+    "message": "Visibility",
+    "description": "Visibility heading in element results view."
+  },
+
+  "elementResultAttributeHeader": {
+    "message": "Attribute",
+    "description": "Column header for attribute results in element results view."
+  },
+
+  "elementResultValueHeader": {
+    "message": "Value",
+    "description": "Column header for attribute results in element results view."
   }
 
 }

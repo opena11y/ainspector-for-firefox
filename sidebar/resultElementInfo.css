@@ -12,6 +12,7 @@
   margin: 0;
   border: 1px solid #aaa;
   padding: 2px;
+  padding-left:  4px;
   display: block;
   left:  2px;
   right:  2px;
@@ -44,7 +45,7 @@
 }
 
 .result-element-info .source {
-  margin-top:  0.5em;
+  margin-bottom:  0.25em;
 }
 
 .result-element-info .source span:first-child {
@@ -59,20 +60,19 @@
   width: 100%;
 }
 
+.result-element-info table.ccr-info tr:nth-child(odd) {
+  background-color: #eee;
+}
+
 .result-element-info table.ccr-info th,
 .result-element-info table.visibility-info th {
   font-weight: normal;
   padding-right: 4px;
-  text-align: right;
+  text-align: left;
   width: 25%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.result-element-info table.ccr-info th:after,
-.result-element-info table.visibility-info th:after {
-  content: ':';
 }
 
 .result-element-info tableccr-info td,
@@ -87,10 +87,9 @@
   width: 100%;
 }
 
-.result-element-info table.attrs-info tbody tr:nth-child(even) {
-  background: #ddd;
+.result-element-info table.attrs-info tbody tr:nth-child(odd) {
+  background: #eee;
 }
-
 
 .result-element-info table.attrs-info thead th {
   text-align: left;
@@ -99,15 +98,11 @@
 .result-element-info table.attrs-info tbody th {
   padding-right: 0.25em;
   font-weight:  normal;
-  text-align: right;
+  text-align: left;
   width: 25%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.result-element-info table.attrs-info tbody th:after {
-  content: ':';
 }
 
 .result-element-info table.attrs-info tbody td.value {

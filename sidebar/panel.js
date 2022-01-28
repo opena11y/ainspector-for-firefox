@@ -15,9 +15,10 @@ import ElementSummary    from './elementSummary.js';
 import ResultElementInfo from './resultElementInfo.js';
 import ResultRuleInfo    from './resultRuleInfo.js';
 
-import HighlightSelect from './highlightSelect.js';
-import ViewsMenuButton from './viewsMenuButton.js';
+import HighlightSelect       from './highlightSelect.js';
+import ViewsMenuButton       from './viewsMenuButton.js';
 import RerunEvaluationButton from './rerunEvaluationButton.js';
+import ExportButton          from './exportButton.js';
 
 customElements.define('result-summary',      ResultSummary);
 customElements.define('result-tablist',      ResultTablist);
@@ -28,6 +29,7 @@ customElements.define('result-rule-info',    ResultRuleInfo);
 customElements.define('highlight-select',    HighlightSelect);
 customElements.define('views-menu-button',   ViewsMenuButton);
 customElements.define('rerun-evaluation-button', RerunEvaluationButton);
+customElements.define('export-button', ExportButton);
 
 var contentPort;
 var myWindowId;
@@ -154,8 +156,8 @@ function initControls () {
   preferencesButton = document.getElementById('preferences-button');
   preferencesButton.addEventListener('click', onPreferencesClick);
 
-  exportButton = document.getElementById('export-button');
-  exportButton.addEventListener('click', onExportClick);
+  exportButton = document.querySelector('export-button');
+  exportButton.setActivationCallback(onExportClick);
 
   rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
   rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);

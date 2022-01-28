@@ -1,7 +1,7 @@
 /* options.css */
 
 body {
-  margin: 4px;
+  margin: 1em;
   padding: 4px;
 }
 
@@ -9,6 +9,10 @@ h2 {
   font-size: 1.2rem;
   font-weight: 550;
   margin: 1.5rem 0 0.75rem;
+}
+
+.checkbox {
+  margin-left: 12px;
 }
 
 fieldset {

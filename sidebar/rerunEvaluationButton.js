@@ -18,20 +18,22 @@ template.innerHTML = `
         id="dialog"
         aria-labelledby="title">
         <div id="title">Rerun Evlaution: Specify Delay</div>
-        <div class="select">
-          <label for="select">Rerun evaluation in </label>
-          <select id="select">
-            <option value="5" selected>5 sec.</option>
-            <option value="10">10 sec.</option>
-            <option value="20">20 sec.</option>
-            <option value="40">40 sec.</option>
-            <option value="60">1 min.</option>
-          </select>
-        </div>
-        <div class="checkbox">
-          <input id="checkbox" type="checkbox">
-          <label for="checkbox">
-            After this evaluation, stop prompting for delay setting.
+        <div class="content">
+          <div class="select">
+            <label for="select">Rerun evaluation in </label>
+            <select id="select">
+              <option value="5" selected>5 sec.</option>
+              <option value="10">10 sec.</option>
+              <option value="20">20 sec.</option>
+              <option value="40">40 sec.</option>
+              <option value="60">1 min.</option>
+            </select>
+          </div>
+          <label class="checkbox">
+            <input id="prompt-for-delay" type="checkbox">
+            <span id="prompt-for-delay-label">
+              After this evaluation, stop prompting for delay setting.
+            </span>
           </label>
         </div>
         <div class="buttons">
@@ -51,7 +53,7 @@ export default class RerunEvaluationButton extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'rerunEvaluationButton.css');
+    link.setAttribute('href', 'dialog.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template
@@ -77,10 +79,15 @@ export default class RerunEvaluationButton extends HTMLElement {
     label = this.shadowRoot.querySelector('label[for="select"]');
     label.textContent = getMessage('rerunEvalSelectLabel');
     this.select.addEventListener('keydown', this.onSelectKeydown.bind(this));
+    this.select.addEventListener('focus', this.onFocus.bind(this));
+    this.select.addEventListener('blur', this.onBlur.bind(this));
 
-    this.checkbox = this.shadowRoot.querySelector('input[type="checkbox"]');
-    label = this.shadowRoot.querySelector('label[for="checkbox"]')
-    label.textContent = getMessage('rerunEvalCheckboxLabel');
+    this.checkbox = this.shadowRoot.querySelector('#prompt-for-delay');
+    this.checkbox.addEventListener('focus', this.onFocus.bind(this));
+    this.checkbox.addEventListener('blur', this.onBlur.bind(this));
+
+    label = this.shadowRoot.querySelector('#prompt-for-delay-label')
+    label.textContent = getMessage('rerunEvalPromptForDelayLabel');
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
     this.cancelButton.textContent  = getMessage('cancelButtonLabel');
@@ -231,4 +238,15 @@ export default class RerunEvaluationButton extends HTMLElement {
       }
     }
   }
+
+  onFocus (event) {
+    let tgt = event.currentTarget;
+    tgt.parentNode.classList.add('focus');
+  }
+
+  onBlur (event) {
+    let tgt = event.currentTarget;
+    tgt.parentNode.classList.remove('focus');
+  }
+
 }

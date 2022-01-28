@@ -1,0 +1,126 @@
+/* rerunEvaluationButton.css */
+
+
+[role="dialog"] {
+  margin: 0;
+  padding: 0;
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 8px;
+  color: black;
+  width: 380px;
+  bottom: 30px;
+  left: 10px;
+}
+
+[role="dialog"] #title {
+  margin-bottom: 0.5em;
+  padding: 4px;
+  border-bottom: 1px solid black;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight:  bold;
+  background-color: #eee;
+}
+
+[role="dialog"] .content {
+  margin:  0.25em;
+  margin-bottom: 1em;
+}
+
+[role="dialog"] .select {
+  margin-left: 0.5em;
+  width: 15em;
+}
+
+[role="dialog"] label
+[role="dialog"] .desc {
+  padding: 4px;
+  font-size: 90%;
+  margin-left: 0.5em;
+}
+
+[role="dialog"] .desc {
+  margin:  0;
+  padding: 0;
+  margin-bottom: 1em;
+  font-style: italic;
+}
+
+[role="dialog"] fieldset {
+  border: none;
+}
+
+[role="dialog"] legend {
+  font-weight:  bold;
+}
+
+[role="dialog"] div.select,
+[role="dialog"] label.checkbox,
+[role="dialog"] label.radio {
+  display:  block;
+  padding: 4px;
+}
+
+[role="dialog"] button {
+  margin: 6px;
+}
+
+[role="dialog"] input[type=text] {
+  margin: 4px;
+}
+
+[role="dialog"] .buttons {
+  float: right;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+[role="dialog"] .buttons button {
+  width: 5em;
+}
+
+[role="dialog"] input[type=checkbox],
+[role="dialog"] input[type=radio] {
+  outline: none;
+}
+
+[role="dialog"] div.select.focus,
+[role="dialog"] label.checkbox.focus,
+[role="dialog"] label.radio.focus {
+  padding: 2px;
+  border: 2px solid currentColor;
+  background-color:  #eee;
+}
+
+[role="dialog"] div.select:hover,
+[role="dialog"] label.checkbox:hover,
+[role="dialog"] label.radio:hover {
+  padding: 3px;
+  border: 1px solid #888;
+  background-color:  #eee;
+}
+
+[role="dialog"] input[type=text]:focus,
+[role="dialog"] button:focus,
+[role="dialog"] input[type=text]:hover,
+[role="dialog"] button:hover {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+button#rerun-button,
+button#export-button {
+  text-align:  center;
+  width: 10em;
+}
+
+button:focus,
+button#export-button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+

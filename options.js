@@ -1,6 +1,8 @@
 /* options.js */
 
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
+import validatePrefix from './validatePrefix.js';
+
 const getMessage = browser.i18n.getMessage;
 
 const debug = false;
@@ -12,11 +14,11 @@ const rulesetStrict  = document.querySelector('input[id="ARIA_STRICT"]');
 const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
-const exportCSV      = document.querySelector('input[id="options-export-csv"]');
-const exportJSON     = document.querySelector('input[id="options-export-json"]');
+const exportPrompt   = document.querySelector('#options-export-prompt');
+const exportCSV      = document.querySelector('#options-export-csv');
+const exportJSON     = document.querySelector('#options-export-json');
 const exportPrefix   = document.querySelector('#options-export-prefix');
 const exportDate     = document.querySelector('#options-export-date');
-const exportTime     = document.querySelector('#options-export-time');
 
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
@@ -38,11 +40,13 @@ function setFormLabels () {
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
   const optionsExportHeading         = document.querySelector('#options-export-heading');
+  const optionsExportPromptLabel     = document.querySelector('#options-export-prompt-label');
   const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
   const optionsExportCSVLabel        = document.querySelector('#options-export-csv-label');
   const optionsExportJSONLabel       = document.querySelector('#options-export-json-label');
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
   const optionsExportPrefixDesc      = document.querySelector('#options-export-prefix-desc');
+  const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
   const optionsResetDefaults         = document.querySelector('#options-reset-defaults');
 
@@ -60,12 +64,17 @@ function setFormLabels () {
   optionsRuleResultsLegend.textContent     = getMessage('optionsRuleResultsLegend');
   optionsInclPassNaLabel.textContent       = getMessage('optionsInclPassNaLabel');
 
-  optionsExportHeading.textContent        = getMessage('optionsExportHeading');
-  optionsExportFormatLegend.textContent   = getMessage('optionsExportFormatLegend');
-  optionsExportCSVLabel.textContent       = getMessage('optionsExportCSVLabel');
-  optionsExportJSONLabel.textContent      = getMessage('optionsExportJSONLabel');
-  optionsExportPrefixLabel.textContent = getMessage('optionsExportPrefixLabel');
-  optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
+  optionsExportHeading.textContent      = getMessage('optionsExportHeading');
+  optionsExportPromptLabel.textContent  = getMessage('optionsExportPrompt');
+  optionsExportFormatLegend.textContent = getMessage('optionsExportFormatLegend');
+  optionsExportCSVLabel.textContent     = getMessage('optionsExportCSVLabel');
+  optionsExportJSONLabel.textContent    = getMessage('optionsExportJSONLabel');
+  optionsExportPrefixLabel.textContent  = getMessage('optionsExportPrefixLabel');
+  optionsExportPrefixDesc.textContent   = getMessage('optionsExportPrefixDesc');
+  optionsExportDateLabel.textContent    = getMessage('optionsExportIncludeDate');
+
+
+
 
   optionsResetDefaults.textContent         = getMessage('optionsResetDefaults');
 }
@@ -85,7 +94,9 @@ function saveFormOptions (e) {
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
     filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
-    includeTime:    exportTime.checked
+    includeTime:    exportDate.checked,
+    promptForExportOptions: exportPrompt.checked
+
   }
 
   if (debug) console.log(options);
@@ -93,35 +104,6 @@ function saveFormOptions (e) {
 }
 
 // Update HTML form values based on user options saved in storage.sync
-
-function isCharacterAllowed(c) {
-  if ((c <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
-    return false;
-  }
-  return true;
-}
-
-function validatePrefix (value) {
-
-  let value1 = '';
-
-  if (typeof value !== 'string') {
-    value = '';
-  }
-  if (value.length > 16) {
-    value = value.substring(0, 16);
-  }
-
-  for (let i = 0; i < value.length; i += 1) {
-    if (isCharacterAllowed(value[i])) {
-      value1 += value[i];
-    }
-  }
-
-  console.log('[validatePrefix]: "' + value + '" "' + value1 +'"');
-
-  return value1;
-}
 
 function updateForm (options) {
   // Set form element values and states
@@ -132,17 +114,16 @@ function updateForm (options) {
   rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
 
+  exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
   exportJSON.checked     = options.exportFormat === 'JSON';
   exportPrefix.value     = validatePrefix(options.filenamePrefix);
   exportDate.checked     = options.includeDate;
-  exportTime.checked     = options.includeTime;
 
 }
 
 function updateOptionsForm() {
   setFormLabels();
-
   getOptions().then(updateForm);
 }
 
@@ -153,13 +134,13 @@ function saveDefaultOptions () {
 function onKeyupValidatePrefix () {
   let value = validatePrefix(exportPrefix.value);
   if (value !== exportPrefix.value) {
-    if (exportPrefix.value) {
+    if (exportPrefix.value >= 16) {
       console.log("[PrefixError]: Prefix can only be 16 characters");
     } else {
       console.log("[PrefixError]: Character not allowed");
     }
   }
-  exportPrefix.value = validatePrefix(exportPrefix.value);
+  exportPrefix.value = value;
 }
 
 // Add event listeners for saving and restoring options
@@ -172,13 +153,12 @@ rulesetStrict.addEventListener('change', saveFormOptions);
 rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
 
+exportPrompt.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);
 exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
-// exportPrefix.addEventListener('keyup', onKeyupValidate);
+exportPrefix.addEventListener('keyup', onKeyupValidatePrefix);
 exportDate.addEventListener('change', saveFormOptions);
-exportTime.addEventListener('change', saveFormOptions);
-
 
 resetDefaults.addEventListener('click', saveDefaultOptions);
 

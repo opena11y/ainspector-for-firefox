@@ -14,7 +14,8 @@
     "find",
     "storage",
     "tabs",
-    "downloads"
+    "downloads",
+    "clipboardWrite"
   ],
 
   "background": {

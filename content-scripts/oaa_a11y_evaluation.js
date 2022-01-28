@@ -34591,8 +34591,22 @@ OpenAjax.a11y.ElementResult.prototype.getAriaAttributes = function () {
  * @return {Object}
  */
 OpenAjax.a11y.ElementResult.prototype.getAccessibleNameInfo = function () {
-  var info = {};
+  var info = {}, dp = false;
 
+  if (this.dom_element) {
+    if (this.dom_element.role) {
+      dp = OpenAjax.a11y.aria.designPatterns[this.dom_element.role];
+    } else {
+      if (this.dom_element.implicit_role) {
+        dp = OpenAjax.a11y.aria.designPatterns[this.dom_element.implicit_role];
+      }
+    }
+  }
+
+  if (dp) {
+    info.name_required   = dp.nameRequired;
+    info.name_prohibited = dp.nameProhibited;
+  }
 
   if (this.cache_item.accessible_name) {
     info.name = this.cache_item.accessible_name;
@@ -34608,6 +34622,11 @@ OpenAjax.a11y.ElementResult.prototype.getAccessibleNameInfo = function () {
       info.name = this.cache_item.computed_label;
       info.name_source = this.nameSource[this.cache_item.computed_label_source];
     }
+  }
+
+  if (!info.name) {
+    info.name = 'none';
+    info.name_source = 'none'
   }
 
   if (this.cache_item.accessible_description) {
@@ -34639,13 +34658,13 @@ OpenAjax.a11y.ElementResult.prototype.getColorContrastInfo = function () {
     if (cs) {
       info.color_contrast_ratio  = cs.color_contrast_ratio;
       info.color                 = cs.color;
-//      info.color_hex             = '#' + cs.color_hex;
+      info.color_hex             = '#' + cs.color_hex;
       info.background_color      = cs.background_color;
-//      info.background_color_hex  = '#' + cs.background_color_hex;
+      info.background_color_hex  = '#' + cs.background_color_hex;
       info.font_family           = cs.font_family;
       info.font_size             = cs.font_size;
       info.font_weight           = cs.font_weight;
-      info.large_font            = cs.is_large_font;
+      info.large_font            = cs.is_large_font ? 'Yes' : 'no';
       info.background_image      = cs.background_image;
       info.background_repeat     = cs.background_repeat;
       info.background_position   = cs.background_position;

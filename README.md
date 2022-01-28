@@ -26,34 +26,6 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 ## Issues and Features
 * Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features
 
-## Version History
-
-| Version  | Date | Notes |
-|----------|:----:|-------|
-| 2.0.0      |  12/09/21 | Updated code to use web components and
-| 1.2.0      |  11/19/21 | Updated evaluation library to version 1.3
-| 1.1.3    |  10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
-| 1.1.2    |  9/20/21  | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
-| 1.1.1    |  9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
-| 0.96.0   | 10/30/19  | Fixes bug in highlight option not being remembered
-
-
-## Version 2.0 Features
-
-| Implemented  | Tested  | Feature |
-|--------------|:-------:|---------|
-|   Yes        |   Yes   | Supporting event and direct port model used in a11ytools/addons/structure-3
-|   Yes        |   Yes   | Using A11y Evaluation Library 1.3
-|   Yes        |   Yes   | Using web components and classes for creating user interface controls
-|   Yes        |   Yes   | Preferences: Using storage
-|   Yes        |   Yes   | Delay feature for re-run button
-|   Yes        | Partial | Resizing and positioning of controls based on sidebar dimensions
-|   Yes        | Partial | Adding accessible names to grid rows and cells
-|   Yes        | Partial | Element highlight feature
-|   no         |   no    | Export view as a CSV file (New)
-|   no         |   no    | Add element details to rule view (New)
-|   Partial    | Partial | Keyboard focus styling to support high contrast
-
 ## Code Documentation
 
 ### Sidebar

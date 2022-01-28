@@ -55,7 +55,14 @@
 
       <h2 id="options-export-heading">Export Evaluation Results</h2>
 
-        <fieldset>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" checked id="options-export-prompt"/>
+          <span id="options-export-prompt-label">Prompt for export options</span>
+        </label>
+      </div>
+
+      <fieldset>
         <legend id="options-export-format-legend">Export Format</legend>
         <label>
           <input type="radio" name="export-format" id="options-export-csv" checked/>
@@ -66,7 +73,6 @@
           <span id="options-export-json-label">JSON</span>
         </label>
       </fieldset>
-
 
       <fieldset>
         <legend id="options-filename-legend">Default Filename Options</legend>
@@ -80,12 +86,7 @@
 
         <label>
           <input type="checkbox" checked id="options-export-date"/>
-          <span id="options-export-date-label">Include date in default file name (e.g. yyyy-mm-dd).</span>
-        </label>
-
-        <label>
-          <input type="checkbox" checked id="options-export-time"/>
-          <span id="options-export-time-label">Include time in default file name  (e.g. XXh-YYm-ZZs).</span>
+          <span id="options-export-date-label">Include date and time in default file name (e.g. yyyy-mm-dd-XXh-YYm-ZZs).</span>
         </label>
 
       </fieldset>

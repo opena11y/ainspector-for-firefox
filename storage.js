@@ -13,12 +13,13 @@ export const defaultOptions = {
   projectTitle: '',
   evaluatorName: '',
   exportFormat: 'CSV',  // other option is JSON
-  filenamePrefix: '',
-  filenameSummary: 'ai-summary{date}{time}',
-  filenameRuleGroup: 'ai-rule-group{date}{time}-{group}',
-  filenameRuleResult: 'ai-rule-result{date}{time}-{rule}',
+  filenamePrefix: 'ai',
+  filenameSummary: 'summary{date}{time}',
+  filenameRuleGroup: 'rule-group{date}{time}-{group}',
+  filenameRuleResult: 'rule-result{date}{time}-{rule}',
   includeDate: true,
-  includeTime: false
+  includeTime: true,
+  promptForExportOptions: true
 };
 
 /*

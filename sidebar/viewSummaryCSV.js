@@ -25,7 +25,6 @@ export default class ViewSummaryCSV extends commonCSV {
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       r = this.rcResults[i];
-      console.log('[ruleCategoryId]: ' + r.id + ' ' + typeof r.id)
       csv += `"${getMessage(getRuleCategoryLabelId(r.id))}","${r.violations}","${r.warnings}","${r.manual_checks}","${r.passed}"\n`;
     }
 

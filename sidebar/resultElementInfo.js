@@ -17,21 +17,21 @@ template.innerHTML = `
         <div id="tagname"></div>
 
         <div id="accname-info">
-          <h3 id="accname-info-label">Accessible Name</h3>
-          <div id="accname"></div>
-          <div class="source"><span>Source:</span> <span id="accname-source"><span></div>
+          <h3><span id="accname-info-label">Accessible Name</span> <span id="accname-info-label-more"></span></h3>
+          <div class="source"><span>Text:</span> <span id="accname"></span></div>
+          <div class="source"><span>Source:</span> <span id="accname-source"></span></div>
         </div>
 
         <div id="accdesc-info">
           <h3 id="accdesc-info-label">Accessible Description</h3>
-          <div id="accdesc"></div>
-          <div class="source"><span>Source:</span> <span id="accdesc-source"><span></div>
+          <div class="source"><span>Text:</span> <span id="accdesc"></span></div>
+          <div class="source"><span>Source:</span> <span id="accdesc-source"></span></div>
         </div>
 
         <div id="errordesc-info">
           <h3 id="errordesc-info-label">Error Description</h3>
-          <div id="errordesc"></div>
-          <div class="source"><span>Source:</span> <span id="errordesc-source"><span></div>
+          <div class="source"><span>Text:</span> <span id="errordesc"></span></div>
+          <div class="source"><span>Source:</span> <span id="errordesc-source"></span></div>
         </div>
 
         <div id="ccr-info">
@@ -92,16 +92,17 @@ export default class ResultElementInfo extends HTMLElement {
     this.actionDiv   = this.shadowRoot.querySelector('#action');
     this.tagNameDiv  = this.shadowRoot.querySelector('#tagname');
 
+    this.accNameInfoLabelMoreSpan = this.shadowRoot.querySelector('#accname-info-label-more');
     this.accNameInfoDiv    = this.shadowRoot.querySelector('#accname-info');
-    this.accNameDiv        = this.shadowRoot.querySelector('#accname');
+    this.accNameSpan       = this.shadowRoot.querySelector('#accname');
     this.accNameSourceSpan = this.shadowRoot.querySelector('#accname-source');
 
     this.accDescInfoDiv    = this.shadowRoot.querySelector('#accdesc-info');
-    this.accDescDiv        = this.shadowRoot.querySelector('#accdesc');
+    this.accDescSpan       = this.shadowRoot.querySelector('#accdesc');
     this.accDescSourceSpan = this.shadowRoot.querySelector('#accdesc-source');
 
     this.errorDescInfoDiv    = this.shadowRoot.querySelector('#errordesc-info');
-    this.errorDescDiv        = this.shadowRoot.querySelector('errordesc');
+    this.errorDescSpan       = this.shadowRoot.querySelector('errordesc');
     this.errorDescSourceSpan = this.shadowRoot.querySelector('#errordesc-source');
 
     this.ccrInfoDiv    = this.shadowRoot.querySelector('#ccr-info');
@@ -112,6 +113,38 @@ export default class ResultElementInfo extends HTMLElement {
 
     this.attrsInfoTable = this.shadowRoot.querySelector('#attrs-info');
     this.attrsTbody     = this.shadowRoot.querySelector('#attrs-content');
+
+    this.initLabels();
+  }
+
+  initLabels () {
+    const actionLabel = this.shadowRoot.querySelector('#action-label');
+    actionLabel.textContent = getMessage('elementResultAction');
+
+    const tagNameLabel = this.shadowRoot.querySelector('#tagname-label');
+    tagNameLabel.textContent = getMessage('elementResultTagName');
+
+    const accNameLabel = this.shadowRoot.querySelector('#accname-info-label');
+    accNameLabel.textContent = getMessage('elementResultAccName');
+
+    const accDescLabel = this.shadowRoot.querySelector('#accdesc-info-label');
+    accDescLabel.textContent = getMessage('elementResultAccDesc');
+
+    const errorDescLabel = this.shadowRoot.querySelector('#errordesc-info-label');
+    errorDescLabel.textContent = getMessage('elementResultErrorDesc');
+
+    const ccrInfoLabel = this.shadowRoot.querySelector('#ccr-info-label');
+    ccrInfoLabel.textContent = getMessage('elementResultCCR');
+
+    const visibilityInfoLabel = this.shadowRoot.querySelector('#visibility-info-label');
+    visibilityInfoLabel.textContent = getMessage('elementResultVisibility');
+
+    const attrInfoLabel = this.shadowRoot.querySelector('#attrs-info-name');
+    attrInfoLabel.textContent = getMessage('elementResultAttributeHeader');
+
+    const valueInfoLabel = this.shadowRoot.querySelector('#attrs-info-value');
+    valueInfoLabel.textContent = getMessage('elementResultValueHeader');
+
   }
 
   resize (size) {
@@ -133,9 +166,10 @@ export default class ResultElementInfo extends HTMLElement {
     switch (prop) {
       case 'color':
       case 'background_color':
+      case 'color_hex':
+      case 'background_color_hex':
       case 'font_weight':
         flag = true;
-        console.log('[SPECIAL_PROP]');
         break;
 
       default:
@@ -164,6 +198,10 @@ export default class ResultElementInfo extends HTMLElement {
         span.setAttribute('aria-hidden', true);
         td.appendChild(span);
         td.appendChild(text);
+        break;
+
+      case 'color_hex':
+      case 'background_color_hex':
         break;
 
       case 'font_weight':
@@ -231,10 +269,19 @@ export default class ResultElementInfo extends HTMLElement {
   updateAccessibleNameInfo(elementInfo) {
     let accNameInfo = elementInfo.accNameInfo;
 
+    this.accNameInfoLabelMoreSpan.textContent = '';
+    if (accNameInfo.name_required) {
+      this.accNameInfoLabelMoreSpan.textContent = getMessage('elementResultAccNameRequired');
+    } else {
+      if (accNameInfo.name_prohibited) {
+        this.accNameInfoLabelMoreSpan.textContent = getMessage('elementResultAccNameProhibited');
+      }
+    }
+
     // Accessible name information
     if (accNameInfo.name) {
       this.accNameInfoDiv.classList.remove('hide');
-      this.accNameDiv.textContent = accNameInfo.name;
+      this.accNameSpan.textContent = accNameInfo.name;
       this.accNameSourceSpan.textContent = accNameInfo.name_source;
     } else {
       this.accNameInfoDiv.classList.add('hide');
@@ -242,7 +289,7 @@ export default class ResultElementInfo extends HTMLElement {
 
     if (accNameInfo.desc) {
       this.accDescInfoDiv.classList.remove('hide');
-      this.accDescDiv.textContent = accNameInfo.desc;
+      this.accDescSpan.textContent = accNameInfo.desc;
       this.accDescSourceSpan.textContent = accNameInfo.desc_source;
     } else {
       this.accDescInfoDiv.classList.add('hide');
@@ -250,7 +297,7 @@ export default class ResultElementInfo extends HTMLElement {
 
     if (accNameInfo.error_desc) {
       this.errorDescInfoDiv.classList.remove('hide');
-      this.errorDescDiv.textContent = accNameInfo.error_desc;
+      this.errorDescSpan.textContent = accNameInfo.error_desc;
       this.errorDescSourceSpan.textContent = accNameInfo.error_desc_source;
     } else {
       this.errorDescInfoDiv.classList.add('hide');
