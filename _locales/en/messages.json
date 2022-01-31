@@ -354,6 +354,11 @@
     "description": "Description of button to copy rule information"
   },
 
+  "copyElemInfoDesc": {
+    "message": "Copy element details to clipboard",
+    "description": "Description of button to copy element information"
+  },
+
   "ruleIdLabel": {
     "message": "Rule ID",
     "description": "Rule ID label for rule information"

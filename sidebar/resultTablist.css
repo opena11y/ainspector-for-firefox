@@ -69,8 +69,30 @@ button.details:after {
   padding-left:  4px;
 }
 
-button.copy-rule-result {
-  margin:  0.5em;
+
+.selected-header {
+  display:  block;
+ }
+
+.selected-header h2 {
+  display:  inline-block;
+  margin: 0;
+  padding: 0;
+  font-size: 110%;
+  font-weight: bold;
+}
+
+.selected-header button.copy-elem-result {
+  position: relative;
+  top:  -2px;
+  display:  inline-block;
+  margin-left:  0.25em;
   font-size: 85%;
 }
+
+main button.copy-rule-result {
+  margin-left: 0.5em;
+  font-size: 85%;
+}
+
 

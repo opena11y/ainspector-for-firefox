@@ -20,13 +20,13 @@ export default class ViewRuleResult {
     this.resultRuleInfo = document.createElement('result-rule-info');
     this.resultTablist.tabpanel1.appendChild(this.resultRuleInfo);
 
-    const copyButton = document.createElement('button');
-    copyButton.id = 'copy-rule-result-details';
-    copyButton.className = 'copy-rule-result';
-    copyButton.textContent = getMessage('copyRuleInfoLabel');
-    copyButton.addEventListener('click', this.onCopyButtonClick.bind(this));
-    copyButton.title = getMessage('copyRuleInfoDesc');
-    this.resultTablist.tabpanel1.appendChild(copyButton);
+    const copyButton1 = document.createElement('button');
+    copyButton1.id = 'copy-rule-result-details';
+    copyButton1.className = 'copy-rule-result';
+    copyButton1.textContent = getMessage('copyRuleInfoLabel');
+    copyButton1.addEventListener('click', this.onCopyRuleInfoButtonClick.bind(this));
+    copyButton1.title = getMessage('copyRuleInfoDesc');
+    this.resultTablist.tabpanel1.appendChild(copyButton1);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
@@ -42,10 +42,22 @@ export default class ViewRuleResult {
     div.className = 'element-info';
     this.resultTablist.tabpanel2.appendChild(div);
 
+    const div1 = document.createElement('div');
+    div1.className = 'selected-header';
+    div.appendChild(div1);
+
     const h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.textContent = getMessage('elementSelectedLabel');
-    div.appendChild(h2);
+    div1.appendChild(h2);
+
+    const copyButton2 = document.createElement('button');
+    copyButton2.id = 'copy-rule-result-details';
+    copyButton2.className = 'copy-elem-result';
+    copyButton2.textContent = getMessage('copyRuleInfoLabel');
+    copyButton2.addEventListener('click', this.onCopyElementInfoButtonClick.bind(this));
+    copyButton2.title = getMessage('copyElemInfoDesc');
+    div1.appendChild(copyButton2);
 
     this.resultElementInfo = document.createElement('result-element-info');
     div.appendChild(this.resultElementInfo);
@@ -67,7 +79,6 @@ export default class ViewRuleResult {
     return this.json;
   }
 
-
   resize (mainHeight) {
     const adjustment = 160;
     const highlightHeight = this.highlightSelect.offsetHeight;
@@ -79,7 +90,6 @@ export default class ViewRuleResult {
   }
 
   initGrid () {
-
     this.resultTablist.tabLabel1 = getMessage('detailsActionLabel');
     this.resultTablist.tabLabel2 = getMessage('elementResultsLabel');
     // Make element results the deafult tab
@@ -89,7 +99,6 @@ export default class ViewRuleResult {
     this.elementResultGrid.addHeaderCell(getMessage('resultLabel'), 'result');
     this.elementResultGrid.addHeaderCell(getMessage('positionAbbrev'), 'position', getMessage('positionLabel'));
     this.elementResultGrid.addHeaderCell(getMessage('actionLabel'), 'action');
-
   }
 
   getResultStyle(result) {
@@ -278,8 +287,19 @@ export default class ViewRuleResult {
     }
   }
 
-  onCopyButtonClick () {
+  onCopyRuleInfoButtonClick () {
     navigator.clipboard.writeText(this.resultRuleInfo.getText()).then(
+      function () {
+//          console.log('Copied to clipboard');
+      },
+      function () {
+        console.log('ERROR: Content not copied to clipboard');
+      }
+    );
+  }
+
+  onCopyElementInfoButtonClick () {
+    navigator.clipboard.writeText(this.resultElementInfo.getText()).then(
       function () {
 //          console.log('Copied to clipboard');
       },

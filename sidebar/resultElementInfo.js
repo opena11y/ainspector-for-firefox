@@ -114,6 +114,8 @@ export default class ResultElementInfo extends HTMLElement {
     this.attrsInfoTable = this.shadowRoot.querySelector('#attrs-info');
     this.attrsTbody     = this.shadowRoot.querySelector('#attrs-content');
 
+    this.copyText = '';
+
     this.initLabels();
   }
 
@@ -267,7 +269,7 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   updateAccessibleNameInfo(elementInfo) {
-    let accNameInfo = elementInfo.accNameInfo;
+    const accNameInfo = elementInfo.accNameInfo;
 
     this.accNameInfoLabelMoreSpan.textContent = '';
     if (accNameInfo.name_required) {
@@ -284,7 +286,13 @@ export default class ResultElementInfo extends HTMLElement {
       this.accNameSpan.textContent = accNameInfo.name;
       this.accNameSourceSpan.textContent = accNameInfo.name_source;
     } else {
-      this.accNameInfoDiv.classList.add('hide');
+      if (accNameInfo.name_required && accNameInfo.name_possible) {
+        this.accNameInfoDiv.classList.remove('hide');
+        this.accNameSpan.textContent = 'none';
+        this.accNameSourceSpan.textContent = 'none';
+      } else {
+        this.accNameInfoDiv.classList.add('hide');
+      }
     }
 
     if (accNameInfo.desc) {
@@ -364,6 +372,8 @@ export default class ResultElementInfo extends HTMLElement {
 
     // Attribute information
     this.updateAttributeInformation(elementInfo);
+
+    this.updateCopyText(elementInfo);
   }
 
   clear (message1, message2) {
@@ -371,6 +381,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.infoDiv.classList.add('hide');
     this.message1Div.textContent = '';
     this.message2Div.textContent = '';
+    this.copyText = '';
 
     if (typeof message1 === 'string') {
       this.message1Div.textContent = message1;
@@ -378,5 +389,89 @@ export default class ResultElementInfo extends HTMLElement {
     if (typeof message2 === 'string') {
       this.message2Div.textContent = message2;
     }
+  }
+
+  updateCopyText (elementInfo) {
+    this.copyText = '';
+
+    this.copyText += getMessage('elementResultAction') + '\n';
+    this.copyText += elementInfo.actionMessage + '\n\n';
+
+    this.copyText += getMessage('elementResultTagName') + '\n';
+    if (elementInfo.role) {
+      this.copyText += elementInfo.tagName + '[role=' + elementInfo.role+ ']\n\n';
+    } else {
+      this.copyText += elementInfo.tagName + '\n\n';
+    }
+
+    const visText = this.appendToCopyText(elementInfo.visibilityInfo);
+    if (visText) {
+      this.copyText += getMessage('elementResultVisibility') + '\n';
+      this.copyText += visText + '\n\n';;
+    }
+
+    const accNameInfo = elementInfo.accNameInfo;
+    if (accNameInfo.name) {
+      this.copyText += getMessage('elementResultAccName') + '\n';
+      this.copyText += 'text: ' + accNameInfo.name + '\n';
+      this.copyText += 'source: ' + accNameInfo.name_source + '\n\n';
+    } else {
+      if (accNameInfo.name_required && accNameInfo.name_possible) {
+        this.copyText += getMessage('elementResultAccName') + '\n';
+      this.copyText += 'text: none' + '\n';
+      this.copyText += 'source: none' + '\n\n';
+      }
+    }
+
+    if (accNameInfo.desc) {
+      this.copyText += getMessage('elementResultAccDesc') + '\n';
+      this.copyText += 'text: ' + accNameInfo.desc + '\n';
+      this.copyText += 'source: ' + accNameInfo.desc_source + '\n\n';
+    }
+
+    if (accNameInfo.error_desc) {
+      this.copyText += getMessage('elementResultErrorDesc') + '\n';
+      this.copyText += 'text: ' + accNameInfo.error_desc + '\n';
+      this.copyText += 'source: ' + accNameInfo.error_desc_source + '\n\n';
+    }
+
+    const ccrText = this.appendToCopyText(elementInfo.ccrInfo);
+    if (ccrText) {
+      this.copyText += getMessage('elementResultCCR') + '\n';
+      this.copyText += ccrText + '\n\n';
+    }
+
+    const htmlAttrText = this.appendToCopyText(elementInfo.htmlAttrInfo);
+    const ariaAttrText = this.appendToCopyText(elementInfo.ariaAttrInfo);
+    if (htmlAttrText || ariaAttrText) {
+      this.copyText += getMessage('elementResultAttributeHeader') + '\n';
+      this.copyText += htmlAttrText;
+      this.copyText += ariaAttrText;
+    }
+
+  }
+
+  // if the info is a string just use textContent
+  // if the info is an array, create a list of items
+  // Some items maybe an object containing a 'url' and 'title' properties
+  appendToCopyText(info) {
+    let content = '', item;
+    if (!info) return '';
+
+    if (typeof info === 'string') {
+      content += info + '\n';;
+    } else {
+      if (typeof info === 'object') {
+        for (const property in info) {
+          item = property.replaceAll('_', ' ');
+          content += item + ': ' + info[property] + '\n';
+        }
+      }
+    }
+    return content;
+  }
+
+  getText () {
+    return this.copyText;
   }
 }
