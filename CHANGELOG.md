@@ -11,11 +11,14 @@
 
 ## Version 2.0 Details
 
+* Rewrote the entire code base to use web components for creating user interface controls
+* Used event and direct port model used in [a11ytools/addons/structure-3](https://github.com/a11y-tools/addons/tree/main/structure-3) to automatically update the evaluation based on tab changes and following links to fix long standing problems updating.
+* Export evaluation result in either CSV or JSON file formats
 * Added element results details view in Rule Result view to provide more details on a particular element result
-* Export evaluation result in either CSV or JSON file formats 
+* Added copy rule information button to copy tule information to the clipboard
+* Added copy element information button to copy tule information to the clipboard
 * Updated to A11y Evaluation Library 1.3 to support custom elements and provide additional element result information
-* Rewrote almost all of the code to use web components for creating user interface controls
 * Used event and direct port model used in [a11ytools/addons/structure-3](https://github.com/a11y-tools/addons/tree/main/structure-3) to automatically update the evaluation based on tab changes and following links
 * Updated the preferences to use the storage uility used in [a11ytools/addons/structure-3](https://github.com/a11y-tools/addons/blob/main/structure-3/storage.js)
 * Improved element highlight feature in rule result view
-* Improved keyboard focus styling indicator
+* Improved keyboard focus styling indicator to supprt high contrast modes
