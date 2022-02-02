@@ -75,4 +75,9 @@ div {
   outline-offset: 2px;
 }
 
+.views-menu-button button:hover {
+  cursor: pointer;
+}
+
+
 

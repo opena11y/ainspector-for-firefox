@@ -22,39 +22,39 @@ export default class ViewSummary {
     this.resultTablist = document.createElement('result-tablist');
     this.summaryNode.appendChild(this.resultTablist);
 
+    // Rule Category tabpanel
+    // create grid for rule category results
     this.rcResultGrid = document.createElement('result-grid');
     this.rcResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
     this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
-    const div1 = document.createElement('div');
-    div1.className = 'buttons';
-    const button1 = document.createElement('button');
-    button1.id = 'rc-details';
-    button1.className = 'details';
-    button1.textContent = getMessage('detailsLabel');
-    button1.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    button1.disabled = true;
-    div1.appendChild(button1)
-    this.resultTablist.tabpanel1.appendChild(div1);
-    this.rcResultGrid.setDetailsButton(button1);
+    // create a middle section DIV for rule category
+    const rcMiddleSectionDiv = document.createElement('div');
+    rcMiddleSectionDiv.className = 'middle-section';
+    this.resultTablist.tabpanel1.appendChild(rcMiddleSectionDiv);
 
+    // create the rule category rule details buttonsß
+    const rcDetailsButton = this.createDetailsButton('rc-details');
+    this.rcResultGrid.setDetailsButton(rcDetailsButton);
+    rcMiddleSectionDiv.appendChild(rcDetailsButton);
+
+    // WCAG Guidelines tabpanel
+    // create grid for guideline results
     this.glResultGrid = document.createElement('result-grid');
     this.glResultGrid.addClassNameToTable('summary');
     this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
-    const div2 = document.createElement('div');
-    div2.className = 'buttons';
-    const button2 = document.createElement('button');
-    button2.id = 'gl-details';
-    button2.className = 'details';
-    button2.textContent = getMessage('detailsLabel');
-    button2.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    button2.disabled = true;
-    div2.appendChild(button2)
-    this.resultTablist.tabpanel2.appendChild(div2);
-    this.glResultGrid.setDetailsButton(button2);
+    // create a middle section DIV for guidelines
+    const glMiddleSection = document.createElement('div');
+    glMiddleSection.className = 'middle-section';
+    this.resultTablist.tabpanel2.appendChild(glMiddleSection);
+
+    // create the guidelines details button
+    const glDetailsButton = this.createDetailsButton('gl-details');
+    glMiddleSection.appendChild(glDetailsButton)
+    this.glResultGrid.setDetailsButton(glDetailsButton);
 
     this.rcResults = [];
     this.glResults = [];
@@ -87,6 +87,16 @@ export default class ViewSummary {
   get disabled () {
     let value = this.rcResultGrid.disabled && this.glResultGrid.disabled;
     return value;
+  }
+
+  createDetailsButton (id) {
+    const button = document.createElement('button');
+    button.id = id;
+    button.className = 'details';
+    button.textContent = getMessage('detailsLabel');
+    button.addEventListener('click', this.onDetailsButtonClick.bind(this));
+    button.disabled = true;
+    return button;
   }
 
   onDetailsButtonClick (event) {

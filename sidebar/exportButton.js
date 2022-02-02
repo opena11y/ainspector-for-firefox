@@ -275,9 +275,11 @@ export default class ExportButton extends HTMLElement {
   }
 
   onBackgroundMousedown(event) {
-    if (!this.contains(event.target)) {
-      if (this.isOpen()) {
-        this.closeDialog();
+    if (this.isOpen()) {
+      if (!this.contains(event.target)) {
+        if (this.isOpen()) {
+          this.closeDialog();
+        }
       }
     }
   }

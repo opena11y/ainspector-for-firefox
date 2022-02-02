@@ -1,5 +1,7 @@
 /* viewRuleResultCSV.js */
 
+import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
+
 const getMessage = browser.i18n.getMessage;
 
 export default class commonCSV {
@@ -28,4 +30,83 @@ export default class commonCSV {
     return csv
   }
 
+}
+
+export function getExportFileName (fname, options, groupType, groupId, ruleId) {
+
+  if (typeof groupType !== 'string') {
+    groupType = 'rc';
+  }
+
+  if (typeof groupId !== 'number') {
+    groupId = 1;
+  }
+
+  if (typeof ruleId !== 'string') {
+    groupId = '';
+  }
+
+  // get group ID
+  let date = '', time = '', dd, mm, yyyy, hh, ss, parts, ruleNum;
+  if (groupType === 'rc') {
+    groupId = getRuleCategoryFilenameId(groupId);
+  } else {
+    groupId = getGuidelineFilenameId(groupId);
+  }
+
+  // get today's date
+  let today = new Date();
+  if (options.includeDate) {
+    dd = String(today.getDate()).padStart(2, '0');
+    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    yyyy = today.getFullYear();
+    date = '-' + yyyy + '-' + mm + '-' + dd;
+  }
+
+  // get time of day
+  if (options.includeTime) {
+    hh = today.getHours();
+    mm = today.getMinutes();
+    ss = today.getSeconds();
+    hh = hh < 10 ? "0" + hh : hh;
+    mm = mm < 10 ? "0" + mm : mm;
+    ss = ss < 10 ? "0" + ss : ss;
+    time = '-' + hh + "h-" + mm + 'm-' + ss + 's';
+  }
+
+  // format rule id
+  if (ruleId && typeof ruleId === 'string') {
+    parts = ruleId.split('_');
+    if (parts.length == 2) {
+      ruleNum = parseInt(parts[1]);
+      ruleNum = ruleNum < 10 ? '0' + ruleNum : ruleNum;
+      ruleId = parts[0].toLowerCase() + '-' + ruleNum;
+    }
+  } else {
+    ruleId = '';
+  }
+
+  fname = fname.replace('{date}', date);
+  fname = fname.replace('{time}', time);
+  fname = fname.replace('{group}', groupId);
+  fname = fname.replace('{rule}', ruleId);
+
+  if (options.filenamePrefix) {
+    const prefixLen = options.filenamePrefix.length;
+    if (options.filenamePrefix[prefixLen - 1] === '-') {
+      fname = options.filenamePrefix + fname;
+    } else {
+      fname = options.filenamePrefix + '-' + fname;
+    }
+  }
+
+  if (options.exportFormat === 'CSV') {
+    fname += '.csv';
+  }
+
+  if (options.exportFormat === 'JSON') {
+    fname += '.json';
+  }
+
+  return fname;
 }

@@ -459,8 +459,9 @@ export default class ResultGrid extends HTMLElement {
     let tr, id = this.lastSelectedRowId;
     if (id) {
       tr = this.table.querySelector('tr[id=' + id + ']')
-    } else {
-      tr = this.tbody.firstElementChild;
+    }
+    if (!tr) {
+      tr = this.tbody.querySelector('tr[id]');
     }
     if (tr && tr.id) {
       this.setSelectedRow(tr);

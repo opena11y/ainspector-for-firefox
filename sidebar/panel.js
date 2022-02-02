@@ -1,8 +1,7 @@
 /* panel.js  */
 
-import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
-
 import { getOptions } from '../storage.js';
+import { getExportFileName } from './commonCSV.js';
 
 import ViewSummary     from './viewSummary.js';
 import ViewRuleGroup   from './viewRuleGroup.js';
@@ -19,6 +18,7 @@ import HighlightSelect       from './highlightSelect.js';
 import ViewsMenuButton       from './viewsMenuButton.js';
 import RerunEvaluationButton from './rerunEvaluationButton.js';
 import ExportButton          from './exportButton.js';
+import CopyButton            from './copyButton.js';
 
 customElements.define('result-summary',      ResultSummary);
 customElements.define('result-tablist',      ResultTablist);
@@ -29,7 +29,8 @@ customElements.define('result-rule-info',    ResultRuleInfo);
 customElements.define('highlight-select',    HighlightSelect);
 customElements.define('views-menu-button',   ViewsMenuButton);
 customElements.define('rerun-evaluation-button', RerunEvaluationButton);
-customElements.define('export-button', ExportButton);
+customElements.define('export-button',       ExportButton);
+customElements.define('copy-button',         CopyButton);
 
 var contentPort;
 var myWindowId;
@@ -234,71 +235,6 @@ function onPreferencesClick (event) {
    chrome.runtime.openOptionsPage();
 }
 
-function getExportFileName (fname, options) {
-  // get group ID
-  let groupId, date = '', time = '', dd, mm, yyyy, hh, ss, ruleId, parts, ruleNum;
-  if (sidebarGroupType === 'rc') {
-    groupId = getRuleCategoryFilenameId(sidebarGroupId);
-  } else {
-    groupId = getGuidelineFilenameId(sidebarGroupId);
-  }
-
-  // get today's date
-  let today = new Date();
-  if (options.includeDate) {
-    dd = String(today.getDate()).padStart(2, '0');
-    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    yyyy = today.getFullYear();
-    date = '-' + yyyy + '-' + mm + '-' + dd;
-  }
-
-  // get time of day
-  if (options.includeTime) {
-    hh = today.getHours();
-    mm = today.getMinutes();
-    ss = today.getSeconds();
-    hh = hh < 10 ? "0" + hh : hh;
-    mm = mm < 10 ? "0" + mm : mm;
-    ss = ss < 10 ? "0" + ss : ss;
-    time = '-' + hh + "h-" + mm + 'm-' + ss + 's';
-  }
-
-  // format rule id
-  ruleId = '';
-  if (sidebarRuleId && typeof sidebarRuleId === 'string') {
-    parts = sidebarRuleId.split('_');
-    if (parts.length == 2) {
-      ruleNum = parseInt(parts[1]);
-      ruleNum = ruleNum < 10 ? '0' + ruleNum : ruleNum;
-      ruleId = parts[0].toLowerCase() + '-' + ruleNum;
-    }
-  }
-
-  fname = fname.replace('{date}', date);
-  fname = fname.replace('{time}', time);
-  fname = fname.replace('{group}', groupId);
-  fname = fname.replace('{rule}', ruleId);
-
-  if (options.filenamePrefix) {
-    const prefixLen = options.filenamePrefix.length;
-    if (options.filenamePrefix[prefixLen - 1] === '-') {
-      fname = options.filenamePrefix + fname;
-    } else {
-      fname = options.filenamePrefix + '-' + fname;
-    }
-  }
-
-  if (options.exportFormat === 'CSV') {
-    fname += '.csv';
-  }
-
-  if (options.exportFormat === 'JSON') {
-    fname += '.json';
-  }
-
-  return fname;
-}
-
 function onExportClick (event) {
   let fname = '', csv = '', json = '';
 
@@ -308,17 +244,17 @@ function onExportClick (event) {
       switch (sidebarView) {
 
         case 'summary':
-          fname = getExportFileName(options.filenameSummary, options);
+          fname = options.filenameSummary;
           csv = vSummary.toCSV(options, pageTitle, pageLocation);
           break;
 
         case 'rule-group':
-          fname = getExportFileName(options.filenameRuleGroup, options);
+          fname = options.filenameRuleGroup;
           csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
           break;
 
         case 'rule-result':
-          fname = getExportFileName(options.filenameRuleResult, options);
+          fname = options.filenameRuleResult;
           csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
           break;
 
@@ -326,6 +262,7 @@ function onExportClick (event) {
           break;
       }
       if (fname && csv) {
+        fname = getExportFileName(fname, options, sidebarGroupType, sidebarGroupId, sidebarRuleId);
         download(fname, csv);
       }
     } else {

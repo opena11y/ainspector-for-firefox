@@ -74,10 +74,6 @@ table td {
   padding-bottom:  4px;
 }
 
-table th.group,
-table td.group {
-  width: auto;
-}
 
 table th.summ,
 table td.summ {
@@ -95,35 +91,24 @@ table th.num {
   text-align: right;
 }
 
-table th.element-info,
-table td.element-info,
-table th.result,
-table td.result,
 table th.sc,
 table td.sc,
 table th.level,
 table td.level,
 table th.required,
-table td.required {
-  width: 12%;
+table td.required,
+table th.result,
+table td.result {
+  width: 50px;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 table th.rule,
 table td.rule {
-  width: auto;
   text-align: left;
+  white-space:  nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-table th.result,
-table td.result {
-  width: 10%;
 }
 
 table th.position,
@@ -135,12 +120,15 @@ table td.position {
 
 table th.element-info,
 table td.element-info {
-  width: 25%;
+  width: 20%;
   padding-left: 4px;
   text-align: left;
 }
 
 table td.element-info {
+  white-space:  nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: lowercase;
 }
 

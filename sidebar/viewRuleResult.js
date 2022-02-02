@@ -20,47 +20,49 @@ export default class ViewRuleResult {
     this.resultRuleInfo = document.createElement('result-rule-info');
     this.resultTablist.tabpanel1.appendChild(this.resultRuleInfo);
 
-    const copyButton1 = document.createElement('button');
-    copyButton1.id = 'copy-rule-result-details';
-    copyButton1.className = 'copy-rule-result';
-    copyButton1.textContent = getMessage('copyRuleInfoLabel');
-    copyButton1.addEventListener('click', this.onCopyRuleInfoButtonClick.bind(this));
-    copyButton1.title = getMessage('copyRuleInfoDesc');
-    this.resultTablist.tabpanel1.appendChild(copyButton1);
+    const ruleInfoFooterDiv = document.createElement('div');
+    ruleInfoFooterDiv.className = 'info-footer';
+    this.resultTablist.tabpanel1.appendChild(ruleInfoFooterDiv);
+
+    const ruleCopyButton = document.createElement('copy-button');
+    ruleCopyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
+    ruleCopyButton.title = getMessage('copyRuleInfoDesc');
+    ruleInfoFooterDiv.appendChild(ruleCopyButton);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
-    this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
     this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
+    this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
 
+    // Create container DIV with heading for element information
+    const middleSectionDiv = document.createElement('div');
+    middleSectionDiv.className = 'middle-section';
+    this.resultTablist.tabpanel2.appendChild(middleSectionDiv);
+
+    // Add highlight select box
     this.highlightSelect = document.createElement('highlight-select');
     this.highlightSelect.setChangeEventCallback(this.onSelectChangeCallback.bind(this));
-    this.resultTablist.tabpanel2.appendChild(this.highlightSelect);
+    middleSectionDiv.appendChild(this.highlightSelect);
 
-    // Create container DIV with heading for rule information
-    const div = document.createElement('div');
-    div.className = 'element-info';
-    this.resultTablist.tabpanel2.appendChild(div);
+    // Create container DIV with header and copy button
+    const elemInfoHeaderDiv = document.createElement('div');
+    elemInfoHeaderDiv.className = 'info-header';
+    middleSectionDiv.appendChild(elemInfoHeaderDiv);
 
-    const div1 = document.createElement('div');
-    div1.className = 'selected-header';
-    div.appendChild(div1);
-
+    // Add heading for the element result details
     const h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.textContent = getMessage('elementSelectedLabel');
-    div1.appendChild(h2);
-
-    const copyButton2 = document.createElement('button');
-    copyButton2.id = 'copy-rule-result-details';
-    copyButton2.className = 'copy-elem-result';
-    copyButton2.textContent = getMessage('copyRuleInfoLabel');
-    copyButton2.addEventListener('click', this.onCopyElementInfoButtonClick.bind(this));
-    copyButton2.title = getMessage('copyElemInfoDesc');
-    div1.appendChild(copyButton2);
+    elemInfoHeaderDiv.appendChild(h2);
 
     this.resultElementInfo = document.createElement('result-element-info');
-    div.appendChild(this.resultElementInfo);
+    this.resultTablist.tabpanel2.appendChild(this.resultElementInfo);
+
+    // Add copy element result details button
+    const elemCopyButton = document.createElement('copy-button');
+    elemCopyButton.setGetTextFunct(this.resultElementInfo.getText.bind(this.resultElementInfo));
+    elemCopyButton.title = getMessage('copyElemInfoDesc');
+    elemInfoHeaderDiv.appendChild(elemCopyButton);
 
     this.elementResults = {};
 
@@ -286,27 +288,4 @@ export default class ViewRuleResult {
       this.onRowSelectionCallback(id);
     }
   }
-
-  onCopyRuleInfoButtonClick () {
-    navigator.clipboard.writeText(this.resultRuleInfo.getText()).then(
-      function () {
-//          console.log('Copied to clipboard');
-      },
-      function () {
-        console.log('ERROR: Content not copied to clipboard');
-      }
-    );
-  }
-
-  onCopyElementInfoButtonClick () {
-    navigator.clipboard.writeText(this.resultElementInfo.getText()).then(
-      function () {
-//          console.log('Copied to clipboard');
-      },
-      function () {
-        console.log('ERROR: Content not copied to clipboard');
-      }
-    );
-  }
-
 }

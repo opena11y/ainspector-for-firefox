@@ -162,6 +162,8 @@ export default class ResultRuleInfo extends HTMLElement {
   }
 
   update(ruleInfo) {
+    let ruleId = '';
+
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
     this.renderContent(this.definitionDiv, ruleInfo.definition);
@@ -173,7 +175,10 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.scDiv,         ruleInfo.sc);
     this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
 
-    this.copyText = ruleInfo.ruleId.replace('_', ' ') + ': ' + ruleInfo.summary + '\n\n';
+    if (typeof ruleInfo.ruleId === 'string') {
+      ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
+    }
+    this.copyText = ruleId + ruleInfo.summary + '\n\n';
     this.appendToCopyText('ruleDefinitionLabel', ruleInfo.definition);
     this.appendToCopyText('ruleActionLabel',     ruleInfo.action);
     this.appendToCopyText('rulePurposeLabel',    ruleInfo.purpose);

@@ -12,20 +12,17 @@ function isCharacterAllowed(c) {
 }
 
 export default function validatePrefix (value) {
-  let value1 = '';
-
   if (typeof value !== 'string') {
     value = '';
   }
-  if (value.length > 16) {
-    value = value.substring(0, 16);
-  }
 
-  for (let i = 0; i < value.length; i += 1) {
-    if (isCharacterAllowed(value[i])) {
-      value1 += value[i];
+  let v = '';
+  for(let i = 0; i < value.length; i += 1) {
+    const c = value[i];
+    if (isCharacterAllowed(c)) {
+      v += c;
     }
-  }
+  };
 
-  return value1;
+  return v.substring(0, 16);
 }

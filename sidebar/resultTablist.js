@@ -42,10 +42,15 @@ export default class ResultTablist extends HTMLElement {
     this.attachShadow({ mode: 'open' });
 
     // Use external CSS stylesheet
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'resultTablist.css');
-    this.shadowRoot.appendChild(link);
+    const link1 = document.createElement('link');
+    link1.setAttribute('rel', 'stylesheet');
+    link1.setAttribute('href', 'resultTablist.css');
+    this.shadowRoot.appendChild(link1);
+
+    const link2 = document.createElement('link');
+    link2.setAttribute('rel', 'stylesheet');
+    link2.setAttribute('href', 'middleSection.css');
+    this.shadowRoot.appendChild(link2);
 
     // Add DOM tree from template
     this.shadowRoot.appendChild(template.content.cloneNode(true));

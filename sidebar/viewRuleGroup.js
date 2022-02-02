@@ -9,7 +9,7 @@ export default class ViewRuleGroup {
 
     this.handleRowActivation = handleRowActivation;
 
-    this.ruleGroupNode     = document.getElementById(id);
+    this.ruleGroupNode = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
     this.ruleGroupNode.appendChild(this.resultSummary);
 
@@ -24,32 +24,35 @@ export default class ViewRuleGroup {
     div.className = 'rule-info';
     this.ruleGroupNode.appendChild(div);
 
-    const div1 = document.createElement('div');
-    div1.className = 'selected-details';
-    div.appendChild(div1);
-
-    const h2 = document.createElement('h2');
-    h2.className = 'selected';
-    h2.textContent = getMessage('ruleSelectedLabel');
-    div1.appendChild(h2);
-
-    const copyButton = document.createElement('button');
-    copyButton.id = 'copy-rule-group-details';
-    copyButton.className = 'copy-rule-group';
-    copyButton.textContent = getMessage('copyRuleInfoLabel');
-    copyButton.addEventListener('click', this.onCopyButtonClick.bind(this));
-    copyButton.title = getMessage('copyRuleInfoDesc');
-    div1.appendChild(copyButton);
+    const middleSectionDiv = document.createElement('div');
+    middleSectionDiv.className = 'middle-section';
+    div.appendChild(middleSectionDiv);
 
     const detailsButton = document.createElement('button');
     detailsButton.id = 'rule-group-details';
     detailsButton.className = 'details';
     detailsButton.textContent = getMessage('detailsLabel');
     detailsButton.addEventListener('click', this.onDetailsButtonClick.bind(this));
-    div1.appendChild(detailsButton);
     this.ruleResultGrid.setDetailsButton(detailsButton);
+    middleSectionDiv.appendChild(detailsButton);
+
+    // Create container DIV with header and copy button
+    const ruleInfoHeaderDiv = document.createElement('div');
+    ruleInfoHeaderDiv.className = 'info-header';
+    middleSectionDiv.appendChild(ruleInfoHeaderDiv);
+
+    const h2 = document.createElement('h2');
+    h2.className = 'selected';
+    h2.textContent = getMessage('ruleSelectedLabel');
+    ruleInfoHeaderDiv.appendChild(h2);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
+
+    const copyButton = document.createElement('copy-button');
+    copyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
+    copyButton.title = getMessage('copyRuleInfoDesc');
+    ruleInfoHeaderDiv.appendChild(copyButton);
+
     div.appendChild(this.resultRuleInfo);
 
     this.groupTitle = 'Rule Group';
@@ -63,7 +66,7 @@ export default class ViewRuleGroup {
 
   initGrid () {
 
-    this.ruleResultGrid.addHeaderCell(getMessage('ruleLabel'), 'rule text');
+    this.ruleResultGrid.addHeaderCell(getMessage('ruleLabel'), 'rule');
     this.ruleResultGrid.addHeaderCell(getMessage('resultLabel'), 'result', '');
     this.ruleResultGrid.addHeaderCell(getMessage('successCriteriaAbbrev'), 'sc', getMessage('successCriteriaLabel'));
     this.ruleResultGrid.addHeaderCell(getMessage('levelLabel'), 'level', '');
@@ -187,7 +190,7 @@ export default class ViewRuleGroup {
           row = this.ruleResultGrid.addRow(rr.ruleId);
 
           cellAccName = '';
-          this.ruleResultGrid.addDataCell(row, rr.summary, cellAccName, 'rule text');
+          this.ruleResultGrid.addDataCell(row, rr.summary, cellAccName, 'rule');
 
           rowAccName = cellAccName;
 
@@ -271,17 +274,4 @@ export default class ViewRuleGroup {
       this.handleRowActivation(rowId);
     }
   }
-
-  onCopyButtonClick () {
-    navigator.clipboard.writeText(this.resultRuleInfo.getText()).then(
-      function () {
-//          console.log('Copied to clipboard');
-      },
-      function () {
-        console.log('ERROR: Content not copied to clipboard');
-      }
-    );
-  }
-
-
 }

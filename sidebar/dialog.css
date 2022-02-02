@@ -82,7 +82,7 @@
 }
 
 [role="dialog"] .no-fieldset {
-  margin-left: 0.25em;
+  margin-left: 0.5em;
 }
 
 [role="dialog"] .buttons {
@@ -137,5 +137,10 @@ button#export-button:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+button:hover {
+  cursor: pointer;
+}
+
 
 

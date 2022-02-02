@@ -344,9 +344,19 @@
     "description": "Selected rule label for rule information"
   },
 
-  "copyRuleInfoLabel": {
+  "copyLabel": {
     "message": "Copy",
-    "description": "label for button to copy rule information"
+    "description": "label for copy button"
+  },
+
+  "copySuccessLabel": {
+    "message": "Copied!",
+    "description": "label when copy is successful for the copy button"
+  },
+
+  "copyFailedLabel": {
+    "message": "Copy Failed!",
+    "description": "label when copy fails for the copy button"
   },
 
   "copyRuleInfoDesc": {
@@ -515,7 +525,7 @@
   },
 
   "okButtonLabel": {
-    "message": "Ok",
+    "message": "OK",
     "description": "Label for OK button in rerun evalaution dialog box"
   },
 
@@ -630,7 +640,7 @@
   },
 
   "optionsExportPromptForOptions": {
-    "message": "After this export, stop prompting for export options.",
+    "message": "Do not prompt for export options.",
     "description": "Label for disable prompting for export export file name options when activating the export button."
   },
 
