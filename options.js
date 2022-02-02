@@ -45,7 +45,6 @@ function setFormLabels () {
   const optionsExportCSVLabel        = document.querySelector('#options-export-csv-label');
   const optionsExportJSONLabel       = document.querySelector('#options-export-json-label');
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
-  const optionsExportPrefixDesc      = document.querySelector('#options-export-prefix-desc');
   const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
   const optionsResetDefaults         = document.querySelector('#options-reset-defaults');
@@ -70,7 +69,6 @@ function setFormLabels () {
   optionsExportCSVLabel.textContent     = getMessage('optionsExportCSVLabel');
   optionsExportJSONLabel.textContent    = getMessage('optionsExportJSONLabel');
   optionsExportPrefixLabel.textContent  = getMessage('optionsExportPrefixLabel');
-  optionsExportPrefixDesc.textContent   = getMessage('optionsExportPrefixDesc');
   optionsExportDateLabel.textContent    = getMessage('optionsExportIncludeDate');
 
 

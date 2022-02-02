@@ -1,4 +1,4 @@
-/* MainMiddleSection.css */
+/* middleSection.css */
 
 highlight-select {
   display:  block;
@@ -31,16 +31,21 @@ highlight-select {
   display:  inline-block;
 }
 
-.info-footer  {
-  margin-top: 0.5em;
+.middle-section copy-button {
+  display:  inline-block;
+  margin-left:  0.25em;
 }
 
-button.copy {
-  display:  inline-block;
-  margin-left: 0.5em;
-  font-size: 85%;
+.info-footer  {
+  display: flex;
+  align-items: top;
+  justify-content: center;
+}
+
+.info-footer copy-button {
+  display: block;
   position: relative;
-  top:  -1px;
+  top: -12px;
 }
 
 button.details,
