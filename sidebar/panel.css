@@ -1,11 +1,9 @@
 body {
   margin: 0;
-  padding:  2px;
   font: caption;
   background-color: white;
   overflow-y: scroll;
-  height: 98%;
-  width:  98%;
+  width:  100%;
 }
 
 header {
