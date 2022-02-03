@@ -181,7 +181,8 @@ export default class ResultElementInfo extends HTMLElement {
     return flag;
   }
 
-  getSpecialProperyContent (prop, value) {
+  getSpecialProperyContent (info, prop) {
+    let value = info[prop];
     let td = document.createElement('td');
     let span = document.createElement('span');
     let text = document.createTextNode(value);
@@ -198,12 +199,15 @@ export default class ResultElementInfo extends HTMLElement {
         span.style.paddingRight = '2px';
         span.style.marginRight = '4px';
         span.setAttribute('aria-hidden', true);
+        td.title = info[prop + '_hex'];
         td.appendChild(span);
         td.appendChild(text);
         break;
 
       case 'color_hex':
       case 'background_color_hex':
+        td.textContent = value;
+        td = false;
         break;
 
       case 'font_weight':
@@ -238,15 +242,17 @@ export default class ResultElementInfo extends HTMLElement {
           th = document.createElement('th');
           item = property.replaceAll('_', ' ');
           th.textContent = item;
-          tr.appendChild(th);
-          td = document.createElement('td');
           if (this.isSpecialProperty(property)) {
-            td = this.getSpecialProperyContent(property, info[property]);
+            td = this.getSpecialProperyContent(info, property);
           } else {
+            td = document.createElement('td');
             td.textContent = info[property];
           }
-          tr.appendChild(td);
-          hasContent = true;
+          if (td) {
+            tr.appendChild(th);
+            tr.appendChild(td);
+            hasContent = true;
+          }
         }
       }
     }

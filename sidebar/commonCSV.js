@@ -4,15 +4,10 @@ import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.j
 
 const getMessage = browser.i18n.getMessage;
 
-export default class commonCSV {
+export class commonCSV {
   constructor() {
     this.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
     this.ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
-  }
-
-  clean(text) {
-    text = text.trim().replace('"', '\"');
-    return text;
   }
 
   getRulesetTitle (rulesetId) {
@@ -24,8 +19,8 @@ export default class commonCSV {
 
   getCSV (options, title, location) {
     let csv = '';
-    csv += `\n"Page Title:","${this.clean(title)}"\n`;
-    csv += `"Page URL:","${this.clean(location)}"\n`;
+    csv += `\n"Page Title:","${cleanCSVItem(title)}"\n`;
+    csv += `"Page URL:","${cleanCSVItem(location)}"\n`;
     csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n\n`;
     return csv
   }
@@ -110,3 +105,22 @@ export function getExportFileName (fname, options, groupType, groupId, ruleId) {
 
   return fname;
 }
+
+export function cleanCSVItem (item) {
+  if (!item) {
+    item = '';
+  } else {
+    if (typeof item !== 'string') {
+      if (typeof item.toString === 'function') {
+        item = item.toString();
+      } else {
+        item = ' ' + item;
+        item = item.substring(1);
+      }
+    }
+  }
+  // clean it for CSV
+  item = item.trim().replaceAll('"', '""');
+  return item;
+}
+

@@ -1,10 +1,9 @@
 /* viewRuleResultCSV.js */
 
+import { cleanCSVItem, commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
 
 const getMessage = browser.i18n.getMessage;
-
-import commonCSV from './commonCSV.js';
 
 export default class ViewRuleGroupCSV extends commonCSV {
   constructor(groupTitle, ruleResults, ruleDetails) {

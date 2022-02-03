@@ -1,6 +1,6 @@
 /* viewRuleResultCSV.js */
 
-import commonCSV from './commonCSV.js';
+import { cleanCSVItem, commonCSV } from './commonCSV.js';
 
 const getMessage = browser.i18n.getMessage;
 const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
@@ -46,7 +46,7 @@ export default class ViewRuleResultCSV extends commonCSV{
 
   // If one element information object has
   // CCR information all element information
-  // objects will
+  // objects will also include them
   getVisibilityProps () {
     let props = [];
     if (this.elementResults) {
@@ -127,7 +127,7 @@ export default class ViewRuleResultCSV extends commonCSV{
       if ((i !== 0) || flag) {
         csv += ',';
       }
-      csv += '"' + props[i] + '"';
+      csv += '"' + cleanCSVItem(props[i]) + '"';
     }
     console.log('[addSCVColumnHeader][csv]: ' + csv);
     return csv;
@@ -140,17 +140,14 @@ export default class ViewRuleResultCSV extends commonCSV{
     }
     let csv = '', value;
     for (let i = 0; i < props.length; i += 1) {
+      value = '';
       if (info) {
         value = info[props[i]];
         if (i != 0 || flag) {
           csv += ',';
         }
       }
-      if (!value) {
-        value = '';
-      }
-      csv += '"' + value + '"';
-      value = '';
+      csv += '"' + cleanCSVItem(value) + '"';
     }
     return csv;
   }
