@@ -124,12 +124,21 @@ export default class ViewRuleResultCSV extends commonCSV{
     }
     let csv = '';
     for (let i = 0; i < props.length; i += 1) {
+      let prop = props[i];
       if ((i !== 0) || flag) {
         csv += ',';
       }
-      csv += '"' + cleanCSVItem(props[i]) + '"';
+      if (prop.indexOf('_') >= 0) {
+        prop = prop.replaceAll('_', ' ');
+      }
+      if (prop.indexOf('actionMessage') >= 0) {
+        prop = 'message';
+      }
+      if (prop.indexOf('tagName') >= 0) {
+        prop = 'element';
+      }
+      csv += '"' + cleanCSVItem(prop) + '"';
     }
-    console.log('[addSCVColumnHeader][csv]: ' + csv);
     return csv;
   }
 
