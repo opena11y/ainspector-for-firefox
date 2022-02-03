@@ -189,7 +189,7 @@ export default class ViewRuleGroup {
 
           row = this.ruleResultGrid.addRow(rr.ruleId);
 
-          cellAccName = '';
+          cellAccName = rr.summary;
           this.ruleResultGrid.addDataCell(row, rr.summary, cellAccName, 'rule');
 
           rowAccName = cellAccName;
