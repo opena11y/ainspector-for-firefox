@@ -1,6 +1,6 @@
 /* viewRuleResultCSV.js */
 
-import { cleanCSVItem, commonCSV } from './commonCSV.js';
+import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
 
 const getMessage = browser.i18n.getMessage;
