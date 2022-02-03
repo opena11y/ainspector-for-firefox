@@ -47,7 +47,7 @@ highlight-select {
 .info-footer copy-button {
   display: block;
   position: relative;
-  top: -12px;
+  top: 4px;
 }
 
 button.details,

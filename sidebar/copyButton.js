@@ -96,6 +96,6 @@ export default class CopyButton extends HTMLElement {
       this.copyButton.ariaLabel = this.failedLabel;
       this.copyButton.classList.add('failed');
     }
-    setTimeout(this.restoreCopyLabel.bind(this), 500);
+    setTimeout(this.restoreCopyLabel.bind(this), 1500);
   }
 }

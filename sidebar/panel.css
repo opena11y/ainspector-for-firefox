@@ -3,6 +3,7 @@ body {
   font: caption;
   background-color: white;
   overflow-y: scroll;
+  overflow-x:  hidden;
   width:  100%;
 }
 

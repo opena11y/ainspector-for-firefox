@@ -36,7 +36,6 @@
 [role="tabpanel"] {
   display:  none;
   border-top: 1px solid #aaa;
-  outline:  1px red dashed;
 }
 
 [role="tabpanel"].show {
