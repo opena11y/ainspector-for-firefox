@@ -21,10 +21,31 @@ export class commonCSV {
     let csv = '';
     csv += `\n"Page Title:","${cleanCSVItem(title)}"\n`;
     csv += `"Page URL:","${cleanCSVItem(location)}"\n`;
-    csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n\n`;
+    csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n`;
+    csv += `"Date:","${getTodaysDate()}"\n`;
+    csv += `"Time:","${getTimeOfDay()}"\n\n`;
     return csv
   }
 
+}
+
+function getTodaysDate () {
+  let today = new Date();
+  let dd = String(today.getDate()).padStart(2, '0');
+  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  let yyyy = today.getFullYear();
+  return yyyy + '-' + mm + '-' + dd;
+}
+
+function getTimeOfDay () {
+  let today = new Date();
+  let hh = today.getHours();
+  let mm = today.getMinutes();
+  let ss = today.getSeconds();
+  hh = hh < 10 ? "0" + hh : hh;
+  mm = mm < 10 ? "0" + mm : mm;
+  ss = ss < 10 ? "0" + ss : ss;
+  return hh + ":" + mm + ':' + ss;
 }
 
 export function getExportFileName (fname, options, groupType, groupId, ruleId) {
@@ -52,10 +73,7 @@ export function getExportFileName (fname, options, groupType, groupId, ruleId) {
   // get today's date
   let today = new Date();
   if (options.includeDate) {
-    dd = String(today.getDate()).padStart(2, '0');
-    mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    yyyy = today.getFullYear();
-    date = '-' + yyyy + '-' + mm + '-' + dd;
+    date = '-' + getTodaysDate();
   }
 
   // get time of day

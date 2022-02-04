@@ -4,7 +4,7 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div class="result-rule-info">
+    <div class="result-rule-info" tabindex="-1">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
@@ -83,6 +83,10 @@ export default class ResultRuleInfo extends HTMLElement {
 
   resize (size) {
     this.resultRuleInfoDiv.style.height = size + 'px';
+  }
+
+  focus () {
+    this.resultRuleInfoDiv.focus();
   }
 
   setHeading (headingId, messageId) {

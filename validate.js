@@ -11,7 +11,7 @@ function isCharacterAllowed(c) {
   return true;
 }
 
-export default function validatePrefix (value) {
+export function validatePrefix (value) {
   if (typeof value !== 'string') {
     value = '';
   }
@@ -23,6 +23,13 @@ export default function validatePrefix (value) {
       v += c;
     }
   };
-
   return v.substring(0, 16);
+}
+
+export function validateShortcut (value) {
+  if (typeof value !== 'string') {
+    value = '';
+  }
+  let v = value;
+  return v;
 }

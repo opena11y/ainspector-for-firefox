@@ -19,7 +19,20 @@ export const defaultOptions = {
   filenameRuleResult: 'rule-result-{rule}{date}{time}',
   includeDate: true,
   includeTime: true,
-  promptForExportOptions: true
+  promptForExportOptions: true,
+  shortcutBack: 'b',
+  shortcutViews: 'v',
+  shortcutExport: 'e',
+  shortcutRerun: 'r',
+  shortcutDetails: 'd',
+  shortcutGrid: 'g',
+  shortcutInfo: 'i',
+  shortcutTabs: 't',
+  shortcutCopy: 'c',
+  shortcutPreferences: 'p',
+  shortcutRequireCtrl: true,
+  shortcutRequireShift: false,
+  shortcutsDisabled: false
 };
 
 /*

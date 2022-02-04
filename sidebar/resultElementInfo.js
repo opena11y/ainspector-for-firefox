@@ -4,7 +4,7 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div class="result-element-info">
+    <div class="result-element-info" tabindex="-1">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
@@ -151,6 +151,10 @@ export default class ResultElementInfo extends HTMLElement {
 
   resize (size) {
     this.resultElemInfoDiv.style.height = size + 'px';
+  }
+
+  focus () {
+    this.resultElemInfoDiv.focus();
   }
 
   setHeading (headingId, messageId) {

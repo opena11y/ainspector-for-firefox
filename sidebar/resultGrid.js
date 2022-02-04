@@ -91,6 +91,13 @@ export default class ResultGrid extends HTMLElement {
     return this.activationDisabled;
   }
 
+  focus () {
+    let elem = this.table.querySelector('[tabindex="0"]');
+    if (elem) {
+      elem.focus();
+    }
+  }
+
   addClassNameToTable (name) {
     return this.table.classList.add(name);
   }

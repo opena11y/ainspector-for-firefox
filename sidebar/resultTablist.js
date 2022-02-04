@@ -92,6 +92,21 @@ export default class ResultTablist extends HTMLElement {
     return this.tabpanelDiv2
   }
 
+  get selectedTabId () {
+    if (this.tabpanelDiv1.classList.contains('show')) {
+      return this.tabpanelDiv1.id;
+    }
+    return this.tabpanelDiv2.id;
+  }
+
+  focus () {
+    if (this.selectedTabId === 'tabpanel-1') {
+      this.tabDiv1.focus();
+    } else {
+      this.tabDiv2.focus();
+    }
+  }
+
   showTabpanel(id) {
     if (this.tabpanelDiv1.id === id) {
       this.tabpanelDiv1.classList.add('show');

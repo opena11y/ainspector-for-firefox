@@ -34,10 +34,10 @@ export default class ViewSummary {
     rcMiddleSectionDiv.className = 'middle-section';
     this.resultTablist.tabpanel1.appendChild(rcMiddleSectionDiv);
 
-    // create the rule category rule details buttonsß
-    const rcDetailsButton = this.createDetailsButton('rc-details');
-    this.rcResultGrid.setDetailsButton(rcDetailsButton);
-    rcMiddleSectionDiv.appendChild(rcDetailsButton);
+    // create the rule category rule details buttons
+    this.rcDetailsButton = this.createDetailsButton('rc-details', 'd');
+    this.rcResultGrid.setDetailsButton(this.rcDetailsButton);
+    rcMiddleSectionDiv.appendChild(this.rcDetailsButton);
 
     // WCAG Guidelines tabpanel
     // create grid for guideline results
@@ -52,9 +52,9 @@ export default class ViewSummary {
     this.resultTablist.tabpanel2.appendChild(glMiddleSection);
 
     // create the guidelines details button
-    const glDetailsButton = this.createDetailsButton('gl-details');
-    glMiddleSection.appendChild(glDetailsButton)
-    this.glResultGrid.setDetailsButton(glDetailsButton);
+    this.glDetailsButton = this.createDetailsButton('gl-details');
+    glMiddleSection.appendChild(this.glDetailsButton)
+    this.glResultGrid.setDetailsButton(this.glDetailsButton);
 
     this.rcResults = [];
     this.glResults = [];
@@ -80,8 +80,8 @@ export default class ViewSummary {
   }
 
   set disabled (value) {
-    this.rcResultGrid.disabled = value;
-    this.glResultGrid.disabled = value;
+      this.rcResultGrid.disabled = value;
+      this.glResultGrid.disabled = value;
   }
 
   get disabled () {
@@ -241,6 +241,12 @@ export default class ViewSummary {
     }
 
     this.glResultGrid.setSelectedRowUsingLastId();
+
+    if (this.resultTablist.selectedTabId === 'tabpanel-1') {
+      this.rcResultGrid.focus();
+    } else {
+      this.glResultGrid.focus();
+    }
 
   }
 

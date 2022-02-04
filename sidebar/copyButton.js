@@ -61,6 +61,10 @@ export default class CopyButton extends HTMLElement {
     return this.copyButton.getAttribute('aria-label');
   }
 
+  click () {
+    this.copyButton.click();
+  }
+
   setGetTextFunct (getTextFunct) {
     this.getTextFunct = getTextFunct;
   }

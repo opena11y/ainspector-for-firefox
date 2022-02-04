@@ -24,10 +24,10 @@ export default class ViewRuleResult {
     ruleInfoFooterDiv.className = 'info-footer';
     this.resultTablist.tabpanel1.appendChild(ruleInfoFooterDiv);
 
-    const ruleCopyButton = document.createElement('copy-button');
-    ruleCopyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
-    ruleCopyButton.title = getMessage('copyRuleInfoDesc');
-    ruleInfoFooterDiv.appendChild(ruleCopyButton);
+    this.ruleCopyButton = document.createElement('copy-button');
+    this.ruleCopyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
+    this.ruleCopyButton.title = getMessage('copyRuleInfoDesc');
+    ruleInfoFooterDiv.appendChild(this.ruleCopyButton);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
@@ -59,10 +59,10 @@ export default class ViewRuleResult {
     this.resultTablist.tabpanel2.appendChild(this.resultElementInfo);
 
     // Add copy element result details button
-    const elemCopyButton = document.createElement('copy-button');
-    elemCopyButton.setGetTextFunct(this.resultElementInfo.getText.bind(this.resultElementInfo));
-    elemCopyButton.title = getMessage('copyElemInfoDesc');
-    elemInfoHeaderDiv.appendChild(elemCopyButton);
+    this.elemCopyButton = document.createElement('copy-button');
+    this.elemCopyButton.setGetTextFunct(this.resultElementInfo.getText.bind(this.resultElementInfo));
+    this.elemCopyButton.title = getMessage('copyElemInfoDesc');
+    elemInfoHeaderDiv.appendChild(this.elemCopyButton);
 
     this.elementResults = {};
 
@@ -259,6 +259,7 @@ export default class ViewRuleResult {
         this.resultElementInfo.clear(label);
       }
       this.elementResultGrid.setSelectedRowUsingLastId();
+      this.elementResultGrid.focus();
     });
   }
 

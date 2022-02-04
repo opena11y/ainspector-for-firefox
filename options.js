@@ -1,11 +1,11 @@
 /* options.js */
 
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
-import validatePrefix from './validatePrefix.js';
+import { validatePrefix, validateShortcut } from './validate.js';
 
 const getMessage = browser.i18n.getMessage;
 
-const debug = false;
+const debug = true;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
 const noDelay        = document.querySelector('input[id="options-no-delay"]');
 const promptForDelay = document.querySelector('input[id="options-prompt-for-delay"]');
@@ -20,6 +20,20 @@ const exportJSON     = document.querySelector('#options-export-json');
 const exportPrefix   = document.querySelector('#options-export-prefix');
 const exportDate     = document.querySelector('#options-export-date');
 
+const shortcutBackTextbox    = document.querySelector('#options-shortcut-back');
+const shortcutViewsTextbox   = document.querySelector('#options-shortcut-views');
+const shortcutExportTextbox  = document.querySelector('#options-shortcut-export');
+const shortcutRerunTextbox   = document.querySelector('#options-shortcut-rerun');
+const shortcutDetailsTextbox = document.querySelector('#options-shortcut-details');
+const shortcutGridTextbox    = document.querySelector('#options-shortcut-grid');
+const shortcutInfoTextbox    = document.querySelector('#options-shortcut-info');
+const shortcutTabsTextbox    = document.querySelector('#options-shortcut-tabs');
+const shortcutCopyTextbox    = document.querySelector('#options-shortcut-copy');
+const shortcutPreferencesTextbox   = document.querySelector('#options-shortcut-preferences');
+
+const shortcutRequiredCtrlCheckbox  = document.querySelector('#options-shortcut-required-ctrl');
+const shortcutRequiredShiftCheckbox = document.querySelector('#options-shortcut-required-shift');
+const shortcutsDisabledCheckbox     = document.querySelector('#options-shortcuts-disabled');
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
@@ -93,8 +107,22 @@ function saveFormOptions (e) {
     filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
     includeTime:    exportDate.checked,
-    promptForExportOptions: exportPrompt.checked
+    promptForExportOptions: exportPrompt.checked,
 
+    shortcutBack:    validateShortcut(shortcutBackTextbox.value),
+    shortcutCopy:    validateShortcut(shortcutCopyTextbox.value),
+    shortcutDetails: validateShortcut(shortcutDetailsTextbox.value),
+    shortcutExport:  validateShortcut(shortcutExportTextbox.value),
+    shortcutGrid:    validateShortcut(shortcutGridTextbox.value),
+    shortcutInfo:    validateShortcut(shortcutInfoTextbox.value),
+    shortcutPreferences:   validateShortcut(shortcutPreferencesTextbox.value),
+    shortcutRerun:   validateShortcut(shortcutRerunTextbox.value),
+    shortcutTabs:    validateShortcut(shortcutTabsTextbox.value),
+    shortcutViews:   validateShortcut(shortcutViewsTextbox.value),
+
+    shortcutRequireCtrl:  shortcutRequiredCtrlCheckbox.checked,
+    shortcutRequireShift: shortcutRequiredShiftCheckbox.checked,
+    shortcutsDisabled:    shortcutsDisabledCheckbox.checked
   }
 
   if (debug) console.log(options);
@@ -118,6 +146,20 @@ function updateForm (options) {
   exportPrefix.value     = validatePrefix(options.filenamePrefix);
   exportDate.checked     = options.includeDate;
 
+  shortcutBackTextbox.value    = options.shortcutBack;
+  shortcutCopyTextbox.value    = options.shortcutCopy;
+  shortcutDetailsTextbox.value = options.shortcutDetails;
+  shortcutExportTextbox.value  = options.shortcutExport;
+  shortcutGridTextbox.value    = options.shortcutGrid;
+  shortcutInfoTextbox.value    = options.shortcutInfo;
+  shortcutPreferencesTextbox.value   = options.shortcutPreferences;
+  shortcutRerunTextbox.value   = options.shortcutRerun;
+  shortcutTabsTextbox.value    = options.shortcutTabs;
+  shortcutViewsTextbox.value   = options.shortcutViews;
+
+  shortcutRequiredCtrlCheckbox.checked  = options.shortcutRequireCtrl;
+  shortcutRequiredShiftCheckbox.checked = options.shortcutRequireShift;
+  shortcutsDisabledCheckbox.checked     = options.shortcutsDisabled;
 }
 
 function updateOptionsForm() {
@@ -141,6 +183,45 @@ function onKeyupValidatePrefix () {
   exportPrefix.value = value;
 }
 
+function checkForDuplicateKey (textbox, key) {
+
+  function checkTextbox (tb) {
+    if (tb !== textbox) {
+      return tb.value !== key;
+    }
+    return true;
+  }
+
+  let flag = true;
+  flag = flag && checkTextbox(shortcutBackTextbox);
+  flag = flag && checkTextbox(shortcutCopyTextbox);
+  flag = flag && checkTextbox(shortcutDetailsTextbox);
+  flag = flag && checkTextbox(shortcutExportTextbox);
+  flag = flag && checkTextbox(shortcutGridTextbox);
+  flag = flag && checkTextbox(shortcutInfoTextbox);
+  flag = flag && checkTextbox(shortcutPreferencesTextbox);
+  flag = flag && checkTextbox(shortcutRerunTextbox);
+  flag = flag && checkTextbox(shortcutTabsTextbox);
+  flag = flag && checkTextbox(shortcutViewsTextbox);
+
+  return flag;
+}
+
+function onShortcutKeydown (event) {
+  let tgt = event.currentTarget;
+  let key = event.key;
+  let currentKey = tgt.value;
+
+  if (key.length === 1) {
+    if (checkForDuplicateKey(tgt, key)) {
+      tgt.value = key;
+      saveFormOptions(event);
+    }
+    event.stopPropagation();
+    event.preventDefault();
+  }
+}
+
 // Add event listeners for saving and restoring options
 
 document.addEventListener('DOMContentLoaded', updateOptionsForm);
@@ -157,6 +238,21 @@ exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('keyup', onKeyupValidatePrefix);
 exportDate.addEventListener('change', saveFormOptions);
+
+shortcutBackTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutCopyTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutDetailsTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutExportTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutGridTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutInfoTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutPreferencesTextbox.addEventListener('keydown', saveFormOptions);
+shortcutRerunTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutTabsTextbox.addEventListener('keydown', onShortcutKeydown);
+shortcutViewsTextbox.addEventListener('keydown', onShortcutKeydown);
+
+shortcutRequiredCtrlCheckbox.addEventListener('change', saveFormOptions);
+shortcutRequiredShiftCheckbox.addEventListener('change', saveFormOptions);
+shortcutsDisabledCheckbox.addEventListener('change', saveFormOptions);
 
 resetDefaults.addEventListener('click', saveDefaultOptions);
 

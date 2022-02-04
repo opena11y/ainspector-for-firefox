@@ -48,10 +48,10 @@ export default class ViewRuleGroup {
 
     this.resultRuleInfo = document.createElement('result-rule-info');
 
-    const copyButton = document.createElement('copy-button');
-    copyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
-    copyButton.title = getMessage('copyRuleInfoDesc');
-    ruleInfoHeaderDiv.appendChild(copyButton);
+    this.copyButton = document.createElement('copy-button');
+    this.copyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
+    this.copyButton.title = getMessage('copyRuleInfoDesc');
+    ruleInfoHeaderDiv.appendChild(this.copyButton);
 
     div.appendChild(this.resultRuleInfo);
 
@@ -248,6 +248,7 @@ export default class ViewRuleGroup {
         this.resultRuleInfo.clear(label);
       }
 
+      this.ruleResultGrid.focus();
     })
   }
 

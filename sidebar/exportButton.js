@@ -3,7 +3,7 @@
 const getMessage = browser.i18n.getMessage;
 
 import { getOptions, saveOptions } from '../storage.js';
-import validatePrefix from '../validatePrefix.js';
+import { validatePrefix } from '../validate.js';
 
 
 const template = document.createElement('template');

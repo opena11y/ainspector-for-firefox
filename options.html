@@ -90,7 +90,116 @@
 
       </fieldset>
 
+      <h2 id="options-shortcut-keys">Shortcut Keys</h2>
+
+      <label>
+        <input type="checkbox" checked id="options-shortcuts-disabled"/>
+        <span id="#options-shortcut-required-shift-label">Disabled the use of shortcuts.</span>
+      </label>
+
+      <label>
+        <input type="checkbox" checked id="options-shortcut-required-ctrl"/>
+        <span id="#options-shortcut-required-ctrl-label">Require control key to be pressed to activate shortcut.</span>
+      </label>
+
+      <label>
+        <input type="checkbox" checked id="options-shortcut-required-shift"/>
+        <span id="#options-shortcut-required-shift-label">Require shift key to be pressed to activate shortcut.</span>
+      </label>
+
+      <table class="shortcuts">
+        <thead>
+          <tr>
+            <th>Shortcut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-back" size="1">
+            </td>
+            <td>
+              Activates Back button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-views" size="1">
+            </td>
+            <td>
+              Activates View button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-export" size="1">
+            </td>
+            <td>
+              Activates Export button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-rerun" size="1">
+            </td>
+            <td>
+              Activates Rerun Evalaution button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-details" size="1">
+            </td>
+            <td>
+              Activates the Details button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-grid" size="1">
+            </td>
+            <td>
+              Moves focus the grid.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-info" size="1">
+            </td>
+            <td>
+              Moves focus to information about the currently selected rule or element.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-tabs" size="1">
+            </td>
+            <td>
+              Moves focus the currently selected tab.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-copy" size="1">
+            </td>
+            <td>
+              Activates the copy button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-preferences" size="1">
+            </td>
+            <td>
+              Activates the Preferences button.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
+
 
     </form>
     <script type="module" src="options.js"></script>
