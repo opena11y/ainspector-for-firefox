@@ -1,13 +1,16 @@
 /* copyButton.css */
 
 button  {
+  margin: 2px;
+  padding: 4px 4px 2px 4px;
   background:  none;
   border: none;
   text-align: center;
+  outline: none;
 }
 
 button img {
-  padding: 1px;
+  margin: 0;
   height: 18px;
 }
 
@@ -28,6 +31,8 @@ button:hover {
 }
 
 button:focus {
-  outline: 2px solid currentColor;
+  padding: 2px 2px 0px 2px;
+  border-radius: 4px;
+  border: 2px solid currentColor;
 }
 

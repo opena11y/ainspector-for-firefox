@@ -16,7 +16,7 @@ header {
   background-color: #ffffff;
   z-index: 10;
   width:  100%;
-  border-bottom: 1px #888 solid;
+  border-bottom: 1px #aaa solid;
 }
 
 header table {
