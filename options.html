@@ -92,20 +92,22 @@
 
       <h2 id="options-shortcut-keys">Shortcut Keys</h2>
 
-      <label>
-        <input type="checkbox" checked id="options-shortcuts-disabled"/>
-        <span id="#options-shortcut-required-shift-label">Disable shortcuts.</span>
-      </label>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" checked id="options-shortcuts-disabled"/>
+          <span id="#options-shortcut-required-shift-label">Disable shortcuts.</span>
+        </label>
 
-      <label>
-        <input type="checkbox" checked id="options-shortcut-required-ctrl"/>
-        <span id="#options-shortcut-required-ctrl-label">Control key must be pressed to activate shortcut.</span>
-      </label>
+        <label>
+          <input type="checkbox" checked id="options-shortcut-required-ctrl"/>
+          <span id="#options-shortcut-required-ctrl-label">Control key must be pressed to activate shortcut.</span>
+        </label>
 
-      <label>
-        <input type="checkbox" checked id="options-shortcut-required-shift"/>
-        <span id="#options-shortcut-required-shift-label">Shift key must be pressed to activate shortcut.</span>
-      </label>
+        <label>
+          <input type="checkbox" checked id="options-shortcut-required-shift"/>
+          <span id="#options-shortcut-required-shift-label">Shift key must be pressed to activate shortcut.</span>
+        </label>
+      </div>
 
       <table class="shortcuts">
         <thead>
@@ -125,26 +127,10 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-views" size="1">
+              <input type="text" id="options-shortcut-copy" size="1">
             </td>
             <td>
-              Activates View button.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-export" size="1">
-            </td>
-            <td>
-              Activates Export button.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-rerun" size="1">
-            </td>
-            <td>
-              Activates Rerun Evalaution button.
+              Activates the copy button.
             </td>
           </tr>
           <tr>
@@ -153,6 +139,14 @@
             </td>
             <td>
               Activates the Details button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-export" size="1">
+            </td>
+            <td>
+              Activates Export button.
             </td>
           </tr>
           <tr>
@@ -173,6 +167,22 @@
           </tr>
           <tr>
             <td>
+              <input type="text" id="options-shortcut-preferences" size="1">
+            </td>
+            <td>
+              Activates the Preferences button.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-rerun" size="1">
+            </td>
+            <td>
+              Activates Rerun Evalaution button.
+            </td>
+          </tr>
+          <tr>
+            <td>
               <input type="text" id="options-shortcut-tabs" size="1">
             </td>
             <td>
@@ -181,18 +191,10 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-copy" size="1">
+              <input type="text" id="options-shortcut-views" size="1">
             </td>
             <td>
-              Activates the copy button.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-preferences" size="1">
-            </td>
-            <td>
-              Activates the Preferences button.
+              Activates View button.
             </td>
           </tr>
         </tbody>

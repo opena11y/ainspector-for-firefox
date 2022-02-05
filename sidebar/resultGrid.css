@@ -173,6 +173,7 @@ table tr:focus,
 table.show-selection tr:focus {
   outline-offset:  -2px;
   outline: currentColor 2px solid;
+  background-color: hsl(198, 52%, 81%);
 }
 
 

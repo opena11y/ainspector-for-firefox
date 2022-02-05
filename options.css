@@ -52,3 +52,13 @@ input[type="text"] {
 button[type=reset] {
   margin-top:  2em;
 }
+
+table.shortcuts  {
+  margin: 0;
+  padding: 0;
+  margin-left:  12px;
+}
+
+table.shortcuts th {
+  text-align:  left;
+}
