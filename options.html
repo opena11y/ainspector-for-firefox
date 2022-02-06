@@ -92,6 +92,7 @@
 
       <h2 id="options-shortcut-keys">Shortcut Keys</h2>
 
+
       <div class="checkbox">
         <label>
           <input type="checkbox" checked id="options-shortcuts-disabled"/>
@@ -117,12 +118,25 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr hidden>
             <td>
-              <input type="text" id="options-shortcut-back" size="1">
+              <input type="text" id="options-shortcut-back" size="1" aria-describedby="">
             </td>
             <td>
-              Activates Back button.
+              <label for="options-shortcut-back">
+                Activates Back button.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <kbd>Backspace</kbd>
+            </td>
+            <td>
+              <label>
+                Always activates the Back button, reguardless of shift or control being pressed.<br/>
+                <div class="note"><span>Note:</span> On macOS use the <kbd>Delete</kbd> key.</div>
+              </label>
             </td>
           </tr>
           <tr>
@@ -130,7 +144,9 @@
               <input type="text" id="options-shortcut-copy" size="1">
             </td>
             <td>
-              Activates the copy button.
+              <label for="options-shortcut-copy">
+                Activates the copy button.
+              </label>
             </td>
           </tr>
           <tr>
@@ -138,7 +154,9 @@
               <input type="text" id="options-shortcut-details" size="1">
             </td>
             <td>
-              Activates the Details button.
+              <label for="options-shortcut-details">
+                Activates the Details button.
+              </label>
             </td>
           </tr>
           <tr>
@@ -146,7 +164,9 @@
               <input type="text" id="options-shortcut-export" size="1">
             </td>
             <td>
-              Activates Export button.
+              <label for="options-shortcut-export">
+                Activates Export button.
+              </label>
             </td>
           </tr>
           <tr>
@@ -154,7 +174,9 @@
               <input type="text" id="options-shortcut-grid" size="1">
             </td>
             <td>
-              Moves focus the grid.
+              <label for="options-shortcut-grid">
+                Moves focus the grid.
+              </label>
             </td>
           </tr>
           <tr>
@@ -162,7 +184,9 @@
               <input type="text" id="options-shortcut-info" size="1">
             </td>
             <td>
-              Moves focus to information about the currently selected rule or element.
+              <label for="options-shortcut-info">
+                Moves focus to information about the currently selected rule or element.
+              </label>
             </td>
           </tr>
           <tr>
@@ -170,7 +194,9 @@
               <input type="text" id="options-shortcut-preferences" size="1">
             </td>
             <td>
-              Activates the Preferences button.
+              <label for="options-shortcut-preferences">
+                Activates the Preferences button.
+              </label>
             </td>
           </tr>
           <tr>
@@ -178,7 +204,9 @@
               <input type="text" id="options-shortcut-rerun" size="1">
             </td>
             <td>
-              Activates Rerun Evalaution button.
+              <label for="options-shortcut-rerun">
+                Activates Rerun Evalaution button.
+              </label>
             </td>
           </tr>
           <tr>
@@ -186,7 +214,9 @@
               <input type="text" id="options-shortcut-tabs" size="1">
             </td>
             <td>
-              Moves focus the currently selected tab.
+              <label for="options-shortcut-tabs">
+                Moves focus the currently selected tab.
+              </label>
             </td>
           </tr>
           <tr>
@@ -194,14 +224,17 @@
               <input type="text" id="options-shortcut-views" size="1">
             </td>
             <td>
-              Activates View button.
+              <label for="options-shortcut-views">
+               Activates View button.
+              </label>
             </td>
           </tr>
         </tbody>
       </table>
+      <p class="note"><span>Note:</span> Leaving the shortcut key value empty disables the shortcut.</p>
+
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
-
 
     </form>
     <script type="module" src="options.js"></script>
