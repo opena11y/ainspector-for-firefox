@@ -10,6 +10,9 @@ template.innerHTML = `
         <div id="message2" class="message"></div>
       </div>
       <div id="info">
+        <h3  id="summary-label">Summary</h3>
+        <div id="summary-content"></div>
+
         <h3  id="definition-label">Definition</h3>
         <div id="definition-content"></div>
 
@@ -52,6 +55,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // Initialize headings
+    this.setHeading('#summary-label',    'ruleSummaryLabel');
     this.setHeading('#definition-label', 'ruleDefinitionLabel');
     this.setHeading('#action-label',     'ruleActionLabel');
     this.setHeading('#purpose-label',    'rulePurposeLabel');
@@ -69,6 +73,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.message2Div    = this.shadowRoot.querySelector('#message2');
 
     this.infoDiv       = this.shadowRoot.querySelector('#info');
+    this.summaryDiv = this.shadowRoot.querySelector('#summary-content');
     this.definitionDiv = this.shadowRoot.querySelector('#definition-content');
     this.actionDiv     = this.shadowRoot.querySelector('#action-content');
     this.purposeDiv    = this.shadowRoot.querySelector('#purpose-content');
@@ -170,6 +175,7 @@ export default class ResultRuleInfo extends HTMLElement {
 
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
+    this.renderContent(this.summaryDiv,    ruleInfo.summary);
     this.renderContent(this.definitionDiv, ruleInfo.definition);
     this.renderContent(this.actionDiv,     ruleInfo.action);
     this.renderContent(this.purposeDiv,    ruleInfo.purpose);
@@ -183,6 +189,7 @@ export default class ResultRuleInfo extends HTMLElement {
       ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
     }
     this.copyText = ruleId + ruleInfo.summary + '\n\n';
+    this.appendToCopyText('ruleSummaryLabel',    ruleInfo.summary);
     this.appendToCopyText('ruleDefinitionLabel', ruleInfo.definition);
     this.appendToCopyText('ruleActionLabel',     ruleInfo.action);
     this.appendToCopyText('rulePurposeLabel',    ruleInfo.purpose);
@@ -207,6 +214,7 @@ export default class ResultRuleInfo extends HTMLElement {
       this.message2Div.textContent = message2;
     }
 
+    this.renderContent(this.summaryDiv, '');
     this.renderContent(this.definitionDiv, '');
     this.renderContent(this.actionDiv,     '');
     this.renderContent(this.purposeDiv,    '');

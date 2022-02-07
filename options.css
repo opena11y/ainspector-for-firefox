@@ -22,6 +22,7 @@ fieldset {
 }
 
 legend {
+  font-size: 110%;
   font-weight: bold;
 }
 
@@ -61,7 +62,7 @@ input[type="text"] {
 
 p.note {
   margin:  0.5em;
-  margin-left:  1.5em;
+  margin-left:  0.75em;
   padding: 0;
 }
 
@@ -72,13 +73,26 @@ button[type=reset] {
 table.shortcuts  {
   margin: 0;
   padding: 0;
-  margin-left:  12px;
+  margin-top: 1em;
+  margin-left: 5px;
 }
 
 table.shortcuts th {
   text-align:  left;
+  font-size: 110%;
+  font-weight: bold;
 }
 
-table.shortcuts th:nth-child(1) {
-  width:  7em;
+table.shortcuts thead th:nth-child(1),
+table.shortcuts tbody td:nth-child(1) {
+  min-width: 7em;
+  text-align: left;
 }
+
+table.shortcuts td input,
+table.shortcuts td label {
+  padding:  0;
+  margin: 0;
+}
+
+

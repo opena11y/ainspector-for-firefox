@@ -216,82 +216,6 @@ function onError (error) {
   console.log(`Error: ${error}`);
 }
 
-function shortcutDetails () {
-  switch (sidebarView) {
-  case 'summary':
-    if (!vSummary.disabled) {
-      if (vSummary.resultTablist.selectedTabId === 'tabpanel-1') {
-        vSummary.rcDetailsButton.click();
-      } else {
-        vSummary.glDetailsButton.click();
-      }
-    }
-    break;
-
-  case 'rule-group':
-    if (!vRuleGroup.disabled) {
-      vRuleGroup.onDetailsButtonClick();
-    }
-    break;
-
-  default:
-    break;
-  }
-}
-
-function shortcutGrid () {
-  switch (sidebarView) {
-    case 'summary':
-      if (vSummary.resultTablist.selectedTabId === 'tabpanel-1') {
-        vSummary.rcResultGrid.focus();
-      } else {
-        vSummary.glResultGrid.focus();
-      }
-      break;
-
-    case 'rule-group':
-      vRuleGroup.ruleResultGrid.focus();
-      break;
-
-    case 'rule-result':
-      vRuleResult.elementResultGrid.focus();
-      break;
-
-    default:
-      break;
-  }
-}
-
-function shortcutTabs () {
-  switch (sidebarView) {
-    case 'summary':
-      vSummary.resultTablist.focus();
-      break;
-
-    case 'rule-result':
-      vRuleResult.resultTablist.focus();
-      break;
-
-    default:
-      break;
-  }
-}
-
-function shortcutInfo () {
-  switch (sidebarView) {
-    case 'rule-group':
-      vRuleGroup.resultRuleInfo.focus();
-      break;
-
-    case 'rule-result':
-      vRuleResult.resultElementInfo.focus();
-      break;
-
-    default:
-      break;
-  }
-}
-
 function shortcutCopy () {
   switch (sidebarView) {
     case 'rule-group':
@@ -299,11 +223,7 @@ function shortcutCopy () {
       break;
 
     case 'rule-result':
-      if (vRuleResult.resultTablist.selectedTabId === 'tabpanel-1') {
-        vRuleResult.ruleCopyButton.click();
-      } else {
-        vRuleResult.elemCopyButton.click();
-      }
+      vRuleResult.elemCopyButton.click();
       break;
 
     default:
@@ -315,93 +235,53 @@ function shortcutCopy () {
 function onShortcutsKeydown (event) {
   let flag = false;
 
-  function isShortcut(shortcut) {
-    return shortcut && (shortcut.toLowerCase() === event.key.toLowerCase());
-  }
-
   if (!event.metaKey &&
+      !event.ctrlKey &&
       !exportButton.isOpen() &&
       !rerunEvaluationButton.isOpen() &&
       !viewsMenuButton.isOpen()) {
     getOptions().then( (options) => {
 
-/*
-      if (event.key === 'Backspace') {
-        if (!backButton.disabled) {
-          onBackButton();
-        }
-        flag = true;
-      }
-*/
-      if (!options.shortcutsDisabled &&
-          (!event.altKey || options.shortcutAllowAlt)&&
-          (options.shortcutRequireCtrl  === event.ctrlKey) &&
-          (options.shortcutRequireShift === event.shiftKey)) {
 
+      if (options.shortcutsEnabled) {
 
-        if (isShortcut(options.shortcutBack)) {
+        if (event.key === options.shortcutBack) {
           if (!backButton.disabled) {
             onBackButton();
           }
           flag = true;
         }
 
-
-        if (isShortcut(options.shortcutCopy)) {
+        if (event.key === options.shortcutCopy) {
           shortcutCopy();
           flag = true;
         }
 
-        if (isShortcut(options.shortcutDetails)) {
-          shortcutDetails();
-          flag = true;
-        }
-
-        if (isShortcut(options.shortcutExport)) {
+        if (event.key === options.shortcutExport) {
           if (!exportButton.disabled) {
             exportButton.onExportButtonClick();
           }
           flag = true;
         }
 
-        if (isShortcut(options.shortcutGrid)) {
-          shortcutGrid();
-          flag = true;
-        }
-
-        if (isShortcut(options.shortcutInfo)) {
-          shortcutInfo();
-          flag = true;
-        }
-
-        if (isShortcut(options.shortcutPreferences)) {
-          onPreferencesClick();
-          flag = true;
-        }
-
-        if (isShortcut(options.shortcutRerun)) {
+        if (event.key === options.shortcutRerun) {
           if (!rerunEvaluationButton.disabled) {
             rerunEvaluationButton.onRerunButtonClick();
           }
           flag = true;
         }
 
-        if (isShortcut(options.shortcutTabs)) {
-          shortcutTabs();
-          flag = true;
-        }
-
-        if (isShortcut(options.shortcutViews)) {
+        if (event.key === options.shortcutViews) {
           if (!viewsMenuButton.disabled) {
             viewsMenuButton.onButtonClick(event);
           }
           flag = true;
         }
-      }
 
-      if (flag) {
-        event.preventDefault();
-        event.stopPropagation();
+        if (flag) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
       }
 
     });

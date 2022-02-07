@@ -4,6 +4,7 @@ import { formatItemForCSV } from '../utilities.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
+  <section aria-labelledby="grid-label">
     <table role="grid" class="result-grid">
       <thead>
         <tr></tr>
@@ -11,6 +12,7 @@ template.innerHTML = `
       <tbody>
       </tbody>
     </table>
+  </section>
 `;
 
 export default class ResultGrid extends HTMLElement {

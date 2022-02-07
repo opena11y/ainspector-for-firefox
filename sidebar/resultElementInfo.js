@@ -4,7 +4,7 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div class="result-element-info" tabindex="-1">
+    <section class="result-element-info" tabindex="-1" aria-labelledy="elem-info-label">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
@@ -61,7 +61,7 @@ template.innerHTML = `
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
 `;
 
 export default class ResultElementInfo extends HTMLElement {

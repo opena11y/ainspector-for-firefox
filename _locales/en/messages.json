@@ -1,11 +1,11 @@
 {
   "extensionName": {
-    "message": "AInspector WCAG",
+    "message": "AInspector",
     "description": "Name of the extension"
   },
 
   "extensionDescription": {
-    "message": "Analyze web pages for WCAG requirements using the OpenAjax evaluation library.",
+    "message": "Analyze web pages for WCAG 2.0 level A and AA requirements using the OpenAjax evaluation library.",
     "description": "Description of the extension"
   },
 
@@ -56,7 +56,7 @@
 
   "emptyContent": {
     "message": "&lt;empty&gt;",
-    "description": "Message indicating that DOM element has no text content."
+    "description": "Message indicating that DOM Sele has no text content."
   },
 
   "tabIsLoading": {
@@ -339,6 +339,11 @@
     "description": "Value for required column in rule group grid"
   },
 
+  "ruleResultGridLabel": {
+    "message": "Rule Results",
+    "description": "Label for rule results grid"
+  },
+
   "ruleSelectedLabel": {
     "message": "Selected Rule",
     "description": "Selected rule label for rule information"
@@ -372,6 +377,11 @@
   "ruleIdLabel": {
     "message": "Rule ID",
     "description": "Rule ID label for rule information"
+  },
+
+  "ruleSummaryLabel": {
+    "message": "Summary",
+    "description": "Summary section label for rule information"
   },
 
   "ruleSummaryLabel": {
@@ -477,6 +487,11 @@
   "highlightOptionAll": {
     "message": "All",
     "description": "All option in the highlight select box"
+  },
+
+  "elementGridLabel": {
+    "message": "Element Results",
+    "description": "Label for element results grid"
   },
 
   "elementSelectedLabel": {
@@ -697,6 +712,31 @@
   "elementResultValueHeader": {
     "message": "Value",
     "description": "Column header for attribute results in element results view."
+  },
+
+  "shortcutDefaultBack": {
+    "message": "Backspace",
+    "description": "Default shortcut key for activating the Back button."
+  },
+
+  "shortcutDefaultCopy": {
+    "message": "c",
+    "description": "Default shortcut key for activating the copy rule or element information."
+  },
+
+  "shortcutDefaultViews": {
+    "message": "v",
+    "description": "Default shortcut key for activating the Views menu."
+  },
+
+  "shortcutDefaultExport": {
+    "message": "e",
+    "description": "Default shortcut key for activating the Export button."
+  },
+
+  "shortcutDefaultRerun": {
+    "message": "r",
+    "description": "Default shortcut key for activating the Rerun Evaluation button."
   }
 
 }

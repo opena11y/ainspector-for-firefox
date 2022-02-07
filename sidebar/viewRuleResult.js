@@ -14,30 +14,22 @@ export default class ViewRuleResult {
     this.elementSummary = document.createElement('element-summary');
     this.ruleResultDiv.appendChild(this.elementSummary);
 
-    this.resultTablist = document.createElement('result-tablist');
-    this.ruleResultDiv.appendChild(this.resultTablist);
-
-    this.resultRuleInfo = document.createElement('result-rule-info');
-    this.resultTablist.tabpanel1.appendChild(this.resultRuleInfo);
-
-    const ruleInfoFooterDiv = document.createElement('div');
-    ruleInfoFooterDiv.className = 'info-footer';
-    this.resultTablist.tabpanel1.appendChild(ruleInfoFooterDiv);
-
-    this.ruleCopyButton = document.createElement('copy-button');
-    this.ruleCopyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
-    this.ruleCopyButton.title = getMessage('copyRuleInfoDesc');
-    ruleInfoFooterDiv.appendChild(this.ruleCopyButton);
+    // Add heading for the element result details
+    let h2 = document.createElement('h2');
+    h2.className = 'grid';
+    h2.id = "grid-label"; // referenced by element result-grid custom element
+    h2.textContent = getMessage('elementGridLabel');
+    this.ruleResultDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
     this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
-    this.resultTablist.tabpanel2.appendChild(this.elementResultGrid);
+    this.ruleResultDiv.appendChild(this.elementResultGrid);
 
     // Create container DIV with heading for element information
     const middleSectionDiv = document.createElement('div');
     middleSectionDiv.className = 'middle-section';
-    this.resultTablist.tabpanel2.appendChild(middleSectionDiv);
+    this.ruleResultDiv.appendChild(middleSectionDiv);
 
     // Add highlight select box
     this.highlightSelect = document.createElement('highlight-select');
@@ -50,13 +42,14 @@ export default class ViewRuleResult {
     middleSectionDiv.appendChild(elemInfoHeaderDiv);
 
     // Add heading for the element result details
-    const h2 = document.createElement('h2');
+    h2 = document.createElement('h2');
     h2.className = 'selected';
+    h2.id = "elem-info-label";  // referenced by result-element-info custom element
     h2.textContent = getMessage('elementSelectedLabel');
     elemInfoHeaderDiv.appendChild(h2);
 
     this.resultElementInfo = document.createElement('result-element-info');
-    this.resultTablist.tabpanel2.appendChild(this.resultElementInfo);
+    this.ruleResultDiv.appendChild(this.resultElementInfo);
 
     // Add copy element result details button
     this.elemCopyButton = document.createElement('copy-button');
@@ -88,15 +81,9 @@ export default class ViewRuleResult {
 
     this.elementResultGrid.resize((h/2));
     this.resultElementInfo.resize((h/2));
-    this.resultRuleInfo.resize(h);
   }
 
   initGrid () {
-    this.resultTablist.tabLabel1 = getMessage('detailsActionLabel');
-    this.resultTablist.tabLabel2 = getMessage('elementResultsLabel');
-    // Make element results the deafult tab
-    this.resultTablist.showTabpanel('tabpane-2');
-
     this.elementResultGrid.addHeaderCell(getMessage('elementLabel'), 'element-info');
     this.elementResultGrid.addHeaderCell(getMessage('resultLabel'), 'result');
     this.elementResultGrid.addHeaderCell(getMessage('positionAbbrev'), 'position', getMessage('positionLabel'));
@@ -247,7 +234,6 @@ export default class ViewRuleResult {
         this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
         id = this.elementResultGrid.setSelectedRowUsingLastId();
         this.resultElementInfo.update(this.elementResults[id]);
-        this.resultRuleInfo.update(infoRuleResult.detailsAction);
       } else {
         if (infoRuleResult.elementResults.length === 0) {
           label = getMessage('noResultsMsg');
@@ -255,7 +241,6 @@ export default class ViewRuleResult {
           label = getMessage('noViolationsWarningsMCResultsMsg');
         }
         this.elementResultGrid.deleteDataRows(label);
-        this.resultRuleInfo.clear(label);
         this.resultElementInfo.clear(label);
       }
       this.elementResultGrid.setSelectedRowUsingLastId();
@@ -266,7 +251,6 @@ export default class ViewRuleResult {
   clear (message1, message2) {
     this.elementResultGrid.disable();
     this.elementResultGrid.deleteDataRows(message1, message2);
-    this.resultRuleInfo.clear(message1, message2);
     this.resultElementInfo.clear(message1, message2);
   }
 

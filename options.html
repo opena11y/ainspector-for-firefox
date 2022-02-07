@@ -95,25 +95,9 @@
 
       <div class="checkbox">
         <label>
-          <input type="checkbox" checked id="options-shortcuts-disabled"/>
-          <span id="#options-shortcut-required-shift-label">Disable shortcuts.</span>
+          <input type="checkbox" checked id="options-shortcuts-enabled"/>
+          <span id="options-shortcuts-enabled-label">Enable keyboard shortcuts.</span>
         </label>
-
-        <label>
-          <input type="checkbox" checked id="options-shortcut-required-ctrl"/>
-          <span id="#options-shortcut-required-ctrl-label"><kbd>Control</kbd> key must be pressed to activate shortcut.</span>
-        </label>
-
-        <label>
-          <input type="checkbox" checked id="options-shortcut-required-shift"/>
-          <span id="#options-shortcut-required-shift-label"><kbd>Shift</kbd> key must be pressed to activate shortcut.</span>
-        </label>
-
-        <label>
-          <input type="checkbox" checked id="options-shortcut-allow-alt"/>
-          <span id="#options-shortcut-allow-alt-label"><kbd>Alt</kbd> key (e.g. <kbd>Option</kbd> key on macOS) is allowed for shortcut key values.</span>
-        </label>
-      </div>
 
       <table class="shortcuts">
         <thead>
@@ -125,37 +109,30 @@
         <tbody>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-back" size="5" aria-describedby="">
+              <kbd id="options-shortcut-back"></kbd>
             </td>
             <td>
-              <label for="options-shortcut-back">
+              <div id="options-shortcut-back-label">
                 Activates Back button.
-              </label>
+              </div>
+              <div id="options-shortcut-back-note"class="note">
+                <span>Note:</span> The <kbd>Delete</kbd> button on macOS.
+              </div>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-copy" size="5" aria-describedby="">
+              <input type="text" id="options-shortcut-copy" size="1" aria-describedby="">
             </td>
             <td>
               <label for="options-shortcut-copy">
-                Activates the copy button.
+                Activates the Copy button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-details" size="5">
-            </td>
-            <td>
-              <label for="options-shortcut-details">
-                Activates the Details button.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-export" size="5">
+              <input type="text" id="options-shortcut-export" size="1">
             </td>
             <td>
               <label for="options-shortcut-export">
@@ -165,37 +142,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-grid" size="5">
-            </td>
-            <td>
-              <label for="options-shortcut-grid">
-                Moves focus the grid.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-info" size="5">
-            </td>
-            <td>
-              <label for="options-shortcut-info">
-                Moves focus to information about the currently selected rule or element.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-preferences" size="5">
-            </td>
-            <td>
-              <label for="options-shortcut-preferences">
-                Activates the Preferences button.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-rerun" size="5">
+              <input type="text" id="options-shortcut-rerun" size="1">
             </td>
             <td>
               <label for="options-shortcut-rerun">
@@ -205,17 +152,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-tabs" size="5">
-            </td>
-            <td>
-              <label for="options-shortcut-tabs">
-                Moves focus the currently selected tab.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-views" size="5">
+              <input type="text" id="options-shortcut-views" size="1">
             </td>
             <td>
               <label for="options-shortcut-views">

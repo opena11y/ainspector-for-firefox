@@ -9,20 +9,28 @@ export default class ViewRuleGroup {
 
     this.handleRowActivation = handleRowActivation;
 
-    this.ruleGroupNode = document.getElementById(id);
+    this.ruleGroupDiv = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
-    this.ruleGroupNode.appendChild(this.resultSummary);
+    this.ruleGroupDiv.appendChild(this.resultSummary);
+
+    // Add heading for the rule result details
+    let h2 = document.createElement('h2');
+    h2.className = 'grid';
+    h2.id = "grid-label"; // referenced by element result-grid custom element
+    h2.textContent = getMessage('ruleResultGridLabel');
+    this.ruleGroupDiv.appendChild(h2);
+
 
     this.ruleResultGrid = document.createElement('result-grid');
     this.ruleResultGrid.setRowActivationEventHandler(handleRowActivation);
     this.ruleResultGrid.setRowSelectionEventHandler(this.handleRowSelection.bind(this));
     this.ruleResultGrid.addClassNameToTable('group');
-    this.ruleGroupNode.appendChild(this.ruleResultGrid);
+    this.ruleGroupDiv.appendChild(this.ruleResultGrid);
 
     // Create container DIV with heading for rule information
     const div = document.createElement('div');
     div.className = 'rule-info';
-    this.ruleGroupNode.appendChild(div);
+    this.ruleGroupDiv.appendChild(div);
 
     const middleSectionDiv = document.createElement('div');
     middleSectionDiv.className = 'middle-section';
@@ -41,7 +49,7 @@ export default class ViewRuleGroup {
     ruleInfoHeaderDiv.className = 'info-header';
     middleSectionDiv.appendChild(ruleInfoHeaderDiv);
 
-    const h2 = document.createElement('h2');
+    h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.textContent = getMessage('ruleSelectedLabel');
     ruleInfoHeaderDiv.appendChild(h2);

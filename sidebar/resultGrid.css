@@ -29,13 +29,12 @@ table.rule tbody {
   overflow-y: scroll;
 }
 
-table.group {
-  padding-top: 2em;
+table.group,
+table.rule {
   border: 1px solid #aaa;
 }
 
-table.summary,
-table.rule {
+table.summary {
   border-left: 1px solid #aaa;
   border-right: 1px solid #aaa;
   border-bottom: 1px solid #aaa;

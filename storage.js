@@ -2,6 +2,8 @@
 *   storage.js
 */
 
+const getMessage = browser.i18n.getMessage;
+
 export const defaultOptions = {
   isSidebarOpen: false,
   rulesetId: 'ARIA_STRICT',
@@ -20,20 +22,12 @@ export const defaultOptions = {
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,
-  shortcutBack: 'b',
-  shortcutViews: 'v',
-  shortcutExport: 'e',
-  shortcutRerun: 'r',
-  shortcutDetails: 'd',
-  shortcutGrid: 'g',
-  shortcutInfo: 'i',
-  shortcutTabs: 't',
-  shortcutCopy: 'c',
-  shortcutPreferences: 'p',
-  shortcutAllowAlt: false,
-  shortcutRequireCtrl: false,
-  shortcutRequireShift: false,
-  shortcutsDisabled: false
+  shortcutBack: getMessage('shortcutDefaultBack'),
+  shortcutViews: getMessage('shortcutDefaultViews'),
+  shortcutExport: getMessage('shortcutDefaultExport'),
+  shortcutRerun: getMessage('shortcutDefaultRerun'),
+  shortcutCopy: getMessage('shortcutDefaultCopy'),
+  shortcutsEnabled: false
 };
 
 /*

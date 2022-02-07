@@ -17,6 +17,7 @@
   right:  2px;
   height: 300px;
   overflow: scroll;
+  user-select:  text;
 }
 
 .result-rule-info h3 {
