@@ -30,7 +30,8 @@ export const defaultOptions = {
   shortcutTabs: 't',
   shortcutCopy: 'c',
   shortcutPreferences: 'p',
-  shortcutRequireCtrl: true,
+  shortcutAllowAlt: false,
+  shortcutRequireCtrl: false,
   shortcutRequireShift: false,
   shortcutsDisabled: false
 };

@@ -101,12 +101,17 @@
 
         <label>
           <input type="checkbox" checked id="options-shortcut-required-ctrl"/>
-          <span id="#options-shortcut-required-ctrl-label">Control key must be pressed to activate shortcut.</span>
+          <span id="#options-shortcut-required-ctrl-label"><kbd>Control</kbd> key must be pressed to activate shortcut.</span>
         </label>
 
         <label>
           <input type="checkbox" checked id="options-shortcut-required-shift"/>
-          <span id="#options-shortcut-required-shift-label">Shift key must be pressed to activate shortcut.</span>
+          <span id="#options-shortcut-required-shift-label"><kbd>Shift</kbd> key must be pressed to activate shortcut.</span>
+        </label>
+
+        <label>
+          <input type="checkbox" checked id="options-shortcut-allow-alt"/>
+          <span id="#options-shortcut-allow-alt-label"><kbd>Alt</kbd> key (e.g. <kbd>Option</kbd> key on macOS) is allowed for shortcut key values.</span>
         </label>
       </div>
 
@@ -118,9 +123,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr hidden>
+          <tr>
             <td>
-              <input type="text" id="options-shortcut-back" size="1" aria-describedby="">
+              <input type="text" id="options-shortcut-back" size="5" aria-describedby="">
             </td>
             <td>
               <label for="options-shortcut-back">
@@ -130,18 +135,7 @@
           </tr>
           <tr>
             <td>
-              <kbd>Backspace</kbd>
-            </td>
-            <td>
-              <label>
-                Always activates the Back button, reguardless of shift or control being pressed.<br/>
-                <div class="note"><span>Note:</span> On macOS use the <kbd>Delete</kbd> key.</div>
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="options-shortcut-copy" size="1">
+              <input type="text" id="options-shortcut-copy" size="5" aria-describedby="">
             </td>
             <td>
               <label for="options-shortcut-copy">
@@ -151,7 +145,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-details" size="1">
+              <input type="text" id="options-shortcut-details" size="5">
             </td>
             <td>
               <label for="options-shortcut-details">
@@ -161,7 +155,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-export" size="1">
+              <input type="text" id="options-shortcut-export" size="5">
             </td>
             <td>
               <label for="options-shortcut-export">
@@ -171,7 +165,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-grid" size="1">
+              <input type="text" id="options-shortcut-grid" size="5">
             </td>
             <td>
               <label for="options-shortcut-grid">
@@ -181,7 +175,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-info" size="1">
+              <input type="text" id="options-shortcut-info" size="5">
             </td>
             <td>
               <label for="options-shortcut-info">
@@ -191,7 +185,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-preferences" size="1">
+              <input type="text" id="options-shortcut-preferences" size="5">
             </td>
             <td>
               <label for="options-shortcut-preferences">
@@ -201,7 +195,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-rerun" size="1">
+              <input type="text" id="options-shortcut-rerun" size="5">
             </td>
             <td>
               <label for="options-shortcut-rerun">
@@ -211,7 +205,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-tabs" size="1">
+              <input type="text" id="options-shortcut-tabs" size="5">
             </td>
             <td>
               <label for="options-shortcut-tabs">
@@ -221,7 +215,7 @@
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-views" size="1">
+              <input type="text" id="options-shortcut-views" size="5">
             </td>
             <td>
               <label for="options-shortcut-views">

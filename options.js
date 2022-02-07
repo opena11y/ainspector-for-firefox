@@ -33,6 +33,7 @@ const shortcutPreferencesTextbox   = document.querySelector('#options-shortcut-p
 
 const shortcutRequiredCtrlCheckbox  = document.querySelector('#options-shortcut-required-ctrl');
 const shortcutRequiredShiftCheckbox = document.querySelector('#options-shortcut-required-shift');
+const shortcutAllowAltCheckbox      = document.querySelector('#options-shortcut-allow-alt');
 const shortcutsDisabledCheckbox     = document.querySelector('#options-shortcuts-disabled');
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
@@ -122,6 +123,7 @@ function saveFormOptions (e) {
 
     shortcutRequireCtrl:  shortcutRequiredCtrlCheckbox.checked,
     shortcutRequireShift: shortcutRequiredShiftCheckbox.checked,
+    shortcutAllowAlt:     shortcutAllowAltCheckbox.checked,
     shortcutsDisabled:    shortcutsDisabledCheckbox.checked
   }
 
@@ -159,6 +161,7 @@ function updateForm (options) {
 
   shortcutRequiredCtrlCheckbox.checked  = options.shortcutRequireCtrl;
   shortcutRequiredShiftCheckbox.checked = options.shortcutRequireShift;
+  shortcutAllowAltCheckbox.checked      = options.shortcutAllowAlt;
   shortcutsDisabledCheckbox.checked     = options.shortcutsDisabled;
 }
 
@@ -215,6 +218,7 @@ function onShortcutKeydown (event) {
   if (key.length === 1) {
     if (checkForDuplicateKey(tgt, key)) {
       tgt.value = key;
+      shortcutAllowAltCheckbox.checked = shortcutAllowAltCheckbox.checked || event.altKey;
       saveFormOptions(event);
     }
     event.stopPropagation();
@@ -252,6 +256,7 @@ shortcutViewsTextbox.addEventListener('keydown', onShortcutKeydown);
 
 shortcutRequiredCtrlCheckbox.addEventListener('change', saveFormOptions);
 shortcutRequiredShiftCheckbox.addEventListener('change', saveFormOptions);
+shortcutAllowAltCheckbox.addEventListener('change', saveFormOptions);
 shortcutsDisabledCheckbox.addEventListener('change', saveFormOptions);
 
 resetDefaults.addEventListener('click', saveDefaultOptions);

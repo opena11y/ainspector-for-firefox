@@ -320,31 +320,32 @@ function onShortcutsKeydown (event) {
   }
 
   if (!event.metaKey &&
-      !event.altKey &&
       !exportButton.isOpen() &&
       !rerunEvaluationButton.isOpen() &&
       !viewsMenuButton.isOpen()) {
     getOptions().then( (options) => {
 
+/*
       if (event.key === 'Backspace') {
         if (!backButton.disabled) {
           onBackButton();
         }
         flag = true;
       }
-
+*/
       if (!options.shortcutsDisabled &&
+          (!event.altKey || options.shortcutAllowAlt)&&
           (options.shortcutRequireCtrl  === event.ctrlKey) &&
           (options.shortcutRequireShift === event.shiftKey)) {
 
-/*
+
         if (isShortcut(options.shortcutBack)) {
           if (!backButton.disabled) {
             onBackButton();
           }
           flag = true;
         }
-*/
+
 
         if (isShortcut(options.shortcutCopy)) {
           shortcutCopy();
