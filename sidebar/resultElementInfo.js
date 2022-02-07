@@ -4,7 +4,7 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <section class="result-element-info" tabindex="-1" aria-labelledy="elem-info-label">
+    <section class="result-element-info" aria-label="Selected Element">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
@@ -82,7 +82,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.setHeading('#action-label',     'ruleActionLabel');
 
     // Create content references
-    this.resultElemInfoDiv = this.shadowRoot.querySelector('.result-element-info');
+    this.resultElemInfoSect = this.shadowRoot.querySelector('.result-element-info');
 
     this.messagesDiv = this.shadowRoot.querySelector('#messages');
     this.message1Div = this.shadowRoot.querySelector('#message1');
@@ -117,6 +117,11 @@ export default class ResultElementInfo extends HTMLElement {
     this.copyText = '';
 
     this.initLabels();
+
+    // Update accessible name for the region
+
+    this.resultElemInfoSect.setAttribute('aria-label', getMessage('elementSelectedLabel'));
+
   }
 
   initLabels () {
@@ -150,11 +155,11 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   resize (size) {
-    this.resultElemInfoDiv.style.height = size + 'px';
+    this.resultElemInfoSect.style.height = size + 'px';
   }
 
   focus () {
-    this.resultElemInfoDiv.focus();
+    this.resultElemInfoSect.focus();
   }
 
   setHeading (headingId, messageId) {

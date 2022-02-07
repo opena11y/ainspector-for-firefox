@@ -51,6 +51,7 @@ export default class ViewRuleGroup {
 
     h2 = document.createElement('h2');
     h2.className = 'selected';
+    h2.id = 'rule-info-label';
     h2.textContent = getMessage('ruleSelectedLabel');
     ruleInfoHeaderDiv.appendChild(h2);
 

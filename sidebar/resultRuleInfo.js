@@ -4,7 +4,7 @@ const getMessage = browser.i18n.getMessage;
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <div class="result-rule-info" tabindex="-1">
+    <section class="result-rule-info" aria-label="Selected Rule">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
@@ -37,7 +37,7 @@ template.innerHTML = `
         <h3  id="additional-label">Additional Information</h3>
         <div id="additional-content"></div>
       </div>
-    </div>
+    </section>
 `;
 
 export default class ResultRuleInfo extends HTMLElement {
@@ -66,7 +66,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.setHeading('#additional-label', 'ruleAdditionalLabel');
 
     // Create content references
-    this.resultRuleInfoDiv = this.shadowRoot.querySelector('.result-rule-info');
+    this.resultRuleInfoSect = this.shadowRoot.querySelector('.result-rule-info');
 
     this.messagesDiv    = this.shadowRoot.querySelector('#messages');
     this.message1Div    = this.shadowRoot.querySelector('#message1');
@@ -84,14 +84,18 @@ export default class ResultRuleInfo extends HTMLElement {
     this.additionalDiv = this.shadowRoot.querySelector('#additional-content');
 
     this.copyText = '';
+
+    // Define an accessible name for the region
+    this.resultRuleInfoSect.setAttribute('aria-label', getMessage('ruleSelectedLabel'));
+
   }
 
   resize (size) {
-    this.resultRuleInfoDiv.style.height = size + 'px';
+    this.resultRuleInfoSect.style.height = size + 'px';
   }
 
   focus () {
-    this.resultRuleInfoDiv.focus();
+    this.resultRuleInfoSect.focus();
   }
 
   setHeading (headingId, messageId) {
