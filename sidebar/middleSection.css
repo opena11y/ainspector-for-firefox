@@ -13,19 +13,20 @@ highlight-select {
 .middle-section button.details,
 .middle-section highlight-select {
   position:  absolute;
-  top:  0.5em;
+  top:  calc(1em + 3px);
   right: 0;
 }
 
 .middle-section .info-header {
   position:  relative;
-  top:  -6px;
+  /* top:  -6px; */
 }
 
 .middle-section .info-header h2 {
   margin: 0;
   padding: 0;
-  margin-top:  1em;
+  margin-top:  1.5em;
+  margin-left: 4px;
   font-size: 110%;
   font-weight: bold;
   display:  inline-block;
@@ -35,7 +36,7 @@ highlight-select {
   display:  inline-block;
   margin-left:  0.25em;
   position: relative;
-  top: 6px;
+  top: 4px;
 }
 
 .info-footer  {
