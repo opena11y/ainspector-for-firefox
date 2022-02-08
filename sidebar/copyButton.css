@@ -1,0 +1,38 @@
+/* copyButton.css */
+
+button  {
+  margin: 2px;
+  padding: 4px 4px 2px 4px;
+  background:  none;
+  border: none;
+  text-align: center;
+  outline: none;
+}
+
+button img {
+  margin: 0;
+  height: 18px;
+}
+
+button img.copied {
+  display:  none;
+}
+
+button.copied img.copy {
+  display:  none;
+}
+
+button.copied img.copied {
+  display:  inline-block;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:focus {
+  padding: 2px 2px 0px 2px;
+  border-radius: 4px;
+  border: 2px solid currentColor;
+}
+

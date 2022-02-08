@@ -1,697 +1,742 @@
 {
   "extensionName": {
-    "message": "AInspector WCAG",
-    "description": "Name of the extension."
+    "message": "AInspector",
+    "description": "Name of the extension"
   },
 
   "extensionDescription": {
-    "message": "The AInspector WCAG is a web accessibility tool that evaluates the page being viewed in the browser according to the rules in the selected OpenAjax Alliance ruleset, which in turn are based on WCAG 2.0 and WAI-ARIA requirements. The rule results may be organized by either Rule Categories or WCAG Guidelines.\n\nKeyboard Shortcuts:\nWindows: ALT + SHIFT + U\nLinux: ALT + SHIFT + U\nMac OSX: Command + Shift + U\n\nCreated by: Nicholas Hoyt and Jon Gunderson\n\nAdditional Contributions: Mihir Kumar, Prasanna Bale and OpenAjax Accessibility Working Group\n\nDedicated to: Morton N. Hoyt, 1917-2014",
-    "description": "Description of the extension."
+    "message": "Analyze web pages for WCAG 2.0 level A and AA requirements using the OpenAjax evaluation library.",
+    "description": "Description of the extension"
   },
 
   "extensionAuthor": {
-    "message": "Accessible IT Group at University of Illinois.",
-    "description": "Author of the accessibility extension."
+    "message": "Nicholas Hoyt and Jon Gunderson",
+    "description": "Authors of the extension"
   },
 
-  "extensionShortCutDescription": {
-    "message": "Open AInspector WCAG",
-    "description": "Description of the function of the shortcut key."
-  },
-
-  "ARIA_STRICT": {
-    "message": "HTML5 and ARIA Techniques",
-    "description": "Openajax evaluation ruleset ID"
-  },
-
-  "ARIA_TRANS": {
-    "message": "HTML4 Legacy Techniques",
-    "description": "Openajax evaluation ruleset ID"
-  },
-
-  "labelSummary": {
+  "viewTitleSummaryLabel": {
     "message": "Summary",
-    "description": "Title for the Summary Panel"
+    "description": "Label for summary view"
   },
 
-  "labelBack": {
+  "backButtonLabel": {
     "message": "Back",
-    "description": "Label for the Back button"
+    "description": "Label for back button"
   },
 
-  "labelViews": {
-    "message": "Views",
-    "description": "Label for the Views button"
-  },
-
-  "labelDetails": {
+  "detailsLabel": {
     "message": "Details",
-    "description": "Label for the Details button"
+    "description": "Label for details button"
   },
 
-  "labelPreferences": {
+  "viewsButtonLabel": {
+    "message": "Views",
+    "description": "Label for views button"
+  },
+
+  "infoLocationLabel": {
+    "message": "Location",
+    "description": "Label for location value"
+  },
+
+  "infoTitleLabel": {
+    "message": "Title",
+    "description": "Label for title value"
+  },
+
+  "infoRulesetLabel": {
+    "message": "Ruleset",
+    "description": "Label for rulset value"
+  },
+
+  "preferencesButtonLabel": {
     "message": "Preferences",
-    "description": "Label for the Preferences button"
+    "description": "Label for preferences button"
   },
 
-  "labelRerunEvaluate": {
-    "message": "Rerun Evaluation",
-    "description": "Label for the Rerun button"
+  "emptyContent": {
+    "message": "&lt;empty&gt;",
+    "description": "Message indicating that DOM Sele has no text content."
   },
 
-  "labelHighlight": {
-    "message": "Highlight",
-    "description": "Label for the highlight options select box"
+  "tabIsLoading": {
+    "message": "Updating...",
+    "description": "Message indicating that content in the sidebar panel is being updated."
   },
 
-  "labelCategories": {
-    "message": "Categories",
-    "description": "Column header for summary grid"
+  "protocolNotSupported": {
+    "message": "Protocol not supported; Unable to retrieve content information.",
+    "description": "Message explaining that content script cannot be executed."
   },
 
-  "labelRuleCategories": {
-    "message": "Rule Categories",
-    "description": "Rule Categories label"
-  },
-
-  "labelGuidelines": {
-    "message": "Guidelines",
-    "description": "Column header for summary grid"
-  },
-
-  "labelNo": {
-    "message": "No",
-    "description": "used to label no violations, warnings, ..."
-  },
-
-  "labelV": {
-    "message": "V",
-    "description": "Abbreviation for violations used in summary grid as a column header"
-  },
-
-  "labelViolation": {
-    "message": "Violation",
-    "description": "Singular version of violations"
-  },
-
-  "labelViolations": {
-    "message": "Violations",
-    "description": "Plural version of violations"
-  },
-
-  "labelW": {
-    "message": "W",
-    "description": "Abbreviation for warnings used in summary grid as a column header"
-  },
-
-  "labelWarning": {
-    "message": "Warning",
-    "description": "Singular version of warnings"
-  },
-
-  "labelWarnings": {
-    "message": "Warnings",
-    "description": "Plural version of warnings"
-  },
-
-  "labelMC": {
-    "message": "MC",
-    "description": "Abbreviation for manual checks used in summary grid as a column header"
-  },
-
-  "labelManualCheck": {
-    "message": "Manual Check",
-    "description": "Singular version of manual checks"
-  },
-
-  "labelManualChecks": {
-    "message": "Manual Checks",
-    "description": "Plural version of manual checks"
-  },
-
-  "labelP": {
-    "message": "P",
-    "description": "Abbreviation for passed used in summary grid as a column header"
-  },
-
-  "labelPass": {
-    "message": "Pass",
-    "description": "Pass"
-  },
-
-  "labelPassed": {
-    "message": "Passed",
-    "description": "Passed rules"
-  },
-
-  "labelDetailsAction": {
-    "message": "Details/Action",
-    "description": "Label for details/action tab in rule panel"
-  },
-
-  "labelElementResults": {
-    "message": "Element Results",
-    "description": "Label for element results tab in rule panel"
-  },
-
-  "labelLandmarks": {
+  "landmarksLabel": {
     "message": "Landmarks",
-    "description": "Landmark rule category"
+    "description": "Label for Landmark rule category view"
   },
 
-  "labelHeadings": {
+  "headingsLabel": {
     "message": "Headings",
-    "description": "Headings rule category"
+    "description": "Label for Headings rule category view"
   },
 
-  "labelStylesContent": {
+  "stylesContentLabel": {
     "message": "Styles/Content",
-    "description": "Styles/Content rule category"
+    "description": "Label for Styles/Content rule category view"
   },
 
-  "labelImages": {
+  "imagesLabel": {
     "message": "Images",
-    "description": "Images rule category"
+    "description": "Label for Images rule category view"
   },
 
-  "labelForms": {
+  "formsLabel": {
     "message": "Forms",
-    "description": "Forms rule category"
+    "description": "Label for Forms rule category view"
   },
 
-  "labelLinks": {
+  "linksLabel": {
     "message": "Links",
-    "description": "Links rule category"
+    "description": "Label for Links rule category view"
   },
 
-  "labelTables": {
+  "tablesLabel": {
     "message": "Tables",
-    "description": "Tables rule category"
+    "description": "Label for Tables rule category view"
   },
 
-  "labelWidgetsScripts": {
+  "widgetsScriptsLabel": {
     "message": "Widgets/Scripts",
-    "description": "Widgets/Scripts rule category"
+    "description": "Label for Widgets/Scripts rule category view"
   },
 
-  "labelAudioVideo": {
+  "audioVideoLabel": {
     "message": "Audio/Video",
-    "description": "Audio/Video rule category"
+    "description": "Label for Audio/Video rule category view"
   },
 
-  "labelKeyboard": {
+  "keyboardLabel": {
     "message": "Keyboard",
-    "description": "Keyboard rule category"
+    "description": "Label for Keyboard rule category view"
   },
 
-  "labelTiming": {
+  "timingLabel": {
     "message": "Timing",
-    "description": "Timing rule category"
+    "description": "Label for Timing rule category view"
   },
 
-  "labelSiteNavigation": {
+  "siteNavigationLabel": {
     "message": "Site Navigation",
-    "description": "Site Navigation rule category"
+    "description": "Label for Site Navigation rule category view"
   },
 
-  "labelAll": {
-    "message": "All",
-    "description": "All rules"
+  "AllRulesLabel": {
+    "message": "All Rules",
+    "description": "Label for all rules view"
+  },
+
+  "summaryLabel": {
+    "message": "Summary",
+    "description": "Label for Summary view"
   },
 
   "g1.1": {
     "message": "1.1 Text Alternatives",
-    "description": "WCAG Guideline 1.1"
+    "description": "Label for WCAG Guideline 1.1 view"
   },
 
   "g1.2": {
     "message": "1.2 Time-based Media",
-    "description": "WCAG Guideline 1.2"
+    "description": "Label for WCAG Guideline 1.2 view"
   },
 
   "g1.3": {
     "message": "1.3 Adaptable",
-    "description": "WCAG Guideline 1.3"
+    "description": "Label for WCAG Guideline 1.3 view"
   },
 
   "g1.4": {
     "message": "1.4 Distinguishable",
-    "description": "WCAG Guideline 1.4"
+    "description": "Label for WCAG Guideline 1.4 view"
   },
 
   "g2.1": {
     "message": "2.1 Keyboard Accessible",
-    "description": "WCAG Guideline 2.1"
+    "description": "Label for WCAG Guideline 2.1 view"
   },
 
   "g2.2": {
     "message": "2.2 Enough Time",
-    "description": "WCAG Guideline 2.2"
+    "description": "Label for WCAG Guideline 2.2 view"
   },
 
   "g2.3": {
     "message": "2.3 Seizures",
-    "description": "WCAG Guideline 2.3"
+    "description": "Label for WCAG Guideline 2.3 view"
   },
 
   "g2.4": {
     "message": "2.4 Navigable",
-    "description": "WCAG Guideline 2.4"
+    "description": "Label for WCAG Guideline 2.4 view"
   },
 
   "g3.1": {
     "message": "3.1 Readable",
-    "description": "WCAG Guideline 3.1"
+    "description": "Label for WCAG Guideline 3.1 view"
   },
 
   "g3.2": {
     "message": "3.2 Predictable",
-    "description": "WCAG Guideline 3.2"
+    "description": "Label for WCAG Guideline 3.2 view"
   },
 
   "g3.3": {
     "message": "3.3 Input Assistance",
-    "description": "WCAG Guideline 3.3"
+    "description": "Label for WCAG Guideline 3.3 view"
   },
 
   "g4.1": {
     "message": "4.1 Compatible",
-    "description": "WCAG Guideline 4.1"
+    "description": "Label for WCAG Guideline 4.1 view"
   },
 
-  "sc1.1.1": {
-    "message": "Non-text Content",
-    "description": "WCAG Success Criteria 1.1.1"
+  "violationsAbbrev": {
+    "message": "V",
+    "description": "Abbreviation for violations"
   },
 
-  "sc1.2.1": {
-    "message": "Audio-only and Video-only (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.1"
+  "violationLabel": {
+    "message": "Violation",
+    "description": "Label for one violation results"
   },
 
-  "sc1.2.2": {
-    "message": "Captions (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.2"
+  "violationsLabel": {
+    "message": "Violations",
+    "description": "Label for violation results"
   },
 
-  "sc1.2.3": {
-    "message": "Audio Description or Media Alternative (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.3"
+  "warningsAbbrev": {
+    "message": "W",
+    "description": "Abbreviation for warnings"
   },
 
-  "sc1.2.4": {
-    "message": "Captions (Live)",
-    "description": "WCAG Success Criteria 1.2.4 "
+  "warningLabel": {
+    "message": "Warning",
+    "description": "Label for one warning results"
   },
 
-  "sc1.2.5": {
-    "message": "Audio Description (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.5"
+  "warningsLabel": {
+    "message": "Warnings",
+    "description": "Label for warning results"
   },
 
-  "sc1.2.6": {
-    "message": "Sign Language (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.6"
+  "manualChecksAbbrev": {
+    "message": "MC",
+    "description": "Abbreviation for manual checks"
   },
 
-  "sc1.2.7": {
-    "message": "Extended Audio Description (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.7"
+  "manualCheckLabel": {
+    "message": "Manual Check",
+    "description": "Label for one manual check results"
   },
 
-  "sc1.2.8": {
-    "message": "Media Alternative (Prerecorded)",
-    "description": "WCAG Success Criteria 1.2.8"
+  "manualChecksLabel": {
+    "message": "Manual Checks",
+    "description": "Label for manual check results"
   },
 
-  "sc1.2.9": {
-    "message": "Audio-only (Live)",
-    "description": "WCAG Success Criteria 1.2.9"
+  "passedAbbrev": {
+    "message": "P",
+    "description": "Abbreviation for passed"
   },
 
-  "sc1.3.1": {
-    "message": "Info and Relationships",
-    "description": "WCAG Success Criteria 1.3.1"
+  "passedLabel": {
+    "message": "Passed",
+    "description": "Label for pass results"
   },
 
-  "sc1.3.2": {
-    "message": "Meaningful Sequence",
-    "description": "WCAG Success Criteria 1.3.2"
+  "hiddenAbbrev": {
+    "message": "H",
+    "description": "Abbreviation for hidden"
   },
 
-  "sc1.3.3": {
-    "message": "Sensory Characteristics",
-    "description": "WCAG Success Criteria 1.3.3"
+  "hiddenLabel": {
+    "message": "Hidden",
+    "description": "Label for hidden results"
   },
 
-  "sc1.4.1": {
-    "message": "Use of Color",
-    "description": "WCAG Success Criteria 1.4.1"
+  "notApplicablelabel": {
+    "message": "Not Applicable",
+    "description": "Label for not applicable results"
   },
 
-  "sc1.4.2": {
-    "message": "Audio Control",
-    "description": "WCAG Success Criteria 1.4.2"
+  "ruleCategoriesLabel": {
+    "message": "Rule Categories",
+    "description": "Label for the rule category group"
   },
 
-  "sc1.4.3": {
-    "message": "Contrast (Minimum)",
-    "description": "WCAG Success Criteria 1.4.3"
+  "guidelinesLabel": {
+    "message": "Guidelines",
+    "description": "Label for the guildeine group"
   },
 
-  "sc1.4.4": {
-    "message": "Resize text",
-    "description": "WCAG Success Criteria 1.4.4"
+  "ruleLabel": {
+    "message": "Rule",
+    "description": "Rule column header for rule group view grid"
   },
 
-  "sc1.4.5": {
-    "message": "Images of Text",
-    "description": "WCAG Success Criteria 1.4.5"
+  "resultLabel": {
+    "message": "Result",
+    "description": "Result column header for rule group view grid"
   },
 
-  "sc1.4.6": {
-    "message": "Contrast (Enhanced)",
-    "description": "WCAG Success Criteria 1.4.6"
+  "successCriteriaAbbrev": {
+    "message": "SC",
+    "description": "Abbreviation for WCAG Success Criteria"
   },
 
-  "sc1.4.7": {
-    "message": "Low or No Background Audio",
-    "description": "WCAG Success Criteria 1.4.7"
+  "successCriteriaLabel": {
+    "message": "Success Criteria",
+    "description": "WCAG Success Criteria"
   },
 
-  "sc1.4.8": {
-    "message": "Visual Presentation",
-    "description": "WCAG Success Criteria 1.4.8"
+  "singleALabel": {
+    "message": "Single A",
+    "description": "WCAG Single A Success Criteria"
   },
 
-  "sc1.4.9": {
-    "message": "Images of Text (No Exception)",
-    "description": "WCAG Success Criteria 1.4.9"
+  "doubleALabel": {
+    "message": "Double A",
+    "description": "WCAG Double A Success Criteria"
   },
 
-  "sc2.1.1": {
-    "message": "Keyboard",
-    "description": "WCAG Success Criteria 2.1.1"
+  "noResultsMsg": {
+    "message": "No results",
+    "description": "Message for no results"
   },
 
-  "sc2.1.2": {
-    "message": "No Keyboard Trap",
-    "description": "WCAG Success Criteria 2.1.2"
-  },
-
-  "sc2.1.3": {
-    "message": "2.1.3Keyboard (No Exception)",
-    "description": "WCAG Success Criteria 2.1.3"
-  },
-
-  "sc2.2.1": {
-    "message": "Timing Adjustable",
-    "description": "WCAG Success Criteria 2.2.1"
-  },
-
-  "sc2.2.2": {
-    "message": "Pause, Stop, Hide",
-    "description": "WCAG Success Criteria 2.2.2"
-  },
-
-  "sc2.2.3": {
-    "message": "No Timing",
-    "description": "WCAG Success Criteria 2.2.3"
-  },
-
-  "sc2.2.4": {
-    "message": "Interruptions",
-    "description": "WCAG Success Criteria 2.2.4"
-  },
-
-  "sc2.2.5": {
-    "message": "Re-authenticating",
-    "description": "WCAG Success Criteria 2.2.5"
-  },
-
-  "sc2.3.1": {
-    "message": "Three Flashes or Below Threshold",
-    "description": "WCAG Success Criteria 2.3.1"
-  },
-
-  "sc2.3.2": {
-    "message": "Three Flashes",
-    "description": "WCAG Success Criteria 2.3.2"
-  },
-
-  "sc2.4.1": {
-    "message": "Bypass Blocks",
-    "description": "WCAG Success Criteria 2.4.1"
-  },
-
-  "sc2.4.2 ": {
-    "message": "Page Titled",
-    "description": "WCAG Success Criteria 2.4.2"
-  },
-
-  "sc2.4.3": {
-    "message": "Focus Order",
-    "description": "WCAG Success Criteria 2.4.3"
-  },
-
-  "sc2.4.4": {
-    "message": "Link Purpose (In Context)",
-    "description": "WCAG Success Criteria 2.4.4"
-  },
-
-  "sc2.4.5": {
-    "message": "Multiple Ways",
-    "description": "WCAG Success Criteria 2.4.5"
-  },
-
-  "sc2.4.6": {
-    "message": "Headings and Labels",
-    "description": "WCAG Success Criteria 2.4.6"
-  },
-
-  "sc2.4.7": {
-    "message": "Focus Visible",
-    "description": "WCAG Success Criteria 2.4.7"
-  },
-
-  "sc2.4.8 ": {
-    "message": "Location",
-    "description": "WCAG Success Criteria 2.4.8 "
-  },
-
-  "sc2.4.9": {
-    "message": "Link Purpose (Link Only)",
-    "description": "WCAG Success Criteria 2.4.9"
-  },
-
-  "sc2.4.10": {
-    "message": "2.4.10 Section Headings",
-    "description": "WCAG Success Criteria 2.4.10"
-  },
-
-  "sc3.1.1": {
-    "message": "Language of Page",
-    "description": "WCAG Success Criteria 3.1.1"
-  },
-
-  "sc3.1.2": {
-    "message": "Language of Parts",
-    "description": "WCAG Success Criteria 3.1.2"
-  },
-
-  "sc3.1.3 ": {
-    "message": "Unusual Words",
-    "description": "WCAG Success Criteria 3.1.3"
-  },
-
-  "sc3.1.4": {
-    "message": "Abbreviations",
-    "description": "WCAG Success Criteria 3.1.4"
-  },
-
-  "sc3.1.5": {
-    "message": "Reading Level",
-    "description": "WCAG Success Criteria 3.1.5"
-  },
-
-  "sc3.1.6": {
-    "message": "Pronunciation",
-    "description": "WCAG Success Criteria 3.1.6"
-  },
-
-  "sc3.2.1": {
-    "message": "On Focus",
-    "description": "WCAG Success Criteria 3.2.1"
-  },
-
-  "sc3.2.2": {
-    "message": "On Input",
-    "description": "WCAG Success Criteria 3.2.2"
-  },
-
-  "sc3.2.3": {
-    "message": "Consistent Navigation",
-    "description": "WCAG Success Criteria 3.2.3"
-  },
-
-  "sc3.2.4": {
-    "message": "Consistent Identification",
-    "description": "WCAG Success Criteria 3.2.4"
-  },
-
-  "sc3.2.5": {
-    "message": "Change on Request",
-    "description": "WCAG Success Criteria 3.2.5"
-  },
-
-  "sc3.3.1": {
-    "message": "Error Identification",
-    "description": "WCAG Success Criteria 3.3.1"
-  },
-
-  "sc3.3.2": {
-    "message": "Labels or Instructions",
-    "description": "WCAG Success Criteria 3.3.2"
-  },
-
-  "sc3.3.3": {
-    "message": "Error Suggestion",
-    "description": "WCAG Success Criteria 3.3.3"
-  },
-
-  "sc3.3.4": {
-    "message": "Error Prevention (Legal, Financial, Data)",
-    "description": "WCAG Success Criteria 3.3.4"
-  },
-
-  "sc3.3.5": {
-    "message": "Help",
-    "description": "WCAG Success Criteria 3.3.5"
-  },
-
-  "sc3.3.6": {
-    "message": "Error Prevention (All)",
-    "description": "WCAG Success Criteria 3.3.6"
-  },
-
-  "sc4.1.1": {
-    "message": "Parsing",
-    "description": "WCAG Success Criteria 4.1.1"
-  },
-
-  "sc4.1.2": {
-    "message": "Name, Role, Value",
-    "description": "WCAG Success Criteria 4.1.2"
-  },
-
-  "labelLevelA": {
-    "message": "Level Single A",
-    "description": "WCAG Success Criteria Level A"
-  },
-
-  "labelLevelAA": {
-    "message": "Level Double A",
-    "description": "WCAG Success Criteria Level AA"
-  },
-
-  "labelLevelAAA": {
-    "message": "Level Triple A",
-    "description": "WCAG Success Criteria Level AAA"
-  },
-
-  "labelRequired": {
-    "message": "Required Rule",
-    "description": "Required rule"
-  },
-
-  "labelRecommended": {
-    "message": "Recommended Rule",
-    "description": "Recommended rule"
-  },
-
-  "labelPosition": {
-    "message": "Position",
-    "description": "Position of element in document, used in rule result view"
-  },
-
-  "noGroupResults": {
+  "noViolationsWarningsMCResultsMsg": {
     "message": "No violations, warnings or manual check results",
-    "description": "No rule group results"
+    "description": "Message when there are no violation, warning or manual check results"
   },
 
-  "prefsTitle": {
-    "message": "Preferences",
-    "description": "Preferences: title"
+  "levelLabel": {
+    "message": "Level",
+    "description": "Level column header for rule group view grid"
   },
 
-
-  "prefsGeneralHeading": {
-    "message": "General",
-    "description": "Preferences: General Section Heading"
+  "requiredAbbrev": {
+    "message": "Req",
+    "description": "Abbreviation for required column header for rule group view grid"
   },
 
-
-  "prefsViewsMenuLegend": {
-    "message": "'Views' Menu",
-    "description": "Preferences: View Menu Section"
+  "requiredLabel": {
+    "message": "Required",
+    "description": "Required column header for rule group view grid"
   },
 
-  "prefsIncludeGuidelinesLabel": {
-    "message": "Include WCAG Guidelines",
-    "description": "Preferences: label for include WCAG Guidelines in view menu"
+  "requiredValue": {
+    "message": "Y",
+    "description": "Value for required column in rule group grid"
   },
 
-  "prefsRerunEvaluationLegend": {
-    "message": "'Rerun Evaluation' Button",
-    "description": "Preferences: 'Rerun Evaluation' Button"
-  },
-
-  "prefsNoDelayLabel": {
-    "message": "Rerun with no delay",
-    "description": "Preferences: Rerun with no delay label"
-  },
-
-  "prefsPromptForDelayLabel": {
-    "message": "Prompt for delay setting",
-    "description": "Preferences: Prompt for delay setting label"
-  },
-
-
-  "prefsEvaluationHeading": {
-    "message": "Evaluation",
-    "description": "Preferences: Evaluation Section Heading"
-  },
-
-
-  "prefsRulesetLegend": {
-    "message": "Ruleset",
-    "description": "Preferences: Ruleset"
-  },
-
-  "prefsAriaStrictLabel": {
-    "message": "HTML5 and ARIA Techniques",
-    "description": "Preferences: HTML5 and ARIA Techniques"
-  },
-
-  "prefsAriaTransLabel": {
-    "message": "HTML4 Legacy Techniques",
-    "description": "Preferences: HTML4 Legacy Techniques"
-  },
-
-
-  "prefsRuleResultsLegend": {
+  "ruleResultGridLabel": {
     "message": "Rule Results",
-    "description": "Preferences: Rule Results"
+    "description": "Label for rule results grid"
   },
 
-  "prefsIncludePassAndNALabel": {
+  "ruleSelectedLabel": {
+    "message": "Selected Rule",
+    "description": "Selected rule label for rule information"
+  },
+
+  "copyLabel": {
+    "message": "Copy",
+    "description": "label for copy button"
+  },
+
+  "copySuccessLabel": {
+    "message": "Copied!",
+    "description": "label when copy is successful for the copy button"
+  },
+
+  "copyFailedLabel": {
+    "message": "Copy Failed!",
+    "description": "label when copy fails for the copy button"
+  },
+
+  "copyRuleInfoDesc": {
+    "message": "Copy rule information to clipboard",
+    "description": "Description of button to copy rule information"
+  },
+
+  "copyElemInfoDesc": {
+    "message": "Copy element details to clipboard",
+    "description": "Description of button to copy element information"
+  },
+
+  "ruleIdLabel": {
+    "message": "Rule ID",
+    "description": "Rule ID label for rule information"
+  },
+
+  "ruleSummaryLabel": {
+    "message": "Summary",
+    "description": "Summary section label for rule information"
+  },
+
+  "ruleSummaryLabel": {
+    "message": "Summary",
+    "description": "Summary section label for rule information"
+  },
+
+  "ruleDefinitionLabel": {
+    "message": "Definition",
+    "description": "Definition section label for rule information"
+  },
+
+  "ruleActionLabel": {
+    "message": "Action",
+    "description": "Action section label for rule information"
+  },
+
+  "rulePurposeLabel": {
+    "message": "Purpose",
+    "description": "Purpose section label for rule information"
+  },
+
+  "ruleTechniquesLabel": {
+    "message": "Techniques",
+    "description": "Techniques section label for rule information"
+  },
+
+  "ruleTargetLabel": {
+    "message": "Target Elements",
+    "description": "Target elements section label for rule information"
+  },
+
+  "ruleComplianceLabel": {
+    "message": "Compliance",
+    "description": "Compliance section label for rule information"
+  },
+
+  "ruleSCLabel": {
+    "message": "WCAG Success Criteria",
+    "description": "WCAG Success Criteria section label for rule information"
+  },
+
+  "ruleAdditionalLabel": {
+    "message": "Additional Information",
+    "description": "Additional information section label for rule information"
+  },
+
+  "detailsActionLabel": {
+    "message": "Details/Action",
+    "description": "Details/action tab label in rule results view"
+  },
+
+  "elementResultsLabel": {
+    "message": "Element Results",
+    "description": "Element results tab label in rule results view"
+  },
+
+  "elementLabel": {
+    "message": "Element",
+    "description": "Element column label in grid for rule results view"
+  },
+
+  "positionAbbrev": {
+    "message": "Pos",
+    "description": "Position column abbreviation in grid for rule results view"
+  },
+
+  "positionLabel": {
+    "message": "Position",
+    "description": "Position column label in grid for rule results view"
+  },
+
+  "domPositionLabel": {
+    "message": ", index of dom position",
+    "description": "Element DOM position label in grid for rule results view"
+  },
+
+  "actionLabel": {
+    "message": "Action",
+    "description": "Action column label in grid for rule results view"
+  },
+
+  "highlightLabel": {
+    "message": "Highlight",
+    "description": "Label text for the highlight select box"
+  },
+
+  "highlightOptionNone": {
+    "message": "None",
+    "description": "None option in the highlight select box"
+  },
+
+  "highlightOptionSelected": {
+    "message": "Selected",
+    "description": "Selected option in the highlight select box"
+  },
+
+  "highlightOptionVW": {
+    "message": "V/W",
+    "description": "Violations/Warning option in the highlight select box"
+  },
+
+  "highlightOptionAll": {
+    "message": "All",
+    "description": "All option in the highlight select box"
+  },
+
+  "elementGridLabel": {
+    "message": "Element Results",
+    "description": "Label for element results grid"
+  },
+
+  "elementSelectedLabel": {
+    "message": "Selected Element",
+    "description": "Selected element details label for rule information"
+  },
+
+  "viewsMenuButtonLabel": {
+    "message": "Views",
+    "description": "Label for button in views menu button"
+  },
+
+  "exportButtonLabel": {
+    "message": "Export",
+    "description": "Label for rerun export button in the footer of the main panel"
+  },
+
+  "exportDialogTitle": {
+    "message": "Export Evaluation Options",
+    "description": "Title for export evalaution options dialog box"
+  },
+
+  "rerunEvalButtonLabel": {
+    "message": "Rerun Evaluation",
+    "description": "Label for rerun evalaution button in the footer of the main panel"
+  },
+
+  "rerunEvalDialogTitle": {
+    "message": "Rerun Evaluation: Specify Delay",
+    "description": "Title for rerun evalaution dialog box"
+  },
+
+  "rerunEvalSelectLabel": {
+    "message": "Rerun evaluation in ",
+    "description": "Label for select input in rerun evalaution dialog box"
+  },
+
+  "rerunEvalPromptForDelayLabel": {
+    "message": "After this evaluation, stop prompting for delay setting.",
+    "description": "Label for checkbox input in rerun evalaution dialog box"
+  },
+
+  "cancelButtonLabel": {
+    "message": "Cancel",
+    "description": "Label for cancel button in rerun evalaution dialog box"
+  },
+
+  "okButtonLabel": {
+    "message": "OK",
+    "description": "Label for OK button in rerun evalaution dialog box"
+  },
+
+  "optionsTitle": {
+    "message": "AInspector WCAG Options",
+    "description": "Title for the options page"
+  },
+
+  "optionsViewsMenuLegend": {
+    "message": "'Views' Menu",
+    "description": "Legend for view menu in the options page"
+  },
+
+  "optionsInclWcagGlLabel": {
+    "message": "Include WCAG Guidelines",
+    "description": "Label for checkbox to include WCAG Guidleines in views menu"
+  },
+
+  "optionsRerunEvaluationLegend": {
+    "message": "'Rerun Evaluation' Button",
+    "description": "Legend for rerun evaluation section in the options page"
+  },
+
+  "optionsNoDelayLabel": {
+    "message": "Rerun with no delay",
+    "description": "Label for rerun with no delay checkbox in the options page"
+  },
+
+  "optionsPromptForDelayLabel": {
+    "message": "Prompt with delay setting",
+    "description": "Label for rerun with prompted delay checkbox in the options page"
+  },
+
+  "optionsEvaluationHeading": {
+    "message": "Evaluation",
+    "description": "Heading for the evaluation section of the options page"
+  },
+
+  "optionsRulesetLegend": {
+    "message": "Ruleset",
+    "description": "Legend for ruleset radio button group in the options page"
+  },
+
+  "optionsRulesetStrictLabel": {
+    "message": "HTML5 and ARIA Ruleset",
+    "description": "Label for strict ruleset checkbox on the options page"
+  },
+
+  "optionsRulesetTransLabel": {
+    "message": "HTML4 Legacy Techniques",
+    "description": "Label for transitional ruleset checkbox on the options page"
+  },
+
+  "optionsRuleResultsLegend": {
+    "message": "Rule Results",
+    "description": "Legend for the rule results section on the options page"
+  },
+
+  "optionsInclPassNaLabel": {
     "message": "Include 'Pass' and 'N/A' results",
-    "description": "Preferences: Include 'Pass' and 'N/A' results"
+    "description": "Label for checkbox to include pass and n/a results in the options page"
   },
 
-  "prefsDefault": {
+  "optionsResetDefaults": {
     "message": "Reset Defaults",
-    "description": "Preferences: Reset defauls button"
+    "description": "Label for reset defaults in the options page"
+  },
+
+  "optionsExportHeading": {
+    "message": "Export Evaluation Options",
+    "description": "Label for file name legend in the export section of the options page"
+  },
+
+  "optionsExportPrompt": {
+    "message": "Prompt for export options",
+    "description": "Prompt for export options when the export button is pressed"
+  },
+
+  "optionsExportFormatLegend": {
+    "message": "Export File Format",
+    "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
+  },
+
+  "optionsExportCSVLabel": {
+    "message": "CSV (e.g. spreadsheets)",
+    "description": "Label for the CSV radio button option in the export section of the options page"
+  },
+
+  "optionsExportJSONLabel": {
+    "message": "JSON (e.g. databases and applications)",
+    "description": "Label for the JSON radio button option in the export section of the options page"
+  },
+
+  "optionsExportPrefixLabel": {
+    "message": "Prefix for export file name (up to 16 character long)",
+    "description": "Label for prefix string input in the export section of the options page"
+  },
+
+  "optionsExportPrefixDesc": {
+    "message": "Can be used to customize export file names for specific projects.",
+    "description": "Description of pottenial use of the prefix string in the export section of the options page"
+  },
+
+  "optionsExportIncludeDate": {
+    "message": "Include date and time.",
+    "description": "Label for including date and time in the export export file name"
+  },
+
+  "optionsExportIncludeDateDesc": {
+    "message": "(e.g. yyyy-mm-dd-XXh-YYm-ZZs)",
+    "description": "Additional information on format for including date and time in the export export file name"
+  },
+
+  "optionsExportPromptForOptions": {
+    "message": "Do not prompt for export options.",
+    "description": "Label for disable prompting for export export file name options when activating the export button."
+  },
+
+  "elementResultAction": {
+    "message": "Action",
+    "description": "Action heading in element results view."
+  },
+
+  "elementResultTagName": {
+    "message": "Tag Name",
+    "description": "Tag name heading in element results view."
+  },
+
+  "elementResultAccName": {
+    "message": "Accessible Name",
+    "description": "Accessible name heading in element results view."
+  },
+
+  "elementResultAccNameRequired": {
+    "message": "(Required)",
+    "description": "Required for accessible name heading in element results view."
+  },
+
+  "elementResultAccNameProhibited": {
+    "message": "(Prohibited)",
+    "description": "Prohibited for accessible name heading in element results view."
+  },
+
+  "elementResultAccDesc": {
+    "message": "Accessible Description",
+    "description": "Accessible name heading in element results view."
+  },
+
+  "elementResultErrorDesc": {
+    "message": "Error Description",
+    "description": "Error Description heading in element results view."
+  },
+
+  "elementResultCCR": {
+    "message": "Color Contrast Ratio",
+    "description": "Color Contrast Ratio heading in element results view."
+  },
+
+  "elementResultVisibility": {
+    "message": "Visibility",
+    "description": "Visibility heading in element results view."
+  },
+
+  "elementResultAttributeHeader": {
+    "message": "Attribute",
+    "description": "Column header for attribute results in element results view."
+  },
+
+  "elementResultValueHeader": {
+    "message": "Value",
+    "description": "Column header for attribute results in element results view."
+  },
+
+  "shortcutDefaultBack": {
+    "message": "Backspace",
+    "description": "Default shortcut key for activating the Back button."
+  },
+
+  "shortcutDefaultCopy": {
+    "message": "c",
+    "description": "Default shortcut key for activating the copy rule or element information."
+  },
+
+  "shortcutDefaultViews": {
+    "message": "v",
+    "description": "Default shortcut key for activating the Views menu."
+  },
+
+  "shortcutDefaultExport": {
+    "message": "e",
+    "description": "Default shortcut key for activating the Export button."
+  },
+
+  "shortcutDefaultRerun": {
+    "message": "r",
+    "description": "Default shortcut key for activating the Rerun Evaluation button."
   }
 
 }

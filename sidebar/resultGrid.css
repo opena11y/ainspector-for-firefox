@@ -1,0 +1,177 @@
+/* resultGrid.css */
+
+.sr-only {
+  position: absolute;
+  top: -30em;
+}
+
+.message {
+  font-style: italic;
+}
+
+table {
+  width: 100%;
+  cell-spacing: 0;
+  border-collapse: collapse;
+}
+
+table thead,
+table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table.group tbody,
+table.rule tbody {
+  display: block;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+table.group,
+table.rule {
+  border: 1px solid #aaa;
+}
+
+table.summary {
+  border-left: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+
+table tbody tr:nth-child(even) {
+  background: #eee;
+}
+
+table thead th {
+  border-bottom: 1px solid #ddd;
+}
+
+table thead th span.icon {
+  display:  none;
+}
+
+table thead th[aria-sort] span.icon {
+  display:  inline;
+  padding-left: 2px;
+}
+
+table tr th:first-child,
+table tr td:first-child {
+  padding-left: 8px;
+}
+
+table tr[aria-selected] {
+  outline-offset:  -2px;
+  outline: currentColor 2px dotted;
+}
+
+table th,
+table td {
+  padding-top:  4px;
+  padding-bottom:  4px;
+}
+
+
+table th.summ,
+table td.summ {
+  width: 10%;
+  padding-right: 5%;
+}
+
+table td.text,
+table th.text {
+  text-align: left;
+}
+
+table td.num,
+table th.num {
+  text-align: right;
+}
+
+table th.sc,
+table td.sc,
+table th.level,
+table td.level,
+table th.required,
+table td.required,
+table th.result,
+table td.result {
+  width: 50px;
+  text-align: center;
+}
+
+table th.rule,
+table td.rule {
+  text-align: left;
+}
+
+table td.rule {
+  white-space:  nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table th.position,
+table td.position {
+  width: 9%;
+  text-align: right;
+  padding-right: 8px;
+}
+
+table th.element-info,
+table td.element-info {
+  width: 20%;
+  padding-left: 4px;
+  text-align: left;
+}
+
+table td.element-info {
+  white-space:  nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+}
+
+table td.action {
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+}
+
+table td.message {
+  font-style: italic;
+}
+
+/* Result brackground colors */
+
+table td.not-applicable {
+  background-color: transparent;
+}
+
+table td.manual-check {
+  background-color: hsl(198, 52%, 81%);
+}
+
+table td.passed {
+  background-color: hsl(90, 67%, 69%);
+}
+
+table td.violation {
+  background-color: hsl(0, 100%, 84%);
+}
+
+table td.warning {
+  background-color: hsl(49, 100%, 79%);
+}
+
+table th:focus,
+table td:focus,
+table tr:focus,
+table.show-selection tr:focus {
+  outline-offset:  -2px;
+  outline: currentColor 2px solid;
+}
+
+

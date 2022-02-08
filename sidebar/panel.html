@@ -3,296 +3,59 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/panel.css"/>
-    <link rel="stylesheet" href="css/tabs.css"/>
-    <link rel="stylesheet" href="css/menuButton.css"/>
-    <link rel="stylesheet" href="css/delayDialog.css"/>
+    <link rel="stylesheet" href="panel.css"/>
+    <link rel="stylesheet" href="middleSection.css"/>
   </head>
 
 <body>
+  <header>
+    <table role="none">
+      <tr>
+        <td class="title">
+          <h1 id="view-title" aria-live="polite"></h1>
+        </td>
+        <td class="buttons" align="right">
+          <button id="back-button"></button>
+          <views-menu-button id="views-menu-button"></views-menu-button>
+        </td>
+      </tr>
+    </table>
+  </header>
 
-  <div id="ainspector_results">
-    <header>
-      <h1 id="title">Summary</h1>
-      <div class="right">
-        <button id="back">Back</button>
-        <button id="view_options_button" aria-haspopup="true" aria-controls="view_options_menu">Views</button>
-        <ul id="view_options_menu"
-            role="menu"
-            aria-label="View Options Menu">
-        </ul>
-      </div>
-    </header>
-
-    <main id="id_main">
-
-      <div id="summary_panel">
-
-        <table class="summary">
-          <tr>
-            <th>V</th>
-            <th>W</th>
-            <th>MC</th>
-            <th>P</th>
-          </tr>
-
-          <tr>
-            <td id="summary_violations">-</td>
-            <td id="summary_warnings">-</td>
-            <td id="summary_manual_checks">-</td>
-            <td id="summary_passed">-</td>
-          </tr>
-        </table>
-
-        <ul id="summary_tablist" role="tablist" aria-label="Summary View Options">
-          <li id="rc_tab" tabindex="-1" role="tab" aria-controls="rc_tabpanel" aria-selected="true">Rule Categories</li>
-          <li id="gl_tab" tabindex="-1" role="tab" aria-controls="gl_tabpanel">Guidelines</li>
-        </ul>
-
-        <div id="rc_tabpanel" role="tabpanel" aria-labelledby="rc_tab">
-          <table id="rc_grid" class="grid categories">
-            <thead>
-              <tr>
-                <th class="text category">Category</th>
-                <th class="num result">V</th>
-                <th class="num result">W</th>
-                <th class="num result">MC</th>
-                <th class="num result">P</th>
-              </tr>
-            </thead>
-            <tbody id="rc_results">
-            </tbody>
-          </table>
-        </div>
-
-        <div id="gl_tabpanel" role="tabpanel" aria-labelledby="gl_tab">
-          <table id="gl_grid" class="grid categories">
-            <thead>
-              <tr>
-                <th class="text category">WCAG Guideline</th>
-                <th class="num result">V</th>
-                <th class="num result">W</th>
-                <th class="num result">MC</th>
-                <th class="num result">P</th>
-              </tr>
-            </thead>
-            <tbody id="gl_results">
-            </tbody>
-          </table>
-        </div>
-
-        <div class="selected_group">
-          <div class="right">
-            <button id="details_group" disabled>Details <span aria-hidden="true" stlye="padding-left: 0.25em">&#10148;</span></button>
-          </div>
-        </div>
-
-      </div>
-
-      <div id="group_panel" style="display: none">
-
-        <table class="summary">
-          <tr>
-            <th>V</th>
-            <th>W</th>
-            <th>MC</th>
-            <th>P</th>
-          </tr>
-
-          <tr>
-            <td id="group_violations">-</td>
-            <td id="group_warnings">-</td>
-            <td id="group_manual_checks">-</td>
-            <td id="group_passed">-</td>
-          </tr>
-        </table>
-
-        <table id="group_grid" role="grid" class="grid rules">
-          <thead>
-            <tr>
-              <th class="text rule">Rule</th>
-              <th class="value result">Result</th>
-              <th class="value sc" title="WCAG Success Criteria">SC</th>
-              <th class="value level" title="WCAG Level">Level</th>
-              <th class="value required" title="Required">Req</th>
-            </tr>
-          </thead>
-          <tbody id="rule_results">
-          </tbody>
-        </table>
-
-        <div class="selected_rule">
-          <h2>Selected Rule</h2>
-          <div class="right">
-            <button id="details_rule">Details <span aria-hidden="true" stlye="padding-left: 0.25em">&#10148;</span></button>
-          </div>
-        </div>
-
-        <div id="rr_details_action" class="details_action">
-
-          <div id="rr_none_selected">
-            nothing selected
-          </div>
-
-          <div id="rr_rule_selected" style="display: none">
-            <h3>Definition</h3>
-            <p id="rr_definition">-</p>
-
-            <h3>Action</h3>
-            <p id="rr_action">-</p>
-
-            <h3>Purpose</h3>
-            <p id="rr_purpose">-</p>
-
-            <h3>Techniques</h3>
-            <p id="rr_techniques">-</p>
-
-            <h3>Target Elements</h3>
-            <p id="rr_target_elements">-</p>
-
-            <h3>Compliance</h3>
-            <p id="rr_compliance">WCAG 2.0 Level A; Required | Recommended</p>
-
-            <h3>WCAG Success Criteria</h3>
-            <ul id="rr_wcag">-</ul>
-
-            <h3>Additional Information</h3>
-            <p id="rr_information">-</p>
-          </div>
-        </div>
-
-      </div>
-
-      <div id="rule_panel" style="display: none">
-
-        <div id="rule_panel_rule">
-          <div id="rule_panel_summary">No summary</div>
-          <div id="rule_panel_result" class="right">-</div>
-        </div>
-
-        <ul id="rule_tablist" role="tablist" aria-label="Rule Result View Options">
-          <li id="da_tab" tabindex="-1" role="tab" aria-controls="da_tabpanel">Details/Action</li>
-          <li id="er_tab" tabindex="-1" role="tab" aria-controls="er_tabpanel" aria-selected="true">Element Results</li>
-        </ul>
-
-        <div id="da_tabpanel" role="tabpanel" aria-labelledby="da_tab">
-
-          <div class="details_action">
-              <h3>Definition</h3>
-              <p id="da_definition">-</p>
-
-              <h3>Action</h3>
-              <p id="da_action">-</p>
-
-              <h3>Purpose</h3>
-              <p id="da_purpose">-</p>
-
-              <h3>Techniques</h3>
-              <p id="da_techniques">-</p>
-
-              <h3>Target Elements</h3>
-              <p id="da_target_elements">-</p>
-
-              <h3>Compliance</h3>
-              <p id="da_compliance">WCAG 2.0 Level A; Required | Recommended</p>
-
-              <h3>WCAG Success Criteria</h3>
-              <p id="da_wcag">-</p>
-
-              <h3>Additional Information</h3>
-              <p id="da_information">-</p>
-
-          </div>
-        </div>
-
-        <div id="er_tabpanel" role="tabpanel" aria-labelledby="er_tab">
-
-          <table id="rule_grid" class="grid elements" style="width: 100%">
-            <thead>
-              <tr>
-                <th class="text element" >Element</th>
-                <th class="value result" >Result</th>
-                <th class="num position" >Pos.</th>
-                <th class="text action" >Action</th>
-              </tr>
-            </thead>
-            <tbody id="element_results">
-            </tbody>
-          </table>
-        </div>
-
-        <div id="id_highlight_section" class="selected_group">
-          <div class="right">
-            <label for="highlight" id="highlight_label">Highlight</label>
-            <select id="highlight">
-              <option value="none">None</option>
-              <option value="selected">Selected</option>
-              <option value="vw">V/W</option>
-              <option value="all">All</option>
-            </select>
-          </div>
-        </div>
-
-      </div>
-
-
-    </main>
-
-    <footer id="id_footer" style="width: 96%">
-      <div class="info">Ruleset: <span id="ruleset"></span></div>
-      <div class="info">Location: <span id="location"></span></div>
-      <div>
-        <button id="preferences">Preferences</button>
-        <div class="right">
-          <button id="evaluate">Rerun evaluation</button>
-        </div>
-      </div>
-    </footer>
-  </div>
-
-
-  <div id="dialog_backdrop">
-  </div>
-
-  <div tabindex="-1" id="delay_dialog" role="dialog" aria-labelledby="delay_dialog_title" style="display: none">
-    <h2 id="delay_dialog_title">Rerun Evaluation: Specify Delay</h2>
-
-    <label for="delay_dialog_select_delay">
-      Rerun evaluation in&nbsp;
-      <select id="delay_dialog_select_delay">
-        <option value="5" selected> 5 sec.</option>
-        <option value="10">10 sec.</option>
-        <option value="20">20 sec.</option>
-        <option value="40">40 sec.</option>
-        <option value="60"> 1 min.</option>
-      </select>
-    </label>
-
-    <label id="delay_dialog_only_once_label">
-      <input type="checkbox" id="delay_dialog_only_once"/>
-      <div class="indent">After this evaluation, stop prompting for delay setting.</div>
-    </label>
-
-    <div id="delay_dialog_buttons">
-      <button id="delay_dialog_cancel">Cancel</button>
-      <button id="delay_dialog_ok">Ok</button>
+  <main>
+    <div id="summary" class="view">
     </div>
-  </div>
+    <div id="rule-group" class="view">
+    </div>
+    <div id="rule-result" class="view">
+    </div>
+  </main>
 
-  <script src="js/utils.js"></script>
-  <script src="js/tabs.js"></script>
-  <script src="js/tablist.js"></script>
-  <script src="js/menu.js"></script>
-  <script src="js/menuItem.js"></script>
-  <script src="js/grid.js"></script>
+  <footer>
+    <div id="info-title" class="info">
+      <span class="label"></span>
+      <span class="value" aria-live="polite"></span>
+    </div>
 
-  <script src="js/options.js"></script>
-  <script src="js/summaryPanel.js"></script>
-  <script src="js/groupPanel.js"></script>
-  <script src="js/rulePanel.js"></script>
-  <script src="js/panel.js"></script>
-  <script src="js/viewMenubutton.js"></script>
-  <script src="js/delayDialog.js"></script>
+    <div id="info-location" class="info">
+      <span class="label"></span>
+      <span class="value"></span>
+    </div>
+
+    <div id="info-ruleset" class="info">
+      <span class="label"></span>
+      <span class="value"></span>
+    </div>
+
+    <div class="footer-buttons">
+      <export-button></export-button>
+      <rerun-evaluation-button></rerun-evaluation-button>
+      <button id="preferences-button"></button>
+    </div>
+
+  </footer>
+
+  <script src="panel.js" type="module"></script>
 </body>
 
 </html>

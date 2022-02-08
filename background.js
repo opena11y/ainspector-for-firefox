@@ -1,49 +1,35 @@
+/*
+*   background.js
+*/
+
+browser.browserAction.onClicked.addListener(function (evt) {
+  browser.sidebarAction.toggle();
+});
+
+/*
+* The following code checks to see if the sidebar has closed
+* If it is closed it semds a message to the content script
+* to remove any element highlighting.  It only needs to
+* remove the highlighting once.
+*/
+
 var sidebarOpen = false;
 var previousSidebarOpen = false;
-
-function toggleSidebar() {
-
-  if (sidebarOpen) {
-    browser.sidebarAction.close();
-  }
-  else {
-    browser.sidebarAction.open();
-  }
-
-}
-
-browser.browserAction.onClicked.addListener(toggleSidebar);
-
-browser.contextMenus.create({
-  id: "ainspector",
-  title: browser.i18n.getMessage("extensionName"),
-  contexts: ["all"],
-});
-
-browser.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "ainspector") {
-    toggleSidebar();
-  }
-});
-
+var messageArgs = {};
 
 setInterval( function () {
-
   browser.sidebarAction.isOpen({}).then(result => {
     previousSidebarOpen = sidebarOpen;
     sidebarOpen = result;
 
+    // Only remove the highlighiting once
     if (!sidebarOpen && (sidebarOpen !== previousSidebarOpen)) {
       removeHighlight();
     }
   });
-
 }, 500);
 
-var messageArgs = {};
-
 function sendMessageToTabs(tabs) {
-
   for (let tab of tabs) {
     browser.tabs.sendMessage(
       tab.id,
@@ -53,7 +39,6 @@ function sendMessageToTabs(tabs) {
 };
 
 function removeHighlight() {
-
   messageArgs.option    = 'highlight';
   messageArgs.highlight = 'none';
 
@@ -63,5 +48,6 @@ function removeHighlight() {
   }).then(sendMessageToTabs).catch(onError);
 };
 
-
-
+function onError(err) {
+  console.error('[BACKGROUND][ERROR]: ' + err);
+}

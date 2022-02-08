@@ -1,0 +1,156 @@
+body {
+  margin: 0;
+  font: caption;
+  background-color: white;
+  overflow-y: scroll;
+  overflow-x:  hidden;
+  width:  100%;
+}
+
+header {
+  margin: 0;
+  margin-bottom: 1px;
+  padding: 0.25em;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 10;
+  width:  100%;
+  border-bottom: 1px #aaa solid;
+}
+
+header table {
+  margin:  0;
+  padding:  0;
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+header table td.title {
+  width: 65%;
+  max-width: 250px;
+  min-width: 100px;
+}
+
+header h1#view-title {
+  font-size: 1.35em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 4px;
+}
+
+header table td.buttons {
+  width: 35%;
+  min-width: 150px;
+}
+
+header h1 {
+  margin:  0;
+  padding: 0;
+  font-size: 175%;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+header .right {
+  padding-right: 1em;
+  background-color: #ffffff;
+}
+
+header button#back-button:before {
+  content: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' class='down' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolygon points='1 6, 11 1, 11 11' fill='currentColor' /%3E%3C/svg%3E");
+  position: relative;
+  top:  1px;
+  padding-right:  4px;
+}
+
+main {
+  margin:  0;
+  padding: 0.25em;
+}
+
+main .view {
+  display:  none;
+}
+
+main .view.show {
+  display:  block;
+}
+
+main h2#grid-label {
+  margin: 0;
+  margin-top: 1em;
+  margin-bottom: 4px;
+  margin-left: 4px;
+  padding: 0;
+  font-size: 110%;
+}
+
+footer {
+  margin: 0;
+  margin-top: 1em;
+  padding: 0.25em;
+  padding-bottom: 1em;
+  position: absolute;
+  width: 100%;
+  user-select: text;
+}
+
+footer .info {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-columns: 70px 1fr;
+  grid-template-rows: auto;
+  font-size: 110%;
+}
+
+footer .info .label {
+  grid-column: 1;
+  text-align: right;
+  padding-right:  0.25em;
+  font-weight:  bold;
+}
+
+footer .info .label:after {
+  content: ':';
+}
+
+footer .info .value {
+  display:  inline-block;
+  padding-right: 1em;
+  grid-column: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+footer .footer-buttons {
+  margin-top:  0.5em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+  row-gap: 0.5rem;
+}
+
+footer button {
+  text-align: center;
+  width: 8em;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+
+

@@ -1,0 +1,98 @@
+/* options.css */
+
+body {
+  margin: 1em;
+  padding: 4px;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: 550;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.checkbox {
+  margin-left: 12px;
+}
+
+fieldset {
+  margin: 0;
+  margin-top: 1em;
+  border: none;
+}
+
+legend {
+  font-size: 110%;
+  font-weight: bold;
+}
+
+label {
+  display:  block;
+  margin: 0.25em;
+}
+
+label[for] {
+  margin-left: 0.5em;
+  margin-top: 1em;
+}
+
+input[type="text"] {
+  margin:  0;
+  padding: 0;
+  margin-left:  0.5em;
+}
+
+.desc {
+  margin:  0;
+  padding: 0;
+  margin-left:  0.5em;
+  margin-bottom: 1em;
+  font-style: italic;
+}
+
+.note {
+  margin:  0;
+  padding: 0;
+  font-style: italic;
+}
+
+.note span {
+  font-weight: bold;
+}
+
+p.note {
+  margin:  0.5em;
+  margin-left:  0.75em;
+  padding: 0;
+}
+
+button[type=reset] {
+  margin-top:  2em;
+}
+
+table.shortcuts  {
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+  margin-left: 5px;
+}
+
+table.shortcuts th {
+  text-align:  left;
+  font-size: 110%;
+  font-weight: bold;
+}
+
+table.shortcuts thead th:nth-child(1),
+table.shortcuts tbody td:nth-child(1) {
+  min-width: 7em;
+  text-align: left;
+}
+
+table.shortcuts td input,
+table.shortcuts td label {
+  padding:  0;
+  margin: 0;
+}
+
+

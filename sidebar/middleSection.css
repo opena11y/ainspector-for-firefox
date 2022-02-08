@@ -1,0 +1,75 @@
+/* middleSection.css */
+
+highlight-select {
+  display:  block;
+}
+
+.middle-section {
+  display:  block;
+  width: 100%;
+  position: relative;
+}
+
+.middle-section button.details,
+.middle-section highlight-select {
+  position:  absolute;
+  top:  calc(1em + 3px);
+  right: 0;
+}
+
+.middle-section .info-header {
+  position:  relative;
+  /* top:  -6px; */
+}
+
+.middle-section .info-header h2 {
+  margin: 0;
+  padding: 0;
+  margin-top:  1.5em;
+  margin-left: 4px;
+  font-size: 110%;
+  font-weight: bold;
+  display:  inline-block;
+}
+
+.middle-section copy-button {
+  display:  inline-block;
+  margin-left:  0.25em;
+  position: relative;
+  top: 4px;
+}
+
+.info-footer  {
+  display: flex;
+  align-items: top;
+  justify-content: center;
+}
+
+.info-footer copy-button {
+  display: block;
+  position: relative;
+  top: 4px;
+}
+
+button.details,
+highlight-select {
+  z-index: 5;
+}
+
+button.details:after {
+  content: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' class='down' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolygon points='1 1, 1 11, 11 6' fill='currentColor' /%3E%3C/svg%3E");
+  position: relative;
+  top:  1px;
+  padding-left:  4px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+

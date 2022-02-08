@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="options.css"/>
+  </head>
+
+  <body>
+    <form>
+
+      <h2 id="options-title">AInspector WCAG Options</h2>
+
+      <fieldset>
+        <legend id="options-views-menu-legend">'Views' menu</legend>
+        <label>
+          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
+          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend id="options-rerun-evaluation-legend">'Rerun Evaluation' Button</legend>
+        <label>
+          <input type="radio" name="delay" id="options-no-delay" checked/>
+          <span id="options-no-delay-label">Rerun with no delay</span>
+        </label>
+        <label>
+          <input type="radio" name="delay" id="options-prompt-for-delay"/>
+          <span id="options-prompt-for-delay-label">Prompt for delay setting</span>
+        </label>
+      </fieldset>
+
+      <h2 id="options-evaluation-heading">Evaluation</h2>
+
+      <fieldset>
+        <legend id="options-ruleset-legend">Ruleset</legend>
+        <label>
+          <input type="radio" name="ruleset" id="ARIA_STRICT" checked/>
+          <span id="options-ruleset-strict-label">HTML5 and ARIA Techniques</span>
+        </label>
+        <label>
+          <input type="radio" name="ruleset" id="ARIA_TRANS"/>
+          <span id="options-ruleset-trans-label">HTML4 Legacy Techniques</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend id="options-rule-results-legend">Rule Results</legend>
+        <label>
+          <input type="checkbox" checked id="options-incl-pass-na"/>
+          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
+        </label>
+      </fieldset>
+
+      <h2 id="options-export-heading">Export Evaluation Results</h2>
+
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" checked id="options-export-prompt"/>
+          <span id="options-export-prompt-label">Prompt for export options</span>
+        </label>
+      </div>
+
+      <fieldset>
+        <legend id="options-export-format-legend">Export Format</legend>
+        <label>
+          <input type="radio" name="export-format" id="options-export-csv" checked/>
+          <span id="options-export-csv-label">CSV</span>
+        </label>
+        <label>
+          <input type="radio" name="export-format" id="options-export-json"/>
+          <span id="options-export-json-label">JSON</span>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend id="options-filename-legend">Default Filename Options</legend>
+
+        <label id="options-export-prefix-label"
+          for="options-export-prefix">
+          Export File Prefix (up to 16 characters)
+        </label>
+        <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
+
+        <label>
+          <input type="checkbox" checked id="options-export-date"/>
+          <span id="options-export-date-label">Include date and time in default file name (e.g. yyyy-mm-dd-XXh-YYm-ZZs).</span>
+        </label>
+
+      </fieldset>
+
+      <h2 id="options-shortcut-keys">Shortcut Keys</h2>
+
+
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" checked id="options-shortcuts-enabled"/>
+          <span id="options-shortcuts-enabled-label">Enable keyboard shortcuts.</span>
+        </label>
+
+      <table class="shortcuts">
+        <thead>
+          <tr>
+            <th>Shortcut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <kbd id="options-shortcut-back"></kbd>
+            </td>
+            <td>
+              <div id="options-shortcut-back-label">
+                Activates Back button.
+              </div>
+              <div id="options-shortcut-back-note"class="note">
+                <span>Note:</span> The <kbd>Delete</kbd> button on macOS.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-copy" size="1" aria-describedby="">
+            </td>
+            <td>
+              <label for="options-shortcut-copy">
+                Activates Copy button.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-export" size="1">
+            </td>
+            <td>
+              <label for="options-shortcut-export">
+                Activates Export button.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-rerun" size="1">
+            </td>
+            <td>
+              <label for="options-shortcut-rerun">
+                Activates Rerun Evaluation button.
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="options-shortcut-views" size="1">
+            </td>
+            <td>
+              <label for="options-shortcut-views">
+               Activates View button.
+              </label>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note"><span>Note:</span> Leaving the shortcut key value empty disables the shortcut.</p>
+
+
+      <button id="options-reset-defaults" type="reset">Reset Defaults</button>
+
+    </form>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

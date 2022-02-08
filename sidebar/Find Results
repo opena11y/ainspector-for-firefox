@@ -1,0 +1,36 @@
+Searching 50 files for "getRuleCategoryFilenameId"
+
+/Users/jongunderson/aitg/firefox-ainspector-wcag/sidebar/constants.js:
+  115  };
+  116  
+  117: export function getRuleCategoryFilenameId (id) {
+  118    switch (id) {
+  119    case RULE_CATEGORIES.LANDMARKS:
+
+/Users/jongunderson/aitg/firefox-ainspector-wcag/sidebar/panel.js:
+    1  /* panel.js  */
+    2  
+    3: import { getRuleCategoryNameId, getGuidelineFilenameId } from './constants.js';
+    4  
+    5  import { getOptions } from '../storage.js';
+    .
+  237    let groupId, date = '', time = '', dd, mm, yyyy, hh, ss, ruleId, parts, ruleNum;
+  238    if (sidebarGroupType === 'rc') {
+  239:     groupId = getRuleCategoryNameId(sidebarGroupId);
+  240    } else {
+  241      groupId = getGuidelineNameId(sidebarGroupId);
+
+/Users/jongunderson/aitg/firefox-ainspector-wcag/sidebar/viewSummaryCSV.js:
+    7  import commonCSV from './commonCSV.js';
+    8  
+    9: import {getRuleCategoryFilenameId, getGuidelineFilenameId} from './constants.js';
+   10  
+   11  export default class ViewSummaryCSV extends commonCSV {
+   ..
+   26      for (i = 0; i < this.rcResults.length; i += 1) {
+   27        r = this.rcResults[i];
+   28:       csv += `"${getRuleCategoryNameId[r.id]}","${r.violations}","${r.warnings}","${r.manual_checks}","${r.passed}"\n`;
+   29      }
+   30  
+
+5 matches across 3 files
