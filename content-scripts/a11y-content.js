@@ -62611,13 +62611,16 @@ function getSummaryInfo () {
 function getRuleGroupItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
+  let rule = ruleResult.getRule();
   let elemResults = ruleResult.getElementResultsSummary();
 
   let item = {
     'ruleId'         : ruleId,
     'summary'        : ruleResult.getRuleSummary(),
     'required'       : ruleResult.isRuleRequired(),
-    'wcag'           : ruleResult.getRule().getPrimarySuccessCriterion().id,
+    'ruleCategory'   : rule.rule_category_info.title,
+    'guideline'      : rule.guideline_info.title.replace('Guideline ',''),
+    'wcag'           : rule.getPrimarySuccessCriterion().id,
     'result'         : ruleResult.getResultValueNLS(),
     'resultValue'    : ruleResult.getResultValue(),
     'level'          : ruleResult.getWCAG20LevelNLS(),
@@ -62658,10 +62661,6 @@ function getRuleGroupInfo (groupType, groupId) {
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
   info.groupLabel = ruleGroupInfo.title.replace('Guideline ', '');
-
-  if (!info.groupLabel) {
-    info.groupLabel = 'All Rules';
-  }
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;

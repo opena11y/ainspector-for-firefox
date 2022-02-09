@@ -1,4 +1,4 @@
-/* viewRuleResultCSV.js */
+/* commonCSV.js */
 
 import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
 
@@ -26,6 +26,86 @@ export class commonCSV {
     csv += `"Time:","${getTimeOfDay()}"\n`;
     csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
     return csv
+  }
+
+  getRuleResultsCSV (title, ruleResults, incRC, incGL) {
+    if (typeof incRC !== 'boolean') {
+      incRC = false;
+    }
+    if (typeof incGL !== 'boolean') {
+      incGL = false;
+    }
+    let csv = '';
+    csv += `\n"Group Title:","${title}"\n\n`
+
+    csv += `"Rule Summary","Result","Result Value","Success Criteria",`;
+    if (incRC) {
+      csv += `"Rule Category",`;
+    }
+    if (incGL) {
+      csv += `"Guideline",`;
+    }
+    csv += `"Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
+    for (let i = 0; i < ruleResults.length; i += 1) {
+      let rr = ruleResults[i];
+      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}","${rr.wcag}",`;
+      if (incRC) {
+        csv += `"${rr.ruleCategory}",`;
+      }
+      if (incGL) {
+        csv += `"${rr.guideline}",`;
+      }
+      csv += `"${rr.level}","${rr.required ? 'Y' : ''}",`;
+      csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
+    }
+    return csv
+  }
+
+  contentCSV(label, info) {
+    if (!info) return '';
+
+    let i, item, csv = '';
+
+    if (typeof info === 'string') {
+      csv += `"${label}","${cleanCSVItem(info)}"\n`;
+    } else {
+      if (info.length) {
+        csv += `"${label}",`;
+        for (i = 0; i < info.length; i += 1) {
+          item = info[i];
+          if (i !== 0) {
+            csv += `"",`;
+          }
+          if (typeof item === 'string') {
+              csv += `"${cleanCSVItem(item)}"\n`;
+          } else {
+            if (item.url) {
+              csv += `"${cleanCSVItem(item.title)}","${cleanCSVItem(item.url)}"\n`;
+            } else {
+              csv += `"${cleanCSVItem(item.title)}"\n`;
+            }
+          }
+        }
+      }
+    }
+    return csv;
+  }
+
+  getDetailsActionCSV (ruleInfo) {
+    let csv = '';
+
+    csv += `"Details/Action"\n`;
+    csv += this.contentCSV('Summary', ruleInfo.summary);
+    csv += this.contentCSV('Definition', ruleInfo.definition);
+    csv += this.contentCSV('Actions', ruleInfo.action);
+    csv += this.contentCSV('Purpose', ruleInfo.purpose);
+    csv += this.contentCSV('Techniques', ruleInfo.techniques);
+    csv += this.contentCSV('Targets', ruleInfo.targets);
+    csv += this.contentCSV('Level', ruleInfo.compliance);
+    csv += this.contentCSV('Success Criteria', ruleInfo.sc);
+    csv += this.contentCSV('Additional Information', ruleInfo.additionalLinks);
+
+    return csv;
   }
 
 }

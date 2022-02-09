@@ -1,4 +1,4 @@
-/* viewRuleResultCSV.js */
+/* viewSummaryCSV.js */
 
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
@@ -46,12 +46,7 @@ export default class ViewSummaryCSV extends commonCSV {
     }
     csv += this.getRow('Totals',this.resultSummary);
 
-    csv += `\n\n"Rule Summary","Result","Result Value",WCAG","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
-    for (let i = 0; i < this.ruleResults.length; i += 1) {
-      let rr = this.ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}","${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
-      csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
-    }
+    csv += this.getRuleResultsCSV('All Rules', this.ruleResults, true, true);
 
     return csv;
   }

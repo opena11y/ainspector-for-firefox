@@ -6,8 +6,9 @@ const getMessage = browser.i18n.getMessage;
 const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
 export default class ViewRuleResultCSV extends commonCSV{
-  constructor(elementResults) {
+  constructor(detailsAction, elementResults) {
     super();
+    this.detailsAction = detailsAction;
     this.elementResults = elementResults;
   }
 
@@ -181,6 +182,11 @@ export default class ViewRuleResultCSV extends commonCSV{
     let ariaAttrProps    = this.getARIAAttributeProps();
 
     let csv = super.getCSV(options, title, location);
+
+    csv += this.getDetailsActionCSV(this.detailsAction);
+
+    csv += `\n\n"Element Results"\n`;
+
     csv += this.addCSVColumnHeaders(basicProps, false);
     csv += this.addCSVColumnHeaders(accNameProps);
     csv += this.addCSVColumnHeaders(ccrProps);

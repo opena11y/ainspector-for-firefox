@@ -58,6 +58,7 @@ export default class ViewRuleResult {
     elemInfoHeaderDiv.appendChild(this.elemCopyButton);
 
     this.elementResults = {};
+    this.detailsActions = {};
 
     this.json = '{}';
 
@@ -66,7 +67,7 @@ export default class ViewRuleResult {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultCSV(this.elementResults);
+    let viewCSV = new ViewRuleResultCSV(this.detailsAction, this.elementResults);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -161,6 +162,8 @@ export default class ViewRuleResult {
     this.elementSummary.hidden       = infoRuleResult.hidden;
 
     this.json = infoRuleResult.json;
+
+    this.detailsAction = infoRuleResult.detailsAction;
 
     this.elementResultGrid.deleteDataRows();
 
