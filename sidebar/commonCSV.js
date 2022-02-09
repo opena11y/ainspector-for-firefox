@@ -19,11 +19,12 @@ export class commonCSV {
 
   getCSV (options, title, location) {
     let csv = '';
-    csv += `\n"Page Title:","${cleanCSVItem(title)}"\n`;
+    csv += `"Page Title:","${cleanCSVItem(title)}"\n`;
     csv += `"Page URL:","${cleanCSVItem(location)}"\n`;
     csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n`;
     csv += `"Date:","${getTodaysDate()}"\n`;
-    csv += `"Time:","${getTimeOfDay()}"\n\n`;
+    csv += `"Time:","${getTimeOfDay()}"\n`;
+    csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
     return csv
   }
 

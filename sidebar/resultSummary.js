@@ -78,6 +78,22 @@ export default class ResultSummary extends HTMLElement {
     this.passedTd.textContent = value;
   }
 
+  get violations () {
+    return this.violationsTd.textContent;
+  }
+
+  get warnings () {
+    return this.warningsTd.textContent;
+  }
+
+  get manual_checks () {
+    return this.manualChecksTd.textContent;
+  }
+
+  get passed () {
+    return this.passedTd.textContent;
+  }
+
   clear () {
     this.violationsTd.textContent   = '-';
     this.warningsTd.textContent     = '-';

@@ -2,6 +2,12 @@
 
 var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
 
+function sortRuleResults(ruleResults) {
+  return ruleResults.sort(function compare (a, b) {
+    return b.resultValue - a.resultValue;
+  });
+}
+
 function evaluate (ruleset) {
 
   if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
@@ -99,6 +105,7 @@ function getSummaryInfo () {
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
   let ruleGroupResult   = evaluationResult.getRuleResultsAll();
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
+  let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
   info.ruleset  = evaluationResult.getRuleset().getId();
 
@@ -111,8 +118,12 @@ function getSummaryInfo () {
   info.glResults = getGuidelineResults(evaluationResult);
   info.json = evaluationResult.toJSON();
 
-  // Remove the evaluation library from the page,
-  // otherwise get duplicate warnings for rulesest and rules being reloaded
+  info.allRuleResults = [];
+  for(let i = 0; i < ruleResults.length; i++) {
+    info.allRuleResults.push(getRuleGroupItem(ruleResults[i]));
+  }
+
+  info.allRuleResults = sortRuleResults(info.allRuleResults);
 
   return info;
 }
@@ -172,6 +183,10 @@ function getRuleGroupInfo (groupType, groupId) {
 
   info.groupLabel = ruleGroupInfo.title.replace('Guideline ', '');
 
+  if (!info.groupLabel) {
+    info.groupLabel = 'All Rules';
+  }
+
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
   info.manual_checks = ruleSummaryResult.manual_checks;
@@ -184,6 +199,8 @@ function getRuleGroupInfo (groupType, groupId) {
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
   }
+
+  info.ruleResults = sortRuleResults(info.ruleResults);
 
   return info;
 }

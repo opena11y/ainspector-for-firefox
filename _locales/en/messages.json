@@ -1,4 +1,9 @@
 {
+  "extensionVersion": {
+    "message": "2.0.0-beta",
+    "description": "Version of the extension"
+  },
+
   "extensionName": {
     "message": "AInspector",
     "description": "Name of the extension"

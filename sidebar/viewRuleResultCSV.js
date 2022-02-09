@@ -132,7 +132,7 @@ export default class ViewRuleResultCSV extends commonCSV{
         prop = prop.replaceAll('_', ' ');
       }
       if (prop.indexOf('actionMessage') >= 0) {
-        prop = 'message';
+        prop = 'action';
       }
       if (prop.indexOf('tagName') >= 0) {
         prop = 'element';
