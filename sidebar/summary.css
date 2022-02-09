@@ -1,9 +1,10 @@
 /* resultSummary.css */
 
 table {
+  margin-top: 0;
+  margin-bottom: 0;
   margin-right: auto;
   margin-left: auto;
-  margin-bottom: 1.5em;
 }
 
 th, td {
@@ -26,4 +27,8 @@ th, td {
 
 #passed-value {
   background-color: hsl(90, 67%, 69%);
+}
+
+#hidden-value {
+  background-color: hsl(0, 0%, 87%);
 }
