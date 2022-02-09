@@ -172,6 +172,7 @@ function getRuleGroupInfo (groupType, groupId) {
 
   info.groupLabel = ruleGroupInfo.title.replace('Guideline ', '');
 
+  info.groupType     = groupType;
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
   info.manual_checks = ruleSummaryResult.manual_checks;

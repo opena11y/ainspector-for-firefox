@@ -274,8 +274,18 @@
     "description": "Label for the rule category group"
   },
 
+  "ruleCategoryLabel": {
+    "message": "Rule Category",
+    "description": "Label for the rule category group"
+  },
+
   "guidelinesLabel": {
     "message": "Guidelines",
+    "description": "Label for the guildeine group"
+  },
+
+  "guidelineLabel": {
+    "message": "Guideline",
     "description": "Label for the guildeine group"
   },
 
@@ -340,7 +350,7 @@
   },
 
   "ruleResultGridLabel": {
-    "message": "Rule Results",
+    "message": "Rule Group Results",
     "description": "Label for rule results grid"
   },
 

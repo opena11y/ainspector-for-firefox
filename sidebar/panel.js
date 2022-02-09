@@ -490,7 +490,8 @@ function resizeView () {
   const header = document.querySelector('header');
 
   const headerHeight = document.querySelector('header').offsetHeight;
-  const footerHeight = footer.offsetHeight;
+  // The adjustment of 14 is to remove the horizontal scrollbar when the window is beyond the miniu
+  const footerHeight = footer.offsetHeight + 14;
   const mainHeight   = Math.max((height - headerHeight - footerHeight), minMainHeight);
 
   const footerTop = headerHeight + mainHeight;
