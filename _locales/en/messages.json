@@ -281,12 +281,12 @@
 
   "guidelinesLabel": {
     "message": "Guidelines",
-    "description": "Label for the guildelines group"
+    "description": "Label for the guidelines group"
   },
 
   "guidelineLabel": {
     "message": "Guideline",
-    "description": "Label for the guildeline group"
+    "description": "Label for the guideline group"
   },
 
   "ruleLabel": {
