@@ -75,12 +75,12 @@ export default class ViewRuleResult {
   }
 
   resize (mainHeight) {
-    const adjustment = 160;
+    const adjustment = 126;
     const highlightHeight = this.highlightSelect.offsetHeight;
-    const h = (mainHeight - highlightHeight - adjustment);
+    const h = (mainHeight - highlightHeight - adjustment) / 2;
 
-    this.elementResultGrid.resize((h/2));
-    this.resultElementInfo.resize((h/2));
+    this.elementResultGrid.resize(h);
+    this.resultElementInfo.resize(h);
   }
 
   initGrid () {

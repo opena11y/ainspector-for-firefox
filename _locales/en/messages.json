@@ -274,9 +274,19 @@
     "description": "Label for the rule category group"
   },
 
+  "ruleCategoryLabel": {
+    "message": "Rule Category",
+    "description": "Label for the rule category group"
+  },
+
   "guidelinesLabel": {
     "message": "Guidelines",
-    "description": "Label for the guildeine group"
+    "description": "Label for the guidelines group"
+  },
+
+  "guidelineLabel": {
+    "message": "Guideline",
+    "description": "Label for the guideline group"
   },
 
   "ruleLabel": {
@@ -340,8 +350,18 @@
   },
 
   "ruleResultGridLabel": {
-    "message": "Rule Results",
+    "message": "Rule Group Results",
     "description": "Label for rule results grid"
+  },
+
+  "ruleCategoryResultGridLabel": {
+    "message": "Rule Category Results",
+    "description": "Label for rule category results grid"
+  },
+
+  "guidelineResultGridLabel": {
+    "message": "Guideline Results",
+    "description": "Label for guideline results grid"
   },
 
   "ruleSelectedLabel": {
@@ -490,8 +510,8 @@
   },
 
   "elementGridLabel": {
-    "message": "Element Results",
-    "description": "Label for element results grid"
+    "message": "Rule / Element Results",
+    "description": "Label for Rule/Element results grid"
   },
 
   "elementSelectedLabel": {

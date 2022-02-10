@@ -34,7 +34,7 @@ export default class ElementSummary extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'elementSummary.css');
+    link.setAttribute('href', 'summary.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

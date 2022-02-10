@@ -44,6 +44,7 @@ header h1#view-title {
 header table td.buttons {
   width: 35%;
   min-width: 150px;
+  padding-right: 0;
 }
 
 header h1 {
@@ -52,11 +53,6 @@ header h1 {
   font-size: 175%;
   font-weight: bold;
   white-space: nowrap;
-}
-
-header .right {
-  padding-right: 1em;
-  background-color: #ffffff;
 }
 
 header button#back-button:before {

@@ -120,7 +120,7 @@ export default class ViewSummary {
 
     this.resultTablist.tabLabel1 = getMessage("ruleCategoriesLabel");
 
-    this.rcResultGrid.addHeaderCell(getMessage('ruleCategoriesLabel'), 'group text');
+    this.rcResultGrid.addHeaderCell(getMessage('ruleCategoryLabel'), 'group text');
     this.rcResultGrid.addHeaderCell(getMessage('violationsAbbrev'),    'summ num', getMessage('violationsLabel'));
     this.rcResultGrid.addHeaderCell(getMessage('warningsAbbrev'),      'summ num', getMessage('warningsLabel'));
     this.rcResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'),  'summ num', getMessage('manualChecksLabel'));
@@ -140,7 +140,7 @@ export default class ViewSummary {
     }
 
     this.resultTablist.tabLabel2 = getMessage("guidelinesLabel");
-    this.glResultGrid.addHeaderCell(getMessage('guidelinesLabel'),     'group text');
+    this.glResultGrid.addHeaderCell(getMessage('guidelineLabel'),     'group text');
     this.glResultGrid.addHeaderCell(getMessage('violationsAbbrev'),   'summ num', getMessage('violationsLabel'));
     this.glResultGrid.addHeaderCell(getMessage('warningsAbbrev'),     'summ num', getMessage('warningsLabel'));
     this.glResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'), 'summ num', getMessage('manualChecksLabel'));

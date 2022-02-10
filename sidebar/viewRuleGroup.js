@@ -14,11 +14,11 @@ export default class ViewRuleGroup {
     this.ruleGroupDiv.appendChild(this.resultSummary);
 
     // Add heading for the rule result details
-    let h2 = document.createElement('h2');
-    h2.className = 'grid';
-    h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = getMessage('ruleResultGridLabel');
-    this.ruleGroupDiv.appendChild(h2);
+    this.gridH2 = document.createElement('h2');
+    this.gridH2.className = 'grid';
+    this.gridH2.id = "grid-label"; // referenced by element result-grid custom element
+    this.gridH2.textContent = getMessage('ruleCategoryResultGridLabel');
+    this.ruleGroupDiv.appendChild(this.gridH2);
 
 
     this.ruleResultGrid = document.createElement('result-grid');
@@ -49,7 +49,7 @@ export default class ViewRuleGroup {
     ruleInfoHeaderDiv.className = 'info-header';
     middleSectionDiv.appendChild(ruleInfoHeaderDiv);
 
-    h2 = document.createElement('h2');
+    const h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.id = 'rule-info-label';
     h2.textContent = getMessage('ruleSelectedLabel');
@@ -187,6 +187,12 @@ export default class ViewRuleGroup {
 
     this.groupTitle = infoRuleGroup.groupLabel;
     this.ruleResults = infoRuleGroup.ruleResults;
+
+    if (infoRuleGroup.groupType === 'gl') {
+      this.gridH2.textContent = getMessage('guidelineResultGridLabel');
+    } else {
+      this.gridH2.textContent = getMessage('ruleCategoryResultGridLabel');
+    }
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
