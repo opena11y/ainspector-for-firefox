@@ -28,20 +28,47 @@ export class commonCSV {
     return csv
   }
 
+  // returns a number for the sorting the result value
+  getResultSortingValue (result) {
+    return ['', 'N/A', 'P', 'MC', 'W', 'V'].indexOf(result);
+  }
+
+  // returns a number used for representing SC for sorting
+  getSCSortingValue (sc) {
+    let parts = sc.split('.');
+    let p = parseInt(parts[0]);
+    let g = parseInt(parts[1]);
+    let s = parseInt(parts[2]);
+    return (p * 10000 + g * 100 + s) * -1;
+  }
+
+  // returns a number used for representing level value for sorting
+  getLevelSortingValue (level) {
+    return ['', 'AAA', 'AA', 'A'].indexOf(level);
+  }
+
+  // returns a number used for representing required value for sorting
+  getRequiredSortingValue (required) {
+    return required ? 2 : 1;
+  }
+
   sortRuleResults(ruleResults) {
-    return ruleResults.sort(function compare (a, b) {
-      if (a.resultValue === b.resultValue) {
-        if (a.level === b.level) {
-          if (a.required === a.required) {
-            return b.wcag < a.wcag;
-          } else {
-            return b.required  < a.required;
+    return ruleResults.sort((a, b) => {
+      let valueA = a.resultValue;
+      let valueB = b.resultValue;
+      if (valueA === valueB) {
+        valueA = this.getLevelSortingValue(a.level);
+        valueB = this.getLevelSortingValue(b.level);
+        if (valueA === valueB) {
+          valueA = this.getRequiredSortingValue(a.required);
+          valueB = this.getRequiredSortingValue(b.required);
+          if (valueA === valueB) {
+            valueA = this.getSCSortingValue(a.wcag);
+            valueB = this.getSCSortingValue(b.wcag);
           }
-        } else {
-          return b.level < a.level;
         }
       }
-      return b.resultValue - a.resultValue;
+      return valueB - valueA;
     });
   }
 
