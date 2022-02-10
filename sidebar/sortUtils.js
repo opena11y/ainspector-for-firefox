@@ -32,11 +32,12 @@
         valueA = getLevelSortingValue(a.level);
         valueB = getLevelSortingValue(b.level);
         if (valueA === valueB) {
-          valueA = getRequiredSortingValue(a.required);
-          valueB = getRequiredSortingValue(b.required);
+          valueA = getSCSortingValue(a.wcag);
+          valueB = getSCSortingValue(b.wcag);
+        } else {
           if (valueA === valueB) {
-            valueA = getSCSortingValue(a.wcag);
-            valueB = getSCSortingValue(b.wcag);
+            valueA = getRequiredSortingValue(a.required);
+            valueB = getRequiredSortingValue(b.required);
           }
         }
       }

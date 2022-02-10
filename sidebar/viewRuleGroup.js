@@ -1,6 +1,7 @@
 /* viewRuleGroup.js */
 const getMessage = browser.i18n.getMessage;
 
+import { getResultSortingValue, getSCSortingValue, getLevelSortingValue, getRequiredSortingValue } from './sortUtils.js';
 import { getOptions } from '../storage.js';
 import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
 
@@ -125,30 +126,6 @@ export default class ViewRuleGroup {
     return style;
   }
 
-  // returns a number for the sorting the result value
-  getResultSortingValue (result) {
-    return ['', 'N/A', 'P', 'MC', 'W', 'V'].indexOf(result);
-  }
-
-  // returns a number used for representing SC for sorting
-  getSCSortingValue (sc) {
-    let parts = sc.split('.');
-    let p = parseInt(parts[0]);
-    let g = parseInt(parts[1]);
-    let s = parseInt(parts[2]);
-    return (p * 10000 + g * 100 + s) * -1;
-  }
-
-  // returns a number used for representing level value for sorting
-  getLevelSortingValue (level) {
-    return ['', 'AAA', 'AA', 'A'].indexOf(level);
-  }
-
-  // returns a number used for representing required value for sorting
-  getRequiredSortingValue (required) {
-    return required ? 2 : 1;
-  }
-
   getResultAccessibleName (result) {
     let accName = getMessage('notApplicableLabel');
 
@@ -215,23 +192,23 @@ export default class ViewRuleGroup {
           rowAccName = cellAccName;
 
           style = 'result ' + this.getResultStyle(rr.result);
-          sortValue = this.getResultSortingValue(rr.result);
+          sortValue = getResultSortingValue(rr.result);
           cellAccName = this.getResultAccessibleName(rr.result);
           rowAccName += ', ' + cellAccName;
           this.ruleResultGrid.addDataCell(row, rr.result, cellAccName, style, sortValue);
 
-          sortValue = this.getSCSortingValue(rr.wcag);
+          sortValue = getSCSortingValue(rr.wcag);
           cellAccName = getMessage('successCriteriaLabel') + ' ' + rr.wcag;
           rowAccName += ', ' + cellAccName;
           this.ruleResultGrid.addDataCell(row, rr.wcag, cellAccName, 'sc', sortValue);
 
-          sortValue = this.getLevelSortingValue(rr.level);
+          sortValue = getLevelSortingValue(rr.level);
           cellAccName = rr.level === 'A' ? getMessage('singleALabel') : getMessage('doubleALabel');
           rowAccName += ', ' + cellAccName;
           this.ruleResultGrid.addDataCell(row, rr.level, cellAccName, 'level', sortValue);
 
           value = rr.required ? getMessage('requiredValue') : '';
-          sortValue = this.getRequiredSortingValue(rr.required);
+          sortValue = getRequiredSortingValue(rr.required);
           cellAccName = rr.required ? getMessage('requiredLabel') : '';
           rowAccName += rr.required ? ', ' + cellAccName : '';
           this.ruleResultGrid.addDataCell(row, value, cellAccName, 'required', sortValue);
