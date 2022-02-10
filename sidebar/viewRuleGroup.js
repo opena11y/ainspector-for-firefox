@@ -67,6 +67,8 @@ export default class ViewRuleGroup {
     this.groupTitle = 'Rule Group';
     this.ruleResults = [];
     this.detailsActions = {};
+    this.groupType = 'rc';
+    this.isAllRules = false;
 
     this.json = '{}';
 
@@ -84,7 +86,7 @@ export default class ViewRuleGroup {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleGroupCSV(this.groupTitle, this.ruleResults, this.detailsActions);
+    let viewCSV = new ViewRuleGroupCSV(this.groupType, this.groupTitle, this.ruleResults, this.detailsActions, this.isAllRules);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -187,6 +189,9 @@ export default class ViewRuleGroup {
 
     this.groupTitle = infoRuleGroup.groupLabel;
     this.ruleResults = infoRuleGroup.ruleResults;
+
+    this.groupType = infoRuleGroup.groupType;
+    this.isAllRules = infoRuleGroup.ruleResults.length > 60;
 
     if (infoRuleGroup.groupType === 'gl') {
       this.gridH2.textContent = getMessage('guidelineResultGridLabel');
