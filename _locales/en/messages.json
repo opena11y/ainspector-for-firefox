@@ -281,12 +281,12 @@
 
   "guidelinesLabel": {
     "message": "Guidelines",
-    "description": "Label for the guildeine group"
+    "description": "Label for the guildelines group"
   },
 
   "guidelineLabel": {
     "message": "Guideline",
-    "description": "Label for the guildeine group"
+    "description": "Label for the guildeline group"
   },
 
   "ruleLabel": {
@@ -510,8 +510,8 @@
   },
 
   "elementGridLabel": {
-    "message": "Element Results",
-    "description": "Label for element results grid"
+    "message": "Rule/Element Results",
+    "description": "Label for Rule/Element results grid"
   },
 
   "elementSelectedLabel": {
