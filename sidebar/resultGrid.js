@@ -49,42 +49,6 @@ export default class ResultGrid extends HTMLElement {
     this.tbody.style.height = h + 'px';
   }
 
-  toCSV () {
-    let csv = '';
-    let item;
-    let last;
-    const headers = Array.from(this.theadTr.querySelectorAll('th, td'));
-
-    headers.forEach( (cell, index, array) => {
-      if (cell.title) {
-        item = cell.title;
-      } else {
-        item = cell.textContent;
-      }
-      last = (index === (array.length - 1));
-      csv += formatItemForCSV(item, last);
-    })
-    csv += '\n';
-
-    const rows = Array.from(this.tbody.querySelectorAll('tr'));
-
-    rows.forEach( (row) => {
-      const cells = Array.from(row.querySelectorAll('th, td'));
-      cells.forEach( (cell, index, array) => {
-        last = (index === (array.length-1));
-        const span = cell.querySelector('[aria-hidden]');
-        if (span) {
-          csv += formatItemForCSV(span.textContent, last);
-        } else {
-          csv += formatItemForCSV(cell.textContent, last);
-        }
-      });
-      csv += '\n';
-    });
-
-    return csv;
-  }
-
   set disabled (value) {
     this.activationDisabled = value;
   }
