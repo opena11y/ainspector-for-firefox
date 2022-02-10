@@ -59,15 +59,16 @@ export default class ViewSummary {
     this.rcResults = [];
     this.glResults = [];
 
+    this.allRuleResults = [];
+
     this.json = '{}';
 
     this.initGrids();
 
   }
 
-  toCSV (options, title, location
-    ) {
-    let viewCSV = new ViewSummaryCSV(this.rcResults, this.glResults);
+  toCSV (options, title, location) {
+    let viewCSV = new ViewSummaryCSV(this.resultSummary, this.rcResults, this.glResults, this.allRuleResults);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -179,6 +180,8 @@ export default class ViewSummary {
     this.resultSummary.passed       = infoSummary.passed;
 
     this.json = infoSummary.json;
+
+    this.allRuleResults = infoSummary.allRuleResults;
 
     this.rcResults = infoSummary.rcResults;
 

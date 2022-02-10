@@ -1,4 +1,4 @@
-/* viewRuleResultCSV.js */
+/* viewRuleGroupCSV.js */
 
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
@@ -15,16 +15,9 @@ export default class ViewRuleGroupCSV extends commonCSV {
 
   getCSV (options, title, url) {
     let csv = super.getCSV(options, title, url);
-
-    csv += `\n"Group Title:","${this.groupTitle}"\n\n`
-
-    csv += `"Rule Summary","Result","WCAG","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
-    for (let i = 0; i < this.ruleResults.length; i += 1) {
-      let rr = this.ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
-      csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
-    }
-
+    // test if rule results include all rules
+    let flag = this.ruleResults.length > 20;
+    csv += this.getRuleResultsCSV(this.groupTitle, this.ruleResults, flag, flag);
     return csv
   }
 

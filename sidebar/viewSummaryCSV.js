@@ -1,4 +1,4 @@
-/* viewRuleResultCSV.js */
+/* viewSummaryCSV.js */
 
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
@@ -8,11 +8,17 @@ const getMessage = browser.i18n.getMessage;
 import { getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
 export default class ViewSummaryCSV extends commonCSV {
-  constructor(rcResults, glResults) {
+  constructor(resultSummary, rcResults, glResults, ruleResults) {
     super();
 
-    this.rcResults = rcResults;
-    this.glResults = glResults;
+    this.resultSummary = resultSummary;
+    this.rcResults     = rcResults;
+    this.glResults     = glResults;
+    this.ruleResults   = ruleResults;
+  }
+
+  getRow (label, result) {
+    return `"${label}","${result.violations}","${result.warnings}","${result.manual_checks}","${result.passed}"\n`;
   }
 
   getCSV (options, title, location) {
@@ -20,19 +26,27 @@ export default class ViewSummaryCSV extends commonCSV {
 
     let csv = super.getCSV(options, title, location);
 
-    csv += '\n"Rule Catactory","Violations","Warnings","Manual Checks","Passed"\n';
+    csv += '\n"","Violations","Warnings","Manual Checks","Passed"\n';
+    csv += this.getRow('Totals',this.resultSummary);
+
+
+    csv += '\n"Rule Category","Violations","Warnings","Manual Checks","Passed"\n';
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       r = this.rcResults[i];
-      csv += `"${getMessage(getRuleCategoryLabelId(r.id))}","${r.violations}","${r.warnings}","${r.manual_checks}","${r.passed}"\n`;
+      csv += this.getRow(getMessage(getRuleCategoryLabelId(r.id)), r);
     }
+    csv += this.getRow('Totals',this.resultSummary);
 
     csv += '\n\n"WCAG Guideline","Violations","Warnings","Manual Checks","Passed"\n';
 
     for (i = 0; i < this.glResults.length; i += 1) {
       r = this.glResults[i];
-      csv += `"${getMessage(getGuidelineLabelId(r.id))}","${r.violations}","${r.warnings}","${r.manual_checks}","${r.passed}"\n`;
+      csv += this.getRow(getMessage(getGuidelineLabelId(r.id)), r);
     }
+    csv += this.getRow('Totals',this.resultSummary);
+
+    csv += this.getRuleResultsCSV('All Rules', this.ruleResults, true, true);
 
     return csv;
   }

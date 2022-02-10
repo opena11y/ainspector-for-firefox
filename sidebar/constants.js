@@ -108,7 +108,9 @@ export function getRuleCategoryLabelId (id) {
   case RULE_CATEGORIES.TIMING:
     return 'timingLabel';
   case RULE_CATEGORIES.SITE_NAVIGATION:
-    return 'siteNavigationLabel'
+    return 'siteNavigationLabel';
+  case RULE_CATEGORIES.ALL:
+    return 'allRulesLabel';
   default:
     return '';
   }
@@ -140,6 +142,8 @@ export function getRuleCategoryFilenameId (id) {
     return 'timing';
   case RULE_CATEGORIES.SITE_NAVIGATION:
     return 'site-navigation'
+  case RULE_CATEGORIES.ALL:
+    return 'all-rules';
   default:
     return 'undefined';
   }
@@ -175,7 +179,8 @@ export function getGuidelineLabelId (id) {
     return 'g3.3';
   case GUIDELINES.G_4_1:
     return 'g4.1';
-
+  case GUIDELINES.ALL:
+    return 'allRulesLabel';
   default:
     return GUIDELINES.UNDEFINED;
 
@@ -212,7 +217,8 @@ export function getGuidelineFilenameId (id) {
     return 'g3-3';
   case GUIDELINES.G_4_1:
     return 'g4-1';
-
+  case GUIDELINES.ALL:
+    return 'all-rules';
   default:
     return GUIDELINES.UNDEFINED;
 
