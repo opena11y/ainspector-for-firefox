@@ -13,6 +13,7 @@
   width: 380px;
   bottom: 30px;
   left: 10px;
+  z-index: 15;
 }
 
 [role="dialog"] #title {

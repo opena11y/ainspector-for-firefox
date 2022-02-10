@@ -28,7 +28,27 @@ export class commonCSV {
     return csv
   }
 
+  sortRuleResults(ruleResults) {
+    return ruleResults.sort(function compare (a, b) {
+      if (a.resultValue === b.resultValue) {
+        if (a.level === b.level) {
+          if (a.required === a.required) {
+            return b.wcag < a.wcag;
+          } else {
+            return b.required  < a.required;
+          }
+        } else {
+          return b.level < a.level;
+        }
+      }
+      return b.resultValue - a.resultValue;
+    });
+  }
+
   getRuleResultsCSV (title, ruleResults, incRC, incGL) {
+
+    ruleResults = this.sortRuleResults(ruleResults);
+
     if (typeof incRC !== 'boolean') {
       incRC = false;
     }
@@ -38,24 +58,24 @@ export class commonCSV {
     let csv = '';
     csv += `\n"Group Title:","${title}"\n\n`
 
-    csv += `"Rule Summary","Result","Result Value","Success Criteria",`;
+    csv += `"Rule Summary","Result","Result Value",`;
     if (incRC) {
       csv += `"Rule Category",`;
     }
     if (incGL) {
       csv += `"Guideline",`;
     }
-    csv += `"Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
+    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
     for (let i = 0; i < ruleResults.length; i += 1) {
       let rr = ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}","${rr.wcag}",`;
+      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}",`;
       if (incRC) {
         csv += `"${rr.ruleCategory}",`;
       }
       if (incGL) {
         csv += `"${rr.guideline}",`;
       }
-      csv += `"${rr.level}","${rr.required ? 'Y' : ''}",`;
+      csv += `"${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
       csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
     }
     return csv
