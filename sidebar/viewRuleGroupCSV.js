@@ -15,9 +15,9 @@ export default class ViewRuleGroupCSV extends commonCSV {
 
   getCSV (options, title, url) {
     let csv = super.getCSV(options, title, url);
-
-    csv += this.getRuleResultsCSV(this.groupTitle, this.ruleResults);
-
+    // test if rule results include all rules
+    let flag = this.ruleResults.length > 20;
+    csv += this.getRuleResultsCSV(this.groupTitle, this.ruleResults, flag, flag);
     return csv
   }
 
