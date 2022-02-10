@@ -30,7 +30,7 @@ export default class ViewSummaryCSV extends commonCSV {
     csv += this.getRow('Totals',this.resultSummary);
 
 
-    csv += '\n"Rule Catactory","Violations","Warnings","Manual Checks","Passed"\n';
+    csv += '\n"Rule Category","Violations","Warnings","Manual Checks","Passed"\n';
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       r = this.rcResults[i];
