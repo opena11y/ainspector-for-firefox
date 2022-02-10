@@ -2,12 +2,6 @@
 
 var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
 
-function sortRuleResults(ruleResults) {
-  return ruleResults.sort(function compare (a, b) {
-    return b.resultValue - a.resultValue;
-  });
-}
-
 function evaluate (ruleset) {
 
   if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
@@ -122,9 +116,6 @@ function getSummaryInfo () {
   for(let i = 0; i < ruleResults.length; i++) {
     info.allRuleResults.push(getRuleGroupItem(ruleResults[i]));
   }
-
-  info.allRuleResults = sortRuleResults(info.allRuleResults);
-
   return info;
 }
 
@@ -199,9 +190,6 @@ function getRuleGroupInfo (groupType, groupId) {
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
   }
-
-  info.ruleResults = sortRuleResults(info.ruleResults);
-
   return info;
 }
 

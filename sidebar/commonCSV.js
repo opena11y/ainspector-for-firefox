@@ -2,6 +2,8 @@
 
 import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
 
+import { sortRuleResults } from './sortUtils.js';
+
 const getMessage = browser.i18n.getMessage;
 
 export class commonCSV {
@@ -25,10 +27,13 @@ export class commonCSV {
     csv += `"Date:","${getTodaysDate()}"\n`;
     csv += `"Time:","${getTimeOfDay()}"\n`;
     csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
-    return csv
+    return csv;
   }
 
   getRuleResultsCSV (title, ruleResults, incRC, incGL) {
+
+    ruleResults = sortRuleResults(ruleResults);
+
     if (typeof incRC !== 'boolean') {
       incRC = false;
     }
@@ -38,27 +43,27 @@ export class commonCSV {
     let csv = '';
     csv += `\n"Group Title:","${title}"\n\n`
 
-    csv += `"Rule Summary","Result","Result Value","Success Criteria",`;
+    csv += `"Rule Summary","Result","Result Value",`;
     if (incRC) {
       csv += `"Rule Category",`;
     }
     if (incGL) {
       csv += `"Guideline",`;
     }
-    csv += `"Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
+    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`;
     for (let i = 0; i < ruleResults.length; i += 1) {
       let rr = ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}","${rr.wcag}",`;
+      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}",`;
       if (incRC) {
         csv += `"${rr.ruleCategory}",`;
       }
       if (incGL) {
         csv += `"${rr.guideline}",`;
       }
-      csv += `"${rr.level}","${rr.required ? 'Y' : ''}",`;
+      csv += `"${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
       csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
     }
-    return csv
+    return csv;
   }
 
   contentCSV(label, info) {
