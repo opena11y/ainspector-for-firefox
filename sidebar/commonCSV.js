@@ -2,6 +2,8 @@
 
 import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
 
+import { sortRuleResults } from './sortUtils.js';
+
 const getMessage = browser.i18n.getMessage;
 
 export class commonCSV {
@@ -25,56 +27,12 @@ export class commonCSV {
     csv += `"Date:","${getTodaysDate()}"\n`;
     csv += `"Time:","${getTimeOfDay()}"\n`;
     csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
-    return csv
-  }
-
-  // returns a number for the sorting the result value
-  getResultSortingValue (result) {
-    return ['', 'N/A', 'P', 'MC', 'W', 'V'].indexOf(result);
-  }
-
-  // returns a number used for representing SC for sorting
-  getSCSortingValue (sc) {
-    let parts = sc.split('.');
-    let p = parseInt(parts[0]);
-    let g = parseInt(parts[1]);
-    let s = parseInt(parts[2]);
-    return (p * 10000 + g * 100 + s) * -1;
-  }
-
-  // returns a number used for representing level value for sorting
-  getLevelSortingValue (level) {
-    return ['', 'AAA', 'AA', 'A'].indexOf(level);
-  }
-
-  // returns a number used for representing required value for sorting
-  getRequiredSortingValue (required) {
-    return required ? 2 : 1;
-  }
-
-  sortRuleResults(ruleResults) {
-    return ruleResults.sort((a, b) => {
-      let valueA = a.resultValue;
-      let valueB = b.resultValue;
-      if (valueA === valueB) {
-        valueA = this.getLevelSortingValue(a.level);
-        valueB = this.getLevelSortingValue(b.level);
-        if (valueA === valueB) {
-          valueA = this.getRequiredSortingValue(a.required);
-          valueB = this.getRequiredSortingValue(b.required);
-          if (valueA === valueB) {
-            valueA = this.getSCSortingValue(a.wcag);
-            valueB = this.getSCSortingValue(b.wcag);
-          }
-        }
-      }
-      return valueB - valueA;
-    });
+    return csv;
   }
 
   getRuleResultsCSV (title, ruleResults, incRC, incGL) {
 
-    ruleResults = this.sortRuleResults(ruleResults);
+    ruleResults = sortRuleResults(ruleResults);
 
     if (typeof incRC !== 'boolean') {
       incRC = false;
@@ -92,7 +50,7 @@ export class commonCSV {
     if (incGL) {
       csv += `"Guideline",`;
     }
-    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`
+    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`;
     for (let i = 0; i < ruleResults.length; i += 1) {
       let rr = ruleResults[i];
       csv += `"${rr.summary}","${rr.result}","${rr.resultValue}",`;
@@ -105,7 +63,7 @@ export class commonCSV {
       csv += `"${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
       csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
     }
-    return csv
+    return csv;
   }
 
   contentCSV(label, info) {
