@@ -66,7 +66,7 @@ const emptyContent         = getMessage("emptyContent");
 const tabIsLoading         = getMessage("tabIsLoading");
 const protocolNotSupported = getMessage("protocolNotSupported");
 const ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-const ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
+const ariaTransRulesetLabel = getMessage("optionsRulesetTransLabel");
 
 function addLabelsAndHelpContent () {
   // Header titles and labels
@@ -526,7 +526,7 @@ function updateSidebar (info) {
     if (info.ruleset === 'ARIA_STRICT') {
       infoRuleset.textContent  = ariaStrictRulesetLabel;
     } else {
-      infoRuleset.textContent  = ariaTransLRulesetLabel;
+      infoRuleset.textContent  = ariaTransRulesetLabel;
     }
 
 

@@ -9,20 +9,17 @@ const getMessage = browser.i18n.getMessage;
 export class commonCSV {
   constructor() {
     this.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-    this.ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
+    this.ariaTransRulesetLabel = getMessage("optionsRulesetTransLabel");
   }
 
   getRulesetTitle (rulesetId) {
     if (rulesetId === 'ARIA_STRICT') {
       return this.ariaStrictRulesetLabel;
     }
-    return ariaTransLRulesetLabel;
+    return ariaTransRulesetLabel;
   }
 
-  arrayToCSV (items, lines) {
-    if (typeof extraLine !== 'number') {
-      lines = 1;
-    }
+  arrayToCSV (items, lines=1) {
     let csv = '';
     items.forEach( (item, index) => {
       if (index !== 0) {
