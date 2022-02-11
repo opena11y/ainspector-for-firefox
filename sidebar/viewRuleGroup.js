@@ -175,7 +175,7 @@ export default class ViewRuleGroup {
     } else {
 //      this.gridH2.textContent = getMessage('ruleCategoryResultGridLabel');
     }
-    this.gridH2.textContent = 'Rule Results';
+    this.gridH2.textContent = getMessage('allRulesLabel');
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {

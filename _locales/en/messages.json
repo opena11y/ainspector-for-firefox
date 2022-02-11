@@ -120,8 +120,8 @@
   },
 
   "keyboardLabel": {
-    "message": "Keyboard",
-    "description": "Label for Keyboard rule category view"
+    "message": "Keyboard Support",
+    "description": "Label for Keyboard Support rule category view"
   },
 
   "timingLabel": {
