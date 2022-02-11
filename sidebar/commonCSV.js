@@ -141,17 +141,16 @@ export class commonCSV {
 
   getDetailsActionCSV (ruleInfo) {
     let csv = '\n';
-
     csv += this.arrayToCSV([getMessage('detailsActionLabel')]);
-    csv += this.contentCSV('Summary', ruleInfo.summary);
-    csv += this.contentCSV('Definition', ruleInfo.definition);
-    csv += this.contentCSV('Actions', ruleInfo.action);
-    csv += this.contentCSV('Purpose', ruleInfo.purpose);
-    csv += this.contentCSV('Techniques', ruleInfo.techniques);
-    csv += this.contentCSV('Targets', ruleInfo.targets);
-    csv += this.contentCSV('Level', ruleInfo.compliance);
-    csv += this.contentCSV('Success Criteria', ruleInfo.sc);
-    csv += this.contentCSV('Additional Information', ruleInfo.additionalLinks);
+    csv += this.contentCSV(getMessage('viewTitleSummaryLabel'), ruleInfo.summary);
+    csv += this.contentCSV(getMessage('ruleDefinitionLabel'),   ruleInfo.definition);
+    csv += this.contentCSV(getMessage('ruleActionLabel'),       ruleInfo.action);
+    csv += this.contentCSV(getMessage('rulePurposeLabel'),      ruleInfo.purpose);
+    csv += this.contentCSV(getMessage('ruleTechniquesLabel'),   ruleInfo.techniques);
+    csv += this.contentCSV(getMessage('ruleTargetLabel'),       ruleInfo.targets);
+    csv += this.contentCSV(getMessage('levelLabel'),            ruleInfo.compliance);
+    csv += this.contentCSV(getMessage('csvSuccessCriteria'),    ruleInfo.sc);
+    csv += this.contentCSV(getMessage('ruleAdditionalLabel'),   ruleInfo.additionalLinks);
     csv += '\n';
 
     return csv;
