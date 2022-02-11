@@ -19,49 +19,90 @@ export class commonCSV {
     return ariaTransLRulesetLabel;
   }
 
+  arrayToCSV (items, lines) {
+    if (typeof extraLine !== 'number') {
+      lines = 1;
+    }
+    let csv = '';
+    items.forEach( (item, index) => {
+      if (index !== 0) {
+        csv += ',';
+      }
+      csv += '"' + cleanCSVItem(item) + '"';
+    });
+
+    for (let i = 0; i < lines; i += 1) {
+      csv += '\n';
+    }
+    return csv;
+  }
+
   getCSV (options, title, location) {
     let csv = '';
-    csv += `"Page Title:","${cleanCSVItem(title)}"\n`;
-    csv += `"Page URL:","${cleanCSVItem(location)}"\n`;
-    csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n`;
-    csv += `"Date:","${getTodaysDate()}"\n`;
-    csv += `"Time:","${getTimeOfDay()}"\n`;
-    csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
+    csv += this.arrayToCSV([getMessage('csvPageTitle'), title]);
+    csv += this.arrayToCSV([getMessage('csvPageURL'), location]);
+    csv += this.arrayToCSV([getMessage('csvRuleset'), this.getRulesetTitle(options.rulesetId)]);
+    csv += this.arrayToCSV([getMessage('csvDate'), getTodaysDate()]);
+    csv += this.arrayToCSV([getMessage('csvTime'), getTimeOfDay()]);
+    csv += this.arrayToCSV([getMessage('csvSource'), 'AInspector ' + getMessage('extensionVersion')], 2);
     return csv;
   }
 
   getRuleResultsCSV (title, ruleResults, incRC, incGL) {
-
-    ruleResults = sortRuleResults(ruleResults);
-
     if (typeof incRC !== 'boolean') {
       incRC = false;
     }
     if (typeof incGL !== 'boolean') {
       incGL = false;
     }
-    let csv = '';
-    csv += `\n"Group Title:","${title}"\n\n`
+    let props = [];
+    let csv = '\n';
 
-    csv += `"Rule Summary","Result","Result Value",`;
+    ruleResults = sortRuleResults(ruleResults);
+
+    csv += this.arrayToCSV([getMessage('csvGroupTitle'), title], 2);
+    props.push(getMessage('csvRuleSummary'));
+    props.push(getMessage('resultLabel'));
+    props.push(getMessage('csvResultValue'));
     if (incRC) {
-      csv += `"Rule Category",`;
+      props.push(getMessage('ruleCategoryLabel'));
     }
     if (incGL) {
-      csv += `"Guideline",`;
+      props.push(getMessage('guidelineLabel'));
     }
-    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`;
+    props.push(getMessage('csvSuccessCriteria'));
+    props.push(getMessage('levelLabel'));
+    props.push(getMessage('requiredLabel'));
+    props.push(getMessage('violationsLabel'));
+    props.push(getMessage('warningsLabel'));
+    props.push(getMessage('manualChecksLabel'));
+    props.push(getMessage('passedLabel'));
+    props.push(getMessage('hiddenLabel'));
+
+    csv += this.arrayToCSV(props);
+
     for (let i = 0; i < ruleResults.length; i += 1) {
+      let values = [];
       let rr = ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}",`;
+      values.push(rr.summary);
+      values.push(rr.result);
+      values.push(rr.resultValue);
       if (incRC) {
-        csv += `"${rr.ruleCategory}",`;
+        values.push(rr.ruleCategory);
       }
       if (incGL) {
-        csv += `"${rr.guideline}",`;
+        values.push(rr.guideline);
       }
-      csv += `"${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
-      csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
+      values.push(rr.wcag);
+      values.push(rr.level);
+      values.push((rr.required ? 'Y' : ''));
+      values.push(rr.elemViolations);
+      values.push(rr.elemWarnings);
+      values.push(rr.elemManualChecks);
+      values.push(rr.elemPassed);
+      values.push(rr.elemHidden);
+
+      csv += this.arrayToCSV(values);
     }
     return csv;
   }
@@ -69,27 +110,29 @@ export class commonCSV {
   contentCSV(label, info) {
     if (!info) return '';
 
-    let i, item, csv = '';
+    let i, item, values, csv = '';
 
     if (typeof info === 'string') {
-      csv += `"${label}","${cleanCSVItem(info)}"\n`;
+      csv += this.arrayToCSV([label, info]);
     } else {
       if (info.length) {
-        csv += `"${label}",`;
+        values = [label];
         for (i = 0; i < info.length; i += 1) {
           item = info[i];
           if (i !== 0) {
-            csv += `"",`;
+            values = [''];
           }
           if (typeof item === 'string') {
-              csv += `"${cleanCSVItem(item)}"\n`;
+              values.push(item);
           } else {
             if (item.url) {
-              csv += `"${cleanCSVItem(item.title)}","${cleanCSVItem(item.url)}"\n`;
+              values.push(item.title);
+              values.push(item.url);
             } else {
-              csv += `"${cleanCSVItem(item.title)}"\n`;
+              values.push(item.title);
             }
           }
+          csv += this.arrayToCSV(values);
         }
       }
     }
@@ -97,9 +140,9 @@ export class commonCSV {
   }
 
   getDetailsActionCSV (ruleInfo) {
-    let csv = '';
+    let csv = '\n';
 
-    csv += `"Details/Action"\n`;
+    csv += this.arrayToCSV([getMessage('detailsActionLabel')]);
     csv += this.contentCSV('Summary', ruleInfo.summary);
     csv += this.contentCSV('Definition', ruleInfo.definition);
     csv += this.contentCSV('Actions', ruleInfo.action);
@@ -109,6 +152,7 @@ export class commonCSV {
     csv += this.contentCSV('Level', ruleInfo.compliance);
     csv += this.contentCSV('Success Criteria', ruleInfo.sc);
     csv += this.contentCSV('Additional Information', ruleInfo.additionalLinks);
+    csv += '\n';
 
     return csv;
   }

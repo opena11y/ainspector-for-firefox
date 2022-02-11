@@ -3,7 +3,7 @@
 const getMessage  = browser.i18n.getMessage;
 const sendMessage = browser.runtime.sendMessage;
 
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+import { GUIDELINES, RULE_CATEGORIES, ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 import ViewSummaryCSV  from './viewSummaryCSV.js';
 
 
@@ -168,6 +168,32 @@ export default class ViewSummary {
     return count + ' ' + getMessage(idNotOne);
   }
 
+  updateRow (id, grid, result) {
+    let row = grid.getRowById(id);
+
+    let cell = grid.getCellByPosition(row, 1);
+    let rowAccName = cell.textContent;
+
+    let celAcclName = this.getNameForNumber(result.violations, 'violationLabel', 'violationsLabel')
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 2, result.violations, celAcclName);
+
+    celAcclName = this.getNameForNumber(result.warnings, 'warningLabel', 'warningsLabel');
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 3, result.warnings, celAcclName);
+
+    celAcclName = this.getNameForNumber(result.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 4, result.manual_checks, celAcclName);
+
+    celAcclName = ', ' + result.passed + ' ' + getMessage('passedLabel');
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 5, result.passed, celAcclName);
+
+    // Add accessible name describing the row content
+    row.setAttribute('aria-label', rowAccName);
+  }
+
   update (infoSummary) {
     let i, gResult, row, rowAccName, cell, celAcclName;
 
@@ -187,62 +213,18 @@ export default class ViewSummary {
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       gResult = this.rcResults[i];
-      row = this.rcResultGrid.getRowById('rc' + gResult.id);
-
-      cell = this.rcResultGrid.getCellByPosition(row, 1);
-      rowAccName = cell.textContent;
-
-      celAcclName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 2, gResult.violations, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel');
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 3, gResult.warnings, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 4, gResult.manual_checks, celAcclName);
-
-      celAcclName = ', ' + gResult.passed + ' ' + getMessage('passedLabel');
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 5, gResult.passed, celAcclName);
-
-      // Add accessible name describing the row content
-      row.setAttribute('aria-label', rowAccName);
+      this.updateRow('rc' + gResult.id, this.rcResultGrid, gResult);
     }
-
+    this.updateRow('rc' + RULE_CATEGORIES.ALL, this.rcResultGrid, infoSummary);
     this.rcResultGrid.setSelectedRowUsingLastId();
 
     this.glResults = infoSummary.glResults;
 
     for (i = 0; i < this.glResults.length; i += 1) {
       gResult = this.glResults[i];
-      row = this.glResultGrid.getRowById('gl' + gResult.id);
-
-      cell = this.glResultGrid.getCellByPosition(row, 1)
-      rowAccName = cell.textContent;
-
-      celAcclName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 2, gResult.violations, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 3, gResult.warnings, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 4, gResult.manual_checks, celAcclName);
-
-      celAcclName = ', ' + gResult.passed + ' ' + getMessage('passedLabel');
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 5, gResult.passed, celAcclName);
-
-      // Add accessible name describing the row content
-      row.setAttribute('aria-label', rowAccName);
+      this.updateRow('gl' + gResult.id, this.glResultGrid, gResult);
     }
-
+    this.updateRow('gl' + GUIDELINES.ALL, this.glResultGrid, infoSummary);
     this.glResultGrid.setSelectedRowUsingLastId();
 
     if (this.resultTablist.selectedTabId === 'tabpanel-1') {

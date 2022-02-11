@@ -119,16 +119,10 @@ export default class ViewRuleResultCSV extends commonCSV{
     return props;
   }
 
-  addCSVColumnHeaders(props, flag) {
-    if (typeof flag !== 'boolean') {
-      flag = true;
-    }
-    let csv = '';
+  getColumnHeaders(props) {
+    let values = [];
     for (let i = 0; i < props.length; i += 1) {
       let prop = props[i];
-      if ((i !== 0) || flag) {
-        csv += ',';
-      }
       if (prop.indexOf('_') >= 0) {
         prop = prop.replaceAll('_', ' ');
       }
@@ -138,39 +132,32 @@ export default class ViewRuleResultCSV extends commonCSV{
       if (prop.indexOf('tagName') >= 0) {
         prop = 'element';
       }
-      csv += '"' + cleanCSVItem(prop) + '"';
+      values.push(prop);
     }
-    return csv;
+    return values;
   }
 
 
-  getCSVFromObject (info, props, flag) {
-    if (typeof flag !== 'boolean') {
-      flag = true;
-    }
-    let csv = '', value;
+  getValuesFromObject (info, props) {
+    let values = [], value;
     for (let i = 0; i < props.length; i += 1) {
       value = '';
       if (info) {
         value = info[props[i]];
-        if (i != 0 || flag) {
-          csv += ',';
-        }
       }
-      csv += '"' + cleanCSVItem(value) + '"';
+      values.push(value);
     }
-    return csv;
+    return values;
   }
 
   elementResultToCSV (elementInfo, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps) {
-    let csv = '';
-    csv += this.getCSVFromObject(elementInfo, basicProps, false);
-    csv += this.getCSVFromObject(elementInfo.accNameInfo, accNameProps);
-    csv += this.getCSVFromObject(elementInfo.ccrInfo, ccrProps);
-    csv += this.getCSVFromObject(elementInfo.visibilityInfo, visProps);
-    csv += this.getCSVFromObject(elementInfo.htmlAttrInfo, htmlAttrProps);
-    csv += this.getCSVFromObject(elementInfo.ariaAttrInfo, ariaAttrProps);
-    return csv + '\n';
+    let values = this.getValuesFromObject(elementInfo, basicProps);
+    values = values.concat(this.getValuesFromObject(elementInfo.accNameInfo, accNameProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.ccrInfo, ccrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.visibilityInfo, visProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.htmlAttrInfo, htmlAttrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.ariaAttrInfo, ariaAttrProps));
+    return this.arrayToCSV(values);
   }
 
   getCSV (options, title, location) {
@@ -184,16 +171,16 @@ export default class ViewRuleResultCSV extends commonCSV{
     let csv = super.getCSV(options, title, location);
 
     csv += this.getDetailsActionCSV(this.detailsAction);
+    csv += this.arrayToCSV([getMessage('elementResultsLabel')]);
 
-    csv += `\n\n"Element Results"\n`;
+    let cols = this.getColumnHeaders(basicProps);
+    cols = cols.concat(this.getColumnHeaders(accNameProps));
+    cols = cols.concat(this.getColumnHeaders(ccrProps));
+    cols = cols.concat(this.getColumnHeaders(visProps));
+    cols = cols.concat(this.getColumnHeaders(htmlAttrProps));
+    cols = cols.concat(this.getColumnHeaders(ariaAttrProps));
 
-    csv += this.addCSVColumnHeaders(basicProps, false);
-    csv += this.addCSVColumnHeaders(accNameProps);
-    csv += this.addCSVColumnHeaders(ccrProps);
-    csv += this.addCSVColumnHeaders(visProps);
-    csv += this.addCSVColumnHeaders(htmlAttrProps);
-    csv += this.addCSVColumnHeaders(ariaAttrProps);
-    csv += '\n';
+    csv += this.arrayToCSV(cols);
 
     for (let er in this.elementResults) {
       let info = this.elementResults[er];

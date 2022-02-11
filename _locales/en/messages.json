@@ -455,7 +455,7 @@
   },
 
   "detailsActionLabel": {
-    "message": "Details/Action",
+    "message": "Details / Action",
     "description": "Details/action tab label in rule results view"
   },
 
@@ -762,6 +762,56 @@
   "shortcutDefaultRerun": {
     "message": "r",
     "description": "Default shortcut key for activating the Rerun Evaluation button."
+  },
+
+  "csvPageTitle": {
+    "message": "Page Title:",
+    "description": "Page title label for CSV export."
+  },
+
+  "csvPageURL": {
+    "message": "Page URL:",
+    "description": "Page URL label for CSV export."
+  },
+
+  "csvRuleset": {
+    "message": "Ruleset:",
+    "description": "Ruleset label for CSV export."
+  },
+
+  "csvDate": {
+    "message": "Date:",
+    "description": "Date label for CSV export."
+  },
+
+  "csvTime": {
+    "message": "Time:",
+    "description": "Time label for CSV export."
+  },
+
+  "csvSource": {
+    "message": "Source:",
+    "description": "Source label for CSV export."
+  },
+
+  "csvGroupTitle": {
+    "message": "Group Title:",
+    "description": "Group title label for CSV export."
+  },
+
+  "csvRuleSummary": {
+    "message": "Rule Summary",
+    "description": "Rule Summary columns header for CSV export."
+  },
+
+  "csvResultValue": {
+    "message": "Result Value",
+    "description": "Result Value column header for CSV export"
+  },
+
+  "csvSuccessCriteria": {
+    "message": "Success Criteria",
+    "description": "Success Criteria column header for CSV export"
   }
 
 }

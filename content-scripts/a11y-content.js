@@ -41041,7 +41041,7 @@ OpenAjax.a11y.nls.RuleCategories.addNLS('en-us', {
     // Composite rule categories
     {
       id           : OpenAjax.a11y.RULE_CATEGORIES.ALL,
-      title        : 'All Categories',
+      title        : 'All Rules',
       url          : '',
       description  : 'Includes all rules in the ruleset and provides a way to sort and compare the results of all the rules.'
     }
@@ -41080,7 +41080,7 @@ OpenAjax.a11y.nls.WCAG20.addNLS('en-us', {
   levels: [  'Undefined',  'AAA',  'AA',  '',  'A'  ],
   evaluation_levels: [  'Undefined',  'AAA',  'AA',  'AA and AAA',  'A',  'A and AAA',  'A nd AA',  'A, AA and AAA'  ],
   all_guidelines: {
-    title: 'All Guidelines',
+    title: 'All Rules',
     description: 'All the rules related to WCAG 2.1.',
     url_spec: 'https://www.w3.org/TR/WCAG21/'
   },
