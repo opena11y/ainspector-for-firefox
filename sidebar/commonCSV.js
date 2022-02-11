@@ -45,14 +45,8 @@ export class commonCSV {
     return csv;
   }
 
-  getRuleResultsCSV (title, ruleResults, incRC, incGL) {
-    if (typeof incRC !== 'boolean') {
-      incRC = false;
-    }
-    if (typeof incGL !== 'boolean') {
-      incGL = false;
-    }
-    let props = [];
+  getRuleResultsCSV (title, ruleResults, incRC=false, incGL=false) {
+    const props = [];
     let csv = '\n';
 
     ruleResults = sortRuleResults(ruleResults);
@@ -79,7 +73,7 @@ export class commonCSV {
     csv += this.arrayToCSV(props);
 
     for (let i = 0; i < ruleResults.length; i += 1) {
-      let values = [];
+      const values = [];
       let rr = ruleResults[i];
       values.push(rr.summary);
       values.push(rr.result);

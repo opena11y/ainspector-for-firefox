@@ -171,10 +171,11 @@ export default class ViewRuleGroup {
     this.isAllRules = infoRuleGroup.ruleResults.length > 60;
 
     if (infoRuleGroup.groupType === 'gl') {
-      this.gridH2.textContent = getMessage('guidelineResultGridLabel');
+//      this.gridH2.textContent = getMessage('guidelineResultGridLabel');
     } else {
-      this.gridH2.textContent = getMessage('ruleCategoryResultGridLabel');
+//      this.gridH2.textContent = getMessage('ruleCategoryResultGridLabel');
     }
+    this.gridH2.textContent = 'Rule Results';
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {

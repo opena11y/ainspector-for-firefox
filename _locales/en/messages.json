@@ -515,7 +515,7 @@
   },
 
   "elementGridLabel": {
-    "message": "Rule / Element Results",
+    "message": "Element Results",
     "description": "Label for Rule/Element results grid"
   },
 
