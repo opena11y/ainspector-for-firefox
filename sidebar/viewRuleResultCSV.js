@@ -137,7 +137,6 @@ export default class ViewRuleResultCSV extends commonCSV{
     return values;
   }
 
-
   getValuesFromObject (info, props) {
     let values = [], value;
     for (let i = 0; i < props.length; i += 1) {
@@ -171,6 +170,7 @@ export default class ViewRuleResultCSV extends commonCSV{
     let csv = super.getCSV(options, title, location);
 
     csv += this.getDetailsActionCSV(this.detailsAction);
+
     csv += this.arrayToCSV([getMessage('elementResultsLabel')]);
 
     let cols = this.getColumnHeaders(basicProps);
