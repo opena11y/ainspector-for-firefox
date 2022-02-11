@@ -5,6 +5,9 @@ import { cleanCSVItem, commonCSV } from './commonCSV.js';
 const getMessage = browser.i18n.getMessage;
 const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
+const msg = {};
+msg.elementResultsLabel = getMessage('elementResultsLabel');
+
 export default class ViewRuleResultCSV extends commonCSV{
   constructor(detailsAction, elementResults) {
     super();
@@ -171,7 +174,7 @@ export default class ViewRuleResultCSV extends commonCSV{
 
     csv += this.getDetailsActionCSV(this.detailsAction);
 
-    csv += this.arrayToCSV([getMessage('elementResultsLabel')]);
+    csv += this.arrayToCSV([msg.elementResultsLabel]);
 
     let cols = this.getColumnHeaders(basicProps);
     cols = cols.concat(this.getColumnHeaders(accNameProps));

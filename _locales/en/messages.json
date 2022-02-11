@@ -359,14 +359,9 @@
     "description": "Label for rule results grid"
   },
 
-  "ruleCategoryResultGridLabel": {
-    "message": "Rule Category Results",
-    "description": "Label for rule category results grid"
-  },
-
-  "guidelineResultGridLabel": {
-    "message": "Guideline Results",
-    "description": "Label for guideline results grid"
+  "ruleResultsGridLabel": {
+    "message": "Rule Results",
+    "description": "Label for rule results grid"
   },
 
   "ruleSelectedLabel": {

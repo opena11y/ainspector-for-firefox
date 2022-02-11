@@ -6,6 +6,11 @@ import { getOptions } from '../storage.js';
 
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
+const msg = {};
+msg.viewsMenuButtonLabel = getMessage('viewsMenuButtonLabel');
+msg.ruleCategoriesLabel  = getMessage('ruleCategoriesLabel');
+msg.guidelinesLabel      = getMessage('guidelinesLabel');
+
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="views-menu-button">
@@ -44,7 +49,7 @@ export default class ViewsMenuButton extends HTMLElement {
 
     this.button  = this.shadowRoot.querySelector('button');
     this.labelSpan = this.button.querySelector('.label');
-    this.labelSpan.textContent = getMessage('viewsMenuButtonLabel');
+    this.labelSpan.textContent = msg.viewsMenuButtonLabel;
     this.button.addEventListener('click', this.onButtonClick.bind(this));
 
     this.menuDiv = this.shadowRoot.querySelector('[role="menu"]');
@@ -71,13 +76,19 @@ export default class ViewsMenuButton extends HTMLElement {
     this.callback = callback;
   }
 
-  addSeparator() {
-    const separatorDiv = document.createElement('div');
-    separatorDiv.setAttribute('role', 'separator');
-    this.menuDiv.appendChild(separatorDiv);
+  addGroup(node, label) {
+    const groupDiv = document.createElement('div');
+    groupDiv.setAttribute('role', 'group');
+    groupDiv.setAttribute('aria-label', label);
+    node.appendChild(groupDiv);
+    const div = document.createElement('div');
+    div.className = 'label';
+    div.textContent = label;
+    groupDiv.appendChild(div);
+    return groupDiv;
   }
 
-  addMenuitem(optionId, messageId) {
+  addMenuitem(node, optionId, messageId) {
     const menuitemDiv = document.createElement('div');
 
     menuitemDiv.id = optionId;
@@ -86,7 +97,7 @@ export default class ViewsMenuButton extends HTMLElement {
     menuitemDiv.addEventListener('keydown', this.onMenuitemKeydown.bind(this));
     menuitemDiv.textContent = getMessage(messageId);
 
-    this.menuDiv.appendChild(menuitemDiv);
+    node.appendChild(menuitemDiv);
 
     this.menuitems.push(menuitemDiv);
     if (!this.firstMenuitem) {
@@ -115,26 +126,24 @@ export default class ViewsMenuButton extends HTMLElement {
 
     this.menuDiv.innerHTML = '';
 
-    this.addMenuitem('summary', 'summaryLabel');
-    this.addSeparator();
+    this.addMenuitem(this.menuDiv, 'summary', 'summaryLabel');
+    const rcGroupDiv = this.addGroup(this.menuDiv, msg.ruleCategoriesLabel);
 
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       rcId = ruleCategoryIds[i];
       msgId = getRuleCategoryLabelId(rcId);
-      this.addMenuitem('rc' + rcId, msgId);
+      this.addMenuitem(rcGroupDiv, 'rc' + rcId, msgId);
     }
 
     getOptions().then( (options) => {
       if (options.viewsMenuIncludeGuidelines) {
-        this.addSeparator();
+        const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
         for (i = 0; i < guidelineIds.length; i += 1 ) {
           glId = guidelineIds[i];
           msgId = getGuidelineLabelId(glId);
-          this.addMenuitem('gl' + glId, msgId);
+          this.addMenuitem(glGroupDiv, 'gl' + glId, msgId);
         }
       }
-      this.addSeparator();
-      this.addMenuitem('all-rules', 'allRulesLabel');
     })
 
     this.closePopup();
