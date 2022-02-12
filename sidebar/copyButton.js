@@ -2,6 +2,13 @@
 
 const getMessage = browser.i18n.getMessage;
 
+// Messages used in this file
+const msg = {};
+msg.copyLabel        = getMessage('copyLabel');
+msg.copySuccessLabel = getMessage('copySuccessLabel');
+msg.copyFailedLabel  = getMessage('copyFailedLabel');
+
+
 const template = document.createElement('template');
 template.innerHTML = `
   <button>
@@ -25,9 +32,9 @@ export default class CopyButton extends HTMLElement {
     this.shadowRoot.appendChild(link);
 
     // Get constants
-    this.copyLabel   = getMessage('copyLabel');
-    this.copiedLabel = getMessage('copySuccessLabel');
-    this.failedLabel = getMessage('copyFailedLabel');
+    this.copyLabel   = msg.copyLabel;
+    this.copiedLabel = msg.copySuccessLabel;
+    this.failedLabel = msg.copyFailedLabel;
 
     // Get references
     this.copyButton  = this.shadowRoot.querySelector('button');

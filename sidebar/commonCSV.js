@@ -6,8 +6,8 @@ import { sortRuleResults } from './sortUtils.js';
 
 const getMessage = browser.i18n.getMessage;
 
+// Messages used in this file
 const msg = {};
-
 msg.extensionVersion          = getMessage('extensionVersion');
 msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
 msg.optionsRulesetTransLabel  = getMessage('optionsRulesetTransLabel');

@@ -4,6 +4,14 @@
 
 const getMessage = browser.i18n.getMessage;
 
+// Messages used in this file
+const msg = {};
+msg.shortcutDefaultBack   = getMessage('shortcutDefaultBack');
+msg.shortcutDefaultViews  = getMessage('shortcutDefaultViews');
+msg.shortcutDefaultExport = getMessage('shortcutDefaultExport');
+msg.shortcutDefaultRerun  = getMessage('shortcutDefaultRerun');
+msg.shortcutDefaultCopy   = getMessage('shortcutDefaultCopy');
+
 export const defaultOptions = {
   isSidebarOpen: false,
   rulesetId: 'ARIA_STRICT',
@@ -22,11 +30,11 @@ export const defaultOptions = {
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,
-  shortcutBack: getMessage('shortcutDefaultBack'),
-  shortcutViews: getMessage('shortcutDefaultViews'),
-  shortcutExport: getMessage('shortcutDefaultExport'),
-  shortcutRerun: getMessage('shortcutDefaultRerun'),
-  shortcutCopy: getMessage('shortcutDefaultCopy'),
+  shortcutBack: msg.shortcutDefaultBack,
+  shortcutViews: msg.shortcutDefaultViews,
+  shortcutExport:msg.shortcutDefaultExport,
+  shortcutRerun: msg.shortcutDefaultRerun,
+  shortcutCopy: msg.shortcutDefaultCopy,
   shortcutsEnabled: false
 };
 
