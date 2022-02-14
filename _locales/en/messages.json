@@ -802,6 +802,61 @@
   "csvSuccessCriteria": {
     "message": "Success Criteria",
     "description": "Success Criteria column header for CSV export"
+  },
+
+  "shortcutsHeading": {
+    "message": "Shortcut Keys",
+    "description": "Label for section on congifugint shortcut keys."
+  },
+
+  "shortcutsEnabledLabel": {
+    "message": "Enable keyboard shortcuts.",
+    "description": "Label for checkbox enabling shortcuts."
+  },
+
+ "shortcutsTableShortcut": {
+    "message": "Shortcut",
+    "description": "Heading for shortcut column in table."
+  },
+
+ "shortcutsTableAction": {
+    "message": "Action",
+    "description": "Heading for action column in table."
+  },
+
+  "shortcutBackLabel": {
+    "message": "Activates Back button (e.g. use <- or Delete key on macOS).",
+    "description": "Describes the action of the Back shortcut key."
+  },
+
+  "shortcutViewsLabel": {
+    "message": "Activates Views button.",
+    "description": "Describes the action of the Views shortcut key."
+  },
+
+  "shortcutExportLabel": {
+    "message": "Activates Export button.",
+    "description": "Describes the action of the Export shortcut key."
+  },
+
+  "shortcutRerunLabel": {
+    "message": "Activates Rerun Evaluation button.",
+    "description": "Describes the action of the Re-run shortcut key."
+  },
+
+  "shortcutCopyLabel": {
+    "message": "Activates Copy button.",
+    "description": "Describes the action of the Copy shortcut key."
+  },
+
+  "shortcutsNotes": {
+    "message": "Note: Leaving the shortcut key value empty disables the shortcut.",
+    "description": "Note providing information on how to disabled an individual shortcut."
+  },
+
+  "shortcutFeedback": {
+    "message": "The $key is already being used.",
+    "description": "Feedback to use if the shortcute is already defined."
   }
 
 }

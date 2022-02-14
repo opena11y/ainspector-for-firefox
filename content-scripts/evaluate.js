@@ -242,9 +242,6 @@ function getElementResultInfo(ruleResult) {
       'ariaAttrInfo'   : ariaAttrInfo
     };
 
-//    console.log('[addElementResult][       ccrInfo]: ' + ccrInfo);
-//    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
-
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;

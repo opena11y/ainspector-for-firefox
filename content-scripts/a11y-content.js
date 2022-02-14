@@ -62718,9 +62718,6 @@ function getElementResultInfo(ruleResult) {
       'ariaAttrInfo'   : ariaAttrInfo
     };
 
-//    console.log('[addElementResult][       ccrInfo]: ' + ccrInfo);
-//    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
-
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
@@ -63539,17 +63536,6 @@ function getEvaluationInfo(panelPort) {
   let position  = infoAInspectorEvaluation.position;
   let highlightOnly   = infoAInspectorEvaluation.highlightOnly;
   let removeHighlight = infoAInspectorEvaluation.removeHighlight;
-
-/*
-  console.log('[content.js][           view]: ' + view);
-  console.log('[content.js][      groupType]: ' + groupType);
-  console.log('[content.js][        groupId]: ' + groupId + ' (' + typeof groupId + ')');
-  console.log('[content.js][         ruleId]: ' + ruleId);
-  console.log('[content.js][      rulesetId]: ' + rulesetId);
-  console.log('[content.js][      highlight]: ' + highlight+ ' (' + typeof highlight + ')');
-  console.log('[content.js][  highlightOnly]: ' + highlightOnly + ' (' + typeof highlightOnly + ')');
-  console.log('[content.js][       position]: ' + position + ' (' + typeof position + ')');
-*/
 
   let info = {};
   info.id       = 'info';

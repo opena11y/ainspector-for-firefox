@@ -5,35 +5,46 @@ import { validatePrefix, validateShortcut } from './validate.js';
 
 const getMessage = browser.i18n.getMessage;
 const msg = {};
-msg.optionsTitle = getMessage('optionsTitle');
+msg.optionsTitle           = getMessage('optionsTitle');
 msg.optionsViewsMenuLegend = getMessage('optionsViewsMenuLegend');
 msg.optionsInclWcagGlLabel = getMessage('optionsInclWcagGlLabel');
 msg.optionsRerunEvaluationLegend = getMessage('optionsRerunEvaluationLegend');
-msg.optionsNoDelayLabel = getMessage('optionsNoDelayLabel');
-msg.optionsPromptForDelayLabel = getMessage('optionsPromptForDelayLabel');
-msg.optionsEvaluationHeading = getMessage('optionsEvaluationHeading');
-msg.optionsRulesetLegend = getMessage('optionsRulesetLegend');
-msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
-msg.optionsRulesetTransLabel = getMessage('optionsRulesetTransLabel');
-msg.optionsRuleResultsLegend = getMessage('optionsRuleResultsLegend');
-msg.optionsInclPassNaLabel = getMessage('optionsInclPassNaLabel');
-msg.optionsExportHeading = getMessage('optionsExportHeading');
-msg.optionsExportPrompt = getMessage('optionsExportPrompt');
+msg.optionsNoDelayLabel          = getMessage('optionsNoDelayLabel');
+msg.optionsPromptForDelayLabel   = getMessage('optionsPromptForDelayLabel');
+msg.optionsEvaluationHeading  = getMessage('optionsEvaluationHeading');
+// msg.optionsRulesetLegend      = getMessage('optionsRulesetLegend');
+// msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
+// msg.optionsRulesetTransLabel  = getMessage('optionsRulesetTransLabel');
+msg.optionsRuleResultsLegend  = getMessage('optionsRuleResultsLegend');
+msg.optionsInclPassNaLabel    = getMessage('optionsInclPassNaLabel');
+msg.optionsExportHeading      = getMessage('optionsExportHeading');
+msg.optionsExportPrompt       = getMessage('optionsExportPrompt');
 msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
-msg.optionsExportCSVLabel = getMessage('optionsExportCSVLabel');
-msg.optionsExportJSONLabel = getMessage('optionsExportJSONLabel');
-msg.optionsExportPrefixLabel = getMessage('optionsExportPrefixLabel');
-msg.optionsExportIncludeDate = getMessage('optionsExportIncludeDate');
-msg.optionsResetDefaults = getMessage('optionsResetDefaults');
+msg.optionsExportCSVLabel     = getMessage('optionsExportCSVLabel');
+msg.optionsExportJSONLabel    = getMessage('optionsExportJSONLabel');
+msg.optionsExportPrefixLabel  = getMessage('optionsExportPrefixLabel');
+msg.optionsExportIncludeDate  = getMessage('optionsExportIncludeDate');
+msg.optionsResetDefaults      = getMessage('optionsResetDefaults');
 
+msg.shortcutsHeading       = getMessage('shortcutsHeading');
+msg.shortcutsEnabledLabel  = getMessage('shortcutsEnabledLabel');
+msg.shortcutsTableShortcut = getMessage('shortcutsTableShortcut');
+msg.shortcutsTableAction   = getMessage('shortcutsTableAction');
+msg.shortcutBackLabel      = getMessage('shortcutBackLabel');
+msg.shortcutViewsLabel     = getMessage('shortcutViewsLabel');
+msg.shortcutExportLabel    = getMessage('shortcutExportLabel');
+msg.shortcutRerunLabel     = getMessage('shortcutRerunLabel');
+msg.shortcutCopyLabel      = getMessage('shortcutCopyLabel');
+msg.shortcutsNote          = getMessage('shortcutsNotes');
+msg.shortcutFeedback       = getMessage('shortcutFeedback');
 
 const debug = true;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
 const noDelay        = document.querySelector('input[id="options-no-delay"]');
 const promptForDelay = document.querySelector('input[id="options-prompt-for-delay"]');
 
-const rulesetStrict  = document.querySelector('input[id="ARIA_STRICT"]');
-const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
+// const rulesetStrict  = document.querySelector('input[id="ARIA_STRICT"]');
+// const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
 const exportPrompt   = document.querySelector('#options-export-prompt');
@@ -42,12 +53,12 @@ const exportJSON     = document.querySelector('#options-export-json');
 const exportPrefix   = document.querySelector('#options-export-prefix');
 const exportDate     = document.querySelector('#options-export-date');
 
-const shortcutBackKbd        = document.querySelector('#options-shortcut-back');
-const shortcutViewsTextbox   = document.querySelector('#options-shortcut-views');
-const shortcutExportTextbox  = document.querySelector('#options-shortcut-export');
-const shortcutRerunTextbox   = document.querySelector('#options-shortcut-rerun');
-const shortcutCopyTextbox    = document.querySelector('#options-shortcut-copy');
-const shortcutsEnabledCheckbox     = document.querySelector('#options-shortcuts-enabled');
+const shortcutsEnabledCheckbox  = document.querySelector('#shortcuts-enabled');
+const shortcutBackKbd           = document.querySelector('#shortcut-back');
+const shortcutViewsTextbox      = document.querySelector('#shortcut-views');
+const shortcutExportTextbox     = document.querySelector('#shortcut-export');
+const shortcutRerunTextbox      = document.querySelector('#shortcut-rerun');
+const shortcutCopyTextbox       = document.querySelector('#shortcut-copy');
 
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
@@ -61,9 +72,9 @@ function setFormLabels () {
   const optionsPromptForDelayLabel   = document.querySelector('#options-prompt-for-delay-label');
 
   const optionsEvaluationHeading     = document.querySelector('#options-evaluation-heading');
-  const optionsRulesetLegend         = document.querySelector('#options-ruleset-legend');
-  const optionsRulesetStrictLabel    = document.querySelector('#options-ruleset-strict-label');
-  const optionsRulesetTransLabel     = document.querySelector('#options-ruleset-trans-label');
+//  const optionsRulesetLegend         = document.querySelector('#options-ruleset-legend');
+//  const optionsRulesetStrictLabel    = document.querySelector('#options-ruleset-strict-label');
+//  const optionsRulesetTransLabel     = document.querySelector('#options-ruleset-trans-label');
   const optionsRuleResultsLegend     = document.querySelector('#options-rule-results-legend');
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
@@ -75,7 +86,18 @@ function setFormLabels () {
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
   const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
-  const optionsResetDefaults         = document.querySelector('#options-reset-defaults');
+  const shortcutsHeading       = document.querySelector('#shortcuts-heading');
+  const shortcutsEnabledLabel  = document.querySelector('#shortcuts-enabled-label');
+  const shortcutsTableShortcut = document.querySelector('#shortcut-table-shortcut');
+  const shortcutsTableAction   = document.querySelector('#shortcut-table-action');
+  const shortcutBackLabel     = document.querySelector('#shortcut-back-label');
+  const shortcutViewsLabel    = document.querySelector('#shortcut-views-label');
+  const shortcutExportLabel   = document.querySelector('#shortcut-export-label');
+  const shortcutRerunLabel    = document.querySelector('#shortcut-rerun-label');
+  const shortcutCopyLabel     = document.querySelector('#shortcut-copy-label');
+  const shortcutsNote         = document.querySelector('#shortcuts-note');
+
+  const optionsResetDefaults  = document.querySelector('#options-reset-defaults');
 
   optionsTitle.textContent            = msg.optionsTitle;
   optionsViewsMenuLegend.textContent  = msg.optionsViewsMenuLegend;
@@ -85,9 +107,9 @@ function setFormLabels () {
   optionsPromptForDelayLabel.textContent   = msg.optionsPromptForDelayLabel;
 
   optionsEvaluationHeading.textContent     = msg.optionsEvaluationHeading;
-  optionsRulesetLegend.textContent         = msg.optionsRulesetLegend;
-  optionsRulesetStrictLabel.textContent    = msg.optionsRulesetStrictLabel;
-  optionsRulesetTransLabel.textContent     = msg.optionsRulesetTransLabel;
+//  optionsRulesetLegend.textContent         = msg.optionsRulesetLegend;
+//  optionsRulesetStrictLabel.textContent    = msg.optionsRulesetStrictLabel;
+//  optionsRulesetTransLabel.textContent     = msg.optionsRulesetTransLabel;
   optionsRuleResultsLegend.textContent     = msg.optionsRuleResultsLegend;
   optionsInclPassNaLabel.textContent       = msg.optionsInclPassNaLabel;
 
@@ -99,6 +121,17 @@ function setFormLabels () {
   optionsExportPrefixLabel.textContent  = msg.optionsExportPrefixLabel;
   optionsExportDateLabel.textContent    = msg.optionsExportIncludeDate;
 
+  shortcutsHeading.textContent       = msg.shortcutsHeading;
+  shortcutsEnabledLabel.textContent  = msg.shortcutsEnabledLabel;
+  shortcutsTableShortcut.textContent = msg.shortcutsTableShortcut;
+  shortcutsTableAction.textContent   = msg.shortcutsTableAction;
+  shortcutBackLabel.textContent      = msg.shortcutBackLabel;
+  shortcutViewsLabel.textContent     = msg.shortcutViewsLabel;
+  shortcutExportLabel.textContent    = msg.shortcutExportLabel;
+  shortcutRerunLabel.textContent     = msg.shortcutRerunLabel;
+  shortcutCopyLabel.textContent      = msg.shortcutCopyLabel;
+  shortcutsNote.textContent          = msg.shortcutsNote;
+
   optionsResetDefaults.textContent         = msg.optionsResetDefaults;
 }
 
@@ -108,7 +141,7 @@ function saveFormOptions (e) {
   e.preventDefault();
 
   const options = {
-    rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
+  //  rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
 
     rerunDelayEnabled: promptForDelay.checked,
@@ -139,8 +172,8 @@ function updateForm (options) {
   inclWcagGl.checked     = options.viewsMenuIncludeGuidelines;
   noDelay.checked        = !options.rerunDelayEnabled;
   promptForDelay.checked = options.rerunDelayEnabled;
-  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
-  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
+//  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
+//  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
 
   exportPrompt.checked   = options.promptForExportOptions;
@@ -217,8 +250,8 @@ document.addEventListener('DOMContentLoaded', updateOptionsForm);
 inclWcagGl.addEventListener('change', saveFormOptions);
 noDelay.addEventListener('change', saveFormOptions);
 promptForDelay.addEventListener('change', saveFormOptions);
-rulesetStrict.addEventListener('change', saveFormOptions);
-rulesetTrans.addEventListener('change', saveFormOptions);
+// rulesetStrict.addEventListener('change', saveFormOptions);
+// rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
 
 exportPrompt.addEventListener('change', saveFormOptions);

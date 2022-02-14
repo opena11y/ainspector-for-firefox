@@ -33,6 +33,7 @@
 
       <h2 id="options-evaluation-heading">Evaluation</h2>
 
+<!--
       <fieldset>
         <legend id="options-ruleset-legend">Ruleset</legend>
         <label>
@@ -44,7 +45,7 @@
           <span id="options-ruleset-trans-label">HTML4 Legacy Techniques</span>
         </label>
       </fieldset>
-
+-->
       <fieldset>
         <legend id="options-rule-results-legend">Rule Results</legend>
         <label>
@@ -90,80 +91,80 @@
 
       </fieldset>
 
-      <h2 id="options-shortcut-keys">Shortcut Keys</h2>
+      <h2 id="shortcuts-heading">Shortcut Keys</h2>
 
 
       <div class="checkbox">
         <label>
-          <input type="checkbox" checked id="options-shortcuts-enabled"/>
-          <span id="options-shortcuts-enabled-label">Enable keyboard shortcuts.</span>
+          <input type="checkbox" checked id="shortcuts-enabled"/>
+          <span id="shortcuts-enabled-label">Enable keyboard shortcuts.</span>
         </label>
 
       <table class="shortcuts">
         <thead>
           <tr>
-            <th>Shortcut</th>
-            <th>Action</th>
+            <th id="shortcut-table-shortcut">Shortcut</th>
+            <th id="shortcut-table-action">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>
-              <kbd id="options-shortcut-back"></kbd>
+              <kbd id="shortcut-back"></kbd>
             </td>
             <td>
-              <div id="options-shortcut-back-label">
-                Activates Back button.
-              </div>
-              <div id="options-shortcut-back-note"class="note">
-                <span>Note:</span> The <kbd>Delete</kbd> button on macOS.
+              <div id="shortcut-back-label">
+                Activates Back button (e.g. use <- or Delete key on macOS).
               </div>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-copy" size="1" aria-describedby="">
+              <input type="text" id="shortcut-copy" size="1" aria-describedby="shortcut-copy-desc">
+              <div id="shortcut-copy-desc" class="feedback"></div>
             </td>
             <td>
-              <label for="options-shortcut-copy">
+              <label id="shortcut-copy-label" for="shortcut-copy">
                 Activates Copy button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-export" size="1">
+              <input type="text" id="shortcut-export" size="1" aria-describedby="shortcut-export-desc">
+              <div id="shortcut-export-desc" class="feedback"></div>
             </td>
             <td>
-              <label for="options-shortcut-export">
+              <label id="shortcut-export-label" for="shortcut-export">
                 Activates Export button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-rerun" size="1">
+              <input type="text" id="shortcut-rerun" size="1" aria-describedby="shortcut-rerun-desc">
+              <div id="shortcut-rerun-desc" class="feedback"></div>
             </td>
             <td>
-              <label for="options-shortcut-rerun">
+              <label id="shortcut-rerun-label" for="shortcut-rerun">
                 Activates Rerun Evaluation button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-views" size="1">
+              <input type="text" id="shortcut-views" size="1" aria-describedby="shortcut-views-desc">
+              <div id="shortcut-views-desc" class="feedback"></div>
             </td>
             <td>
-              <label for="options-shortcut-views">
+              <label id="shortcut-views-label" for="shortcut-views">
                Activates View button.
               </label>
             </td>
           </tr>
         </tbody>
       </table>
-      <p class="note"><span>Note:</span> Leaving the shortcut key value empty disables the shortcut.</p>
-
+      <p id="shortcuts-note" class="note">Note: Leaving the shortcut key value empty disables the shortcut.</p>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
 
