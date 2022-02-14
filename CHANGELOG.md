@@ -15,6 +15,7 @@
 
 * Renamed extension from "AInspector WCAG" to "AInspector", since most people just call it AInspector
 * Rewrote the entire code base to use web components for creating user interface controls
+* Remeoved ARIA Transitional ruleset from options
 * Used event and direct port model used in [a11ytools/addons/structure-3](https://github.com/a11y-tools/addons/tree/main/structure-3) to automatically update the evaluation based on tab changes and following links to fix long standing problems updating.
 * Updated the preferences to use the storage.js uility in [a11ytools/addons/structure-3](https://github.com/a11y-tools/addons/blob/main/structure-3/storage.js)
 * Export evaluation result in either CSV or JSON file formats
