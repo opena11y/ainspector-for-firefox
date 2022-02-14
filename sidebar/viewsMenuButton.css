@@ -2,6 +2,7 @@
 
 div {
   --menu-bg-color: #eee;
+  --menu-bg-highlight: #ddd;
   --menu-text-color: black;
   --menu-border-color: black;
 }
@@ -28,6 +29,7 @@ div {
 .views-menu-button [role="menuitem"],
 .views-menu-button [role="group"] div.label {
   margin: 0;
+  margin-right:  1em;
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 4px;
@@ -35,9 +37,10 @@ div {
   border: 0 solid var(--menu-border-color);
   border-radius: 4px;
   display: block;
-  width: 13em;
+  width: 12em;
   background-color: var(--menu-bg-color);
   color: var(--menu-text-color);
+  outline:  none;
 }
 
 .views-menu-button [role="group"] div.label {
@@ -49,7 +52,6 @@ div {
 .views-menu-button [role="group"] > [role="menuitem"] {
   margin-left: 4px;
 }
-
 
 .views-menu-button button svg.down {
   padding-left: 0.125em;
@@ -63,14 +65,17 @@ div {
 
 /* focus styling */
 
-.views-menu-button [role="menuitem"]:hover,
 .views-menu-button [role="menuitem"]:focus {
   padding-top: 0;
   padding-bottom: 0;
   padding-left:  2px;
   padding-right:  2px;
   border-width: 2px;
-  outline:  none;
+  background: var(--menu-bg-highlight);
+}
+
+.views-menu-button [role="menuitem"]:hover {
+  cursor: pointer;
 }
 
 .views-menu-button button:focus {

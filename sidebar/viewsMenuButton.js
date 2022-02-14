@@ -1,15 +1,41 @@
 /* viewMenuButton.js */
 
-const getMessage = browser.i18n.getMessage;
 
 import { getOptions } from '../storage.js';
 
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
+const getMessage = browser.i18n.getMessage;
 const msg = {};
 msg.viewsMenuButtonLabel = getMessage('viewsMenuButtonLabel');
 msg.ruleCategoriesLabel  = getMessage('ruleCategoriesLabel');
 msg.guidelinesLabel      = getMessage('guidelinesLabel');
+msg.landmarksLabel       = getMessage('landmarksLabel');
+msg.headingsLabel        = getMessage('headingsLabel');
+msg.stylesContentLabel   = getMessage('stylesContentLabel');
+msg.imagesLabel          = getMessage('imagesLabel');
+msg.formsLabel           = getMessage('formsLabel');
+msg.linksLabel           = getMessage('linksLabel');
+msg.tablesLabel          = getMessage('tablesLabel');
+msg.widgetsScriptsLabel  = getMessage('widgetsScriptsLabel');
+msg.audioVideoLabel      = getMessage('audioVideoLabel');
+msg.keyboardLabel        = getMessage('keyboardLabel');
+msg.timingLabel          = getMessage('timingLabel');
+msg.siteNavigationLabel  = getMessage('siteNavigationLabel');
+msg.allRulesLabel        = getMessage('allRulesLabel');
+msg.summaryLabel         = getMessage('summaryLabel');
+msg.g1_1 = getMessage('g1.1');
+msg.g1_2 = getMessage('g1.2');
+msg.g1_3 = getMessage('g1.3');
+msg.g1_4 = getMessage('g1.4');
+msg.g2_1 = getMessage('g2.1');
+msg.g2_2 = getMessage('g2.2');
+msg.g2_3 = getMessage('g2.3');
+msg.g2_4 = getMessage('g2.4');
+msg.g3_1 = getMessage('g3.1');
+msg.g3_2 = getMessage('g3.2');
+msg.g3_3 = getMessage('g3.3');
+msg.g4_1 = getMessage('g4.1');
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -88,14 +114,14 @@ export default class ViewsMenuButton extends HTMLElement {
     return groupDiv;
   }
 
-  addMenuitem(node, optionId, messageId) {
+  addMenuitem(node, optionId, message) {
     const menuitemDiv = document.createElement('div');
 
     menuitemDiv.id = optionId;
     menuitemDiv.tabIndex = -1;
     menuitemDiv.setAttribute('role', 'menuitem');
     menuitemDiv.addEventListener('keydown', this.onMenuitemKeydown.bind(this));
-    menuitemDiv.textContent = getMessage(messageId);
+    menuitemDiv.textContent = message;
 
     node.appendChild(menuitemDiv);
 
@@ -126,13 +152,13 @@ export default class ViewsMenuButton extends HTMLElement {
 
     this.menuDiv.innerHTML = '';
 
-    this.addMenuitem(this.menuDiv, 'summary', 'summaryLabel');
+    this.addMenuitem(this.menuDiv, 'summary', msg.summaryLabel);
     const rcGroupDiv = this.addGroup(this.menuDiv, msg.ruleCategoriesLabel);
 
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       rcId = ruleCategoryIds[i];
       msgId = getRuleCategoryLabelId(rcId);
-      this.addMenuitem(rcGroupDiv, 'rc' + rcId, msgId);
+      this.addMenuitem(rcGroupDiv, 'rc' + rcId, msg[msgId]);
     }
 
     getOptions().then( (options) => {
@@ -140,8 +166,9 @@ export default class ViewsMenuButton extends HTMLElement {
         const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
         for (i = 0; i < guidelineIds.length; i += 1 ) {
           glId = guidelineIds[i];
-          msgId = getGuidelineLabelId(glId);
-          this.addMenuitem(glGroupDiv, 'gl' + glId, msgId);
+          // cannot have periods in the msgId, so converted to underscrore character
+          msgId = getGuidelineLabelId(glId).replaceAll('.', '_');
+          this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
         }
       }
     })

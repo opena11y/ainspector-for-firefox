@@ -3,8 +3,6 @@
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
 
-const getMessage = browser.i18n.getMessage;
-
 export default class ViewRuleGroupCSV extends commonCSV {
   constructor(groupType, groupTitle, ruleResults, ruleDetails, isAllRules) {
     super();

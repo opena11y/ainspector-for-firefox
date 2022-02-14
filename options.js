@@ -4,6 +4,28 @@ import { getOptions, saveOptions, defaultOptions } from './storage.js';
 import { validatePrefix, validateShortcut } from './validate.js';
 
 const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.optionsTitle = getMessage('optionsTitle');
+msg.optionsViewsMenuLegend = getMessage('optionsViewsMenuLegend');
+msg.optionsInclWcagGlLabel = getMessage('optionsInclWcagGlLabel');
+msg.optionsRerunEvaluationLegend = getMessage('optionsRerunEvaluationLegend');
+msg.optionsNoDelayLabel = getMessage('optionsNoDelayLabel');
+msg.optionsPromptForDelayLabel = getMessage('optionsPromptForDelayLabel');
+msg.optionsEvaluationHeading = getMessage('optionsEvaluationHeading');
+msg.optionsRulesetLegend = getMessage('optionsRulesetLegend');
+msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
+msg.optionsRulesetTransLabel = getMessage('optionsRulesetTransLabel');
+msg.optionsRuleResultsLegend = getMessage('optionsRuleResultsLegend');
+msg.optionsInclPassNaLabel = getMessage('optionsInclPassNaLabel');
+msg.optionsExportHeading = getMessage('optionsExportHeading');
+msg.optionsExportPrompt = getMessage('optionsExportPrompt');
+msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
+msg.optionsExportCSVLabel = getMessage('optionsExportCSVLabel');
+msg.optionsExportJSONLabel = getMessage('optionsExportJSONLabel');
+msg.optionsExportPrefixLabel = getMessage('optionsExportPrefixLabel');
+msg.optionsExportIncludeDate = getMessage('optionsExportIncludeDate');
+msg.optionsResetDefaults = getMessage('optionsResetDefaults');
+
 
 const debug = true;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
@@ -55,29 +77,29 @@ function setFormLabels () {
 
   const optionsResetDefaults         = document.querySelector('#options-reset-defaults');
 
-  optionsTitle.textContent            = getMessage('optionsTitle');
-  optionsViewsMenuLegend.textContent  = getMessage('optionsViewsMenuLegend');
-  optionsInclWcagGlLabel.textContent  = getMessage('optionsInclWcagGlLabel');
-  optionsRerunEvaluationLegend.textContent = getMessage('optionsRerunEvaluationLegend');
-  optionsNoDelayLabel.textContent          = getMessage('optionsNoDelayLabel');
-  optionsPromptForDelayLabel.textContent   = getMessage('optionsPromptForDelayLabel');
+  optionsTitle.textContent            = msg.optionsTitle;
+  optionsViewsMenuLegend.textContent  = msg.optionsViewsMenuLegend;
+  optionsInclWcagGlLabel.textContent  = msg.optionsInclWcagGlLabel;
+  optionsRerunEvaluationLegend.textContent = msg.optionsRerunEvaluationLegend;
+  optionsNoDelayLabel.textContent          = msg.optionsNoDelayLabel;
+  optionsPromptForDelayLabel.textContent   = msg.optionsPromptForDelayLabel;
 
-  optionsEvaluationHeading.textContent     = getMessage('optionsEvaluationHeading');
-  optionsRulesetLegend.textContent         = getMessage('optionsRulesetLegend');
-  optionsRulesetStrictLabel.textContent    = getMessage('optionsRulesetStrictLabel');
-  optionsRulesetTransLabel.textContent     = getMessage('optionsRulesetTransLabel');
-  optionsRuleResultsLegend.textContent     = getMessage('optionsRuleResultsLegend');
-  optionsInclPassNaLabel.textContent       = getMessage('optionsInclPassNaLabel');
+  optionsEvaluationHeading.textContent     = msg.optionsEvaluationHeading;
+  optionsRulesetLegend.textContent         = msg.optionsRulesetLegend;
+  optionsRulesetStrictLabel.textContent    = msg.optionsRulesetStrictLabel;
+  optionsRulesetTransLabel.textContent     = msg.optionsRulesetTransLabel;
+  optionsRuleResultsLegend.textContent     = msg.optionsRuleResultsLegend;
+  optionsInclPassNaLabel.textContent       = msg.optionsInclPassNaLabel;
 
-  optionsExportHeading.textContent      = getMessage('optionsExportHeading');
-  optionsExportPromptLabel.textContent  = getMessage('optionsExportPrompt');
-  optionsExportFormatLegend.textContent = getMessage('optionsExportFormatLegend');
-  optionsExportCSVLabel.textContent     = getMessage('optionsExportCSVLabel');
-  optionsExportJSONLabel.textContent    = getMessage('optionsExportJSONLabel');
-  optionsExportPrefixLabel.textContent  = getMessage('optionsExportPrefixLabel');
-  optionsExportDateLabel.textContent    = getMessage('optionsExportIncludeDate');
+  optionsExportHeading.textContent      = msg.optionsExportHeading;
+  optionsExportPromptLabel.textContent  = msg.optionsExportPrompt;
+  optionsExportFormatLegend.textContent = msg.optionsExportFormatLegend;
+  optionsExportCSVLabel.textContent     = msg.optionsExportCSVLabel;
+  optionsExportJSONLabel.textContent    = msg.optionsExportJSONLabel;
+  optionsExportPrefixLabel.textContent  = msg.optionsExportPrefixLabel;
+  optionsExportDateLabel.textContent    = msg.optionsExportIncludeDate;
 
-  optionsResetDefaults.textContent         = getMessage('optionsResetDefaults');
+  optionsResetDefaults.textContent         = msg.optionsResetDefaults;
 }
 
 // Save user options selected in form and display message

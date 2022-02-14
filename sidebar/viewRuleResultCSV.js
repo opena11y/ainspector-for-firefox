@@ -2,9 +2,9 @@
 
 import { cleanCSVItem, commonCSV } from './commonCSV.js';
 
-const getMessage = browser.i18n.getMessage;
 const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
+const getMessage = browser.i18n.getMessage;
 const msg = {};
 msg.elementResultsLabel = getMessage('elementResultsLabel');
 

@@ -1,6 +1,20 @@
 /* resultElementInfojs */
 
 const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.elementSelectedLabel         = getMessage('elementSelectedLabel');
+msg.elementResultAction          = getMessage('elementResultAction');
+msg.elementResultTagName         = getMessage('elementResultTagName');
+msg.elementResultAccName         = getMessage('elementResultAccName');
+msg.elementResultAccDesc         = getMessage('elementResultAccDesc');
+msg.elementResultErrorDesc       = getMessage('elementResultErrorDesc');
+msg.elementResultCCR             = getMessage('elementResultCCR');
+msg.elementResultVisibility      = getMessage('elementResultVisibility');
+msg.elementResultAttributeHeader = getMessage('elementResultAttributeHeader');
+msg.elementResultValueHeader     = getMessage('elementResultValueHeader');
+msg.ruleActionLabel              = getMessage('ruleActionLabel');
+msg.elementResultAccNameRequired = getMessage('elementResultAccNameRequired');
+msg.elementResultAccNameProhibited = getMessage('elementResultAccNameProhibited');
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -79,7 +93,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // Initialize headings
-    this.setHeading('#action-label',     'ruleActionLabel');
+    this.setHeading('#action-label', msg.ruleActionLabel);
 
     // Create content references
     this.resultElemInfoSect = this.shadowRoot.querySelector('.result-element-info');
@@ -120,37 +134,37 @@ export default class ResultElementInfo extends HTMLElement {
 
     // Update accessible name for the region
 
-    this.resultElemInfoSect.setAttribute('aria-label', getMessage('elementSelectedLabel'));
+    this.resultElemInfoSect.setAttribute('aria-label', msg.elementSelectedLabel);
 
   }
 
   initLabels () {
     const actionLabel = this.shadowRoot.querySelector('#action-label');
-    actionLabel.textContent = getMessage('elementResultAction');
+    actionLabel.textContent = msg.elementResultAction;
 
     const tagNameLabel = this.shadowRoot.querySelector('#tagname-label');
-    tagNameLabel.textContent = getMessage('elementResultTagName');
+    tagNameLabel.textContent = msg.elementResultTagName;
 
     const accNameLabel = this.shadowRoot.querySelector('#accname-info-label');
-    accNameLabel.textContent = getMessage('elementResultAccName');
+    accNameLabel.textContent = msg.elementResultAccName;
 
     const accDescLabel = this.shadowRoot.querySelector('#accdesc-info-label');
-    accDescLabel.textContent = getMessage('elementResultAccDesc');
+    accDescLabel.textContent = msg.elementResultAccDesc;
 
     const errorDescLabel = this.shadowRoot.querySelector('#errordesc-info-label');
-    errorDescLabel.textContent = getMessage('elementResultErrorDesc');
+    errorDescLabel.textContent = msg.elementResultErrorDesc;
 
     const ccrInfoLabel = this.shadowRoot.querySelector('#ccr-info-label');
-    ccrInfoLabel.textContent = getMessage('elementResultCCR');
+    ccrInfoLabel.textContent = msg.elementResultCCR;
 
     const visibilityInfoLabel = this.shadowRoot.querySelector('#visibility-info-label');
-    visibilityInfoLabel.textContent = getMessage('elementResultVisibility');
+    visibilityInfoLabel.textContent = msg.elementResultVisibility;
 
     const attrInfoLabel = this.shadowRoot.querySelector('#attrs-info-name');
-    attrInfoLabel.textContent = getMessage('elementResultAttributeHeader');
+    attrInfoLabel.textContent = msg.elementResultAttributeHeader;
 
     const valueInfoLabel = this.shadowRoot.querySelector('#attrs-info-value');
-    valueInfoLabel.textContent = getMessage('elementResultValueHeader');
+    valueInfoLabel.textContent = msg.elementResultValueHeader;
 
   }
 
@@ -162,11 +176,10 @@ export default class ResultElementInfo extends HTMLElement {
     this.resultElemInfoSect.focus();
   }
 
-  setHeading (headingId, messageId) {
+  setHeading (headingId, message) {
     let h = this.shadowRoot.querySelector(headingId);
-    let m = getMessage(messageId)
-    if (h && m) {
-      h.textContent = m;
+    if (h && message) {
+      h.textContent = message;
     }
   }
 
@@ -288,10 +301,10 @@ export default class ResultElementInfo extends HTMLElement {
 
     this.accNameInfoLabelMoreSpan.textContent = '';
     if (accNameInfo.name_required) {
-      this.accNameInfoLabelMoreSpan.textContent = getMessage('elementResultAccNameRequired');
+      this.accNameInfoLabelMoreSpan.textContent = msg.elementResultAccNameRequired;
     } else {
       if (accNameInfo.name_prohibited) {
-        this.accNameInfoLabelMoreSpan.textContent = getMessage('elementResultAccNameProhibited');
+        this.accNameInfoLabelMoreSpan.textContent = msg.elementResultAccNameProhibited;
       }
     }
 
@@ -409,10 +422,10 @@ export default class ResultElementInfo extends HTMLElement {
   updateCopyText (elementInfo) {
     this.copyText = '';
 
-    this.copyText += getMessage('elementResultAction') + '\n';
+    this.copyText += msg.elementResultAction + '\n';
     this.copyText += elementInfo.actionMessage + '\n\n';
 
-    this.copyText += getMessage('elementResultTagName') + '\n';
+    this.copyText += msg.elementResultTagName + '\n';
     if (elementInfo.role) {
       this.copyText += elementInfo.tagName + '[role=' + elementInfo.role+ ']\n\n';
     } else {
@@ -421,45 +434,45 @@ export default class ResultElementInfo extends HTMLElement {
 
     const visText = this.appendToCopyText(elementInfo.visibilityInfo);
     if (visText) {
-      this.copyText += getMessage('elementResultVisibility') + '\n';
+      this.copyText += msg.elementResultVisibility + '\n';
       this.copyText += visText + '\n\n';;
     }
 
     const accNameInfo = elementInfo.accNameInfo;
     if (accNameInfo.name) {
-      this.copyText += getMessage('elementResultAccName') + '\n';
+      this.copyText += msg.elementResultAccName + '\n';
       this.copyText += 'text: ' + accNameInfo.name + '\n';
       this.copyText += 'source: ' + accNameInfo.name_source + '\n\n';
     } else {
       if (accNameInfo.name_required && accNameInfo.name_possible) {
-        this.copyText += getMessage('elementResultAccName') + '\n';
+        this.copyText += msg.elementResultAccName + '\n';
       this.copyText += 'text: none' + '\n';
       this.copyText += 'source: none' + '\n\n';
       }
     }
 
     if (accNameInfo.desc) {
-      this.copyText += getMessage('elementResultAccDesc') + '\n';
+      this.copyText += msg.elementResultAccDesc + '\n';
       this.copyText += 'text: ' + accNameInfo.desc + '\n';
       this.copyText += 'source: ' + accNameInfo.desc_source + '\n\n';
     }
 
     if (accNameInfo.error_desc) {
-      this.copyText += getMessage('elementResultErrorDesc') + '\n';
+      this.copyText += msg.elementResultErrorDesc + '\n';
       this.copyText += 'text: ' + accNameInfo.error_desc + '\n';
       this.copyText += 'source: ' + accNameInfo.error_desc_source + '\n\n';
     }
 
     const ccrText = this.appendToCopyText(elementInfo.ccrInfo);
     if (ccrText) {
-      this.copyText += getMessage('elementResultCCR') + '\n';
+      this.copyText += msg.elementResultCCR + '\n';
       this.copyText += ccrText + '\n\n';
     }
 
     const htmlAttrText = this.appendToCopyText(elementInfo.htmlAttrInfo);
     const ariaAttrText = this.appendToCopyText(elementInfo.ariaAttrInfo);
     if (htmlAttrText || ariaAttrText) {
-      this.copyText += getMessage('elementResultAttributeHeader') + '\n';
+      this.copyText += msg.elementResultAttributeHeader + '\n';
       this.copyText += htmlAttrText;
       this.copyText += ariaAttrText;
     }

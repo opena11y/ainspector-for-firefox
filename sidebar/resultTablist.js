@@ -1,7 +1,5 @@
 /* resultTablist.js */
 
-const getMessage = browser.i18n.getMessage;
-
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="result-tablist">

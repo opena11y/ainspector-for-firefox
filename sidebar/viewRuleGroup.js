@@ -1,9 +1,31 @@
 /* viewRuleGroup.js */
-const getMessage = browser.i18n.getMessage;
-
 import { getResultSortingValue, getSCSortingValue, getLevelSortingValue, getRequiredSortingValue } from './sortUtils.js';
 import { getOptions } from '../storage.js';
 import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
+
+const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.ruleResultsGridLabel  = getMessage('ruleResultsGridLabel');
+msg.detailsLabel          = getMessage('detailsLabel');
+msg.ruleSelectedLabel     = getMessage('ruleSelectedLabel');
+msg.copyRuleInfoDesc      = getMessage('copyRuleInfoDesc');
+msg.ruleLabel             = getMessage('ruleLabel');
+msg.resultLabel           = getMessage('resultLabel');
+msg.successCriteriaAbbrev = getMessage('successCriteriaAbbrev');
+msg.successCriteriaLabel  = getMessage('successCriteriaLabel');
+msg.levelLabel            = getMessage('levelLabel');
+msg.requiredAbbrev     = getMessage('requiredAbbrev');
+msg.requiredLabel      = getMessage('requiredLabel');
+msg.notApplicableLabel = getMessage('notApplicableLabel');
+msg.manualCheckLabel   = getMessage('manualCheckLabel');
+msg.passedLabel        = getMessage('passedLabel');
+msg.violationLabel     = getMessage('violationLabel');
+msg.warningLabel       = getMessage('warningLabel');
+msg.singleALabel       = getMessage('singleALabel');
+msg.doubleALabel       = getMessage('doubleALabel');
+msg.requiredValue      = getMessage('requiredValue');
+msg.noResultsMsg       = getMessage('noResultsMsg');
+msg.noViolationsWarningsMCResultsMsg = getMessage('noViolationsWarningsMCResultsMsg');
 
 export default class ViewRuleGroup {
   constructor(id, handleRowActivation) {
@@ -18,7 +40,7 @@ export default class ViewRuleGroup {
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = getMessage('ruleResultsGridLabel');
+    h2.textContent = msg.ruleResultsGridLabel;
     this.ruleGroupDiv.appendChild(h2);
 
 
@@ -40,7 +62,7 @@ export default class ViewRuleGroup {
     const detailsButton = document.createElement('button');
     detailsButton.id = 'rule-group-details';
     detailsButton.className = 'details';
-    detailsButton.textContent = getMessage('detailsLabel');
+    detailsButton.textContent = msg.detailsLabel;
     detailsButton.addEventListener('click', this.onDetailsButtonClick.bind(this));
     this.ruleResultGrid.setDetailsButton(detailsButton);
     middleSectionDiv.appendChild(detailsButton);
@@ -53,14 +75,14 @@ export default class ViewRuleGroup {
     h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.id = 'rule-info-label';
-    h2.textContent = getMessage('ruleSelectedLabel');
+    h2.textContent = msg.ruleSelectedLabel;
     ruleInfoHeaderDiv.appendChild(h2);
 
     this.resultRuleInfo = document.createElement('result-rule-info');
 
     this.copyButton = document.createElement('copy-button');
     this.copyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
-    this.copyButton.title = getMessage('copyRuleInfoDesc');
+    this.copyButton.title = msg.copyRuleInfoDesc;
     ruleInfoHeaderDiv.appendChild(this.copyButton);
 
     div.appendChild(this.resultRuleInfo);
@@ -78,11 +100,11 @@ export default class ViewRuleGroup {
 
   initGrid () {
 
-    this.ruleResultGrid.addHeaderCell(getMessage('ruleLabel'), 'rule');
-    this.ruleResultGrid.addHeaderCell(getMessage('resultLabel'), 'result', '');
-    this.ruleResultGrid.addHeaderCell(getMessage('successCriteriaAbbrev'), 'sc', getMessage('successCriteriaLabel'));
-    this.ruleResultGrid.addHeaderCell(getMessage('levelLabel'), 'level', '');
-    this.ruleResultGrid.addHeaderCell(getMessage('requiredAbbrev'), 'required', getMessage('requiredLabel'));
+    this.ruleResultGrid.addHeaderCell(msg.ruleLabel, 'rule');
+    this.ruleResultGrid.addHeaderCell(msg.resultLabel, 'result', '');
+    this.ruleResultGrid.addHeaderCell(msg.successCriteriaAbbrev, 'sc', msg.successCriteriaLabel);
+    this.ruleResultGrid.addHeaderCell(msg.levelLabel, 'level', '');
+    this.ruleResultGrid.addHeaderCell(msg.requiredAbbrev, 'required', msg.requiredLabel);
 
   }
 
@@ -127,21 +149,25 @@ export default class ViewRuleGroup {
   }
 
   getResultAccessibleName (result) {
-    let accName = getMessage('notApplicableLabel');
+    let accName = msg.notApplicableLabel;
 
     switch (result){
       case 'MC':
-        accName = getMessage('manualCheckLabel');
+        accName = msg.manualCheckLabel;
         break;
+
       case 'P':
-        accName = getMessage('passedLabel');
+        accName = msg.passedLabel;
         break;
+
       case 'V':
-        accName = getMessage('violationLabel');
+        accName = msg.violationLabel;
         break;
+
       case 'W':
-        accName = getMessage('warningLabel');
+        accName = msg.warningLabel;
         break;
+
       default:
         break;
     }
@@ -192,18 +218,18 @@ export default class ViewRuleGroup {
           this.ruleResultGrid.addDataCell(row, rr.result, cellAccName, style, sortValue);
 
           sortValue = getSCSortingValue(rr.wcag);
-          cellAccName = getMessage('successCriteriaLabel') + ' ' + rr.wcag;
+          cellAccName = msg.successCriteriaLabel + ' ' + rr.wcag;
           rowAccName += ', ' + cellAccName;
           this.ruleResultGrid.addDataCell(row, rr.wcag, cellAccName, 'sc', sortValue);
 
           sortValue = getLevelSortingValue(rr.level);
-          cellAccName = rr.level === 'A' ? getMessage('singleALabel') : getMessage('doubleALabel');
+          cellAccName = rr.level === 'A' ? msg.singleALabel : msg.doubleALabel;
           rowAccName += ', ' + cellAccName;
           this.ruleResultGrid.addDataCell(row, rr.level, cellAccName, 'level', sortValue);
 
-          value = rr.required ? getMessage('requiredValue') : '';
+          value = rr.required ? msg.requiredValue : '';
           sortValue = getRequiredSortingValue(rr.required);
-          cellAccName = rr.required ? getMessage('requiredLabel') : '';
+          cellAccName = rr.required ? msg.requiredLabel : '';
           rowAccName += rr.required ? ', ' + cellAccName : '';
           this.ruleResultGrid.addDataCell(row, value, cellAccName, 'required', sortValue);
 
@@ -231,9 +257,9 @@ export default class ViewRuleGroup {
         }
       } else {
         if (infoRuleGroup.ruleResults.length === 0) {
-          label = getMessage('noResultsMsg');
+          label = msg.noResultsMsg;
         } else {
-          label = getMessage('noViolationsWarningsMCResultsMsg');
+          label = msg.noViolationsWarningsMCResultsMsg;
         }
         this.ruleResultGrid.addMessageRow(label);
         this.resultRuleInfo.clear(label);

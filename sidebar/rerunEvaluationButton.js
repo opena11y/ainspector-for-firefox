@@ -1,8 +1,15 @@
 /* rerunEvaluationButton.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions } from '../storage.js';
+
+const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.rerunEvalButtonLabel = getMessage('rerunEvalButtonLabel');
+msg.rerunEvalDialogTitle = getMessage('rerunEvalDialogTitle');
+msg.rerunEvalSelectLabel = getMessage('rerunEvalSelectLabel');
+msg.rerunEvalPromptForDelayLabel = getMessage('rerunEvalPromptForDelayLabel');
+msg.cancelButtonLabel    = getMessage('cancelButtonLabel');
+msg.okButtonLabel        = getMessage('okButtonLabel');
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -67,17 +74,17 @@ export default class RerunEvaluationButton extends HTMLElement {
     this.timerValue = 0;
 
     this.rerunButton  = this.shadowRoot.querySelector('#rerun-button');
-    this.rerunButton.textContent = getMessage('rerunEvalButtonLabel');
+    this.rerunButton.textContent = msg.rerunEvalButtonLabel;
     this.rerunButton.addEventListener('click', this.onRerunButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     label = this.dialogDiv.querySelector('#title');
-    label.textContent = getMessage('rerunEvalDialogTitle');
+    label.textContent = msg.rerunEvalDialogTitle;
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
     this.select = this.shadowRoot.querySelector('select');
     label = this.shadowRoot.querySelector('label[for="select"]');
-    label.textContent = getMessage('rerunEvalSelectLabel');
+    label.textContent = msg.rerunEvalSelectLabel;
     this.select.addEventListener('keydown', this.onSelectKeydown.bind(this));
     this.select.addEventListener('focus', this.onFocus.bind(this));
     this.select.addEventListener('blur', this.onBlur.bind(this));
@@ -87,14 +94,14 @@ export default class RerunEvaluationButton extends HTMLElement {
     this.checkbox.addEventListener('blur', this.onBlur.bind(this));
 
     label = this.shadowRoot.querySelector('#prompt-for-delay-label')
-    label.textContent = getMessage('rerunEvalPromptForDelayLabel');
+    label.textContent = msg.rerunEvalPromptForDelayLabel;
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
-    this.cancelButton.textContent  = getMessage('cancelButtonLabel');
+    this.cancelButton.textContent  = msg.cancelButtonLabel;
     this.cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     this.okButton = this.shadowRoot.querySelector('#ok-button');
-    this.okButton.textContent  = getMessage('okButtonLabel');
+    this.okButton.textContent  = msg.okButtonLabel;
     this.okButton.addEventListener('click', this.onOkButtonClick.bind(this));
     this.okButton.addEventListener('keydown', this.onOkButtonKeydown.bind(this));
 
@@ -146,7 +153,7 @@ export default class RerunEvaluationButton extends HTMLElement {
   checkTimeout() {
     if (this.timerValue < 1) {
       this.rerunButton.setAttribute('aria-live', 'off');
-      this.rerunButton.textContent = getMessage('rerunEvalButtonLabel');;
+      this.rerunButton.textContent = msg.rerunEvalButtonLabel;
       this.callback();
     } else {
       this.rerunButton.textContent = this.timerValue + ' seconds';

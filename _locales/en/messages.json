@@ -59,11 +59,6 @@
     "description": "Label for preferences button"
   },
 
-  "emptyContent": {
-    "message": "&lt;empty&gt;",
-    "description": "Message indicating that DOM Sele has no text content."
-  },
-
   "tabIsLoading": {
     "message": "Updating...",
     "description": "Message indicating that content in the sidebar panel is being updated."
@@ -134,7 +129,7 @@
     "description": "Label for Site Navigation rule category view"
   },
 
-  "AllRulesLabel": {
+  "allRulesLabel": {
     "message": "All Rules",
     "description": "Label for all rules view"
   },

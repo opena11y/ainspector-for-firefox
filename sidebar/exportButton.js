@@ -1,10 +1,20 @@
 /* rerunEvaluationButton.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions, saveOptions } from '../storage.js';
 import { validatePrefix } from '../validate.js';
 
+const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.exportButtonLabel = getMessage('exportButtonLabel');
+msg.exportDialogTitle = getMessage('exportDialogTitle');
+msg.cancelButtonLabel = getMessage('cancelButtonLabel');
+msg.okButtonLabel     = getMessage('okButtonLabel');
+msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
+msg.optionsExportCSVLabel     = getMessage('optionsExportCSVLabel');
+msg.optionsExportJSONLabel    = getMessage('optionsExportJSONLabel');
+msg.optionsExportPrefixLabel  = getMessage('optionsExportPrefixLabel');
+msg.optionsExportIncludeDate  = getMessage('optionsExportIncludeDate');
+msg.optionsExportPromptForOptions = getMessage('optionsExportPromptForOptions');
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -86,12 +96,12 @@ export default class ExportButton extends HTMLElement {
     this.timerValue = 0;
 
     this.exportButton  = this.shadowRoot.querySelector('#export-button');
-    this.exportButton.textContent = getMessage('exportButtonLabel');
+    this.exportButton.textContent = msg.exportButtonLabel;
     this.exportButton.addEventListener('click', this.onExportButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     label = this.dialogDiv.querySelector('#title');
-    label.textContent = getMessage('exportDialogTitle');
+    label.textContent = msg.exportDialogTitle;
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
     this.exportCSV      = this.shadowRoot.querySelector('input[id="options-export-csv"]');
@@ -115,11 +125,11 @@ export default class ExportButton extends HTMLElement {
     this.exportPrompt.addEventListener('blur', this.onBlur.bind(this));
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
-    this.cancelButton.textContent  = getMessage('cancelButtonLabel');
+    this.cancelButton.textContent  = msg.cancelButtonLabel;
     this.cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     this.okButton = this.shadowRoot.querySelector('#ok-button');
-    this.okButton.textContent  = getMessage('okButtonLabel');
+    this.okButton.textContent  = msg.okButtonLabel;
     this.okButton.addEventListener('click', this.onOkButtonClick.bind(this));
     this.okButton.addEventListener('keydown', this.onOkButtonKeydown.bind(this));
 
@@ -143,25 +153,22 @@ export default class ExportButton extends HTMLElement {
 
   setDialogLabels () {
     const optionsExportFormatLegend    = this.shadowRoot.querySelector('#options-export-format-legend');
-    optionsExportFormatLegend.textContent   = getMessage('optionsExportFormatLegend');
+    optionsExportFormatLegend.textContent = msg.optionsExportFormatLegend;
 
     const optionsExportCSVLabel        = this.shadowRoot.querySelector('#options-export-csv-label');
-    optionsExportCSVLabel.textContent       = getMessage('optionsExportCSVLabel');
+    optionsExportCSVLabel.textContent  = msg.optionsExportCSVLabel;
 
     const optionsExportJSONLabel       = this.shadowRoot.querySelector('#options-export-json-label');
-    optionsExportJSONLabel.textContent      = getMessage('optionsExportJSONLabel');
+    optionsExportJSONLabel.textContent = msg.optionsExportJSONLabel;
 
     const optionsExportPrefixLabel     = this.shadowRoot.querySelector('#options-export-prefix-label');
-    optionsExportPrefixLabel.textContent = getMessage('optionsExportPrefixLabel');
-
-//    const optionsExportPrefixDesc      = this.shadowRoot.querySelector('#options-export-prefix-desc');
-//    optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
+    optionsExportPrefixLabel.textContent = msg.optionsExportPrefixLabel;
 
     const optionsExportIncludeDateLabel = this.shadowRoot.querySelector('#options-export-include-date-label');
-    optionsExportIncludeDateLabel.textContent  = getMessage('optionsExportIncludeDate');
+    optionsExportIncludeDateLabel.textContent  = msg.optionsExportIncludeDate;
 
     const optionsExportPromptForOptionsLabel =  this.shadowRoot.querySelector('#options-export-prompt-for-options-label');
-    optionsExportPromptForOptionsLabel.textContent  = getMessage('optionsExportPromptForOptions');
+    optionsExportPromptForOptionsLabel.textContent  = msg.optionsExportPromptForOptions;
   }
 
 

@@ -4,6 +4,15 @@ const getMessage = browser.i18n.getMessage;
 
 import { getOptions, saveOptions } from '../storage.js';
 
+// Messages used in this file
+const msg = {};
+
+msg.highlightLabel          = getMessage('highlightLabel');
+msg.highlightOptionNone     = getMessage('highlightOptionNone');
+msg.highlightOptionSelected = getMessage('highlightOptionSelected');
+msg.highlightOptionVW       = getMessage('highlightOptionVW');
+msg.highlightOptionAll      = getMessage('highlightOptionAll');
+
 const template = document.createElement('template');
 template.innerHTML = `
     <div class="highlight-select">
@@ -40,22 +49,21 @@ export default class HighlightSelect extends HTMLElement {
   }
 
   init () {
-    function updateTextContent(elemSelector, messageId) {
+    function updateTextContent(elemSelector, message) {
       let elem = sr.querySelector(elemSelector);
-      let msg = getMessage(messageId);
-      if (elem && msg) {
-        elem.textContent = msg;
+      if (elem && message) {
+        elem.textContent = message;
       }
     }
 
     // "sr" is used by updateTextContent
     let sr = this.shadowRoot;
 
-    updateTextContent('label',              'highlightLabel');
-    updateTextContent('[value="none"]',     'highlightOptionNone');
-    updateTextContent('[value="selected"]', 'highlightOptionSelected');
-    updateTextContent('[value="vw"]',       'highlightOptionVW');
-    updateTextContent('[value="all"]',      'highlightOptionAll');
+    updateTextContent('label',              msg.highlightLabel);
+    updateTextContent('[value="none"]',     msg.highlightOptionNone);
+    updateTextContent('[value="selected"]', msg.highlightOptionSelected);
+    updateTextContent('[value="vw"]',       msg.highlightOptionVW);
+    updateTextContent('[value="all"]',      msg.highlightOptionAll);
 
     getOptions().then(this.setSelectValue.bind(this));
   }

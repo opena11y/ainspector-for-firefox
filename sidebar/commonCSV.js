@@ -26,6 +26,7 @@ msg.guidelineLabel            = getMessage('guidelineLabel');
 msg.csvSuccessCriteria        = getMessage('csvSuccessCriteria');
 msg.levelLabel                = getMessage('levelLabel');
 msg.requiredLabel             = getMessage('requiredLabel');
+msg.requiredValue             = getMessage('requiredValue');
 msg.violationsLabel           = getMessage('violationsLabel');
 msg.warningsLabel             = getMessage('warningsLabel');
 msg.manualChecksLabel         = getMessage('manualChecksLabel');
@@ -123,7 +124,7 @@ export class commonCSV {
       }
       values.push(rr.wcag);
       values.push(rr.level);
-      values.push((rr.required ? 'Y' : ''));
+      values.push((rr.required ? msg.requiredValue : ''));
       values.push(rr.elemViolations);
       values.push(rr.elemWarnings);
       values.push(rr.elemManualChecks);
