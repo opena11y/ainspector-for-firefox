@@ -23,6 +23,9 @@ msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
 msg.optionsExportCSVLabel     = getMessage('optionsExportCSVLabel');
 msg.optionsExportJSONLabel    = getMessage('optionsExportJSONLabel');
 msg.optionsExportPrefixLabel  = getMessage('optionsExportPrefixLabel');
+msg.optionsExportPrefixErrorToLong         = getMessage('optionsExportPrefixErrorToLong');
+msg.optionsExportPrefixErrorCharNotAllowed = getMessage('optionsExportPrefixErrorCharNotAllowed');
+
 msg.optionsExportIncludeDate  = getMessage('optionsExportIncludeDate');
 msg.optionsResetDefaults      = getMessage('optionsResetDefaults');
 
@@ -36,9 +39,9 @@ msg.shortcutExportLabel    = getMessage('shortcutExportLabel');
 msg.shortcutRerunLabel     = getMessage('shortcutRerunLabel');
 msg.shortcutCopyLabel      = getMessage('shortcutCopyLabel');
 msg.shortcutsNote          = getMessage('shortcutsNotes');
-msg.shortcutFeedback       = getMessage('shortcutFeedback');
+msg.shortcutAllreadyUsed   = getMessage('shortcutAllreadyUsed');
 
-const debug = true;
+const debug = false;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
 const noDelay        = document.querySelector('input[id="options-no-delay"]');
 const promptForDelay = document.querySelector('input[id="options-prompt-for-delay"]');
@@ -47,11 +50,12 @@ const promptForDelay = document.querySelector('input[id="options-prompt-for-dela
 // const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
-const exportPrompt   = document.querySelector('#options-export-prompt');
-const exportCSV      = document.querySelector('#options-export-csv');
-const exportJSON     = document.querySelector('#options-export-json');
-const exportPrefix   = document.querySelector('#options-export-prefix');
-const exportDate     = document.querySelector('#options-export-date');
+const exportPrompt     = document.querySelector('#options-export-prompt');
+const exportCSV        = document.querySelector('#options-export-csv');
+const exportJSON       = document.querySelector('#options-export-json');
+const exportPrefix     = document.querySelector('#options-export-prefix');
+const exportPrefixDesc = document.querySelector('#options-export-prefix-desc');
+const exportDate       = document.querySelector('#options-export-date');
 
 const shortcutsEnabledCheckbox  = document.querySelector('#shortcuts-enabled');
 const shortcutBackKbd           = document.querySelector('#shortcut-back');
@@ -96,6 +100,7 @@ function setFormLabels () {
   const shortcutRerunLabel    = document.querySelector('#shortcut-rerun-label');
   const shortcutCopyLabel     = document.querySelector('#shortcut-copy-label');
   const shortcutsNote         = document.querySelector('#shortcuts-note');
+
 
   const optionsResetDefaults  = document.querySelector('#options-reset-defaults');
 
@@ -179,7 +184,7 @@ function updateForm (options) {
   exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
   exportJSON.checked     = options.exportFormat === 'JSON';
-  exportPrefix.value     = validatePrefix(options.filenamePrefix);
+  exportPrefix.value     = options.filenamePrefix;
   exportDate.checked     = options.includeDate;
 
   shortcutBackKbd.textContent      = options.shortcutBack;
@@ -199,13 +204,27 @@ function saveDefaultOptions () {
   saveOptions(defaultOptions).then(getOptions).then(updateForm);
 }
 
+function hidePrefixError() {
+  exportPrefixDesc.textContent = '';
+  exportPrefixDesc.classList.remove('show');
+}
+
+function showPrefixError(message) {
+  exportPrefixDesc.textContent = message;
+  exportPrefixDesc.classList.add('show');
+}
+
 function onKeyupValidatePrefix () {
-  let value = validatePrefix(exportPrefix.value);
+  hidePrefixError();
+  const value = validatePrefix(exportPrefix.value);
+  const key = exportPrefix.value[exportPrefix.value.length - 1];
   if (value !== exportPrefix.value) {
-    if (exportPrefix.value >= 16) {
-      console.log("[PrefixError]: Prefix can only be 16 characters");
+    if (exportPrefix.value.length >= 16) {
+      showPrefixError(msg.optionsExportPrefixErrorToLong);
+      console.log('[PREFIX][ERROR]: ' + msg.optionsExportPrefixErrorToLong);
     } else {
-      console.log("[PrefixError]: Character not allowed");
+      showPrefixError(msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
+      console.log('[PREFIX][ERROR]: ' + msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
     }
   }
   exportPrefix.value = value;
@@ -229,19 +248,38 @@ function checkForDuplicateKey (textbox, key) {
   return flag;
 }
 
+function clearDesc (target) {
+  const descDiv = target.parentNode.querySelector('.feedback');
+  if (descDiv) {
+    descDiv.classList.remove('show');
+  }
+  return descDiv;
+}
+
 function onShortcutKeydown (event) {
-  let tgt = event.currentTarget;
-  let key = event.key;
-  let currentKey = tgt.value;
+  const tgt = event.currentTarget;
+  const descDiv = clearDesc(tgt);
+  const key = event.key;
+  const currentKey = tgt.value;
 
   if (key.length === 1) {
     if (checkForDuplicateKey(tgt, key)) {
       tgt.value = key;
       saveFormOptions(event);
+    } else {
+      if (descDiv) {
+        descDiv.textContent = msg.shortcutAllreadyUsed.replace('$key', `"${key}"`);
+        descDiv.classList.add('show');
+      }
     }
     event.stopPropagation();
     event.preventDefault();
   }
+}
+
+function onShortcutBlur (event) {
+  const tgt = event.currentTarget;
+  const descDiv = clearDesc(tgt);
 }
 
 // Add event listeners for saving and restoring options
@@ -259,12 +297,18 @@ exportCSV.addEventListener('change', saveFormOptions);
 exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('keyup', onKeyupValidatePrefix);
+exportPrefix.addEventListener('blur', hidePrefixError);
 exportDate.addEventListener('change', saveFormOptions);
 
 shortcutCopyTextbox.addEventListener('keydown', onShortcutKeydown);
 shortcutExportTextbox.addEventListener('keydown', onShortcutKeydown);
 shortcutRerunTextbox.addEventListener('keydown', onShortcutKeydown);
 shortcutViewsTextbox.addEventListener('keydown', onShortcutKeydown);
+
+shortcutCopyTextbox.addEventListener('blur', onShortcutBlur);
+shortcutExportTextbox.addEventListener('blur', onShortcutBlur);
+shortcutRerunTextbox.addEventListener('blur', onShortcutBlur);
+shortcutViewsTextbox.addEventListener('blur', onShortcutBlur);
 
 shortcutsEnabledCheckbox.addEventListener('change', saveFormOptions);
 

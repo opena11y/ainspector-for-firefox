@@ -23,7 +23,8 @@ export function validatePrefix (value) {
       v += c;
     }
   };
-  return v.substring(0, 16);
+  v = v.substring(0, 16);
+  return v;
 }
 
 export function validateShortcut (value) {
