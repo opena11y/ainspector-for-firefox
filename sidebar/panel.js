@@ -32,6 +32,21 @@ customElements.define('rerun-evaluation-button', RerunEvaluationButton);
 customElements.define('export-button',       ExportButton);
 customElements.define('copy-button',         CopyButton);
 
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {};
+msg.tabIsLoading           = getMessage("tabIsLoading");
+msg.protocolNotSupported   = getMessage("protocolNotSupported");
+msg.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
+msg.ariaTransRulesetLabel  = getMessage("optionsRulesetTransLabel");
+msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
+msg.backButtonLabel        = getMessage('backButtonLabel');
+msg.infoLocationLabel      = getMessage('infoLocationLabel');
+msg.infoTitleLabel         = getMessage('infoTitleLabel');
+msg.infoRulesetLabel       = getMessage('infoRulesetLabel');
+msg.preferencesButtonLabel = getMessage('preferencesButtonLabel');
+msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
+
 var contentPort;
 var myWindowId;
 var logInfo = false;
@@ -58,21 +73,6 @@ var viewsMenuButton;
 var preferencesButton;
 var exportButton;
 var rerunEvaluationButton;
-
-// Get message strings from locale-specific messages.json file
-const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.tabIsLoading           = getMessage("tabIsLoading");
-msg.protocolNotSupported   = getMessage("protocolNotSupported");
-msg.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-msg.ariaTransRulesetLabel  = getMessage("optionsRulesetTransLabel");
-msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
-msg.backButtonLabel        = getMessage('backButtonLabel');
-msg.infoLocationLabel      = getMessage('infoLocationLabel');
-msg.infoTitleLabel         = getMessage('infoTitleLabel');
-msg.infoRulesetLabel       = getMessage('infoRulesetLabel');
-msg.preferencesButtonLabel = getMessage('preferencesButtonLabel');
-msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
 
 function addLabelsAndHelpContent () {
   let elem;
