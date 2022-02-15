@@ -207,12 +207,12 @@ function saveDefaultOptions () {
 
 function hidePrefixError() {
   exportPrefixDesc.textContent = '';
-  exportPrefixDesc.classList.remove('show');
+  exportPrefixDesc.parentNode.classList.remove('show');
 }
 
 function showPrefixError(message) {
   exportPrefixDesc.textContent = message;
-  exportPrefixDesc.classList.add('show');
+  exportPrefixDesc.parentNode.classList.add('show');
 }
 
 function onKeyupValidatePrefix () {
@@ -269,7 +269,10 @@ function onShortcutKeydown (event) {
       saveFormOptions(event);
     } else {
       if (descDiv) {
-        descDiv.textContent = msg.shortcutAllreadyUsed.replace('$key', `"${key}"`);
+        let span = descDiv.querySelector('span');
+        if (span) {
+          span.textContent = msg.shortcutAllreadyUsed.replace('$key', `"${key}"`);
+        }
         descDiv.classList.add('show');
       }
     }

@@ -108,12 +108,16 @@ table.shortcuts td label {
   border-radius:  4px;
 }
 
+.feedback img {
+  height: 12px !important;
+}
+
 .feedback.shortcut {
   display:  none;
   position: absolute;
   left:  1em;
   top: 1em;
-  width:  15em;
+  width:  18em;
   z-index: 10;
 }
 
