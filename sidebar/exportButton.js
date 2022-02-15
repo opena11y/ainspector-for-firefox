@@ -3,6 +3,7 @@
 import { getOptions, saveOptions } from '../storage.js';
 import { validatePrefix } from '../validate.js';
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {};
 msg.exportButtonLabel = getMessage('exportButtonLabel');

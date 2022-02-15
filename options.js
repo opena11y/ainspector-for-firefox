@@ -3,6 +3,7 @@
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
 import { validatePrefix, validateShortcut } from './validate.js';
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {};
 msg.optionsTitle           = getMessage('optionsTitle');

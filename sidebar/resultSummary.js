@@ -1,7 +1,7 @@
 /* ruleSummary.js */
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-// Messages used in this file
 const msg = {};
 msg.violationsAbbrev   = getMessage('violationsAbbrev');
 msg.violationsLabel    = getMessage('violationsLabel');

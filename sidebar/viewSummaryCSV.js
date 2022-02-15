@@ -5,6 +5,7 @@ import { getOptions } from '../storage.js';
 
 import { getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 
+// Get message strings from locale-specific messages.json file
 const getMessage  = browser.i18n.getMessage;
 const msg = {};
 msg.detailsLabel        = getMessage('detailsLabel');

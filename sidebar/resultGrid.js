@@ -1,7 +1,5 @@
 /* resultGrid.js */
 
-import { formatItemForCSV } from '../utilities.js';
-
 const template = document.createElement('template');
 template.innerHTML = `
   <section aria-labelledby="grid-label">
