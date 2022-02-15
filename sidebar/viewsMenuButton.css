@@ -22,7 +22,7 @@ div {
   border-radius: 4px;
   background-color: var(--menu-bg-color);
   right: 0;
-  height: 400px;
+  height: 300px;
   overflow-y: scroll;
 }
 

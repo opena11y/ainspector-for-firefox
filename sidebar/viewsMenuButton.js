@@ -77,6 +77,7 @@ export default class ViewsMenuButton extends HTMLElement {
     this.labelSpan = this.button.querySelector('.label');
     this.labelSpan.textContent = msg.viewsMenuButtonLabel;
     this.button.addEventListener('click', this.onButtonClick.bind(this));
+    this.button.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
     this.menuDiv = this.shadowRoot.querySelector('[role="menu"]');
 
@@ -87,7 +88,13 @@ export default class ViewsMenuButton extends HTMLElement {
     this.lastMenuitem = false;
     this.firstChars = [];
 
-    this.initMenu();
+    this.closePopup();
+    window.addEventListener(
+      'mousedown',
+      this.onBackgroundMousedown.bind(this),
+      true
+    );
+
   }
 
   set disabled (value) {
@@ -147,10 +154,14 @@ export default class ViewsMenuButton extends HTMLElement {
     );
   }
 
-  initMenu () {
+  initMenu (options) {
     let i, rcId, glId, msgId;
 
     this.menuDiv.innerHTML = '';
+    this.menuitems = [];
+    this.firstMenuitem = false;
+    this.lastMenuitem = false;
+    this.firstChars = [];
 
     this.addMenuitem(this.menuDiv, 'summary', msg.summaryLabel);
     const rcGroupDiv = this.addGroup(this.menuDiv, msg.ruleCategoriesLabel);
@@ -161,26 +172,15 @@ export default class ViewsMenuButton extends HTMLElement {
       this.addMenuitem(rcGroupDiv, 'rc' + rcId, msg[msgId]);
     }
 
-    getOptions().then( (options) => {
-      if (options.viewsMenuIncludeGuidelines) {
-        const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
-        for (i = 0; i < guidelineIds.length; i += 1 ) {
-          glId = guidelineIds[i];
-          // cannot have periods in the msgId, so converted to underscrore character
-          msgId = getGuidelineLabelId(glId).replaceAll('.', '_');
-          this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
-        }
+    if (options.viewsMenuIncludeGuidelines) {
+      const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
+      for (i = 0; i < guidelineIds.length; i += 1 ) {
+        glId = guidelineIds[i];
+        // cannot have periods in the msgId, so converted to underscrore character
+        msgId = getGuidelineLabelId(glId).replaceAll('.', '_');
+        this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
       }
-    })
-
-    this.closePopup();
-
-    window.addEventListener(
-      'mousedown',
-      this.onBackgroundMousedown.bind(this),
-      true
-    );
-
+    }
   }
 
   setFocusToMenuitem(newMenuitem) {
@@ -271,9 +271,17 @@ export default class ViewsMenuButton extends HTMLElement {
 
   // Popup menu methods
 
-  openPopup() {
-    this.menuDiv.style.display = 'block';
-    this.button.setAttribute('aria-expanded', 'true');
+  openPopup(setFirst = true) {
+    getOptions().then( (options) => {
+      this.initMenu(options);
+      this.menuDiv.style.display = 'block';
+      this.button.setAttribute('aria-expanded', 'true');
+      if (setFirst) {
+        this.setFocusToFirstMenuitem();
+      } else {
+        this.setFocusToLastMenuitem();
+      }
+    });
   }
 
   closePopup() {
@@ -297,22 +305,17 @@ export default class ViewsMenuButton extends HTMLElement {
       case ' ':
       case 'Enter':
       case 'ArrowDown':
-      case 'Down':
         this.openPopup();
-        this.setFocusToFirstMenuitem();
         flag = true;
         break;
 
-      case 'Esc':
       case 'Escape':
         this.closePopup();
         flag = true;
         break;
 
-      case 'Up':
       case 'ArrowUp':
-        this.openPopup();
-        this.setFocusToLastMenuitem();
+        this.openPopup(false);
         flag = true;
         break;
 
@@ -332,7 +335,6 @@ export default class ViewsMenuButton extends HTMLElement {
       this.button.focus();
     } else {
       this.openPopup();
-      this.setFocusToFirstMenuitem();
     }
 
     event.stopPropagation();
