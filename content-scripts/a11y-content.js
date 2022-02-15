@@ -62245,60 +62245,60 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
         enabled  : true
       },
       ROLE_1 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_2 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_3 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_4 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_5 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_6 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_7 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_8 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_9 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_10 : {
-        required : true,
-        enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_11 : {
-       required : true,
-       enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_12 : {
-       required : true,
-       enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_13 : {
-       required : true,
-       enabled  : true
+        required : false,
+        enabled  : false
       },
       ROLE_14 : {
-       required : true,
-       enabled  : true
+        required : false,
+        enabled  : false
      },
       SENSORY_1 : {
         required : true,
@@ -62822,10 +62822,8 @@ function highlightElements(highlight, position) {
           domNode = elementResults[0].getDOMElement();
           break;
 
-        case 'vw':
-          highlightModule.setHighlightPreferences(false, false, false, false);
-          highlightModule.highlightElementResults(document, elementResults);
-          domNode = elementResults[0].getDOMElement();
+        case 'none':
+          highlightModule.removeHighlight(document);
           break;
 
         case 'selected':
@@ -62836,6 +62834,12 @@ function highlightElements(highlight, position) {
               break;
             }
           }
+          break;
+
+        case 'vw':
+          highlightModule.setHighlightPreferences(false, false, false, false);
+          highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
           break;
 
         default:

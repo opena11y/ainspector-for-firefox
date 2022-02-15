@@ -43,6 +43,8 @@ export default class HighlightSelect extends HTMLElement {
     this.select = this.shadowRoot.querySelector('#select');
     this.select.addEventListener('change', this.onSelectChange.bind(this));
 
+    this.onChangeEventCallback = false;
+
     this.init();
   }
 
@@ -87,7 +89,7 @@ export default class HighlightSelect extends HTMLElement {
       getOptions().then( (options) => {
         options.highlight = value;
         saveOptions(options);
-        if (this.onChangeEvent) {
+        if (this.onChangeEventCallback) {
           this.onChangeEventCallback()
         }
       });
