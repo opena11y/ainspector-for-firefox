@@ -6,36 +6,37 @@ import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabe
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.viewsMenuButtonLabel = getMessage('viewsMenuButtonLabel');
-msg.ruleCategoriesLabel  = getMessage('ruleCategoriesLabel');
-msg.guidelinesLabel      = getMessage('guidelinesLabel');
-msg.landmarksLabel       = getMessage('landmarksLabel');
-msg.headingsLabel        = getMessage('headingsLabel');
-msg.stylesContentLabel   = getMessage('stylesContentLabel');
-msg.imagesLabel          = getMessage('imagesLabel');
-msg.formsLabel           = getMessage('formsLabel');
-msg.linksLabel           = getMessage('linksLabel');
-msg.tablesLabel          = getMessage('tablesLabel');
-msg.widgetsScriptsLabel  = getMessage('widgetsScriptsLabel');
-msg.audioVideoLabel      = getMessage('audioVideoLabel');
-msg.keyboardLabel        = getMessage('keyboardLabel');
-msg.timingLabel          = getMessage('timingLabel');
-msg.siteNavigationLabel  = getMessage('siteNavigationLabel');
-msg.allRulesLabel        = getMessage('allRulesLabel');
-msg.summaryLabel         = getMessage('summaryLabel');
-msg.g1_1 = getMessage('g1.1');
-msg.g1_2 = getMessage('g1.2');
-msg.g1_3 = getMessage('g1.3');
-msg.g1_4 = getMessage('g1.4');
-msg.g2_1 = getMessage('g2.1');
-msg.g2_2 = getMessage('g2.2');
-msg.g2_3 = getMessage('g2.3');
-msg.g2_4 = getMessage('g2.4');
-msg.g3_1 = getMessage('g3.1');
-msg.g3_2 = getMessage('g3.2');
-msg.g3_3 = getMessage('g3.3');
-msg.g4_1 = getMessage('g4.1');
+const msg = {
+  viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel'),
+  ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
+  guidelinesLabel      : getMessage('guidelinesLabel'),
+  landmarksLabel       : getMessage('landmarksLabel'),
+  headingsLabel        : getMessage('headingsLabel'),
+  stylesContentLabel   : getMessage('stylesContentLabel'),
+  imagesLabel          : getMessage('imagesLabel'),
+  formsLabel           : getMessage('formsLabel'),
+  linksLabel           : getMessage('linksLabel'),
+  tablesLabel          : getMessage('tablesLabel'),
+  widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
+  audioVideoLabel      : getMessage('audioVideoLabel'),
+  keyboardLabel        : getMessage('keyboardLabel'),
+  timingLabel          : getMessage('timingLabel'),
+  siteNavigationLabel  : getMessage('siteNavigationLabel'),
+  allRulesLabel        : getMessage('allRulesLabel'),
+  summaryLabel         : getMessage('summaryLabel'),
+  g1_1 : getMessage('g1.1'),
+  g1_2 : getMessage('g1.2'),
+  g1_3 : getMessage('g1.3'),
+  g1_4 : getMessage('g1.4'),
+  g2_1 : getMessage('g2.1'),
+  g2_2 : getMessage('g2.2'),
+  g2_3 : getMessage('g2.3'),
+  g2_4 : getMessage('g2.4'),
+  g3_1 : getMessage('g3.1'),
+  g3_2 : getMessage('g3.2'),
+  g3_3 : getMessage('g3.3'),
+  g4_1 : getMessage('g4.1')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

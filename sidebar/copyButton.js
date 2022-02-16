@@ -3,11 +3,11 @@
 const getMessage = browser.i18n.getMessage;
 
 // Get message strings from locale-specific messages.json file
-const msg = {};
-msg.copyLabel        = getMessage('copyLabel');
-msg.copySuccessLabel = getMessage('copySuccessLabel');
-msg.copyFailedLabel  = getMessage('copyFailedLabel');
-
+const msg = {
+  copyLabel        : getMessage('copyLabel'),
+  copySuccessLabel : getMessage('copySuccessLabel'),
+  copyFailedLabel  : getMessage('copyFailedLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

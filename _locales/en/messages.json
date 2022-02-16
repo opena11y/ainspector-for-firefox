@@ -470,7 +470,7 @@
   },
 
   "domPositionLabel": {
-    "message": ", index of dom position",
+    "message": ", DOM position index: ",
     "description": "Element DOM position label in grid for rule results view"
   },
 
@@ -650,7 +650,7 @@
   },
 
   "optionsExportPrefixLabel": {
-    "message": "Prefix for export file name (up to 16 character long)",
+    "message": "Prefix for export file name (up to 16 characters long)",
     "description": "Label for prefix string input in the export section of the options page"
   },
 

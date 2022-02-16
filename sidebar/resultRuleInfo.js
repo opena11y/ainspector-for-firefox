@@ -2,17 +2,18 @@
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.ruleSelectedLabel   = getMessage('ruleSelectedLabel');
-msg.ruleSummaryLabel    = getMessage('ruleSummaryLabel');
-msg.ruleDefinitionLabel = getMessage('ruleDefinitionLabel');
-msg.ruleActionLabel     = getMessage('ruleActionLabel');
-msg.rulePurposeLabel    = getMessage('rulePurposeLabel');
-msg.ruleTechniquesLabel = getMessage('ruleTechniquesLabel');
-msg.ruleTargetLabel     = getMessage('ruleTargetLabel');
-msg.ruleComplianceLabel = getMessage('ruleComplianceLabel');
-msg.ruleSCLabel         = getMessage('ruleSCLabel');
-msg.ruleAdditionalLabel = getMessage('ruleAdditionalLabel');
+const msg = {
+  ruleSelectedLabel   : getMessage('ruleSelectedLabel'),
+  ruleSummaryLabel    : getMessage('ruleSummaryLabel'),
+  ruleDefinitionLabel : getMessage('ruleDefinitionLabel'),
+  ruleActionLabel     : getMessage('ruleActionLabel'),
+  rulePurposeLabel    : getMessage('rulePurposeLabel'),
+  ruleTechniquesLabel : getMessage('ruleTechniquesLabel'),
+  ruleTargetLabel     : getMessage('ruleTargetLabel'),
+  ruleComplianceLabel : getMessage('ruleComplianceLabel'),
+  ruleSCLabel         : getMessage('ruleSCLabel'),
+  ruleAdditionalLabel : getMessage('ruleAdditionalLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

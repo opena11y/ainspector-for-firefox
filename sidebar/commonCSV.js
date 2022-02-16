@@ -6,42 +6,42 @@ import { sortRuleResults } from './sortUtils.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.extensionVersion          = getMessage('extensionVersion');
-msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
-msg.optionsRulesetTransLabel  = getMessage('optionsRulesetTransLabel');
-msg.csvPageTitle              = getMessage('csvPageTitle');
-msg.csvPageURL                = getMessage('csvPageURL');
-msg.csvRuleset                = getMessage('csvRuleset');
-msg.csvDate                   = getMessage('csvDate');
-msg.csvTime                   = getMessage('csvTime');
-msg.csvSource                 = getMessage('csvSource');
-msg.csvGroupTitle             = getMessage('csvGroupTitle');
-msg.csvRuleSummary            = getMessage('csvRuleSummary');
-msg.resultLabel               = getMessage('resultLabel');
-msg.csvResultValue            = getMessage('csvResultValue');
-msg.ruleCategoryLabel         = getMessage('ruleCategoryLabel');
-msg.guidelineLabel            = getMessage('guidelineLabel');
-msg.csvSuccessCriteria        = getMessage('csvSuccessCriteria');
-msg.levelLabel                = getMessage('levelLabel');
-msg.requiredLabel             = getMessage('requiredLabel');
-msg.requiredValue             = getMessage('requiredValue');
-msg.violationsLabel           = getMessage('violationsLabel');
-msg.warningsLabel             = getMessage('warningsLabel');
-msg.manualChecksLabel         = getMessage('manualChecksLabel');
-msg.passedLabel               = getMessage('passedLabel');
-msg.hiddenLabel               = getMessage('hiddenLabel');
-msg.detailsActionLabel        = getMessage('detailsActionLabel');
-msg.viewTitleSummaryLabel     = getMessage('viewTitleSummaryLabel');
-msg.ruleDefinitionLabel       = getMessage('ruleDefinitionLabel');
-msg.ruleActionLabel           = getMessage('ruleActionLabel');
-msg.rulePurposeLabel          = getMessage('rulePurposeLabel');
-msg.ruleTechniquesLabel       = getMessage('ruleTechniquesLabel');
-msg.ruleTargetLabel           = getMessage('ruleTargetLabel');
-msg.levelLabel                = getMessage('levelLabel');
-msg.csvSuccessCriteria        = getMessage('csvSuccessCriteria');
-msg.ruleAdditionalLabel       = getMessage('ruleAdditionalLabel');
-
+const msg = {
+  extensionVersion          : getMessage('extensionVersion'),
+  optionsRulesetStrictLabel : getMessage('optionsRulesetStrictLabel'),
+  optionsRulesetTransLabel  : getMessage('optionsRulesetTransLabel'),
+  csvPageTitle              : getMessage('csvPageTitle'),
+  csvPageURL                : getMessage('csvPageURL'),
+  csvRuleset                : getMessage('csvRuleset'),
+  csvDate                   : getMessage('csvDate'),
+  csvTime                   : getMessage('csvTime'),
+  csvSource                 : getMessage('csvSource'),
+  csvGroupTitle             : getMessage('csvGroupTitle'),
+  csvRuleSummary            : getMessage('csvRuleSummary'),
+  resultLabel               : getMessage('resultLabel'),
+  csvResultValue            : getMessage('csvResultValue'),
+  ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
+  guidelineLabel            : getMessage('guidelineLabel'),
+  csvSuccessCriteria        : getMessage('csvSuccessCriteria'),
+  levelLabel                : getMessage('levelLabel'),
+  requiredLabel             : getMessage('requiredLabel'),
+  requiredValue             : getMessage('requiredValue'),
+  violationsLabel           : getMessage('violationsLabel'),
+  warningsLabel             : getMessage('warningsLabel'),
+  manualChecksLabel         : getMessage('manualChecksLabel'),
+  passedLabel               : getMessage('passedLabel'),
+  hiddenLabel               : getMessage('hiddenLabel'),
+  detailsActionLabel        : getMessage('detailsActionLabel'),
+  viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
+  ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
+  ruleActionLabel           : getMessage('ruleActionLabel'),
+  rulePurposeLabel          : getMessage('rulePurposeLabel'),
+  ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
+  ruleTargetLabel           : getMessage('ruleTargetLabel'),
+  levelLabel                : getMessage('levelLabel'),
+  csvSuccessCriteria        : getMessage('csvSuccessCriteria'),
+  ruleAdditionalLabel       : getMessage('ruleAdditionalLabel')
+};
 
 export class commonCSV {
   constructor() {

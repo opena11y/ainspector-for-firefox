@@ -5,28 +5,29 @@ import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.ruleResultsGridLabel  = getMessage('ruleResultsGridLabel');
-msg.detailsLabel          = getMessage('detailsLabel');
-msg.ruleSelectedLabel     = getMessage('ruleSelectedLabel');
-msg.copyRuleInfoDesc      = getMessage('copyRuleInfoDesc');
-msg.ruleLabel             = getMessage('ruleLabel');
-msg.resultLabel           = getMessage('resultLabel');
-msg.successCriteriaAbbrev = getMessage('successCriteriaAbbrev');
-msg.successCriteriaLabel  = getMessage('successCriteriaLabel');
-msg.levelLabel            = getMessage('levelLabel');
-msg.requiredAbbrev     = getMessage('requiredAbbrev');
-msg.requiredLabel      = getMessage('requiredLabel');
-msg.notApplicableLabel = getMessage('notApplicableLabel');
-msg.manualCheckLabel   = getMessage('manualCheckLabel');
-msg.passedLabel        = getMessage('passedLabel');
-msg.violationLabel     = getMessage('violationLabel');
-msg.warningLabel       = getMessage('warningLabel');
-msg.singleALabel       = getMessage('singleALabel');
-msg.doubleALabel       = getMessage('doubleALabel');
-msg.requiredValue      = getMessage('requiredValue');
-msg.noResultsMsg       = getMessage('noResultsMsg');
-msg.noViolationsWarningsMCResultsMsg = getMessage('noViolationsWarningsMCResultsMsg');
+const msg = {
+  ruleResultsGridLabel  : getMessage('ruleResultsGridLabel'),
+  detailsLabel          : getMessage('detailsLabel'),
+  ruleSelectedLabel     : getMessage('ruleSelectedLabel'),
+  copyRuleInfoDesc      : getMessage('copyRuleInfoDesc'),
+  ruleLabel             : getMessage('ruleLabel'),
+  resultLabel           : getMessage('resultLabel'),
+  successCriteriaAbbrev : getMessage('successCriteriaAbbrev'),
+  successCriteriaLabel  : getMessage('successCriteriaLabel'),
+  levelLabel            : getMessage('levelLabel'),
+  requiredAbbrev        : getMessage('requiredAbbrev'),
+  requiredLabel         : getMessage('requiredLabel'),
+  notApplicableLabel    : getMessage('notApplicableLabel'),
+  manualCheckLabel      : getMessage('manualCheckLabel'),
+  passedLabel           : getMessage('passedLabel'),
+  violationLabel        : getMessage('violationLabel'),
+  warningLabel          : getMessage('warningLabel'),
+  singleALabel          : getMessage('singleALabel'),
+  doubleALabel          : getMessage('doubleALabel'),
+  requiredValue         : getMessage('requiredValue'),
+  noResultsMsg          : getMessage('noResultsMsg'),
+  noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg')
+};
 
 export default class ViewRuleGroup {
   constructor(id, handleRowActivation) {

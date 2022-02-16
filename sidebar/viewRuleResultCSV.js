@@ -6,9 +6,9 @@ const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.elementResultsLabel = getMessage('elementResultsLabel');
-
+const msg = {
+  elementResultsLabel : getMessage('elementResultsLabel')
+};
 export default class ViewRuleResultCSV extends commonCSV{
   constructor(detailsAction, elementResults) {
     super();

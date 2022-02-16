@@ -4,12 +4,13 @@ import { getOptions, saveOptions } from '../storage.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.highlightLabel          = getMessage('highlightLabel');
-msg.highlightOptionNone     = getMessage('highlightOptionNone');
-msg.highlightOptionSelected = getMessage('highlightOptionSelected');
-msg.highlightOptionVW       = getMessage('highlightOptionVW');
-msg.highlightOptionAll      = getMessage('highlightOptionAll');
+const msg = {
+  highlightLabel          : getMessage('highlightLabel'),
+  highlightOptionNone     : getMessage('highlightOptionNone'),
+  highlightOptionSelected : getMessage('highlightOptionSelected'),
+  highlightOptionVW       : getMessage('highlightOptionVW'),
+  highlightOptionAll      : getMessage('highlightOptionAll')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

@@ -5,17 +5,18 @@ import { validatePrefix } from '../validate.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.exportButtonLabel = getMessage('exportButtonLabel');
-msg.exportDialogTitle = getMessage('exportDialogTitle');
-msg.cancelButtonLabel = getMessage('cancelButtonLabel');
-msg.okButtonLabel     = getMessage('okButtonLabel');
-msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
-msg.optionsExportCSVLabel     = getMessage('optionsExportCSVLabel');
-msg.optionsExportJSONLabel    = getMessage('optionsExportJSONLabel');
-msg.optionsExportPrefixLabel  = getMessage('optionsExportPrefixLabel');
-msg.optionsExportIncludeDate  = getMessage('optionsExportIncludeDate');
-msg.optionsExportPromptForOptions = getMessage('optionsExportPromptForOptions');
+const msg = {
+  exportButtonLabel         : getMessage('exportButtonLabel'),
+  exportDialogTitle         : getMessage('exportDialogTitle'),
+  cancelButtonLabel         : getMessage('cancelButtonLabel'),
+  okButtonLabel             : getMessage('okButtonLabel'),
+  optionsExportFormatLegend : getMessage('optionsExportFormatLegend'),
+  optionsExportCSVLabel     : getMessage('optionsExportCSVLabel'),
+  optionsExportJSONLabel    : getMessage('optionsExportJSONLabel'),
+  optionsExportPrefixLabel  : getMessage('optionsExportPrefixLabel'),
+  optionsExportIncludeDate  : getMessage('optionsExportIncludeDate'),
+  optionsExportPromptForOptions : getMessage('optionsExportPromptForOptions')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

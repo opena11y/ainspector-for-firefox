@@ -5,42 +5,41 @@ import { validatePrefix, validateShortcut } from './validate.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.optionsTitle           = getMessage('optionsTitle');
-msg.optionsViewsMenuLegend = getMessage('optionsViewsMenuLegend');
-msg.optionsInclWcagGlLabel = getMessage('optionsInclWcagGlLabel');
-msg.optionsRerunEvaluationLegend = getMessage('optionsRerunEvaluationLegend');
-msg.optionsNoDelayLabel          = getMessage('optionsNoDelayLabel');
-msg.optionsPromptForDelayLabel   = getMessage('optionsPromptForDelayLabel');
-msg.optionsEvaluationHeading  = getMessage('optionsEvaluationHeading');
-// msg.optionsRulesetLegend      = getMessage('optionsRulesetLegend');
-// msg.optionsRulesetStrictLabel = getMessage('optionsRulesetStrictLabel');
-// msg.optionsRulesetTransLabel  = getMessage('optionsRulesetTransLabel');
-msg.optionsRuleResultsLegend  = getMessage('optionsRuleResultsLegend');
-msg.optionsInclPassNaLabel    = getMessage('optionsInclPassNaLabel');
-msg.optionsExportHeading      = getMessage('optionsExportHeading');
-msg.optionsExportPrompt       = getMessage('optionsExportPrompt');
-msg.optionsExportFormatLegend = getMessage('optionsExportFormatLegend');
-msg.optionsExportCSVLabel     = getMessage('optionsExportCSVLabel');
-msg.optionsExportJSONLabel    = getMessage('optionsExportJSONLabel');
-msg.optionsExportPrefixLabel  = getMessage('optionsExportPrefixLabel');
-msg.optionsExportPrefixErrorToLong         = getMessage('optionsExportPrefixErrorToLong');
-msg.optionsExportPrefixErrorCharNotAllowed = getMessage('optionsExportPrefixErrorCharNotAllowed');
-
-msg.optionsExportIncludeDate  = getMessage('optionsExportIncludeDate');
-msg.optionsResetDefaults      = getMessage('optionsResetDefaults');
-
-msg.shortcutsHeading       = getMessage('shortcutsHeading');
-msg.shortcutsEnabledLabel  = getMessage('shortcutsEnabledLabel');
-msg.shortcutsTableShortcut = getMessage('shortcutsTableShortcut');
-msg.shortcutsTableAction   = getMessage('shortcutsTableAction');
-msg.shortcutBackLabel      = getMessage('shortcutBackLabel');
-msg.shortcutViewsLabel     = getMessage('shortcutViewsLabel');
-msg.shortcutExportLabel    = getMessage('shortcutExportLabel');
-msg.shortcutRerunLabel     = getMessage('shortcutRerunLabel');
-msg.shortcutCopyLabel      = getMessage('shortcutCopyLabel');
-msg.shortcutsNote          = getMessage('shortcutsNotes');
-msg.shortcutAllreadyUsed   = getMessage('shortcutAllreadyUsed');
+const msg = {
+  optionsTitle                 : getMessage('optionsTitle'),
+  optionsViewsMenuLegend       : getMessage('optionsViewsMenuLegend'),
+  optionsInclWcagGlLabel       : getMessage('optionsInclWcagGlLabel'),
+  optionsRerunEvaluationLegend : getMessage('optionsRerunEvaluationLegend'),
+  optionsNoDelayLabel          : getMessage('optionsNoDelayLabel'),
+  optionsPromptForDelayLabel   : getMessage('optionsPromptForDelayLabel'),
+  optionsEvaluationHeading     : getMessage('optionsEvaluationHeading'),
+//  optionsRulesetLegend         : getMessage('optionsRulesetLegend');
+//  optionsRulesetStrictLabel    : getMessage('optionsRulesetStrictLabel');
+//  optionsRulesetTransLabel     : getMessage('optionsRulesetTransLabel'),
+  optionsRuleResultsLegend     : getMessage('optionsRuleResultsLegend'),
+  optionsInclPassNaLabel       : getMessage('optionsInclPassNaLabel'),
+  optionsExportHeading         : getMessage('optionsExportHeading'),
+  optionsExportPrompt          : getMessage('optionsExportPrompt'),
+  optionsExportFormatLegend    : getMessage('optionsExportFormatLegend'),
+  optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
+  optionsExportJSONLabel       : getMessage('optionsExportJSONLabel'),
+  optionsExportPrefixLabel     : getMessage('optionsExportPrefixLabel'),
+  optionsExportPrefixErrorToLong         : getMessage('optionsExportPrefixErrorToLong'),
+  optionsExportPrefixErrorCharNotAllowed : getMessage('optionsExportPrefixErrorCharNotAllowed'),
+  optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
+  optionsResetDefaults         : getMessage('optionsResetDefaults'),
+  shortcutsHeading             : getMessage('shortcutsHeading'),
+  shortcutsEnabledLabel        : getMessage('shortcutsEnabledLabel'),
+  shortcutsTableShortcut       : getMessage('shortcutsTableShortcut'),
+  shortcutsTableAction         : getMessage('shortcutsTableAction'),
+  shortcutBackLabel            : getMessage('shortcutBackLabel'),
+  shortcutViewsLabel           : getMessage('shortcutViewsLabel'),
+  shortcutExportLabel          : getMessage('shortcutExportLabel'),
+  shortcutRerunLabel           : getMessage('shortcutRerunLabel'),
+  shortcutCopyLabel            : getMessage('shortcutCopyLabel'),
+  shortcutsNote                : getMessage('shortcutsNotes'),
+  shortcutAllreadyUsed         : getMessage('shortcutAllreadyUsed')
+};
 
 const debug = false;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');

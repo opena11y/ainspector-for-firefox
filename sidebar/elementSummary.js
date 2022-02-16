@@ -1,19 +1,20 @@
-/* ruleSummary.js */
+/* elementSummary.js */
 
 const getMessage = browser.i18n.getMessage;
 
 // Get message strings from locale-specific messages.json file
-const msg = {};
-msg.violationsAbbrev   = getMessage('violationsAbbrev');
-msg.violationsLabel    = getMessage('violationsLabel');
-msg.warningsAbbrev     = getMessage('warningsAbbrev');
-msg.warningsLabel      = getMessage('warningsLabel');
-msg.manualChecksAbbrev = getMessage('manualChecksAbbrev');
-msg.manualChecksLabel  = getMessage('manualChecksLabel');
-msg.passedAbbrev       = getMessage('passedAbbrev');
-msg.passedLabel        = getMessage('passedLabel');
-msg.hiddenAbbrev       = getMessage('hiddenAbbrev');
-msg.hiddenLabel        = getMessage('hiddenLabel');
+const msg = {
+  violationsAbbrev   : getMessage('violationsAbbrev'),
+  violationsLabel    : getMessage('violationsLabel'),
+  warningsAbbrev     : getMessage('warningsAbbrev'),
+  warningsLabel      : getMessage('warningsLabel'),
+  manualChecksAbbrev : getMessage('manualChecksAbbrev'),
+  manualChecksLabel  : getMessage('manualChecksLabel'),
+  passedAbbrev       : getMessage('passedAbbrev'),
+  passedLabel        : getMessage('passedLabel'),
+  hiddenAbbrev       : getMessage('hiddenAbbrev'),
+  hiddenLabel        : getMessage('hiddenLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `

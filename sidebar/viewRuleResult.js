@@ -5,23 +5,24 @@ import ViewRuleResultCSV  from './viewRuleResultCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.elementGridLabel     = getMessage('elementGridLabel');
-msg.elementSelectedLabel = getMessage('elementSelectedLabel');
-msg.copyElemInfoDesc     = getMessage('copyElemInfoDesc');
-msg.elementLabel         = getMessage('elementLabel');
-msg.resultLabel          = getMessage('resultLabel');
-msg.positionAbbrev       = getMessage('positionAbbrev');
-msg.positionLabel        = getMessage('positionLabel');
-msg.domPositionLabel     = getMessage('domPositionLabel');
-msg.actionLabel          = getMessage('actionLabel');
-msg.notApplicableLabel   = getMessage('notApplicableLabel');
-msg.manualCheckLabel     = getMessage('manualCheckLabel');
-msg.passedLabel          = getMessage('passedLabel');
-msg.violationLabel       = getMessage('violationLabel');
-msg.warningLabel         = getMessage('warningLabel');
-msg.noResultsMsg         = getMessage('noResultsMsg');
-msg.noViolationsWarningsMCResultsMsg = getMessage('noViolationsWarningsMCResultsMsg');
+const msg = {
+  elementGridLabel     : getMessage('elementGridLabel'),
+  elementSelectedLabel : getMessage('elementSelectedLabel'),
+  copyElemInfoDesc     : getMessage('copyElemInfoDesc'),
+  elementLabel         : getMessage('elementLabel'),
+  resultLabel          : getMessage('resultLabel'),
+  positionAbbrev       : getMessage('positionAbbrev'),
+  positionLabel        : getMessage('positionLabel'),
+  domPositionLabel     : getMessage('domPositionLabel'),
+  actionLabel          : getMessage('actionLabel'),
+  notApplicableLabel   : getMessage('notApplicableLabel'),
+  manualCheckLabel     : getMessage('manualCheckLabel'),
+  passedLabel          : getMessage('passedLabel'),
+  violationLabel       : getMessage('violationLabel'),
+  warningLabel         : getMessage('warningLabel'),
+  noResultsMsg         : getMessage('noResultsMsg'),
+  noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg')
+};
 
 export default class ViewRuleResult {
   constructor(id, handleRowSelection) {
@@ -238,7 +239,7 @@ export default class ViewRuleResult {
           this.elementResultGrid.addDataCell(row, er.result, cellAccName, style, sortValue);
 
           // Add position information cell (column 3)
-          cellAccName = er.position + ' ' + msg.domPositionLabel;
+          cellAccName = msg.domPositionLabel + ' ' + er.position;
           rowAccName += ', ' + cellAccName;
           this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', (-1 * er.position));
 

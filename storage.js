@@ -5,12 +5,6 @@
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.shortcutDefaultBack   = getMessage('shortcutDefaultBack');
-msg.shortcutDefaultViews  = getMessage('shortcutDefaultViews');
-msg.shortcutDefaultExport = getMessage('shortcutDefaultExport');
-msg.shortcutDefaultRerun  = getMessage('shortcutDefaultRerun');
-msg.shortcutDefaultCopy   = getMessage('shortcutDefaultCopy');
 
 export const defaultOptions = {
   isSidebarOpen: false,
@@ -30,11 +24,11 @@ export const defaultOptions = {
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,
-  shortcutBack: msg.shortcutDefaultBack,
-  shortcutViews: msg.shortcutDefaultViews,
-  shortcutExport:msg.shortcutDefaultExport,
-  shortcutRerun: msg.shortcutDefaultRerun,
-  shortcutCopy: msg.shortcutDefaultCopy,
+  shortcutBack:  getMessage('shortcutDefaultBack'),
+  shortcutViews: getMessage('shortcutDefaultViews'),
+  shortcutExport:getMessage('shortcutDefaultExport'),
+  shortcutRerun: getMessage('shortcutDefaultRerun'),
+  shortcutCopy:  getMessage('shortcutDefaultCopy'),
   shortcutsEnabled: false
 };
 

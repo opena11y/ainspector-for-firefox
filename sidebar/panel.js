@@ -34,18 +34,19 @@ customElements.define('copy-button',         CopyButton);
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.tabIsLoading           = getMessage("tabIsLoading");
-msg.protocolNotSupported   = getMessage("protocolNotSupported");
-msg.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-msg.ariaTransRulesetLabel  = getMessage("optionsRulesetTransLabel");
-msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
-msg.backButtonLabel        = getMessage('backButtonLabel');
-msg.infoLocationLabel      = getMessage('infoLocationLabel');
-msg.infoTitleLabel         = getMessage('infoTitleLabel');
-msg.infoRulesetLabel       = getMessage('infoRulesetLabel');
-msg.preferencesButtonLabel = getMessage('preferencesButtonLabel');
-msg.viewTitleSummaryLabel  = getMessage('viewTitleSummaryLabel');
+const msg = {
+  tabIsLoading           : getMessage("tabIsLoading"),
+  protocolNotSupported   : getMessage("protocolNotSupported"),
+  ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
+  ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
+  viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel'),
+  backButtonLabel        : getMessage('backButtonLabel'),
+  infoLocationLabel      : getMessage('infoLocationLabel'),
+  infoTitleLabel         : getMessage('infoTitleLabel'),
+  infoRulesetLabel       : getMessage('infoRulesetLabel'),
+  preferencesButtonLabel : getMessage('preferencesButtonLabel'),
+  viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
+};
 
 var contentPort;
 var myWindowId;

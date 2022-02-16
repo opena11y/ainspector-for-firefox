@@ -2,20 +2,21 @@
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
-const msg = {};
-msg.elementSelectedLabel         = getMessage('elementSelectedLabel');
-msg.elementResultAction          = getMessage('elementResultAction');
-msg.elementResultTagName         = getMessage('elementResultTagName');
-msg.elementResultAccName         = getMessage('elementResultAccName');
-msg.elementResultAccDesc         = getMessage('elementResultAccDesc');
-msg.elementResultErrorDesc       = getMessage('elementResultErrorDesc');
-msg.elementResultCCR             = getMessage('elementResultCCR');
-msg.elementResultVisibility      = getMessage('elementResultVisibility');
-msg.elementResultAttributeHeader = getMessage('elementResultAttributeHeader');
-msg.elementResultValueHeader     = getMessage('elementResultValueHeader');
-msg.ruleActionLabel              = getMessage('ruleActionLabel');
-msg.elementResultAccNameRequired = getMessage('elementResultAccNameRequired');
-msg.elementResultAccNameProhibited = getMessage('elementResultAccNameProhibited');
+const msg = {
+  elementSelectedLabel         : getMessage('elementSelectedLabel'),
+  elementResultAction          : getMessage('elementResultAction'),
+  elementResultTagName         : getMessage('elementResultTagName'),
+  elementResultAccName         : getMessage('elementResultAccName'),
+  elementResultAccDesc         : getMessage('elementResultAccDesc'),
+  elementResultErrorDesc       : getMessage('elementResultErrorDesc'),
+  elementResultCCR             : getMessage('elementResultCCR'),
+  elementResultVisibility      : getMessage('elementResultVisibility'),
+  elementResultAttributeHeader : getMessage('elementResultAttributeHeader'),
+  elementResultValueHeader     : getMessage('elementResultValueHeader'),
+  ruleActionLabel              : getMessage('ruleActionLabel'),
+  elementResultAccNameRequired : getMessage('elementResultAccNameRequired'),
+  elementResultAccNameProhibited : getMessage('elementResultAccNameProhibited')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
