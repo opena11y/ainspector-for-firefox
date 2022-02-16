@@ -469,11 +469,6 @@
     "description": "Position column label in grid for rule results view"
   },
 
-  "domPositionLabel": {
-    "message": ", DOM position index: ",
-    "description": "Element DOM position label in grid for rule results view"
-  },
-
   "actionLabel": {
     "message": "Action",
     "description": "Action column label in grid for rule results view"

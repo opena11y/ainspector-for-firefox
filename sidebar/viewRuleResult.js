@@ -13,7 +13,6 @@ const msg = {
   resultLabel          : getMessage('resultLabel'),
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
-  domPositionLabel     : getMessage('domPositionLabel'),
   actionLabel          : getMessage('actionLabel'),
   notApplicableLabel   : getMessage('notApplicableLabel'),
   manualCheckLabel     : getMessage('manualCheckLabel'),
@@ -228,7 +227,7 @@ export default class ViewRuleResult {
             elemName = er.tagName;
           }
 
-          rowAccName = elemName;
+          rowAccName = elemName + ' ' + msg.elementLabel;
           this.elementResultGrid.addDataCell(row, elemName, '', 'element-info');
 
           // Add result information cell (column 2)
@@ -239,7 +238,7 @@ export default class ViewRuleResult {
           this.elementResultGrid.addDataCell(row, er.result, cellAccName, style, sortValue);
 
           // Add position information cell (column 3)
-          cellAccName = msg.domPositionLabel + ' ' + er.position;
+          cellAccName = ', ' + msg.positionLabel + ' ' + er.position;
           rowAccName += ', ' + cellAccName;
           this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', (-1 * er.position));
 
