@@ -82,7 +82,7 @@ export default class ViewSummaryCSV extends commonCSV {
     }
     csv += this.getRow(msg.allRulesLabel,this.resultSummary);
 
-    csv += this.getRuleResultsCSV(msg.allRulesLabel, this.ruleResults, true, true);
+    csv += this.getRuleResultsCSV(options, msg.allRulesLabel, this.ruleResults, true, true);
 
     return csv;
   }

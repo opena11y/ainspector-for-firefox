@@ -188,7 +188,10 @@ export default class ViewRuleResultCSV extends commonCSV{
 
     for (let er in this.elementResults) {
       let info = this.elementResults[er];
-      csv += this.elementResultToCSV(info, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps);
+      if (options.resultsIncludePassNa ||
+          (['', 'V', 'W', 'MC'].indexOf(info.result) > 0)) {
+        csv += this.elementResultToCSV(info, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps);
+      }
     }
     return csv
   }

@@ -22,7 +22,7 @@ export default class ViewRuleGroupCSV extends commonCSV {
     if (this.groupType !== 'gl' || this.isAllRules) {
       incGL = true;
     }
-    csv += this.getRuleResultsCSV(this.groupTitle, this.ruleResults, incRC, incGL);
+    csv += this.getRuleResultsCSV(options, this.groupTitle, this.ruleResults, incRC, incGL);
     return csv
   }
 

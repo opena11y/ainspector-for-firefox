@@ -82,7 +82,7 @@ export class commonCSV {
     return csv;
   }
 
-  getRuleResultsCSV (title, ruleResults, incRC=false, incGL=false) {
+  getRuleResultsCSV (options, title, ruleResults, incRC=false, incGL=false) {
     const props = [];
     let csv = '\n';
 
@@ -112,25 +112,28 @@ export class commonCSV {
     for (let i = 0; i < ruleResults.length; i += 1) {
       const values = [];
       let rr = ruleResults[i];
-      values.push(rr.summary);
-      values.push(rr.result);
-      values.push(rr.resultValue);
-      if (incRC) {
-        values.push(rr.ruleCategory);
-      }
-      if (incGL) {
-        values.push(rr.guideline);
-      }
-      values.push(rr.wcag);
-      values.push(rr.level);
-      values.push((rr.required ? msg.requiredValue : ''));
-      values.push(rr.elemViolations);
-      values.push(rr.elemWarnings);
-      values.push(rr.elemManualChecks);
-      values.push(rr.elemPassed);
-      values.push(rr.elemHidden);
+      if (options.resultsIncludePassNa ||
+          (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
+        values.push(rr.summary);
+        values.push(rr.result);
+        values.push(rr.resultValue);
+        if (incRC) {
+          values.push(rr.ruleCategory);
+        }
+        if (incGL) {
+          values.push(rr.guideline);
+        }
+        values.push(rr.wcag);
+        values.push(rr.level);
+        values.push((rr.required ? msg.requiredValue : ''));
+        values.push(rr.elemViolations);
+        values.push(rr.elemWarnings);
+        values.push(rr.elemManualChecks);
+        values.push(rr.elemPassed);
+        values.push(rr.elemHidden);
 
-      csv += this.arrayToCSV(values);
+        csv += this.arrayToCSV(values);
+      }
     }
     return csv;
   }
