@@ -83,11 +83,14 @@
           Export File Prefix (up to 16 characters)
         </label>
         <div class="input">
-          <input id="options-export-prefix" type="text" size="20" aria-describedby="options-export-prefix-desc"/>
+          <input id="options-export-prefix" type="text" size="20" aria-describedby="options-export-prefix-desc options-export-prefix-note"/>
           <span class="feedback prefix">
             <img src="icons/error-icon-15.png" alt=""/>
             <span id="options-export-prefix-desc" aria-live="assertive"></span>
           </span>
+        </div>
+        <div class="desc" id="options-export-prefix-note">
+          Note: Prefix cannot contain spaces or <code>&lt;&gt;:"/\|?*[]</code> characters.
         </div>
 
         <label>

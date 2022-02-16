@@ -1,44 +1,43 @@
 /* options.js */
 
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
-import { validatePrefix, validateShortcut } from './validate.js';
+import { isCharacterAllowed, validatePrefix, validateShortcut } from './validate.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  optionsTitle                 : getMessage('optionsTitle'),
-  optionsViewsMenuLegend       : getMessage('optionsViewsMenuLegend'),
+  optionsEvaluationHeading     : getMessage('optionsEvaluationHeading'),
+  optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
+  optionsExportFormatLegend    : getMessage('optionsExportFormatLegend'),
+  optionsExportHeading         : getMessage('optionsExportHeading'),
+  optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
+  optionsExportJSONLabel       : getMessage('optionsExportJSONLabel'),
+  optionsExportPrefixErrorCharNotAllowed : getMessage('optionsExportPrefixErrorCharNotAllowed'),
+  optionsExportPrefixErrorToLong         : getMessage('optionsExportPrefixErrorToLong'),
+  optionsExportPrefixLabel     : getMessage('optionsExportPrefixLabel'),
+  optionsExportPrompt          : getMessage('optionsExportPrompt'),
+  optionsInclPassNaLabel       : getMessage('optionsInclPassNaLabel'),
   optionsInclWcagGlLabel       : getMessage('optionsInclWcagGlLabel'),
-  optionsRerunEvaluationLegend : getMessage('optionsRerunEvaluationLegend'),
   optionsNoDelayLabel          : getMessage('optionsNoDelayLabel'),
   optionsPromptForDelayLabel   : getMessage('optionsPromptForDelayLabel'),
-  optionsEvaluationHeading     : getMessage('optionsEvaluationHeading'),
-//  optionsRulesetLegend         : getMessage('optionsRulesetLegend');
-//  optionsRulesetStrictLabel    : getMessage('optionsRulesetStrictLabel');
-//  optionsRulesetTransLabel     : getMessage('optionsRulesetTransLabel'),
+  optionsRerunEvaluationLegend : getMessage('optionsRerunEvaluationLegend'),
   optionsRuleResultsLegend     : getMessage('optionsRuleResultsLegend'),
-  optionsInclPassNaLabel       : getMessage('optionsInclPassNaLabel'),
-  optionsExportHeading         : getMessage('optionsExportHeading'),
-  optionsExportPrompt          : getMessage('optionsExportPrompt'),
-  optionsExportFormatLegend    : getMessage('optionsExportFormatLegend'),
-  optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
-  optionsExportJSONLabel       : getMessage('optionsExportJSONLabel'),
-  optionsExportPrefixLabel     : getMessage('optionsExportPrefixLabel'),
-  optionsExportPrefixErrorToLong         : getMessage('optionsExportPrefixErrorToLong'),
-  optionsExportPrefixErrorCharNotAllowed : getMessage('optionsExportPrefixErrorCharNotAllowed'),
-  optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
+  optionsTitle                 : getMessage('optionsTitle'),
+  optionsViewsMenuLegend       : getMessage('optionsViewsMenuLegend'),
   optionsResetDefaults         : getMessage('optionsResetDefaults'),
-  shortcutsHeading             : getMessage('shortcutsHeading'),
-  shortcutsEnabledLabel        : getMessage('shortcutsEnabledLabel'),
-  shortcutsTableShortcut       : getMessage('shortcutsTableShortcut'),
-  shortcutsTableAction         : getMessage('shortcutsTableAction'),
+  shortcutAllreadyUsed         : getMessage('shortcutAllreadyUsed')
   shortcutBackLabel            : getMessage('shortcutBackLabel'),
-  shortcutViewsLabel           : getMessage('shortcutViewsLabel'),
+  shortcutCopyLabel            : getMessage('shortcutCopyLabel'),
   shortcutExportLabel          : getMessage('shortcutExportLabel'),
   shortcutRerunLabel           : getMessage('shortcutRerunLabel'),
-  shortcutCopyLabel            : getMessage('shortcutCopyLabel'),
+  shortcutViewsLabel           : getMessage('shortcutViewsLabel'),
+  shortcutsHeading             : getMessage('shortcutsHeading'),
   shortcutsNote                : getMessage('shortcutsNotes'),
-  shortcutAllreadyUsed         : getMessage('shortcutAllreadyUsed')
+  shortcutsTableAction         : getMessage('shortcutsTableAction'),
+  shortcutsTableShortcut       : getMessage('shortcutsTableShortcut')
+//  optionsRulesetLegend         : getMessage('optionsRulesetLegend'),
+//  optionsRulesetStrictLabel    : getMessage('optionsRulesetStrictLabel'),
+//  optionsRulesetTransLabel     : getMessage('optionsRulesetTransLabel')
 };
 
 const debug = false;
@@ -214,17 +213,29 @@ function showPrefixError(message) {
   exportPrefixDesc.parentNode.classList.add('show');
 }
 
-function onKeyupValidatePrefix () {
+function onKeydownValidatePrefix (event) {
   hidePrefixError();
+  const key = event.key;
+  if (!isCharacterAllowed(key)) {
+    showPrefixError(msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
+    event.stopPropagation();
+    event.preventDefault();
+  } else {
+    if ((key.length === 1) &&
+        (exportPrefix.value.length === 16)) {
+      showPrefixError(msg.optionsExportPrefixErrorToLong);
+      event.stopPropagation();
+      event.preventDefault();
+    }
+  }
+}
+
+function onKeyupValidatePrefix () {
   const value = validatePrefix(exportPrefix.value);
-  const key = exportPrefix.value[exportPrefix.value.length - 1];
   if (value !== exportPrefix.value) {
     if (exportPrefix.value.length >= 16) {
       showPrefixError(msg.optionsExportPrefixErrorToLong);
       console.log('[PREFIX][ERROR]: ' + msg.optionsExportPrefixErrorToLong);
-    } else {
-      showPrefixError(msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
-      console.log('[PREFIX][ERROR]: ' + msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
     }
   }
   exportPrefix.value = value;
@@ -299,6 +310,7 @@ exportPrompt.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);
 exportJSON.addEventListener('change', saveFormOptions);
 exportPrefix.addEventListener('change', saveFormOptions);
+exportPrefix.addEventListener('keydown', onKeydownValidatePrefix);
 exportPrefix.addEventListener('keyup', onKeyupValidatePrefix);
 exportPrefix.addEventListener('blur', hidePrefixError);
 exportDate.addEventListener('change', saveFormOptions);

@@ -5,12 +5,12 @@ import { getOptions } from '../storage.js';
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
+  cancelButtonLabel    : getMessage('cancelButtonLabel'),
+  okButtonLabel        : getMessage('okButtonLabel'),
   rerunEvalButtonLabel : getMessage('rerunEvalButtonLabel'),
   rerunEvalDialogTitle : getMessage('rerunEvalDialogTitle'),
   rerunEvalSelectLabel : getMessage('rerunEvalSelectLabel'),
-  rerunEvalPromptForDelayLabel : getMessage('rerunEvalPromptForDelayLabel'),
-  cancelButtonLabel    : getMessage('cancelButtonLabel'),
-  okButtonLabel        : getMessage('okButtonLabel')
+  rerunEvalPromptForDelayLabel : getMessage('rerunEvalPromptForDelayLabel')
 };
 
 const template = document.createElement('template');

@@ -26,7 +26,7 @@ legend {
   font-weight: bold;
 }
 
-label {
+label  {
   display:  block;
   margin: 0.25em;
 }
@@ -49,6 +49,13 @@ input[type="text"] {
   margin-bottom: 1em;
   font-style: italic;
 }
+
+.desc code {
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  font-style: normal !important;
+  font-weight:  bold;
+}
+
 
 .note {
   margin:  0;

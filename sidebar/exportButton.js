@@ -6,15 +6,15 @@ import { validatePrefix } from '../validate.js';
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
+  cancelButtonLabel         : getMessage('cancelButtonLabel'),
   exportButtonLabel         : getMessage('exportButtonLabel'),
   exportDialogTitle         : getMessage('exportDialogTitle'),
-  cancelButtonLabel         : getMessage('cancelButtonLabel'),
   okButtonLabel             : getMessage('okButtonLabel'),
-  optionsExportFormatLegend : getMessage('optionsExportFormatLegend'),
   optionsExportCSVLabel     : getMessage('optionsExportCSVLabel'),
+  optionsExportFormatLegend : getMessage('optionsExportFormatLegend'),
+  optionsExportIncludeDate  : getMessage('optionsExportIncludeDate'),
   optionsExportJSONLabel    : getMessage('optionsExportJSONLabel'),
   optionsExportPrefixLabel  : getMessage('optionsExportPrefixLabel'),
-  optionsExportIncludeDate  : getMessage('optionsExportIncludeDate'),
   optionsExportPromptForOptions : getMessage('optionsExportPromptForOptions')
 };
 

@@ -4,7 +4,7 @@
 *   File: validatePrefix.js
 */
 
-function isCharacterAllowed(c) {
+export function isCharacterAllowed(c) {
   if ((c <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
     return false;
   }

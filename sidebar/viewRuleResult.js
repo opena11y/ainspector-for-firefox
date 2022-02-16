@@ -6,21 +6,21 @@ import ViewRuleResultCSV  from './viewRuleResultCSV.js';
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  elementGridLabel     : getMessage('elementGridLabel'),
-  elementSelectedLabel : getMessage('elementSelectedLabel'),
+  actionLabel          : getMessage('actionLabel'),
   copyElemInfoDesc     : getMessage('copyElemInfoDesc'),
+  elementGridLabel     : getMessage('elementGridLabel'),
   elementLabel         : getMessage('elementLabel'),
-  resultLabel          : getMessage('resultLabel'),
+  elementSelectedLabel : getMessage('elementSelectedLabel'),
+  manualCheckLabel     : getMessage('manualCheckLabel'),
+  noResultsMsg         : getMessage('noResultsMsg'),
+  noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg'),
+  notApplicableLabel   : getMessage('notApplicableLabel'),
+  passedLabel          : getMessage('passedLabel'),
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
-  actionLabel          : getMessage('actionLabel'),
-  notApplicableLabel   : getMessage('notApplicableLabel'),
-  manualCheckLabel     : getMessage('manualCheckLabel'),
-  passedLabel          : getMessage('passedLabel'),
+  resultLabel          : getMessage('resultLabel'),
   violationLabel       : getMessage('violationLabel'),
-  warningLabel         : getMessage('warningLabel'),
-  noResultsMsg         : getMessage('noResultsMsg'),
-  noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg')
+  warningLabel         : getMessage('warningLabel')
 };
 
 export default class ViewRuleResult {

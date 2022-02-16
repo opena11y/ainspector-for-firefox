@@ -3,14 +3,14 @@
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  violationsAbbrev   : getMessage('violationsAbbrev'),
-  violationsLabel    : getMessage('violationsLabel'),
-  warningsAbbrev     : getMessage('warningsAbbrev'),
-  warningsLabel      : getMessage('warningsLabel'),
   manualChecksAbbrev : getMessage('manualChecksAbbrev'),
   manualChecksLabel  : getMessage('manualChecksLabel'),
   passedAbbrev       : getMessage('passedAbbrev'),
-  passedLabel        : getMessage('passedLabel')
+  passedLabel        : getMessage('passedLabel'),
+  violationsAbbrev   : getMessage('violationsAbbrev'),
+  violationsLabel    : getMessage('violationsLabel'),
+  warningsAbbrev     : getMessage('warningsAbbrev'),
+  warningsLabel      : getMessage('warningsLabel')
 };
 
 const template = document.createElement('template');

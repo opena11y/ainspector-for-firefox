@@ -7,40 +7,39 @@ import { sortRuleResults } from './sortUtils.js';
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  extensionVersion          : getMessage('extensionVersion'),
-  optionsRulesetStrictLabel : getMessage('optionsRulesetStrictLabel'),
-  optionsRulesetTransLabel  : getMessage('optionsRulesetTransLabel'),
+  csvDate                   : getMessage('csvDate'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
-  csvRuleset                : getMessage('csvRuleset'),
-  csvDate                   : getMessage('csvDate'),
   csvTime                   : getMessage('csvTime'),
+  csvResultValue            : getMessage('csvResultValue'),
+  csvRuleset                : getMessage('csvRuleset'),
   csvSource                 : getMessage('csvSource'),
   csvGroupTitle             : getMessage('csvGroupTitle'),
+  csvRuleId                 : getMessage('csvRuleId'),
   csvRuleSummary            : getMessage('csvRuleSummary'),
-  resultLabel               : getMessage('resultLabel'),
-  csvResultValue            : getMessage('csvResultValue'),
-  ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
-  guidelineLabel            : getMessage('guidelineLabel'),
   csvSuccessCriteria        : getMessage('csvSuccessCriteria'),
+  detailsActionLabel        : getMessage('detailsActionLabel'),
+  extensionVersion          : getMessage('extensionVersion'),
+  guidelineLabel            : getMessage('guidelineLabel'),
+  hiddenLabel               : getMessage('hiddenLabel'),
   levelLabel                : getMessage('levelLabel'),
+  manualChecksLabel         : getMessage('manualChecksLabel'),
+  optionsRulesetStrictLabel : getMessage('optionsRulesetStrictLabel'),
+  optionsRulesetTransLabel  : getMessage('optionsRulesetTransLabel'),
+  passedLabel               : getMessage('passedLabel'),
   requiredLabel             : getMessage('requiredLabel'),
   requiredValue             : getMessage('requiredValue'),
-  violationsLabel           : getMessage('violationsLabel'),
-  warningsLabel             : getMessage('warningsLabel'),
-  manualChecksLabel         : getMessage('manualChecksLabel'),
-  passedLabel               : getMessage('passedLabel'),
-  hiddenLabel               : getMessage('hiddenLabel'),
-  detailsActionLabel        : getMessage('detailsActionLabel'),
-  viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
-  ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
+  resultLabel               : getMessage('resultLabel'),
   ruleActionLabel           : getMessage('ruleActionLabel'),
+  ruleAdditionalLabel       : getMessage('ruleAdditionalLabel'),
+  ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
+  ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel          : getMessage('rulePurposeLabel'),
   ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
   ruleTargetLabel           : getMessage('ruleTargetLabel'),
-  levelLabel                : getMessage('levelLabel'),
-  csvSuccessCriteria        : getMessage('csvSuccessCriteria'),
-  ruleAdditionalLabel       : getMessage('ruleAdditionalLabel')
+  viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
+  violationsLabel           : getMessage('violationsLabel'),
+  warningsLabel             : getMessage('warningsLabel')
 };
 
 export class commonCSV {
@@ -89,6 +88,7 @@ export class commonCSV {
     ruleResults = sortRuleResults(ruleResults);
 
     csv += this.arrayToCSV([msg.csvGroupTitle, title], 2);
+    props.push(msg.csvRuleId);
     props.push(msg.csvRuleSummary);
     props.push(msg.resultLabel);
     props.push(msg.csvResultValue);
@@ -114,6 +114,7 @@ export class commonCSV {
       let rr = ruleResults[i];
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
+        values.push(rr.ruleId.replace('_', ' '));
         values.push(rr.summary);
         values.push(rr.result);
         values.push(rr.resultValue);
@@ -173,6 +174,7 @@ export class commonCSV {
   getDetailsActionCSV (ruleInfo) {
     let csv = '\n';
     csv += this.arrayToCSV([msg.detailsActionLabel]);
+    csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
     csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
     csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
     csv += this.contentCSV(msg.ruleActionLabel,       ruleInfo.action);

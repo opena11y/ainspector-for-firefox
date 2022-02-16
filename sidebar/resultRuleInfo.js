@@ -3,16 +3,16 @@
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
+  ruleActionLabel     : getMessage('ruleActionLabel'),
+  ruleAdditionalLabel : getMessage('ruleAdditionalLabel'),
+  ruleComplianceLabel : getMessage('ruleComplianceLabel'),
+  ruleDefinitionLabel : getMessage('ruleDefinitionLabel'),
+  rulePurposeLabel    : getMessage('rulePurposeLabel'),
+  ruleSCLabel         : getMessage('ruleSCLabel'),
   ruleSelectedLabel   : getMessage('ruleSelectedLabel'),
   ruleSummaryLabel    : getMessage('ruleSummaryLabel'),
-  ruleDefinitionLabel : getMessage('ruleDefinitionLabel'),
-  ruleActionLabel     : getMessage('ruleActionLabel'),
-  rulePurposeLabel    : getMessage('rulePurposeLabel'),
-  ruleTechniquesLabel : getMessage('ruleTechniquesLabel'),
   ruleTargetLabel     : getMessage('ruleTargetLabel'),
-  ruleComplianceLabel : getMessage('ruleComplianceLabel'),
-  ruleSCLabel         : getMessage('ruleSCLabel'),
-  ruleAdditionalLabel : getMessage('ruleAdditionalLabel')
+  ruleTechniquesLabel : getMessage('ruleTechniquesLabel')
 };
 
 const template = document.createElement('template');
@@ -188,6 +188,9 @@ export default class ResultRuleInfo extends HTMLElement {
 
   update(ruleInfo) {
     let ruleId = '';
+    if (typeof ruleInfo.ruleId === 'string') {
+      ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
+    }
 
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
@@ -201,9 +204,6 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.scDiv,         ruleInfo.sc);
     this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
 
-    if (typeof ruleInfo.ruleId === 'string') {
-      ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
-    }
     this.copyText = ruleId + ruleInfo.summary + '\n\n';
     this.appendToCopyText(msg.ruleSummaryLabel,    ruleInfo.summary);
     this.appendToCopyText(msg.ruleDefinitionLabel, ruleInfo.definition);

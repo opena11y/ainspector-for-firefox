@@ -4,18 +4,18 @@
 const getMessage = browser.i18n.getMessage;
 const msg = {
   elementSelectedLabel         : getMessage('elementSelectedLabel'),
-  elementResultAction          : getMessage('elementResultAction'),
-  elementResultTagName         : getMessage('elementResultTagName'),
-  elementResultAccName         : getMessage('elementResultAccName'),
   elementResultAccDesc         : getMessage('elementResultAccDesc'),
-  elementResultErrorDesc       : getMessage('elementResultErrorDesc'),
-  elementResultCCR             : getMessage('elementResultCCR'),
-  elementResultVisibility      : getMessage('elementResultVisibility'),
-  elementResultAttributeHeader : getMessage('elementResultAttributeHeader'),
-  elementResultValueHeader     : getMessage('elementResultValueHeader'),
-  ruleActionLabel              : getMessage('ruleActionLabel'),
+  elementResultAccName         : getMessage('elementResultAccName'),
   elementResultAccNameRequired : getMessage('elementResultAccNameRequired'),
-  elementResultAccNameProhibited : getMessage('elementResultAccNameProhibited')
+  elementResultAccNameProhibited : getMessage('elementResultAccNameProhibited'),
+  elementResultAction          : getMessage('elementResultAction'),
+  elementResultAttributeHeader : getMessage('elementResultAttributeHeader'),
+  elementResultCCR             : getMessage('elementResultCCR'),
+  elementResultErrorDesc       : getMessage('elementResultErrorDesc'),
+  elementResultTagName         : getMessage('elementResultTagName'),
+  elementResultValueHeader     : getMessage('elementResultValueHeader'),
+  elementResultVisibility      : getMessage('elementResultVisibility'),
+  ruleActionLabel              : getMessage('ruleActionLabel')
 };
 
 const template = document.createElement('template');

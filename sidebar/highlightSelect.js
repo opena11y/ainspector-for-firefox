@@ -6,10 +6,10 @@ import { getOptions, saveOptions } from '../storage.js';
 const getMessage = browser.i18n.getMessage;
 const msg = {
   highlightLabel          : getMessage('highlightLabel'),
+  highlightOptionAll      : getMessage('highlightOptionAll'),
   highlightOptionNone     : getMessage('highlightOptionNone'),
   highlightOptionSelected : getMessage('highlightOptionSelected'),
-  highlightOptionVW       : getMessage('highlightOptionVW'),
-  highlightOptionAll      : getMessage('highlightOptionAll')
+  highlightOptionVW       : getMessage('highlightOptionVW')
 };
 
 const template = document.createElement('template');

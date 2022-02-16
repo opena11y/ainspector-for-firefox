@@ -399,11 +399,6 @@
     "description": "Summary section label for rule information"
   },
 
-  "ruleSummaryLabel": {
-    "message": "Summary",
-    "description": "Summary section label for rule information"
-  },
-
   "ruleDefinitionLabel": {
     "message": "Definition",
     "description": "Definition section label for rule information"
@@ -649,6 +644,13 @@
     "description": "Label for prefix string input in the export section of the options page"
   },
 
+  "optionsExportPrefixDesc": {
+    "message": "Note: For operating system compatibility file name cannot contain any spaces or <>:\"/\\|?*[] characters.",
+    "description": "Label for prefix string input in the export section of the options page"
+  },
+
+
+
   "optionsExportPrefixErrorToLong": {
     "message": "Prefix can only be 16 characters long.",
     "description": "Error feedback for prefix string being too long"
@@ -793,6 +795,11 @@
   "csvGroupTitle": {
     "message": "Group Title:",
     "description": "Group title label for CSV export."
+  },
+
+  "csvRuleId": {
+    "message": "Rule ID",
+    "description": "Rule ID columns header for CSV export."
   },
 
   "csvRuleSummary": {

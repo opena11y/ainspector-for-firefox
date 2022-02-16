@@ -35,16 +35,15 @@ customElements.define('copy-button',         CopyButton);
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  tabIsLoading           : getMessage("tabIsLoading"),
-  protocolNotSupported   : getMessage("protocolNotSupported"),
+  backButtonLabel        : getMessage('backButtonLabel'),
   ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
   ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
-  viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel'),
-  backButtonLabel        : getMessage('backButtonLabel'),
   infoLocationLabel      : getMessage('infoLocationLabel'),
-  infoTitleLabel         : getMessage('infoTitleLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
+  infoTitleLabel         : getMessage('infoTitleLabel'),
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
+  protocolNotSupported   : getMessage("protocolNotSupported"),
+  tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
 
