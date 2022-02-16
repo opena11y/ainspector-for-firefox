@@ -238,9 +238,8 @@ export default class ViewRuleResult {
           this.elementResultGrid.addDataCell(row, er.result, cellAccName, style, sortValue);
 
           // Add position information cell (column 3)
-          cellAccName = ', ' + msg.positionLabel + ' ' + er.position;
-          rowAccName += ', ' + cellAccName;
-          this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', (-1 * er.position));
+          rowAccName += ', ' + msg.positionLabel + ' ' + er.position;
+          this.elementResultGrid.addDataCell(row, er.position, '', 'position', (-1 * er.position));
 
           // Add action information cell (column 4)
           rowAccName += ', ' + er.actionMessage;
