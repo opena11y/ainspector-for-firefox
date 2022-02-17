@@ -7,6 +7,17 @@ AInspector WCAG is a port of [AInspector Sidebar](https://ainspector.github.io/)
 ## Compatibility
 * Firefox Version 60 or newer
 
+## Trying latest development version
+
+1. Open the Firefox browser.
+2. Download the [ainspector-latest.zip](_ainspector_releases/ainspector-latest.zip) file to a known location on your computer, usually the "downloads" directory.
+3. Type into the address bar: “about:debugging” (without quotation marks).
+4. Select “This Firefox” button in the upper left corner of the screen.
+5. You should see a “Load Temporary Add-on” button near the top center part of the web page.
+6. Use the button to browse to and install the downloaded zip file.
+7. The AInspector sidebar should pop open on the left side of Firefox.
+
+
 ## Keyboard Shortcuts
 
 ### Windows and Linux
