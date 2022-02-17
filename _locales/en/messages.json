@@ -1,5 +1,10 @@
 {
   "extensionVersion": {
+    "message": "2.0.0",
+    "description": "Version of the extension"
+  },
+
+  "extensionVersionName": {
     "message": "2.0.0-beta.1",
     "description": "Version of the extension"
   },
@@ -637,6 +642,11 @@
   "optionsExportJSONLabel": {
     "message": "JSON (e.g. databases and applications)",
     "description": "Label for the JSON radio button option in the export section of the options page"
+  },
+
+  "optionsExportFilenameLegend": {
+    "message": "Filename Options",
+    "description": "Lagend for the filenaming options in export section of the options page"
   },
 
   "optionsExportPrefixLabel": {

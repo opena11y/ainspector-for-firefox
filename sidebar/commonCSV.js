@@ -6,6 +6,9 @@ import { sortRuleResults } from './sortUtils.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
+const getName    = browser.runtime.getManifest().name;
+const getVersion = browser.runtime.getManifest().version;
+
 const msg = {
   csvDate                   : getMessage('csvDate'),
   csvPageTitle              : getMessage('csvPageTitle'),
@@ -77,7 +80,7 @@ export class commonCSV {
     csv += this.arrayToCSV([msg.csvRuleset, this.getRulesetTitle(options.rulesetId)]);
     csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
     csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
-    csv += this.arrayToCSV([msg.csvSource, 'AInspector ' + msg.extensionVersion], 2);
+    csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);
     return csv;
   }
 

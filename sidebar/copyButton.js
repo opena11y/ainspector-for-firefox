@@ -12,8 +12,8 @@ const msg = {
 const template = document.createElement('template');
 template.innerHTML = `
   <button>
-    <img class="copy"   src="icon-copy.png"  alt="">
-    <img class="copied" src="icon-check.png" alt="">
+    <img class="copy"   src="../icons/icon-copy.png"  alt="">
+    <img class="copied" src="../icons/icon-check.png" alt="">
   </button>
 `;
 

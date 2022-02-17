@@ -143,5 +143,39 @@ button:hover {
   cursor: pointer;
 }
 
+[role="dialog"] .note {
+  margin:  0;
+  padding: 0;
+  margin-left:  0.75em;
+  margin-bottom: 1em;
+  font-style: italic;
+}
+
+[role="dialog"] .note code {
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  font-style: normal !important;
+  font-weight:  bold;
+}
+
+[role="dialog"] .feedback {
+  color: black;
+  border: 2px solid red;
+  background:  white;
+  padding: 2px;
+  border-radius:  4px;
+}
+
+[role="dialog"] .feedback img {
+  height: 12px !important;
+}
+
+[role="dialog"] .feedback.prefix {
+  margin-left:  0.75em;
+  display:  none;
+}
+
+[role="dialog"] .feedback.prefix.show {
+  display:  block;
+}
 
 

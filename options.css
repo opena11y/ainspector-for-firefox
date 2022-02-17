@@ -35,7 +35,7 @@ label  {
 
 label[for] {
   margin-left: 0.5em;
-  margin-top: 1em;
+  margin-bottom: none;
 }
 
 input[type="text"] {
@@ -104,10 +104,6 @@ table.shortcuts td input,
 table.shortcuts td label {
   padding:  0;
   margin: 0;
-}
-
-.input input {
-  margin: 4px;
 }
 
 .feedback {

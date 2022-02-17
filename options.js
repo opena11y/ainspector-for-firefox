@@ -12,6 +12,7 @@ const msg = {
   optionsExportHeading         : getMessage('optionsExportHeading'),
   optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
   optionsExportJSONLabel       : getMessage('optionsExportJSONLabel'),
+  optionsExportFilenameLegend  : getMessage('optionsExportFilenameLegend'),
   optionsExportPrefixErrorCharNotAllowed : getMessage('optionsExportPrefixErrorCharNotAllowed'),
   optionsExportPrefixErrorToLong         : getMessage('optionsExportPrefixErrorToLong'),
   optionsExportPrefixLabel     : getMessage('optionsExportPrefixLabel'),
@@ -75,10 +76,6 @@ function setFormLabels () {
   const optionsNoDelayLabel          = document.querySelector('#options-no-delay-label');
   const optionsPromptForDelayLabel   = document.querySelector('#options-prompt-for-delay-label');
 
-//  const optionsEvaluationHeading     = document.querySelector('#options-evaluation-heading');
-//  const optionsRulesetLegend         = document.querySelector('#options-ruleset-legend');
-//  const optionsRulesetStrictLabel    = document.querySelector('#options-ruleset-strict-label');
-//  const optionsRulesetTransLabel     = document.querySelector('#options-ruleset-trans-label');
   const optionsRuleResultsLegend     = document.querySelector('#options-rule-results-legend');
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
@@ -87,6 +84,7 @@ function setFormLabels () {
   const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
   const optionsExportCSVLabel        = document.querySelector('#options-export-csv-label');
   const optionsExportJSONLabel       = document.querySelector('#options-export-json-label');
+  const optionsExportFilenameLegend  = document.querySelector('#options-filename-legend');
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
   const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
@@ -111,20 +109,17 @@ function setFormLabels () {
   optionsNoDelayLabel.textContent          = msg.optionsNoDelayLabel;
   optionsPromptForDelayLabel.textContent   = msg.optionsPromptForDelayLabel;
 
-//  optionsEvaluationHeading.textContent     = msg.optionsEvaluationHeading;
-//  optionsRulesetLegend.textContent         = msg.optionsRulesetLegend;
-//  optionsRulesetStrictLabel.textContent    = msg.optionsRulesetStrictLabel;
-//  optionsRulesetTransLabel.textContent     = msg.optionsRulesetTransLabel;
   optionsRuleResultsLegend.textContent     = msg.optionsRuleResultsLegend;
   optionsInclPassNaLabel.textContent       = msg.optionsInclPassNaLabel;
 
-  optionsExportHeading.textContent      = msg.optionsExportHeading;
-  optionsExportPromptLabel.textContent  = msg.optionsExportPrompt;
-  optionsExportFormatLegend.textContent = msg.optionsExportFormatLegend;
-  optionsExportCSVLabel.textContent     = msg.optionsExportCSVLabel;
-  optionsExportJSONLabel.textContent    = msg.optionsExportJSONLabel;
-  optionsExportPrefixLabel.textContent  = msg.optionsExportPrefixLabel;
-  optionsExportDateLabel.textContent    = msg.optionsExportIncludeDate;
+  optionsExportHeading.textContent        = msg.optionsExportHeading;
+  optionsExportPromptLabel.textContent    = msg.optionsExportPrompt;
+  optionsExportFormatLegend.textContent   = msg.optionsExportFormatLegend;
+  optionsExportCSVLabel.textContent       = msg.optionsExportCSVLabel;
+  optionsExportJSONLabel.textContent      = msg.optionsExportJSONLabel;
+  optionsExportFilenameLegend.textContent = msg.optionsExportFilenameLegend;
+  optionsExportPrefixLabel.textContent    = msg.optionsExportPrefixLabel;
+  optionsExportDateLabel.textContent      = msg.optionsExportIncludeDate;
 
   shortcutsHeading.textContent       = msg.shortcutsHeading;
   shortcutsEnabledLabel.textContent  = msg.shortcutsEnabledLabel;
@@ -236,7 +231,6 @@ function onKeyupValidatePrefix () {
   if (value !== exportPrefix.value) {
     if (exportPrefix.value.length >= 16) {
       showPrefixError(msg.optionsExportPrefixErrorToLong);
-      console.log('[PREFIX][ERROR]: ' + msg.optionsExportPrefixErrorToLong);
     }
   }
   exportPrefix.value = value;

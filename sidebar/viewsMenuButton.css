@@ -50,7 +50,7 @@ div {
 }
 
 .views-menu-button [role="group"] > [role="menuitem"] {
-  margin-left: 4px;
+  margin-left: 0;
 }
 
 .views-menu-button button svg.down {
