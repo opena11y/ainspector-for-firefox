@@ -5,7 +5,7 @@
 */
 
 export function isCharacterAllowed(c) {
-  if ((c <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
+  if ((c.charCodeAt(0) <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
     return false;
   }
   return true;
