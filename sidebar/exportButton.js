@@ -266,7 +266,7 @@ export default class ExportButton extends HTMLElement {
         this.showPrefixError(msg.optionsExportPrefixErrorToLong);
       }
     }
-    exportPrefix.value = value;
+    this.exportPrefix.value = value;
   }
 
   onExportButtonClick () {
