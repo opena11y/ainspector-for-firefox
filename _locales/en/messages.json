@@ -738,7 +738,7 @@
   },
 
   "shortcutDefaultBack": {
-    "message": "Backspace",
+    "message": "Backspace/Delete",
     "description": "Default shortcut key for activating the Back button."
   },
 
@@ -838,7 +838,7 @@
   },
 
   "shortcutBackLabel": {
-    "message": "Activates Back button (e.g. use <- or Delete key on macOS).",
+    "message": "Activates Back button.",
     "description": "Describes the action of the Back shortcut key."
   },
 
