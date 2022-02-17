@@ -9,6 +9,8 @@ h2 {
   font-size: 1.2rem;
   font-weight: 550;
   margin: 1.5rem 0 0.75rem;
+  width: 100%;
+  border-bottom: 1px solid #aaa;
 }
 
 .checkbox {
