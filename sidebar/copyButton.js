@@ -2,11 +2,18 @@
 
 const getMessage = browser.i18n.getMessage;
 
+// Get message strings from locale-specific messages.json file
+const msg = {
+  copyFailedLabel  : getMessage('copyFailedLabel'),
+  copyLabel        : getMessage('copyLabel'),
+  copySuccessLabel : getMessage('copySuccessLabel')
+};
+
 const template = document.createElement('template');
 template.innerHTML = `
   <button>
-    <img class="copy"   src="icon-copy.png"  alt="">
-    <img class="copied" src="icon-check.png" alt="">
+    <img class="copy"   src="../icons/icon-copy.png"  alt="">
+    <img class="copied" src="../icons/icon-check.png" alt="">
   </button>
 `;
 
@@ -25,9 +32,9 @@ export default class CopyButton extends HTMLElement {
     this.shadowRoot.appendChild(link);
 
     // Get constants
-    this.copyLabel   = getMessage('copyLabel');
-    this.copiedLabel = getMessage('copySuccessLabel');
-    this.failedLabel = getMessage('copyFailedLabel');
+    this.copyLabel   = msg.copyLabel;
+    this.copiedLabel = msg.copySuccessLabel;
+    this.failedLabel = msg.copyFailedLabel;
 
     // Get references
     this.copyButton  = this.shadowRoot.querySelector('button');

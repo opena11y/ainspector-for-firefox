@@ -9,6 +9,8 @@ h2 {
   font-size: 1.2rem;
   font-weight: 550;
   margin: 1.5rem 0 0.75rem;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
 }
 
 .checkbox {
@@ -26,14 +28,14 @@ legend {
   font-weight: bold;
 }
 
-label {
+label  {
   display:  block;
   margin: 0.25em;
 }
 
 label[for] {
   margin-left: 0.5em;
-  margin-top: 1em;
+  margin-bottom: none;
 }
 
 input[type="text"] {
@@ -49,6 +51,13 @@ input[type="text"] {
   margin-bottom: 1em;
   font-style: italic;
 }
+
+.desc code {
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  font-style: normal !important;
+  font-weight:  bold;
+}
+
 
 .note {
   margin:  0;
@@ -81,12 +90,14 @@ table.shortcuts th {
   text-align:  left;
   font-size: 110%;
   font-weight: bold;
+  background-color: #eee;
 }
 
 table.shortcuts thead th:nth-child(1),
 table.shortcuts tbody td:nth-child(1) {
   min-width: 7em;
   text-align: left;
+  position: relative;
 }
 
 table.shortcuts td input,
@@ -94,5 +105,40 @@ table.shortcuts td label {
   padding:  0;
   margin: 0;
 }
+
+.feedback {
+  color: black;
+  border: 2px solid red;
+  background:  white;
+  padding: 2px;
+  border-radius:  4px;
+}
+
+.feedback img {
+  height: 12px !important;
+}
+
+.feedback.shortcut {
+  display:  none;
+  position: absolute;
+  left:  1em;
+  top: 1em;
+  width:  18em;
+  z-index: 10;
+}
+
+.feedback.shortcut.show {
+  display:  block;
+}
+
+.feedback.prefix {
+  display:  inline-block;
+  visibility:  hidden;
+}
+
+.feedback.prefix.show {
+  visibility:  visible;
+}
+
 
 

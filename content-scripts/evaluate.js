@@ -242,9 +242,6 @@ function getElementResultInfo(ruleResult) {
       'ariaAttrInfo'   : ariaAttrInfo
     };
 
-//    console.log('[addElementResult][       ccrInfo]: ' + ccrInfo);
-//    console.log('[addElementResult][visibilityInfo]: ' + visibilityInfo);
-
     // Adjust sort order of element results for AInspector Sidebar
     if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
@@ -349,10 +346,8 @@ function highlightElements(highlight, position) {
           domNode = elementResults[0].getDOMElement();
           break;
 
-        case 'vw':
-          highlightModule.setHighlightPreferences(false, false, false, false);
-          highlightModule.highlightElementResults(document, elementResults);
-          domNode = elementResults[0].getDOMElement();
+        case 'none':
+          highlightModule.removeHighlight(document);
           break;
 
         case 'selected':
@@ -363,6 +358,12 @@ function highlightElements(highlight, position) {
               break;
             }
           }
+          break;
+
+        case 'vw':
+          highlightModule.setHighlightPreferences(false, false, false, false);
+          highlightModule.highlightElementResults(document, elementResults);
+          domNode = elementResults[0].getDOMElement();
           break;
 
         default:

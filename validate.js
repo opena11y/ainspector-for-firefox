@@ -4,8 +4,8 @@
 *   File: validatePrefix.js
 */
 
-function isCharacterAllowed(c) {
-  if ((c <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
+export function isCharacterAllowed(c) {
+  if ((c.charCodeAt(0) <= 32) || ('<>:"/\\|?*[]'.indexOf(c) >= 0)) {
     return false;
   }
   return true;
@@ -23,7 +23,8 @@ export function validatePrefix (value) {
       v += c;
     }
   };
-  return v.substring(0, 16);
+  v = v.substring(0, 16);
+  return v;
 }
 
 export function validateShortcut (value) {

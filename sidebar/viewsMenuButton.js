@@ -1,10 +1,42 @@
 /* viewMenuButton.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions } from '../storage.js';
 
 import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {
+  allRulesLabel        : getMessage('allRulesLabel'),
+  audioVideoLabel      : getMessage('audioVideoLabel'),
+  formsLabel           : getMessage('formsLabel'),
+  g1_1                 : getMessage('g1.1'),
+  g1_2                 : getMessage('g1.2'),
+  g1_3                 : getMessage('g1.3'),
+  g1_4                 : getMessage('g1.4'),
+  g2_1                 : getMessage('g2.1'),
+  g2_2                 : getMessage('g2.2'),
+  g2_3                 : getMessage('g2.3'),
+  g2_4                 : getMessage('g2.4'),
+  g3_1                 : getMessage('g3.1'),
+  g3_2                 : getMessage('g3.2'),
+  g3_3                 : getMessage('g3.3'),
+  g4_1                 : getMessage('g4.1'),
+  headingsLabel        : getMessage('headingsLabel'),
+  imagesLabel          : getMessage('imagesLabel'),
+  keyboardLabel        : getMessage('keyboardLabel'),
+  landmarksLabel       : getMessage('landmarksLabel'),
+  linksLabel           : getMessage('linksLabel'),
+  siteNavigationLabel  : getMessage('siteNavigationLabel'),
+  stylesContentLabel   : getMessage('stylesContentLabel'),
+  tablesLabel          : getMessage('tablesLabel'),
+  timingLabel          : getMessage('timingLabel'),
+  widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
+  guidelinesLabel      : getMessage('guidelinesLabel'),
+  ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
+  summaryLabel         : getMessage('summaryLabel'),
+  viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -44,8 +76,9 @@ export default class ViewsMenuButton extends HTMLElement {
 
     this.button  = this.shadowRoot.querySelector('button');
     this.labelSpan = this.button.querySelector('.label');
-    this.labelSpan.textContent = getMessage('viewsMenuButtonLabel');
+    this.labelSpan.textContent = msg.viewsMenuButtonLabel;
     this.button.addEventListener('click', this.onButtonClick.bind(this));
+    this.button.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
     this.menuDiv = this.shadowRoot.querySelector('[role="menu"]');
 
@@ -56,7 +89,13 @@ export default class ViewsMenuButton extends HTMLElement {
     this.lastMenuitem = false;
     this.firstChars = [];
 
-    this.initMenu();
+    this.closePopup();
+    window.addEventListener(
+      'mousedown',
+      this.onBackgroundMousedown.bind(this),
+      true
+    );
+
   }
 
   set disabled (value) {
@@ -71,22 +110,28 @@ export default class ViewsMenuButton extends HTMLElement {
     this.callback = callback;
   }
 
-  addSeparator() {
-    const separatorDiv = document.createElement('div');
-    separatorDiv.setAttribute('role', 'separator');
-    this.menuDiv.appendChild(separatorDiv);
+  addGroup(node, label) {
+    const groupDiv = document.createElement('div');
+    groupDiv.setAttribute('role', 'group');
+    groupDiv.setAttribute('aria-label', label);
+    node.appendChild(groupDiv);
+    const div = document.createElement('div');
+    div.className = 'label';
+    div.textContent = label;
+    groupDiv.appendChild(div);
+    return groupDiv;
   }
 
-  addMenuitem(optionId, messageId) {
+  addMenuitem(node, optionId, message) {
     const menuitemDiv = document.createElement('div');
 
     menuitemDiv.id = optionId;
     menuitemDiv.tabIndex = -1;
     menuitemDiv.setAttribute('role', 'menuitem');
     menuitemDiv.addEventListener('keydown', this.onMenuitemKeydown.bind(this));
-    menuitemDiv.textContent = getMessage(messageId);
+    menuitemDiv.textContent = message;
 
-    this.menuDiv.appendChild(menuitemDiv);
+    node.appendChild(menuitemDiv);
 
     this.menuitems.push(menuitemDiv);
     if (!this.firstMenuitem) {
@@ -110,41 +155,33 @@ export default class ViewsMenuButton extends HTMLElement {
     );
   }
 
-  initMenu () {
+  initMenu (options) {
     let i, rcId, glId, msgId;
 
     this.menuDiv.innerHTML = '';
+    this.menuitems = [];
+    this.firstMenuitem = false;
+    this.lastMenuitem = false;
+    this.firstChars = [];
 
-    this.addMenuitem('summary', 'summaryLabel');
-    this.addSeparator();
+    this.addMenuitem(this.menuDiv, 'summary', msg.summaryLabel);
+    const rcGroupDiv = this.addGroup(this.menuDiv, msg.ruleCategoriesLabel);
 
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       rcId = ruleCategoryIds[i];
       msgId = getRuleCategoryLabelId(rcId);
-      this.addMenuitem('rc' + rcId, msgId);
+      this.addMenuitem(rcGroupDiv, 'rc' + rcId, msg[msgId]);
     }
 
-    getOptions().then( (options) => {
-      if (options.viewsMenuIncludeGuidelines) {
-        this.addSeparator();
-        for (i = 0; i < guidelineIds.length; i += 1 ) {
-          glId = guidelineIds[i];
-          msgId = getGuidelineLabelId(glId);
-          this.addMenuitem('gl' + glId, msgId);
-        }
+    if (options.viewsMenuIncludeGuidelines) {
+      const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
+      for (i = 0; i < guidelineIds.length; i += 1 ) {
+        glId = guidelineIds[i];
+        // cannot have periods in the msgId, so converted to underscrore character
+        msgId = getGuidelineLabelId(glId).replaceAll('.', '_');
+        this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
       }
-      this.addSeparator();
-      this.addMenuitem('all-rules', 'allRulesLabel');
-    })
-
-    this.closePopup();
-
-    window.addEventListener(
-      'mousedown',
-      this.onBackgroundMousedown.bind(this),
-      true
-    );
-
+    }
   }
 
   setFocusToMenuitem(newMenuitem) {
@@ -235,9 +272,17 @@ export default class ViewsMenuButton extends HTMLElement {
 
   // Popup menu methods
 
-  openPopup() {
-    this.menuDiv.style.display = 'block';
-    this.button.setAttribute('aria-expanded', 'true');
+  openPopup(setFirst = true) {
+    getOptions().then( (options) => {
+      this.initMenu(options);
+      this.menuDiv.style.display = 'block';
+      this.button.setAttribute('aria-expanded', 'true');
+      if (setFirst) {
+        this.setFocusToFirstMenuitem();
+      } else {
+        this.setFocusToLastMenuitem();
+      }
+    });
   }
 
   closePopup() {
@@ -261,22 +306,17 @@ export default class ViewsMenuButton extends HTMLElement {
       case ' ':
       case 'Enter':
       case 'ArrowDown':
-      case 'Down':
         this.openPopup();
-        this.setFocusToFirstMenuitem();
         flag = true;
         break;
 
-      case 'Esc':
       case 'Escape':
         this.closePopup();
         flag = true;
         break;
 
-      case 'Up':
       case 'ArrowUp':
-        this.openPopup();
-        this.setFocusToLastMenuitem();
+        this.openPopup(false);
         flag = true;
         break;
 
@@ -296,7 +336,6 @@ export default class ViewsMenuButton extends HTMLElement {
       this.button.focus();
     } else {
       this.openPopup();
-      this.setFocusToFirstMenuitem();
     }
 
     event.stopPropagation();

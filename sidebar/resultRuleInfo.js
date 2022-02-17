@@ -1,6 +1,19 @@
 /* ruleResultInfo.js */
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
+const msg = {
+  ruleActionLabel     : getMessage('ruleActionLabel'),
+  ruleAdditionalLabel : getMessage('ruleAdditionalLabel'),
+  ruleComplianceLabel : getMessage('ruleComplianceLabel'),
+  ruleDefinitionLabel : getMessage('ruleDefinitionLabel'),
+  rulePurposeLabel    : getMessage('rulePurposeLabel'),
+  ruleSCLabel         : getMessage('ruleSCLabel'),
+  ruleSelectedLabel   : getMessage('ruleSelectedLabel'),
+  ruleSummaryLabel    : getMessage('ruleSummaryLabel'),
+  ruleTargetLabel     : getMessage('ruleTargetLabel'),
+  ruleTechniquesLabel : getMessage('ruleTechniquesLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -55,15 +68,15 @@ export default class ResultRuleInfo extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // Initialize headings
-    this.setHeading('#summary-label',    'ruleSummaryLabel');
-    this.setHeading('#definition-label', 'ruleDefinitionLabel');
-    this.setHeading('#action-label',     'ruleActionLabel');
-    this.setHeading('#purpose-label',    'rulePurposeLabel');
-    this.setHeading('#techniques-label', 'ruleTechniquesLabel');
-    this.setHeading('#target-label',     'ruleTargetLabel');
-    this.setHeading('#compliance-label', 'ruleComplianceLabel');
-    this.setHeading('#sc-label',         'ruleSCLabel');
-    this.setHeading('#additional-label', 'ruleAdditionalLabel');
+    this.setHeading('#summary-label',    msg.ruleSummaryLabel);
+    this.setHeading('#definition-label', msg.ruleDefinitionLabel);
+    this.setHeading('#action-label',     msg.ruleActionLabel);
+    this.setHeading('#purpose-label',    msg.rulePurposeLabel);
+    this.setHeading('#techniques-label', msg.ruleTechniquesLabel);
+    this.setHeading('#target-label',     msg.ruleTargetLabel);
+    this.setHeading('#compliance-label', msg.ruleComplianceLabel);
+    this.setHeading('#sc-label',         msg.ruleSCLabel);
+    this.setHeading('#additional-label', msg.ruleAdditionalLabel);
 
     // Create content references
     this.resultRuleInfoSect = this.shadowRoot.querySelector('.result-rule-info');
@@ -86,7 +99,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.copyText = '';
 
     // Define an accessible name for the region
-    this.resultRuleInfoSect.setAttribute('aria-label', getMessage('ruleSelectedLabel'));
+    this.resultRuleInfoSect.setAttribute('aria-label', msg.ruleSelectedLabel);
 
   }
 
@@ -98,11 +111,10 @@ export default class ResultRuleInfo extends HTMLElement {
     this.resultRuleInfoSect.focus();
   }
 
-  setHeading (headingId, messageId) {
+  setHeading (headingId, message) {
     let h = this.shadowRoot.querySelector(headingId);
-    let m = getMessage(messageId)
-    if (h && m) {
-      h.textContent = m;
+    if (h && message) {
+      h.textContent = message;
     }
   }
 
@@ -144,13 +156,13 @@ export default class ResultRuleInfo extends HTMLElement {
   // if the info is a string just use textContent
   // if the info is an array, create a list of items
   // Some items maybe an object containing a 'url' and 'title' properties
-  appendToCopyText(titleId, info, listChar) {
+  appendToCopyText(title, info, listChar) {
     if (typeof listChar !== 'string') {
       listChar = '';
     }
     if (!info) return;
 
-    this.copyText += getMessage(titleId) + '\n';
+    this.copyText += title + '\n';
 
     if (typeof info === 'string') {
       this.copyText += info + '\n';
@@ -176,6 +188,9 @@ export default class ResultRuleInfo extends HTMLElement {
 
   update(ruleInfo) {
     let ruleId = '';
+    if (typeof ruleInfo.ruleId === 'string') {
+      ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
+    }
 
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
@@ -189,19 +204,16 @@ export default class ResultRuleInfo extends HTMLElement {
     this.renderContent(this.scDiv,         ruleInfo.sc);
     this.renderContent(this.additionalDiv, ruleInfo.additionalLinks);
 
-    if (typeof ruleInfo.ruleId === 'string') {
-      ruleId = ruleInfo.ruleId.replace('_', ' ') + ': ';
-    }
     this.copyText = ruleId + ruleInfo.summary + '\n\n';
-    this.appendToCopyText('ruleSummaryLabel',    ruleInfo.summary);
-    this.appendToCopyText('ruleDefinitionLabel', ruleInfo.definition);
-    this.appendToCopyText('ruleActionLabel',     ruleInfo.action);
-    this.appendToCopyText('rulePurposeLabel',    ruleInfo.purpose);
-    this.appendToCopyText('ruleTechniquesLabel', ruleInfo.techniques, '* ');
-    this.appendToCopyText('ruleTargetLabel',     ruleInfo.targets, '* ');
-    this.appendToCopyText('ruleComplianceLabel', ruleInfo.compliance);
-    this.appendToCopyText('ruleSCLabel',         ruleInfo.sc, '* ');
-    this.appendToCopyText('ruleAdditionalLabel', ruleInfo.additionalLinks, '* ');
+    this.appendToCopyText(msg.ruleSummaryLabel,    ruleInfo.summary);
+    this.appendToCopyText(msg.ruleDefinitionLabel, ruleInfo.definition);
+    this.appendToCopyText(msg.ruleActionLabel,     ruleInfo.action);
+    this.appendToCopyText(msg.rulePurposeLabel,    ruleInfo.purpose);
+    this.appendToCopyText(msg.ruleTechniquesLabel, ruleInfo.techniques, '* ');
+    this.appendToCopyText(msg.ruleTargetLabel,     ruleInfo.targets, '* ');
+    this.appendToCopyText(msg.ruleComplianceLabel, ruleInfo.compliance);
+    this.appendToCopyText(msg.ruleSCLabel,         ruleInfo.sc, '* ');
+    this.appendToCopyText(msg.ruleAdditionalLabel, ruleInfo.additionalLinks, '* ');
 
   }
 

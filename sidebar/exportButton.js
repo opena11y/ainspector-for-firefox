@@ -1,10 +1,27 @@
 /* rerunEvaluationButton.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions, saveOptions } from '../storage.js';
-import { validatePrefix } from '../validate.js';
+import { isCharacterAllowed, validatePrefix } from '../validate.js';
 
+
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {
+  cancelButtonLabel         : getMessage('cancelButtonLabel'),
+  exportButtonLabel         : getMessage('exportButtonLabel'),
+  exportDialogTitle         : getMessage('exportDialogTitle'),
+  okButtonLabel             : getMessage('okButtonLabel'),
+
+  optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
+  optionsExportFilenameLegend  : getMessage('optionsExportFilenameLegend'),
+  optionsExportFormatLegend    : getMessage('optionsExportFormatLegend'),
+  optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
+  optionsExportJSONLabel       : getMessage('optionsExportJSONLabel'),
+  optionsExportPrefixErrorCharNotAllowed : getMessage('optionsExportPrefixErrorCharNotAllowed'),
+  optionsExportPrefixErrorToLong         : getMessage('optionsExportPrefixErrorToLong'),
+  optionsExportPrefixLabel     : getMessage('optionsExportPrefixLabel'),
+  optionsExportPromptForOptions : getMessage('optionsExportPromptForOptions')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -33,15 +50,23 @@ template.innerHTML = `
           </fieldset>
 
           <fieldset>
-            <legend id="options-filename-legend">Default Filename Options</legend>
+            <legend id="options-filename-legend">Filename Options X</legend>
 
             <label class="text"
               id="options-export-prefix-label"
               for="options-export-prefix">
               Export File Prefix (up to 16 characters)
             </label>
-            <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
-            <!-- class="desc" id="options-export-prefix-desc">Can be used to customize export file names for specific projects.</div -->
+            <div class="input">
+              <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc options-export-prefix-note" />
+              <div class="feedback prefix">
+                <img src="../icons/error-icon-15.png" alt=""/>
+                <span id="options-export-prefix-desc" aria-live="assertive"></span>
+              </div>
+            </div>
+            <div class="note" id="options-export-prefix-note">
+              Note: Prefix cannot contain spaces or <code>&lt;&gt;:"/\|?*[]</code> characters.
+            </div>
 
             <label class="checkbox">
               <input type="checkbox" checked id="options-export-date"/>
@@ -86,12 +111,12 @@ export default class ExportButton extends HTMLElement {
     this.timerValue = 0;
 
     this.exportButton  = this.shadowRoot.querySelector('#export-button');
-    this.exportButton.textContent = getMessage('exportButtonLabel');
+    this.exportButton.textContent = msg.exportButtonLabel;
     this.exportButton.addEventListener('click', this.onExportButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     label = this.dialogDiv.querySelector('#title');
-    label.textContent = getMessage('exportDialogTitle');
+    label.textContent = msg.exportDialogTitle;
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
     this.exportCSV      = this.shadowRoot.querySelector('input[id="options-export-csv"]');
@@ -105,6 +130,11 @@ export default class ExportButton extends HTMLElement {
     this.exportJSON.addEventListener('blur', this.onBlur.bind(this));
 
     this.exportPrefix   = this.shadowRoot.querySelector('#options-export-prefix');
+    this.exportPrefix.addEventListener('keydown', this.onKeydownValidatePrefix.bind(this));
+    this.exportPrefix.addEventListener('keyup', this.onKeyupValidatePrefix.bind(this));
+    this.exportPrefix.addEventListener('blur', this.hidePrefixError.bind(this));
+
+    this.exportPrefixDesc = this.shadowRoot.querySelector('#options-export-prefix-desc');
 
     this.exportDate     = this.shadowRoot.querySelector('#options-export-date');
     this.exportDate.addEventListener('focus', this.onFocus.bind(this));
@@ -115,11 +145,11 @@ export default class ExportButton extends HTMLElement {
     this.exportPrompt.addEventListener('blur', this.onBlur.bind(this));
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
-    this.cancelButton.textContent  = getMessage('cancelButtonLabel');
+    this.cancelButton.textContent  = msg.cancelButtonLabel;
     this.cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     this.okButton = this.shadowRoot.querySelector('#ok-button');
-    this.okButton.textContent  = getMessage('okButtonLabel');
+    this.okButton.textContent  = msg.okButtonLabel;
     this.okButton.addEventListener('click', this.onOkButtonClick.bind(this));
     this.okButton.addEventListener('keydown', this.onOkButtonKeydown.bind(this));
 
@@ -142,26 +172,27 @@ export default class ExportButton extends HTMLElement {
 
 
   setDialogLabels () {
+
     const optionsExportFormatLegend    = this.shadowRoot.querySelector('#options-export-format-legend');
-    optionsExportFormatLegend.textContent   = getMessage('optionsExportFormatLegend');
+    optionsExportFormatLegend.textContent = msg.optionsExportFormatLegend;
 
     const optionsExportCSVLabel        = this.shadowRoot.querySelector('#options-export-csv-label');
-    optionsExportCSVLabel.textContent       = getMessage('optionsExportCSVLabel');
+    optionsExportCSVLabel.textContent  = msg.optionsExportCSVLabel;
 
     const optionsExportJSONLabel       = this.shadowRoot.querySelector('#options-export-json-label');
-    optionsExportJSONLabel.textContent      = getMessage('optionsExportJSONLabel');
+    optionsExportJSONLabel.textContent = msg.optionsExportJSONLabel;
+
+    const optionsExportFilenameLegend    = this.shadowRoot.querySelector('#options-filename-legend');
+    optionsExportFilenameLegend.textContent = msg.optionsExportFilenameLegend;
 
     const optionsExportPrefixLabel     = this.shadowRoot.querySelector('#options-export-prefix-label');
-    optionsExportPrefixLabel.textContent = getMessage('optionsExportPrefixLabel');
-
-//    const optionsExportPrefixDesc      = this.shadowRoot.querySelector('#options-export-prefix-desc');
-//    optionsExportPrefixDesc.textContent  = getMessage('optionsExportPrefixDesc');
+    optionsExportPrefixLabel.textContent = msg.optionsExportPrefixLabel;
 
     const optionsExportIncludeDateLabel = this.shadowRoot.querySelector('#options-export-include-date-label');
-    optionsExportIncludeDateLabel.textContent  = getMessage('optionsExportIncludeDate');
+    optionsExportIncludeDateLabel.textContent  = msg.optionsExportIncludeDate;
 
     const optionsExportPromptForOptionsLabel =  this.shadowRoot.querySelector('#options-export-prompt-for-options-label');
-    optionsExportPromptForOptionsLabel.textContent  = getMessage('optionsExportPromptForOptions');
+    optionsExportPromptForOptionsLabel.textContent  = msg.optionsExportPromptForOptions;
   }
 
 
@@ -201,6 +232,42 @@ export default class ExportButton extends HTMLElement {
     }
   }
 
+  hidePrefixError () {
+    this.exportPrefixDesc.textContent = '';
+    this.exportPrefixDesc.parentNode.classList.remove('show');
+  }
+
+  showPrefixError(message) {
+    this.exportPrefixDesc.textContent = message;
+    this.exportPrefixDesc.parentNode.classList.add('show');
+  }
+
+  onKeydownValidatePrefix (event) {
+    this.hidePrefixError();
+    const key = event.key;
+    if (!isCharacterAllowed(key)) {
+      this.showPrefixError(msg.optionsExportPrefixErrorCharNotAllowed.replaceAll('$key', `"${key}"`));
+      event.stopPropagation();
+      event.preventDefault();
+    } else {
+      if ((key.length === 1) &&
+          (this.exportPrefix.value.length === 16)) {
+        this.showPrefixError(msg.optionsExportPrefixErrorToLong);
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    }
+  }
+
+  onKeyupValidatePrefix () {
+    const value = validatePrefix(this.exportPrefix.value);
+    if (value !== this.exportPrefix.value) {
+      if (this.exportPrefix.value.length >= 16) {
+        this.showPrefixError(msg.optionsExportPrefixErrorToLong);
+      }
+    }
+    this.exportPrefix.value = value;
+  }
 
   onExportButtonClick () {
     getOptions().then( (options) => {

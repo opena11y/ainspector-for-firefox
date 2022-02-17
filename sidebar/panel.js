@@ -32,6 +32,21 @@ customElements.define('rerun-evaluation-button', RerunEvaluationButton);
 customElements.define('export-button',       ExportButton);
 customElements.define('copy-button',         CopyButton);
 
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {
+  backButtonLabel        : getMessage('backButtonLabel'),
+  ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
+  ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
+  infoLocationLabel      : getMessage('infoLocationLabel'),
+  infoRulesetLabel       : getMessage('infoRulesetLabel'),
+  infoTitleLabel         : getMessage('infoTitleLabel'),
+  preferencesButtonLabel : getMessage('preferencesButtonLabel'),
+  protocolNotSupported   : getMessage("protocolNotSupported"),
+  tabIsLoading           : getMessage("tabIsLoading"),
+  viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
+};
+
 var contentPort;
 var myWindowId;
 var logInfo = false;
@@ -59,35 +74,27 @@ var preferencesButton;
 var exportButton;
 var rerunEvaluationButton;
 
-// Get message strings from locale-specific messages.json file
-const getMessage = browser.i18n.getMessage;
-
-const emptyContent         = getMessage("emptyContent");
-const tabIsLoading         = getMessage("tabIsLoading");
-const protocolNotSupported = getMessage("protocolNotSupported");
-const ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-const ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
-
 function addLabelsAndHelpContent () {
+  let elem;
   // Header titles and labels
+  elem = document.getElementById('view-title');
+  elem.textContent = msg.viewTitleSummaryLabel;
 
-  document.getElementById('view-title').textContent =
-    getMessage("viewTitleSummaryLabel");
-  document.getElementById('back-button').textContent =
-    getMessage("backButtonLabel");
+  elem = document.getElementById('back-button');
+  elem.textContent = msg.backButtonLabel;
 
   // Footer titles and labels
+  elem = document.querySelector('#info-location .label')
+  elem.textContent = msg.infoLocationLabel;
 
-  document.querySelector('#info-location .label').textContent =
-    getMessage("infoLocationLabel");
-  document.querySelector('#info-title .label').textContent =
-    getMessage("infoTitleLabel");
-  document.querySelector('#info-ruleset .label').textContent =
-    getMessage("infoRulesetLabel");
+  elem = document.querySelector('#info-title .label');
+  elem.textContent = msg.infoTitleLabel;
 
-  document.getElementById('preferences-button').textContent =
-    getMessage("preferencesButtonLabel");
+  elem = document.querySelector('#info-ruleset .label');
+  elem.textContent = msg.infoRulesetLabel;
 
+  elem = document.getElementById('preferences-button');
+  elem.textContent = msg.preferencesButtonLabel;
 }
 
 // Callback functions used by views for activation or selection of rows
@@ -389,7 +396,7 @@ function handleTabUpdated (tabId, changeInfo, tab) {
   }
   else {
     timeoutID = setTimeout(function () {
-      updateSidebar(tabIsLoading);
+      updateSidebar(msg.tabIsLoading);
     }, 250);
   }
 }
@@ -524,15 +531,15 @@ function updateSidebar (info) {
     pageLocation = info.location;
 
     if (info.ruleset === 'ARIA_STRICT') {
-      infoRuleset.textContent  = ariaStrictRulesetLabel;
+      infoRuleset.textContent  = msg.ariaStrictRulesetLabel;
     } else {
-      infoRuleset.textContent  = ariaTransLRulesetLabel;
+      infoRuleset.textContent  = msg.ariaTransRulesetLabel;
     }
 
 
     // Update the headings box
     if (typeof info.infoSummary === 'object') {
-      viewTitle.textContent = getMessage("viewTitleSummaryLabel");
+      viewTitle.textContent = msg.viewTitleSummaryLabel;
         viewTitle.title = '';
       vSummary.update(info.infoSummary);
       enableButtons();
@@ -602,7 +609,7 @@ function updateSidebar (info) {
 */
 function runContentScripts (callerfn) {
   if (!sidebarHighlightOnly) {
-    updateSidebar (tabIsLoading);
+    updateSidebar (msg.tabIsLoading);
     showView(sidebarView);
   }
 
@@ -625,7 +632,7 @@ function runContentScripts (callerfn) {
         });
       }
       else {
-        updateSidebar (protocolNotSupported);
+        updateSidebar (msg.protocolNotSupported);
       }
       sidebarHighlightOnly= false;
     })

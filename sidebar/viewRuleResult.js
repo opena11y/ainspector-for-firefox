@@ -1,9 +1,27 @@
 /* viewRuleResult.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions } from '../storage.js';
 import ViewRuleResultCSV  from './viewRuleResultCSV.js';
+
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {
+  actionLabel          : getMessage('actionLabel'),
+  copyElemInfoDesc     : getMessage('copyElemInfoDesc'),
+  elementGridLabel     : getMessage('elementGridLabel'),
+  elementLabel         : getMessage('elementLabel'),
+  elementSelectedLabel : getMessage('elementSelectedLabel'),
+  manualCheckLabel     : getMessage('manualCheckLabel'),
+  noResultsMsg         : getMessage('noResultsMsg'),
+  noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg'),
+  notApplicableLabel   : getMessage('notApplicableLabel'),
+  passedLabel          : getMessage('passedLabel'),
+  positionAbbrev       : getMessage('positionAbbrev'),
+  positionLabel        : getMessage('positionLabel'),
+  resultLabel          : getMessage('resultLabel'),
+  violationLabel       : getMessage('violationLabel'),
+  warningLabel         : getMessage('warningLabel')
+};
 
 export default class ViewRuleResult {
   constructor(id, handleRowSelection) {
@@ -18,7 +36,7 @@ export default class ViewRuleResult {
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = getMessage('elementGridLabel');
+    h2.textContent = msg.elementGridLabel;
     this.ruleResultDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
@@ -45,7 +63,7 @@ export default class ViewRuleResult {
     h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.id = "elem-info-label";  // referenced by result-element-info custom element
-    h2.textContent = getMessage('elementSelectedLabel');
+    h2.textContent = msg.elementSelectedLabel;
     elemInfoHeaderDiv.appendChild(h2);
 
     this.resultElementInfo = document.createElement('result-element-info');
@@ -54,7 +72,7 @@ export default class ViewRuleResult {
     // Add copy element result details button
     this.elemCopyButton = document.createElement('copy-button');
     this.elemCopyButton.setGetTextFunct(this.resultElementInfo.getText.bind(this.resultElementInfo));
-    this.elemCopyButton.title = getMessage('copyElemInfoDesc');
+    this.elemCopyButton.title = msg.copyElemInfoDesc;
     elemInfoHeaderDiv.appendChild(this.elemCopyButton);
 
     this.elementResults = {};
@@ -85,10 +103,10 @@ export default class ViewRuleResult {
   }
 
   initGrid () {
-    this.elementResultGrid.addHeaderCell(getMessage('elementLabel'), 'element-info');
-    this.elementResultGrid.addHeaderCell(getMessage('resultLabel'), 'result');
-    this.elementResultGrid.addHeaderCell(getMessage('positionAbbrev'), 'position', getMessage('positionLabel'));
-    this.elementResultGrid.addHeaderCell(getMessage('actionLabel'), 'action');
+    this.elementResultGrid.addHeaderCell(msg.elementLabel, 'element-info');
+    this.elementResultGrid.addHeaderCell(msg.resultLabel, 'result');
+    this.elementResultGrid.addHeaderCell(msg.positionAbbrev, 'position', msg.positionLabel);
+    this.elementResultGrid.addHeaderCell(msg.actionLabel, 'action');
   }
 
   getResultStyle(result) {
@@ -126,20 +144,20 @@ export default class ViewRuleResult {
   }
 
   getResultAccessibleName (result) {
-    let accName = getMessage('notApplicableLabel');
+    let accName = msg.notApplicableLabel;
 
     switch (result){
       case 'MC':
-        accName = getMessage('manualCheckLabel');
+        accName = msg.manualCheckLabel;
         break;
       case 'P':
-        accName = getMessage('passedLabel');
+        accName = msg.passedLabel;
         break;
       case 'V':
-        accName = getMessage('violationLabel');
+        accName = msg.violationLabel;
         break;
       case 'W':
-        accName = getMessage('warningLabel');
+        accName = msg.warningLabel;
         break;
       default:
         break;
@@ -209,7 +227,7 @@ export default class ViewRuleResult {
             elemName = er.tagName;
           }
 
-          rowAccName = elemName;
+          rowAccName = elemName + ' ' + msg.elementLabel;
           this.elementResultGrid.addDataCell(row, elemName, '', 'element-info');
 
           // Add result information cell (column 2)
@@ -220,9 +238,8 @@ export default class ViewRuleResult {
           this.elementResultGrid.addDataCell(row, er.result, cellAccName, style, sortValue);
 
           // Add position information cell (column 3)
-          cellAccName = er.position + ' ' + getMessage('domPositionLabel');
-          rowAccName += ', ' + cellAccName;
-          this.elementResultGrid.addDataCell(row, er.position, cellAccName, 'position', (-1 * er.position));
+          rowAccName += ', ' + msg.positionLabel + ' ' + er.position;
+          this.elementResultGrid.addDataCell(row, er.position, '', 'position', (-1 * er.position));
 
           // Add action information cell (column 4)
           rowAccName += ', ' + er.actionMessage;
@@ -239,9 +256,9 @@ export default class ViewRuleResult {
         this.resultElementInfo.update(this.elementResults[id]);
       } else {
         if (infoRuleResult.elementResults.length === 0) {
-          label = getMessage('noResultsMsg');
+          label = msg.noResultsMsg;
         } else {
-          label = getMessage('noViolationsWarningsMCResultsMsg');
+          label = msg.noViolationsWarningsMCResultsMsg;
         }
         this.elementResultGrid.deleteDataRows(label);
         this.resultElementInfo.clear(label);

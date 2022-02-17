@@ -3,8 +3,6 @@
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
 
-const getMessage = browser.i18n.getMessage;
-
 export default class ViewRuleGroupCSV extends commonCSV {
   constructor(groupType, groupTitle, ruleResults, ruleDetails, isAllRules) {
     super();
@@ -24,7 +22,7 @@ export default class ViewRuleGroupCSV extends commonCSV {
     if (this.groupType !== 'gl' || this.isAllRules) {
       incGL = true;
     }
-    csv += this.getRuleResultsCSV(this.groupTitle, this.ruleResults, incRC, incGL);
+    csv += this.getRuleResultsCSV(options, this.groupTitle, this.ruleResults, incRC, incGL);
     return csv
   }
 

@@ -1,8 +1,16 @@
 /* highlightSelect.js */
 
-const getMessage = browser.i18n.getMessage;
-
 import { getOptions, saveOptions } from '../storage.js';
+
+// Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
+const msg = {
+  highlightLabel          : getMessage('highlightLabel'),
+  highlightOptionAll      : getMessage('highlightOptionAll'),
+  highlightOptionNone     : getMessage('highlightOptionNone'),
+  highlightOptionSelected : getMessage('highlightOptionSelected'),
+  highlightOptionVW       : getMessage('highlightOptionVW')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -36,26 +44,27 @@ export default class HighlightSelect extends HTMLElement {
     this.select = this.shadowRoot.querySelector('#select');
     this.select.addEventListener('change', this.onSelectChange.bind(this));
 
+    this.onChangeEventCallback = false;
+
     this.init();
   }
 
   init () {
-    function updateTextContent(elemSelector, messageId) {
+    function updateTextContent(elemSelector, message) {
       let elem = sr.querySelector(elemSelector);
-      let msg = getMessage(messageId);
-      if (elem && msg) {
-        elem.textContent = msg;
+      if (elem && message) {
+        elem.textContent = message;
       }
     }
 
     // "sr" is used by updateTextContent
     let sr = this.shadowRoot;
 
-    updateTextContent('label',              'highlightLabel');
-    updateTextContent('[value="none"]',     'highlightOptionNone');
-    updateTextContent('[value="selected"]', 'highlightOptionSelected');
-    updateTextContent('[value="vw"]',       'highlightOptionVW');
-    updateTextContent('[value="all"]',      'highlightOptionAll');
+    updateTextContent('label',              msg.highlightLabel);
+    updateTextContent('[value="none"]',     msg.highlightOptionNone);
+    updateTextContent('[value="selected"]', msg.highlightOptionSelected);
+    updateTextContent('[value="vw"]',       msg.highlightOptionVW);
+    updateTextContent('[value="all"]',      msg.highlightOptionAll);
 
     getOptions().then(this.setSelectValue.bind(this));
   }
@@ -81,7 +90,7 @@ export default class HighlightSelect extends HTMLElement {
       getOptions().then( (options) => {
         options.highlight = value;
         saveOptions(options);
-        if (this.onChangeEvent) {
+        if (this.onChangeEventCallback) {
           this.onChangeEventCallback()
         }
       });

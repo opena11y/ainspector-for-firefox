@@ -1,11 +1,55 @@
 /* viewSummary.js */
 
-const getMessage  = browser.i18n.getMessage;
-const sendMessage = browser.runtime.sendMessage;
-
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+import { GUIDELINES, RULE_CATEGORIES, ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
 import ViewSummaryCSV  from './viewSummaryCSV.js';
 
+// Get message strings from locale-specific messages.json file
+const getMessage  = browser.i18n.getMessage;
+const msg = {
+  allRulesLabel        : getMessage('allRulesLabel'),
+  audioVideoLabel      : getMessage('audioVideoLabel'),
+  detailsLabel         : getMessage('detailsLabel'),
+  formsLabel           : getMessage('formsLabel'),
+  g1_1                 : getMessage('g1.1'),
+  g1_2                 : getMessage('g1.2'),
+  g1_3                 : getMessage('g1.3'),
+  g1_4                 : getMessage('g1.4'),
+  g2_1                 : getMessage('g2.1'),
+  g2_2                 : getMessage('g2.2'),
+  g2_3                 : getMessage('g2.3'),
+  g2_4                 : getMessage('g2.4'),
+  g3_1                 : getMessage('g3.1'),
+  g3_2                 : getMessage('g3.2'),
+  g3_3                 : getMessage('g3.3'),
+  g4_1                 : getMessage('g4.1'),
+  guidelineLabel       : getMessage('guidelineLabel'),
+  guidelinesLabel      : getMessage('guidelinesLabel'),
+  headingsLabel        : getMessage('headingsLabel'),
+  imagesLabel          : getMessage('imagesLabel'),
+  keyboardLabel        : getMessage('keyboardLabel'),
+  landmarksLabel       : getMessage('landmarksLabel'),
+  linksLabel           : getMessage('linksLabel'),
+  manualChecksAbbrev   : getMessage('manualChecksAbbrev'),
+  manualChecksLabel    : getMessage('manualChecksLabel'),
+  manualCheckLabel     : getMessage('manualCheckLabel'),
+  passedAbbrev         : getMessage('passedAbbrev'),
+  passedLabel          : getMessage('passedLabel'),
+  siteNavigationLabel  : getMessage('siteNavigationLabel'),
+  stylesContentLabel   : getMessage('stylesContentLabel'),
+  tablesLabel          : getMessage('tablesLabel'),
+  timingLabel          : getMessage('timingLabel'),
+  widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
+  ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
+  ruleCategoryLabel    : getMessage('ruleCategoryLabel'),
+  summaryLabel         : getMessage('summaryLabel'),
+  viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel'),
+  violationsAbbrev     : getMessage('violationsAbbrev'),
+  violationsLabel      : getMessage('violationsLabel'),
+  violationLabel       : getMessage('violationLabel'),
+  warningsAbbrev       : getMessage('warningsAbbrev'),
+  warningsLabel        : getMessage('warningsLabel'),
+  warningLabel         : getMessage('warningLabel')
+};
 
 // The summary view for AInspector WCAG
 
@@ -94,7 +138,7 @@ export default class ViewSummary {
     const button = document.createElement('button');
     button.id = id;
     button.className = 'details';
-    button.textContent = getMessage('detailsLabel');
+    button.textContent = msg.detailsLabel;
     button.addEventListener('click', this.onDetailsButtonClick.bind(this));
     button.disabled = true;
     return button;
@@ -119,17 +163,17 @@ export default class ViewSummary {
   initGrids () {
     let i, id, label, row;
 
-    this.resultTablist.tabLabel1 = getMessage("ruleCategoriesLabel");
+    this.resultTablist.tabLabel1 = msg.ruleCategoriesLabel;
 
-    this.rcResultGrid.addHeaderCell(getMessage('ruleCategoryLabel'), 'group text');
-    this.rcResultGrid.addHeaderCell(getMessage('violationsAbbrev'),    'summ num', getMessage('violationsLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('warningsAbbrev'),      'summ num', getMessage('warningsLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'),  'summ num', getMessage('manualChecksLabel'));
-    this.rcResultGrid.addHeaderCell(getMessage('passedAbbrev'),        'summ num', getMessage('passedLabel'));
+    this.rcResultGrid.addHeaderCell(msg.ruleCategoryLabel, 'group text');
+    this.rcResultGrid.addHeaderCell(msg.violationsAbbrev,    'summ num', msg.violationsLabel);
+    this.rcResultGrid.addHeaderCell(msg.warningsAbbrev,      'summ num', msg.warningsLabel);
+    this.rcResultGrid.addHeaderCell(msg.manualChecksAbbrev,  'summ num', msg.manualChecksLabel);
+    this.rcResultGrid.addHeaderCell(msg.passedAbbrev,        'summ num', msg.passedLabel);
 
     for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
       id = ruleCategoryIds[i];
-      label = getMessage(getRuleCategoryLabelId(id));
+      label = msg[getRuleCategoryLabelId(id)];
       // The row ID identifies the row as a rule category rule group and
       // includes which category using its numerical constant
       row = this.rcResultGrid.addRow('rc' + id);
@@ -140,16 +184,16 @@ export default class ViewSummary {
       this.rcResultGrid.addDataCell(row, '', '-', 'summ num');
     }
 
-    this.resultTablist.tabLabel2 = getMessage("guidelinesLabel");
-    this.glResultGrid.addHeaderCell(getMessage('guidelineLabel'),     'group text');
-    this.glResultGrid.addHeaderCell(getMessage('violationsAbbrev'),   'summ num', getMessage('violationsLabel'));
-    this.glResultGrid.addHeaderCell(getMessage('warningsAbbrev'),     'summ num', getMessage('warningsLabel'));
-    this.glResultGrid.addHeaderCell(getMessage('manualChecksAbbrev'), 'summ num', getMessage('manualChecksLabel'));
-    this.glResultGrid.addHeaderCell(getMessage('passedAbbrev'),       'summ num', getMessage('passedLabel'));
+    this.resultTablist.tabLabel2 = msg.guidelinesLabel;
+    this.glResultGrid.addHeaderCell(msg.guidelineLabel,     'group text');
+    this.glResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
+    this.glResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
+    this.glResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
+    this.glResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
 
     for (i = 0; i < guidelineIds.length; i += 1 ) {
       id = guidelineIds[i];
-      label = getMessage(getGuidelineLabelId(id));
+      label = msg[getGuidelineLabelId(id).replaceAll('.', '_')];
       // The row ID identifies the row as a guideline rule group and
       // includes which guideline using its numerical constant
       row = this.glResultGrid.addRow('gl' + id);
@@ -161,11 +205,37 @@ export default class ViewSummary {
     }
   }
 
-  getNameForNumber(count, idOne, idNotOne) {
+  getNameForNumber(count, messageOne, messageNotOne) {
     if (count === 1) {
-      return count + ' ' + getMessage(idOne);
+      return count + ' ' + messageOne;
     }
-    return count + ' ' + getMessage(idNotOne);
+    return count + ' ' + messageNotOne;
+  }
+
+  updateRow (id, grid, result) {
+    let row = grid.getRowById(id);
+
+    let cell = grid.getCellByPosition(row, 1);
+    let rowAccName = cell.textContent;
+
+    let celAcclName = this.getNameForNumber(result.violations, msg.violationLabel, msg.violationsLabel)
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 2, result.violations, celAcclName);
+
+    celAcclName = this.getNameForNumber(result.warnings, msg.warningLabel, msg.warningsLabel);
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 3, result.warnings, celAcclName);
+
+    celAcclName = this.getNameForNumber(result.manual_checks, msg.manualCheckLabel, msg.manualChecksLabel);
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 4, result.manual_checks, celAcclName);
+
+    celAcclName = ', ' + result.passed + ' ' + msg.passedLabel;
+    rowAccName += ', ' + celAcclName;
+    this.rcResultGrid.updateDataCell(row, 5, result.passed, celAcclName);
+
+    // Add accessible name describing the row content
+    row.setAttribute('aria-label', rowAccName);
   }
 
   update (infoSummary) {
@@ -187,62 +257,18 @@ export default class ViewSummary {
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       gResult = this.rcResults[i];
-      row = this.rcResultGrid.getRowById('rc' + gResult.id);
-
-      cell = this.rcResultGrid.getCellByPosition(row, 1);
-      rowAccName = cell.textContent;
-
-      celAcclName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 2, gResult.violations, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel');
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 3, gResult.warnings, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 4, gResult.manual_checks, celAcclName);
-
-      celAcclName = ', ' + gResult.passed + ' ' + getMessage('passedLabel');
-      rowAccName += ', ' + celAcclName;
-      this.rcResultGrid.updateDataCell(row, 5, gResult.passed, celAcclName);
-
-      // Add accessible name describing the row content
-      row.setAttribute('aria-label', rowAccName);
+      this.updateRow('rc' + gResult.id, this.rcResultGrid, gResult);
     }
-
+    this.updateRow('rc' + RULE_CATEGORIES.ALL, this.rcResultGrid, infoSummary);
     this.rcResultGrid.setSelectedRowUsingLastId();
 
     this.glResults = infoSummary.glResults;
 
     for (i = 0; i < this.glResults.length; i += 1) {
       gResult = this.glResults[i];
-      row = this.glResultGrid.getRowById('gl' + gResult.id);
-
-      cell = this.glResultGrid.getCellByPosition(row, 1)
-      rowAccName = cell.textContent;
-
-      celAcclName = this.getNameForNumber(gResult.violations, 'violationLabel', 'violationsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 2, gResult.violations, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.warnings, 'warningLabel', 'warningsLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 3, gResult.warnings, celAcclName);
-
-      celAcclName = this.getNameForNumber(gResult.manual_checks, 'manualCheckLabel', 'manualChecksLabel')
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 4, gResult.manual_checks, celAcclName);
-
-      celAcclName = ', ' + gResult.passed + ' ' + getMessage('passedLabel');
-      rowAccName += ', ' + celAcclName;
-      this.glResultGrid.updateDataCell(row, 5, gResult.passed, celAcclName);
-
-      // Add accessible name describing the row content
-      row.setAttribute('aria-label', rowAccName);
+      this.updateRow('gl' + gResult.id, this.glResultGrid, gResult);
     }
-
+    this.updateRow('gl' + GUIDELINES.ALL, this.glResultGrid, infoSummary);
     this.glResultGrid.setSelectedRowUsingLastId();
 
     if (this.resultTablist.selectedTabId === 'tabpanel-1') {

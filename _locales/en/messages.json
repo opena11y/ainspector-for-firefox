@@ -1,5 +1,10 @@
 {
   "extensionVersion": {
+    "message": "2.0.0",
+    "description": "Version of the extension"
+  },
+
+  "extensionVersionName": {
     "message": "2.0.0-beta.1",
     "description": "Version of the extension"
   },
@@ -59,11 +64,6 @@
     "description": "Label for preferences button"
   },
 
-  "emptyContent": {
-    "message": "&lt;empty&gt;",
-    "description": "Message indicating that DOM Sele has no text content."
-  },
-
   "tabIsLoading": {
     "message": "Updating...",
     "description": "Message indicating that content in the sidebar panel is being updated."
@@ -120,8 +120,8 @@
   },
 
   "keyboardLabel": {
-    "message": "Keyboard",
-    "description": "Label for Keyboard rule category view"
+    "message": "Keyboard Support",
+    "description": "Label for Keyboard Support rule category view"
   },
 
   "timingLabel": {
@@ -134,7 +134,7 @@
     "description": "Label for Site Navigation rule category view"
   },
 
-  "AllRulesLabel": {
+  "allRulesLabel": {
     "message": "All Rules",
     "description": "Label for all rules view"
   },
@@ -359,14 +359,9 @@
     "description": "Label for rule results grid"
   },
 
-  "ruleCategoryResultGridLabel": {
-    "message": "Rule Category Results",
-    "description": "Label for rule category results grid"
-  },
-
-  "guidelineResultGridLabel": {
-    "message": "Guideline Results",
-    "description": "Label for guideline results grid"
+  "ruleResultsGridLabel": {
+    "message": "Rule Results",
+    "description": "Label for rule results grid"
   },
 
   "ruleSelectedLabel": {
@@ -402,11 +397,6 @@
   "ruleIdLabel": {
     "message": "Rule ID",
     "description": "Rule ID label for rule information"
-  },
-
-  "ruleSummaryLabel": {
-    "message": "Summary",
-    "description": "Summary section label for rule information"
   },
 
   "ruleSummaryLabel": {
@@ -455,7 +445,7 @@
   },
 
   "detailsActionLabel": {
-    "message": "Details/Action",
+    "message": "Details / Action",
     "description": "Details/action tab label in rule results view"
   },
 
@@ -477,11 +467,6 @@
   "positionLabel": {
     "message": "Position",
     "description": "Position column label in grid for rule results view"
-  },
-
-  "domPositionLabel": {
-    "message": ", index of dom position",
-    "description": "Element DOM position label in grid for rule results view"
   },
 
   "actionLabel": {
@@ -515,7 +500,7 @@
   },
 
   "elementGridLabel": {
-    "message": "Rule / Element Results",
+    "message": "Element Results",
     "description": "Label for Rule/Element results grid"
   },
 
@@ -535,7 +520,7 @@
   },
 
   "exportDialogTitle": {
-    "message": "Export Evaluation Options",
+    "message": "Export Options",
     "description": "Title for export evalaution options dialog box"
   },
 
@@ -570,7 +555,7 @@
   },
 
   "optionsTitle": {
-    "message": "AInspector WCAG Options",
+    "message": "General Options",
     "description": "Title for the options page"
   },
 
@@ -635,7 +620,7 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export Evaluation Options",
+    "message": "Export Options",
     "description": "Label for file name legend in the export section of the options page"
   },
 
@@ -645,7 +630,7 @@
   },
 
   "optionsExportFormatLegend": {
-    "message": "Export File Format",
+    "message": "File Format",
     "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
@@ -659,10 +644,33 @@
     "description": "Label for the JSON radio button option in the export section of the options page"
   },
 
+  "optionsExportFilenameLegend": {
+    "message": "Filename Options",
+    "description": "Lagend for the filenaming options in export section of the options page"
+  },
+
   "optionsExportPrefixLabel": {
-    "message": "Prefix for export file name (up to 16 character long)",
+    "message": "Prefix for export file name (up to 16 characters long)",
     "description": "Label for prefix string input in the export section of the options page"
   },
+
+  "optionsExportPrefixDesc": {
+    "message": "Note: For operating system compatibility file name cannot contain any spaces or <>:\"/\\|?*[] characters.",
+    "description": "Label for prefix string input in the export section of the options page"
+  },
+
+
+
+  "optionsExportPrefixErrorToLong": {
+    "message": "Prefix can only be 16 characters long.",
+    "description": "Error feedback for prefix string being too long"
+  },
+
+  "optionsExportPrefixErrorCharNotAllowed": {
+    "message": "Prefix cannot contain the $key character.",
+    "description": "Error feedback on characters that cannot not be in prefix."
+  },
+
 
   "optionsExportPrefixDesc": {
     "message": "Can be used to customize export file names for specific projects.",
@@ -762,6 +770,116 @@
   "shortcutDefaultRerun": {
     "message": "r",
     "description": "Default shortcut key for activating the Rerun Evaluation button."
+  },
+
+  "csvPageTitle": {
+    "message": "Page Title:",
+    "description": "Page title label for CSV export."
+  },
+
+  "csvPageURL": {
+    "message": "Page URL:",
+    "description": "Page URL label for CSV export."
+  },
+
+  "csvRuleset": {
+    "message": "Ruleset:",
+    "description": "Ruleset label for CSV export."
+  },
+
+  "csvDate": {
+    "message": "Date:",
+    "description": "Date label for CSV export."
+  },
+
+  "csvTime": {
+    "message": "Time:",
+    "description": "Time label for CSV export."
+  },
+
+  "csvSource": {
+    "message": "Source:",
+    "description": "Source label for CSV export."
+  },
+
+  "csvGroupTitle": {
+    "message": "Group Title:",
+    "description": "Group title label for CSV export."
+  },
+
+  "csvRuleId": {
+    "message": "Rule ID",
+    "description": "Rule ID columns header for CSV export."
+  },
+
+  "csvRuleSummary": {
+    "message": "Rule Summary",
+    "description": "Rule Summary columns header for CSV export."
+  },
+
+  "csvResultValue": {
+    "message": "Result Value",
+    "description": "Result Value column header for CSV export"
+  },
+
+  "csvSuccessCriteria": {
+    "message": "Success Criteria",
+    "description": "Success Criteria column header for CSV export"
+  },
+
+  "shortcutsHeading": {
+    "message": "Keyboard Shortcuts",
+    "description": "Label for section on configuring shortcut keys."
+  },
+
+  "shortcutsEnabledLabel": {
+    "message": "Enable keyboard shortcuts.",
+    "description": "Label for checkbox enabling shortcuts."
+  },
+
+ "shortcutsTableShortcut": {
+    "message": "Key",
+    "description": "Heading for shortcut column in table."
+  },
+
+ "shortcutsTableAction": {
+    "message": "Action",
+    "description": "Heading for action column in table."
+  },
+
+  "shortcutBackLabel": {
+    "message": "Activates Back button.",
+    "description": "Describes the action of the Back shortcut key."
+  },
+
+  "shortcutViewsLabel": {
+    "message": "Activates Views button.",
+    "description": "Describes the action of the Views shortcut key."
+  },
+
+  "shortcutExportLabel": {
+    "message": "Activates Export button.",
+    "description": "Describes the action of the Export shortcut key."
+  },
+
+  "shortcutRerunLabel": {
+    "message": "Activates Rerun Evaluation button.",
+    "description": "Describes the action of the Re-run shortcut key."
+  },
+
+  "shortcutCopyLabel": {
+    "message": "Activates Copy button.",
+    "description": "Describes the action of the Copy shortcut key."
+  },
+
+  "shortcutsNotes": {
+    "message": "Note: Leaving the shortcut key value empty disables the shortcut.",
+    "description": "Note providing information on how to disabled an individual shortcut."
+  },
+
+  "shortcutAllreadyUsed": {
+    "message": "The $key is already being used.",
+    "description": "Feedback to use if the shortcut is already defined."
   }
 
 }

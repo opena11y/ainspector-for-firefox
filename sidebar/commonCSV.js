@@ -4,64 +4,140 @@ import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.j
 
 import { sortRuleResults } from './sortUtils.js';
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
+const getName    = browser.runtime.getManifest().name;
+const getVersion = browser.runtime.getManifest().version;
+
+const msg = {
+  csvDate                   : getMessage('csvDate'),
+  csvPageTitle              : getMessage('csvPageTitle'),
+  csvPageURL                : getMessage('csvPageURL'),
+  csvTime                   : getMessage('csvTime'),
+  csvResultValue            : getMessage('csvResultValue'),
+  csvRuleset                : getMessage('csvRuleset'),
+  csvSource                 : getMessage('csvSource'),
+  csvGroupTitle             : getMessage('csvGroupTitle'),
+  csvRuleId                 : getMessage('csvRuleId'),
+  csvRuleSummary            : getMessage('csvRuleSummary'),
+  csvSuccessCriteria        : getMessage('csvSuccessCriteria'),
+  detailsActionLabel        : getMessage('detailsActionLabel'),
+  extensionVersion          : getMessage('extensionVersion'),
+  guidelineLabel            : getMessage('guidelineLabel'),
+  hiddenLabel               : getMessage('hiddenLabel'),
+  levelLabel                : getMessage('levelLabel'),
+  manualChecksLabel         : getMessage('manualChecksLabel'),
+  optionsRulesetStrictLabel : getMessage('optionsRulesetStrictLabel'),
+  optionsRulesetTransLabel  : getMessage('optionsRulesetTransLabel'),
+  passedLabel               : getMessage('passedLabel'),
+  requiredLabel             : getMessage('requiredLabel'),
+  requiredValue             : getMessage('requiredValue'),
+  resultLabel               : getMessage('resultLabel'),
+  ruleActionLabel           : getMessage('ruleActionLabel'),
+  ruleAdditionalLabel       : getMessage('ruleAdditionalLabel'),
+  ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
+  ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
+  rulePurposeLabel          : getMessage('rulePurposeLabel'),
+  ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
+  ruleTargetLabel           : getMessage('ruleTargetLabel'),
+  viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
+  violationsLabel           : getMessage('violationsLabel'),
+  warningsLabel             : getMessage('warningsLabel')
+};
 
 export class commonCSV {
   constructor() {
-    this.ariaStrictRulesetLabel = getMessage("optionsRulesetStrictLabel");
-    this.ariaTransLRulesetLabel = getMessage("optionsRulesetTransLabel");
+    this.ariaStrictRulesetLabel = msg.optionsRulesetStrictLabel;
+    this.ariaTransRulesetLabel = msg.optionsRulesetTransLabel;
   }
 
   getRulesetTitle (rulesetId) {
     if (rulesetId === 'ARIA_STRICT') {
       return this.ariaStrictRulesetLabel;
     }
-    return ariaTransLRulesetLabel;
+    return ariaTransRulesetLabel;
+  }
+
+  arrayToCSV (items, lines = 1) {
+    let csv = '';
+    items.forEach( (item, index) => {
+      if (index !== 0) {
+        csv += ',';
+      }
+      csv += '"' + cleanCSVItem(item) + '"';
+    });
+
+    for (let i = 0; i < lines; i += 1) {
+      csv += '\n';
+    }
+    return csv;
   }
 
   getCSV (options, title, location) {
     let csv = '';
-    csv += `"Page Title:","${cleanCSVItem(title)}"\n`;
-    csv += `"Page URL:","${cleanCSVItem(location)}"\n`;
-    csv += `"Ruleset:","${this.getRulesetTitle(options.rulesetId)}"\n`;
-    csv += `"Date:","${getTodaysDate()}"\n`;
-    csv += `"Time:","${getTimeOfDay()}"\n`;
-    csv += `"Source:","AInspector ${getMessage('extensionVersion')}"\n\n`;
+    csv += this.arrayToCSV([msg.csvPageTitle, title]);
+    csv += this.arrayToCSV([msg.csvPageURL, location]);
+    csv += this.arrayToCSV([msg.csvRuleset, this.getRulesetTitle(options.rulesetId)]);
+    csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
+    csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
+    csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);
     return csv;
   }
 
-  getRuleResultsCSV (title, ruleResults, incRC, incGL) {
+  getRuleResultsCSV (options, title, ruleResults, incRC=false, incGL=false) {
+    const props = [];
+    let csv = '\n';
 
     ruleResults = sortRuleResults(ruleResults);
 
-    if (typeof incRC !== 'boolean') {
-      incRC = false;
-    }
-    if (typeof incGL !== 'boolean') {
-      incGL = false;
-    }
-    let csv = '';
-    csv += `\n"Group Title:","${title}"\n\n`
-
-    csv += `"Rule Summary","Result","Result Value",`;
+    csv += this.arrayToCSV([msg.csvGroupTitle, title], 2);
+    props.push(msg.csvRuleId);
+    props.push(msg.csvRuleSummary);
+    props.push(msg.resultLabel);
+    props.push(msg.csvResultValue);
     if (incRC) {
-      csv += `"Rule Category",`;
+      props.push(msg.ruleCategoryLabel);
     }
     if (incGL) {
-      csv += `"Guideline",`;
+      props.push(msg.guidelineLabel);
     }
-    csv += `"Success Criteria","Level","Required","Violations","Warnings","Manual Checks","Passed","Hidden"\n`;
+    props.push(msg.csvSuccessCriteria);
+    props.push(msg.levelLabel);
+    props.push(msg.requiredLabel);
+    props.push(msg.violationsLabel);
+    props.push(msg.warningsLabel);
+    props.push(msg.manualChecksLabel);
+    props.push(msg.passedLabel);
+    props.push(msg.hiddenLabel);
+
+    csv += this.arrayToCSV(props);
+
     for (let i = 0; i < ruleResults.length; i += 1) {
+      const values = [];
       let rr = ruleResults[i];
-      csv += `"${rr.summary}","${rr.result}","${rr.resultValue}",`;
-      if (incRC) {
-        csv += `"${rr.ruleCategory}",`;
+      if (options.resultsIncludePassNa ||
+          (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
+        values.push(rr.ruleId.replace('_', ' '));
+        values.push(rr.summary);
+        values.push(rr.result);
+        values.push(rr.resultValue);
+        if (incRC) {
+          values.push(rr.ruleCategory);
+        }
+        if (incGL) {
+          values.push(rr.guideline);
+        }
+        values.push(rr.wcag);
+        values.push(rr.level);
+        values.push((rr.required ? msg.requiredValue : ''));
+        values.push(rr.elemViolations);
+        values.push(rr.elemWarnings);
+        values.push(rr.elemManualChecks);
+        values.push(rr.elemPassed);
+        values.push(rr.elemHidden);
+
+        csv += this.arrayToCSV(values);
       }
-      if (incGL) {
-        csv += `"${rr.guideline}",`;
-      }
-      csv += `"${rr.wcag}","${rr.level}","${rr.required ? 'Y' : ''}",`;
-      csv += `"${rr.elemViolations}","${rr.elemWarnings}","${rr.elemManualChecks}","${rr.elemPassed}","${rr.elemHidden}"\n`;
     }
     return csv;
   }
@@ -69,27 +145,29 @@ export class commonCSV {
   contentCSV(label, info) {
     if (!info) return '';
 
-    let i, item, csv = '';
+    let i, item, values, csv = '';
 
     if (typeof info === 'string') {
-      csv += `"${label}","${cleanCSVItem(info)}"\n`;
+      csv += this.arrayToCSV([label, info]);
     } else {
       if (info.length) {
-        csv += `"${label}",`;
+        values = [label];
         for (i = 0; i < info.length; i += 1) {
           item = info[i];
           if (i !== 0) {
-            csv += `"",`;
+            values = [''];
           }
           if (typeof item === 'string') {
-              csv += `"${cleanCSVItem(item)}"\n`;
+              values.push(item);
           } else {
             if (item.url) {
-              csv += `"${cleanCSVItem(item.title)}","${cleanCSVItem(item.url)}"\n`;
+              values.push(item.title);
+              values.push(item.url);
             } else {
-              csv += `"${cleanCSVItem(item.title)}"\n`;
+              values.push(item.title);
             }
           }
+          csv += this.arrayToCSV(values);
         }
       }
     }
@@ -97,18 +175,19 @@ export class commonCSV {
   }
 
   getDetailsActionCSV (ruleInfo) {
-    let csv = '';
-
-    csv += `"Details/Action"\n`;
-    csv += this.contentCSV('Summary', ruleInfo.summary);
-    csv += this.contentCSV('Definition', ruleInfo.definition);
-    csv += this.contentCSV('Actions', ruleInfo.action);
-    csv += this.contentCSV('Purpose', ruleInfo.purpose);
-    csv += this.contentCSV('Techniques', ruleInfo.techniques);
-    csv += this.contentCSV('Targets', ruleInfo.targets);
-    csv += this.contentCSV('Level', ruleInfo.compliance);
-    csv += this.contentCSV('Success Criteria', ruleInfo.sc);
-    csv += this.contentCSV('Additional Information', ruleInfo.additionalLinks);
+    let csv = '\n';
+    csv += this.arrayToCSV([msg.detailsActionLabel]);
+    csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
+    csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
+    csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
+    csv += this.contentCSV(msg.ruleActionLabel,       ruleInfo.action);
+    csv += this.contentCSV(msg.rulePurposeLabel,      ruleInfo.purpose);
+    csv += this.contentCSV(msg.ruleTechniquesLabel,   ruleInfo.techniques);
+    csv += this.contentCSV(msg.ruleTargetLabel,       ruleInfo.targets);
+    csv += this.contentCSV(msg.levelLabel,            ruleInfo.compliance);
+    csv += this.contentCSV(msg.csvSuccessCriteria,    ruleInfo.sc);
+    csv += this.contentCSV(msg.ruleAdditionalLabel,   ruleInfo.additionalLinks);
+    csv += '\n';
 
     return csv;
   }

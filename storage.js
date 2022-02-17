@@ -2,6 +2,8 @@
 *   storage.js
 */
 
+
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 
 export const defaultOptions = {
@@ -22,11 +24,11 @@ export const defaultOptions = {
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,
-  shortcutBack: getMessage('shortcutDefaultBack'),
+  shortcutBack:  getMessage('shortcutDefaultBack'),
   shortcutViews: getMessage('shortcutDefaultViews'),
-  shortcutExport: getMessage('shortcutDefaultExport'),
+  shortcutExport:getMessage('shortcutDefaultExport'),
   shortcutRerun: getMessage('shortcutDefaultRerun'),
-  shortcutCopy: getMessage('shortcutDefaultCopy'),
+  shortcutCopy:  getMessage('shortcutDefaultCopy'),
   shortcutsEnabled: false
 };
 

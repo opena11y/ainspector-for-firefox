@@ -40980,7 +40980,7 @@ OpenAjax.a11y.nls.RuleCategories.addNLS('en-us', {
     },
     {
       id           : OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY,
-      title        : 'Styling/Content',
+      title        : 'Styles/Content',
       url          : '',
       description  : 'Use proper HTML markup to identify the semantics and language of text content. Ensure that text is readable by adhering to color contrast guidelines, and that information is not conveyed solely by the use of color, shape, location or sound.'
     },
@@ -41010,7 +41010,7 @@ OpenAjax.a11y.nls.RuleCategories.addNLS('en-us', {
     },
     {
       id           : OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS,
-      title        : 'Widgets/Scripting',
+      title        : 'Widgets/Scripts',
       url          : '',
       description  : 'Use appropriate event handlers on elements to support native interactivity using JavaScript. Ensure that custom widgets created using JavaScript support keyboard interaction and include ARIA markup to describe their roles, properties and states.'
     },
@@ -41041,7 +41041,7 @@ OpenAjax.a11y.nls.RuleCategories.addNLS('en-us', {
     // Composite rule categories
     {
       id           : OpenAjax.a11y.RULE_CATEGORIES.ALL,
-      title        : 'All Categories',
+      title        : 'All Rules',
       url          : '',
       description  : 'Includes all rules in the ruleset and provides a way to sort and compare the results of all the rules.'
     }
@@ -41080,7 +41080,7 @@ OpenAjax.a11y.nls.WCAG20.addNLS('en-us', {
   levels: [  'Undefined',  'AAA',  'AA',  '',  'A'  ],
   evaluation_levels: [  'Undefined',  'AAA',  'AA',  'AA and AAA',  'A',  'A and AAA',  'A nd AA',  'A, AA and AAA'  ],
   all_guidelines: {
-    title: 'All Guidelines',
+    title: 'All Rules',
     description: 'All the rules related to WCAG 2.1.',
     url_spec: 'https://www.w3.org/TR/WCAG21/'
   },

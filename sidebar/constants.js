@@ -12,7 +12,7 @@
 *  sidebar.
 */
 
-const GUIDELINES =  {
+export const GUIDELINES =  {
   G_1_1: 0x000010,
   G_1_2: 0x000020,
   G_1_3: 0x000040,
@@ -35,7 +35,7 @@ const GUIDELINES =  {
 *  be in the sidebar.
 */
 
-const RULE_CATEGORIES = {
+export const RULE_CATEGORIES = {
   UNDEFINED              : 0x0000,
   LANDMARKS              : 0x0001,
   HEADINGS               : 0x0002,
@@ -65,7 +65,8 @@ export const ruleCategoryIds = [
   RULE_CATEGORIES.AUDIO_VIDEO,
   RULE_CATEGORIES.KEYBOARD_SUPPORT,
   RULE_CATEGORIES.TIMING,
-  RULE_CATEGORIES.SITE_NAVIGATION
+  RULE_CATEGORIES.SITE_NAVIGATION,
+  RULE_CATEGORIES.ALL,
 ];
 
 export const guidelineIds = [
@@ -80,7 +81,8 @@ export const guidelineIds = [
   GUIDELINES.G_3_1,
   GUIDELINES.G_3_2,
   GUIDELINES.G_3_3,
-  GUIDELINES.G_4_1
+  GUIDELINES.G_4_1,
+  GUIDELINES.ALL,
 ];
 
 export function getRuleCategoryLabelId (id) {

@@ -1,6 +1,17 @@
 /* ruleSummary.js */
 
+// Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
+const msg = {
+  manualChecksAbbrev : getMessage('manualChecksAbbrev'),
+  manualChecksLabel  : getMessage('manualChecksLabel'),
+  passedAbbrev       : getMessage('passedAbbrev'),
+  passedLabel        : getMessage('passedLabel'),
+  violationsAbbrev   : getMessage('violationsAbbrev'),
+  violationsLabel    : getMessage('violationsLabel'),
+  warningsAbbrev     : getMessage('warningsAbbrev'),
+  warningsLabel      : getMessage('warningsLabel')
+};
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -40,20 +51,20 @@ export default class ResultSummary extends HTMLElement {
 
     // Initialize abbreviations and labels
     this.violationsTh = this.shadowRoot.querySelector('#violations-label');
-    this.violationsTh.textContent = getMessage('violationsAbbrev');
-    this.violationsTh.setAttribute('aria-label', getMessage('violationsLabel'));
+    this.violationsTh.textContent = msg.violationsAbbrev;
+    this.violationsTh.setAttribute('aria-label', msg.violationsLabel);
 
     this.warningsTh = this.shadowRoot.querySelector('#warnings-label');
-    this.warningsTh.textContent = getMessage('warningsAbbrev');
-    this.warningsTh.setAttribute('aria-label', getMessage('warningsLabel'));
+    this.warningsTh.textContent = msg.warningsAbbrev;
+    this.warningsTh.setAttribute('aria-label', msg.warningsLabel);
 
     this.manualChecksTh = this.shadowRoot.querySelector('#manual-checks-label');
-    this.manualChecksTh.textContent = getMessage('manualChecksAbbrev');
-    this.manualChecksTh.setAttribute('aria-label', getMessage('manualChecksLabel'));
+    this.manualChecksTh.textContent = msg.manualChecksAbbrev;
+    this.manualChecksTh.setAttribute('aria-label', msg.manualChecksLabel);
 
     this.passedTh = this.shadowRoot.querySelector('#passed-label');
-    this.passedTh.textContent = getMessage('passedAbbrev');
-    this.passedTh.setAttribute('aria-label', getMessage('passedLabel'));
+    this.passedTh.textContent = msg.passedAbbrev;
+    this.passedTh.setAttribute('aria-label', msg.passedLabel);
 
     // Initialize references
     this.violationsTd   = this.shadowRoot.querySelector('#violations-value');

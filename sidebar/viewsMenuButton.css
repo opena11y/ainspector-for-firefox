@@ -2,6 +2,7 @@
 
 div {
   --menu-bg-color: #eee;
+  --menu-bg-highlight: #ddd;
   --menu-text-color: black;
   --menu-border-color: black;
 }
@@ -26,8 +27,9 @@ div {
 }
 
 .views-menu-button [role="menuitem"],
-.views-menu-button [role="separator"] {
+.views-menu-button [role="group"] div.label {
   margin: 0;
+  margin-right:  1em;
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 4px;
@@ -38,14 +40,17 @@ div {
   width: 12em;
   background-color: var(--menu-bg-color);
   color: var(--menu-text-color);
+  outline:  none;
 }
 
-.views-menu-button [role="separator"] {
-  padding-top: 3px;
-  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cline x1='0' y1='6' x2='12' y2='6' style='stroke:black;stroke-width:1' /%3E%3C/svg%3E%0A");
-  background-size: 10px 10px;
-  background-position: center;
-  background-repeat: repeat-x;
+.views-menu-button [role="group"] div.label {
+  border-bottom: 1px solid var(--menu-border-color);
+  font-weight: bold;
+  border-radius: 0;
+}
+
+.views-menu-button [role="group"] > [role="menuitem"] {
+  margin-left: 0;
 }
 
 .views-menu-button button svg.down {
@@ -60,14 +65,17 @@ div {
 
 /* focus styling */
 
-.views-menu-button [role="menuitem"]:hover,
 .views-menu-button [role="menuitem"]:focus {
   padding-top: 0;
   padding-bottom: 0;
   padding-left:  2px;
   padding-right:  2px;
   border-width: 2px;
-  outline:  none;
+  background: var(--menu-bg-highlight);
+}
+
+.views-menu-button [role="menuitem"]:hover {
+  cursor: pointer;
 }
 
 .views-menu-button button:focus {

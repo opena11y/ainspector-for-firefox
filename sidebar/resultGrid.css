@@ -44,6 +44,10 @@ table tbody tr:nth-child(even) {
   background: #eee;
 }
 
+table.summary tbody tr:last-child {
+  border-top: 1px solid #aaa;
+}
+
 table thead th {
   border-bottom: 1px solid #ddd;
 }

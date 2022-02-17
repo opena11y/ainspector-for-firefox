@@ -9,13 +9,13 @@
   <body>
     <form>
 
-      <h2 id="options-title">AInspector WCAG Options</h2>
+      <h2 id="options-title">General Options</h2>
 
       <fieldset>
-        <legend id="options-views-menu-legend">'Views' menu</legend>
+        <legend id="options-rule-results-legend">Rule Results</legend>
         <label>
-          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
-          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
+          <input type="checkbox" checked id="options-incl-pass-na"/>
+          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
         </label>
       </fieldset>
 
@@ -31,36 +31,24 @@
         </label>
       </fieldset>
 
-      <h2 id="options-evaluation-heading">Evaluation</h2>
-
       <fieldset>
-        <legend id="options-ruleset-legend">Ruleset</legend>
+        <legend id="options-views-menu-legend">'Views' menu</legend>
         <label>
-          <input type="radio" name="ruleset" id="ARIA_STRICT" checked/>
-          <span id="options-ruleset-strict-label">HTML5 and ARIA Techniques</span>
-        </label>
-        <label>
-          <input type="radio" name="ruleset" id="ARIA_TRANS"/>
-          <span id="options-ruleset-trans-label">HTML4 Legacy Techniques</span>
+          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
+          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
         </label>
       </fieldset>
 
+
+      <h2 id="options-export-heading">Export Options</h2>
+
       <fieldset>
-        <legend id="options-rule-results-legend">Rule Results</legend>
-        <label>
-          <input type="checkbox" checked id="options-incl-pass-na"/>
-          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
-        </label>
-      </fieldset>
-
-      <h2 id="options-export-heading">Export Evaluation Results</h2>
-
-      <div class="checkbox">
+        <legend id="options-export-button-legend">'Export' Button</legend>
         <label>
           <input type="checkbox" checked id="options-export-prompt"/>
           <span id="options-export-prompt-label">Prompt for export options</span>
         </label>
-      </div>
+      </fieldset>
 
       <fieldset>
         <legend id="options-export-format-legend">Export Format</legend>
@@ -75,13 +63,22 @@
       </fieldset>
 
       <fieldset>
-        <legend id="options-filename-legend">Default Filename Options</legend>
+        <legend id="options-filename-legend">Filename Options</legend>
 
         <label id="options-export-prefix-label"
           for="options-export-prefix">
           Export File Prefix (up to 16 characters)
         </label>
-        <input id="options-export-prefix" type="text" size="20" aria-describedby="option-export-prefix-desc"/>
+        <div class="input">
+          <input id="options-export-prefix" type="text" size="20" aria-describedby="options-export-prefix-desc options-export-prefix-note"/>
+          <span class="feedback prefix">
+            <img src="icons/error-icon-15.png" alt=""/>
+            <span id="options-export-prefix-desc" aria-live="assertive"></span>
+          </span>
+        </div>
+        <div class="desc" id="options-export-prefix-note">
+          Note: Prefix cannot contain spaces or <code>&lt;&gt;:"/\|?*[]</code> characters.
+        </div>
 
         <label>
           <input type="checkbox" checked id="options-export-date"/>
@@ -90,80 +87,92 @@
 
       </fieldset>
 
-      <h2 id="options-shortcut-keys">Shortcut Keys</h2>
+      <h2 id="shortcuts-heading">Shortcut Keys</h2>
 
 
       <div class="checkbox">
         <label>
-          <input type="checkbox" checked id="options-shortcuts-enabled"/>
-          <span id="options-shortcuts-enabled-label">Enable keyboard shortcuts.</span>
+          <input type="checkbox" checked id="shortcuts-enabled"/>
+          <span id="shortcuts-enabled-label">Enable keyboard shortcuts.</span>
         </label>
 
       <table class="shortcuts">
         <thead>
           <tr>
-            <th>Shortcut</th>
-            <th>Action</th>
+            <th id="shortcut-table-shortcut">Shortcut</th>
+            <th id="shortcut-table-action">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>
-              <kbd id="options-shortcut-back"></kbd>
+              <kbd id="shortcut-back">Backspace/<br/>Delete</kbd>
             </td>
             <td>
-              <div id="options-shortcut-back-label">
+              <div id="shortcut-back-label">
                 Activates Back button.
-              </div>
-              <div id="options-shortcut-back-note"class="note">
-                <span>Note:</span> The <kbd>Delete</kbd> button on macOS.
               </div>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-copy" size="1" aria-describedby="">
+              <input type="text" id="shortcut-copy" size="1" aria-describedby="shortcut-copy-desc">
+              <div class="feedback shortcut">
+                <img src="icons/error-icon-15.png" alt=""/>
+                <span id="shortcut-copy-desc" aria-live="assertive"></span>
+              </div>
             </td>
             <td>
-              <label for="options-shortcut-copy">
+              <label id="shortcut-copy-label" for="shortcut-copy">
                 Activates Copy button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-export" size="1">
+              <input type="text" id="shortcut-export" size="1" aria-describedby="shortcut-export-desc">
+              <div class="feedback shortcut">
+                <img src="icons/error-icon-15.png" alt=""/>
+                <span id="shortcut-export-desc" aria-live="assertive"></span>
+              </div>
             </td>
             <td>
-              <label for="options-shortcut-export">
+              <label id="shortcut-export-label" for="shortcut-export">
                 Activates Export button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-rerun" size="1">
+              <input type="text" id="shortcut-rerun" size="1" aria-describedby="shortcut-rerun-desc">
+              <div class="feedback shortcut">
+                <img src="icons/error-icon-15.png" alt=""/>
+                <span id="shortcut-rerun-desc" aria-live="assertive"></span>
+              </div>
             </td>
             <td>
-              <label for="options-shortcut-rerun">
+              <label id="shortcut-rerun-label" for="shortcut-rerun">
                 Activates Rerun Evaluation button.
               </label>
             </td>
           </tr>
           <tr>
             <td>
-              <input type="text" id="options-shortcut-views" size="1">
+              <input type="text" id="shortcut-views" size="1" aria-describedby="shortcut-views-desc">
+              <div class="feedback shortcut">
+                <img src="icons/error-icon-15.png" alt=""/>
+                <span id="shortcut-views-desc" aria-live="assertive"></span>
+              </div>
             </td>
             <td>
-              <label for="options-shortcut-views">
+              <label id="shortcut-views-label" for="shortcut-views">
                Activates View button.
               </label>
             </td>
           </tr>
         </tbody>
       </table>
-      <p class="note"><span>Note:</span> Leaving the shortcut key value empty disables the shortcut.</p>
-
+      <p id="shortcuts-note" class="note">Note: Leaving the shortcut key value empty disables the shortcut.</p>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
 
