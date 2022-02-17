@@ -515,7 +515,7 @@
   },
 
   "exportDialogTitle": {
-    "message": "Export Evaluation Options",
+    "message": "Export Options",
     "description": "Title for export evalaution options dialog box"
   },
 
@@ -550,7 +550,7 @@
   },
 
   "optionsTitle": {
-    "message": "AInspector WCAG Options",
+    "message": "General Options",
     "description": "Title for the options page"
   },
 
@@ -615,7 +615,7 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export Evaluation Options",
+    "message": "Export Options",
     "description": "Label for file name legend in the export section of the options page"
   },
 
@@ -625,7 +625,7 @@
   },
 
   "optionsExportFormatLegend": {
-    "message": "Export File Format",
+    "message": "File Format",
     "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
@@ -738,7 +738,7 @@
   },
 
   "shortcutDefaultBack": {
-    "message": "Backspace/Delete",
+    "message": "Backspace",
     "description": "Default shortcut key for activating the Back button."
   },
 
@@ -818,8 +818,8 @@
   },
 
   "shortcutsHeading": {
-    "message": "Shortcut Keys",
-    "description": "Label for section on congifugint shortcut keys."
+    "message": "Keyboard Shortcuts",
+    "description": "Label for section on configuring shortcut keys."
   },
 
   "shortcutsEnabledLabel": {
@@ -828,7 +828,7 @@
   },
 
  "shortcutsTableShortcut": {
-    "message": "Shortcut",
+    "message": "Key",
     "description": "Heading for shortcut column in table."
   },
 

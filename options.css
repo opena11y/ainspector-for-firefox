@@ -88,6 +88,7 @@ table.shortcuts th {
   text-align:  left;
   font-size: 110%;
   font-weight: bold;
+  background-color: #eee;
 }
 
 table.shortcuts thead th:nth-child(1),

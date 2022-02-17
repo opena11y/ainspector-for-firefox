@@ -9,13 +9,13 @@
   <body>
     <form>
 
-      <h2 id="options-title">AInspector WCAG Options</h2>
+      <h2 id="options-title">General Options</h2>
 
       <fieldset>
-        <legend id="options-views-menu-legend">'Views' menu</legend>
+        <legend id="options-rule-results-legend">Rule Results</legend>
         <label>
-          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
-          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
+          <input type="checkbox" checked id="options-incl-pass-na"/>
+          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
         </label>
       </fieldset>
 
@@ -31,37 +31,24 @@
         </label>
       </fieldset>
 
-      <h2 id="options-evaluation-heading">Evaluation</h2>
-
-<!--
       <fieldset>
-        <legend id="options-ruleset-legend">Ruleset</legend>
+        <legend id="options-views-menu-legend">'Views' menu</legend>
         <label>
-          <input type="radio" name="ruleset" id="ARIA_STRICT" checked/>
-          <span id="options-ruleset-strict-label">HTML5 and ARIA Techniques</span>
-        </label>
-        <label>
-          <input type="radio" name="ruleset" id="ARIA_TRANS"/>
-          <span id="options-ruleset-trans-label">HTML4 Legacy Techniques</span>
-        </label>
-      </fieldset>
--->
-      <fieldset>
-        <legend id="options-rule-results-legend">Rule Results</legend>
-        <label>
-          <input type="checkbox" checked id="options-incl-pass-na"/>
-          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
+          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
+          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
         </label>
       </fieldset>
 
-      <h2 id="options-export-heading">Export Evaluation Results</h2>
 
-      <div class="checkbox">
+      <h2 id="options-export-heading">Export Options</h2>
+
+      <fieldset>
+        <legend id="options-export-button-legend">'Export' Button</legend>
         <label>
           <input type="checkbox" checked id="options-export-prompt"/>
           <span id="options-export-prompt-label">Prompt for export options</span>
         </label>
-      </div>
+      </fieldset>
 
       <fieldset>
         <legend id="options-export-format-legend">Export Format</legend>
@@ -76,7 +63,7 @@
       </fieldset>
 
       <fieldset>
-        <legend id="options-filename-legend">Default Filename Options</legend>
+        <legend id="options-filename-legend">Filename Options</legend>
 
         <label id="options-export-prefix-label"
           for="options-export-prefix">
@@ -119,11 +106,11 @@
         <tbody>
           <tr>
             <td>
-              <kbd id="shortcut-back"></kbd>
+              <kbd id="shortcut-back">Backspace/<br/>Delete</kbd>
             </td>
             <td>
               <div id="shortcut-back-label">
-                Activates Back button (e.g. use <- or Delete key on macOS).
+                Activates Back button.
               </div>
             </td>
           </tr>

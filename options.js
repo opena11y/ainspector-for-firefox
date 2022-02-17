@@ -75,7 +75,7 @@ function setFormLabels () {
   const optionsNoDelayLabel          = document.querySelector('#options-no-delay-label');
   const optionsPromptForDelayLabel   = document.querySelector('#options-prompt-for-delay-label');
 
-  const optionsEvaluationHeading     = document.querySelector('#options-evaluation-heading');
+//  const optionsEvaluationHeading     = document.querySelector('#options-evaluation-heading');
 //  const optionsRulesetLegend         = document.querySelector('#options-ruleset-legend');
 //  const optionsRulesetStrictLabel    = document.querySelector('#options-ruleset-strict-label');
 //  const optionsRulesetTransLabel     = document.querySelector('#options-ruleset-trans-label');
@@ -111,7 +111,7 @@ function setFormLabels () {
   optionsNoDelayLabel.textContent          = msg.optionsNoDelayLabel;
   optionsPromptForDelayLabel.textContent   = msg.optionsPromptForDelayLabel;
 
-  optionsEvaluationHeading.textContent     = msg.optionsEvaluationHeading;
+//  optionsEvaluationHeading.textContent     = msg.optionsEvaluationHeading;
 //  optionsRulesetLegend.textContent         = msg.optionsRulesetLegend;
 //  optionsRulesetStrictLabel.textContent    = msg.optionsRulesetStrictLabel;
 //  optionsRulesetTransLabel.textContent     = msg.optionsRulesetTransLabel;
@@ -187,7 +187,7 @@ function updateForm (options) {
   exportPrefix.value     = options.filenamePrefix;
   exportDate.checked     = options.includeDate;
 
-  shortcutBackKbd.textContent      = options.shortcutBack;
+//  shortcutBackKbd.textContent      = options.shortcutBack;
   shortcutCopyTextbox.value        = options.shortcutCopy;
   shortcutExportTextbox.value      = options.shortcutExport;
   shortcutRerunTextbox.value       = options.shortcutRerun;
