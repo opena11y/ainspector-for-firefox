@@ -19,7 +19,7 @@ table.rule {
   display: block;
   border: 1px solid #aaa;
   overflow-y: auto;
-  height: 40vh;
+  height: 30vh;
 }
 
 table.summary {
