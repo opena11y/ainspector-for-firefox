@@ -170,10 +170,6 @@ export default class ResultElementInfo extends HTMLElement {
 
   }
 
-  resize (size) {
-    this.resultElemInfoSect.style.height = size + 'px';
-  }
-
   focus () {
     this.resultElemInfoSect.focus();
   }

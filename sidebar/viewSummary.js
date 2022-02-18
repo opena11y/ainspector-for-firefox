@@ -120,10 +120,6 @@ export default class ViewSummary {
     return this.json;
   }
 
-  resize (size) {
-    return false;
-  }
-
   set disabled (value) {
       this.rcResultGrid.disabled = value;
       this.glResultGrid.disabled = value;

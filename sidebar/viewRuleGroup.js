@@ -119,15 +119,6 @@ export default class ViewRuleGroup {
     return this.json;
   }
 
-  resize (size) {
-    const adjustment = 100;
-    const ruleSummaryHeight = this.resultSummary.offsetHeight;
-    const h = (size - ruleSummaryHeight - adjustment) / 2;
-
-    this.ruleResultGrid.resize(h);
-    this.resultRuleInfo.resize(h);
-  }
-
   getResultStyle (result) {
     let style = 'not-applicable';
 

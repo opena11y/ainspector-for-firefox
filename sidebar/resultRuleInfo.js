@@ -103,10 +103,6 @@ export default class ResultRuleInfo extends HTMLElement {
 
   }
 
-  resize (size) {
-    this.resultRuleInfoSect.style.height = size + 'px';
-  }
-
   focus () {
     this.resultRuleInfoSect.focus();
   }

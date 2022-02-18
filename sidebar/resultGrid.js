@@ -41,12 +41,6 @@ export default class ResultGrid extends HTMLElement {
     this.activationDisabled = false;
   }
 
-  resize (size) {
-    const headHeight = this.thead.offsetHeight;
-    const h = size - headHeight;
-    this.tbody.style.height = h + 'px';
-  }
-
   set disabled (value) {
     this.activationDisabled = value;
   }

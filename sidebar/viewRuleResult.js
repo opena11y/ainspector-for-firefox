@@ -93,15 +93,6 @@ export default class ViewRuleResult {
     return this.json;
   }
 
-  resize (mainHeight) {
-    const adjustment = 126;
-    const highlightHeight = this.highlightSelect.offsetHeight;
-    const h = (mainHeight - highlightHeight - adjustment) / 2;
-
-    this.elementResultGrid.resize(h);
-    this.resultElementInfo.resize(h);
-  }
-
   initGrid () {
     this.elementResultGrid.addHeaderCell(msg.elementLabel, 'element-info');
     this.elementResultGrid.addHeaderCell(msg.resultLabel, 'result');
