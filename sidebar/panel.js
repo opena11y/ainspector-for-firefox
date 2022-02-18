@@ -481,9 +481,9 @@ function enableButtons() {
 */
 
 function resizeView () {
-  const  minMainHeight = 650;
+  const  minContainerHeight = 650;
   const containerDiv = document.querySelector('#container');
-  containerDiv.style.height = Math.max(minMainHeight, window.innerHeight) + 'px';
+  containerDiv.style.height = Math.max(minContainerHeight, window.innerHeight) + 'px';
 }
 
 /*
