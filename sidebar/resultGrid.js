@@ -160,12 +160,12 @@ export default class ResultGrid extends HTMLElement {
   }
 
   // This grid only supports one row of headers
-  addHeaderCell (txt, style, title, isSortable) {
+  addHeaderCell (txt, cName, title, isSortable) {
     let th = document.createElement('th');
     th.tabIndex = -1;
     th.textContent = txt;
-    if (style) {
-      th.className = style;
+    if (cName) {
+      th.className = cName;
     }
     if (title) {
       th.title = title;
@@ -213,7 +213,7 @@ export default class ResultGrid extends HTMLElement {
     return tr;
   }
 
-  addDataCell (row, txt, accName, style, sortValue) {
+  addDataCell (row, txt, accName, cName, sortValue) {
     let span1, span2;
     let td = document.createElement('td');
     td.tabIndex = -1;
@@ -233,8 +233,8 @@ export default class ResultGrid extends HTMLElement {
       td.textContent = txt;
     }
 
-    if (style) {
-      td.className = style;
+    if (cName) {
+      td.className = cName;
     }
     if (sortValue) {
       td.setAttribute('data-sort-value', sortValue);
@@ -245,14 +245,14 @@ export default class ResultGrid extends HTMLElement {
     return td;
   }
 
-  updateDataCell (row, pos, txt, name, style, sortValue) {
+  updateDataCell (row, pos, txt, name, cName, sortValue) {
     let cell = this.getCellByPosition(row, pos);
     cell.textContent = txt;
     if (name) {
       cell.setAttribute('aria-label', name);
     }
-    if (style) {
-      cell.className = style;
+    if (cName) {
+      cell.className = cName;
     }
     if (sortValue) {
       cell.attribute('data-sort-value', sortValue);

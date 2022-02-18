@@ -11,7 +11,6 @@
 
 table {
   width: 100%;
-  cell-spacing: 0;
   border-collapse: collapse;
 }
 
@@ -24,14 +23,16 @@ table tbody tr {
 
 table.group tbody,
 table.rule tbody {
-  display: block;
-  height: 200px;
-  overflow-y: scroll;
+  /* display: block; */
+  /* height: 200px; */
+  /* overflow-y: scroll; */
 }
 
 table.group,
 table.rule {
   border: 1px solid #aaa;
+  overflow-y: scroll;
+  height: 220px;
 }
 
 table.summary {
