@@ -7,9 +7,8 @@ body {
   width:  100%;
 }
 
-div.container {
+#container {
   position: relative;
-  min-height: 900px;
 }
 
 header {

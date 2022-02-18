@@ -153,7 +153,7 @@ function callbackUpdateHighlight(position) {
 */
 function initControls () {
 
-  // window.addEventListener('resize', resizeView);
+  window.addEventListener('resize', resizeView);
 
   document.body.addEventListener('keydown', onShortcutsKeydown);
 
@@ -449,7 +449,7 @@ function showView (id) {
       view.classList.remove('show');
     }
   }
-//  resizeView();
+resizeView();
 }
 
 function updateBackButton () {
@@ -484,30 +484,9 @@ function enableButtons() {
 */
 
 function resizeView () {
-  let  minMainHeight = 650;
-
-  if (sidebarView === 'summary') {
-    minMainHeight = minMainHeight - 160;
-  }
-
-  const height = window.innerHeight;
-  const width = window.innerWidth;
-
-  const footer = document.querySelector('footer');
-  const header = document.querySelector('header');
-
-  const headerHeight = document.querySelector('header').offsetHeight;
-  // The adjustment of 14 is to remove the horizontal scrollbar when the window is beyond the miniu
-  const footerHeight = footer.offsetHeight + 14;
-  const mainHeight   = Math.max((height - headerHeight - footerHeight), minMainHeight);
-
-  const footerTop = headerHeight + mainHeight;
-  footer.style.top   = footerTop + 'px';
-
-  vSummary.resize(mainHeight);
-  vRuleGroup.resize(mainHeight);
-  vRuleResult.resize(mainHeight);
-
+  const  minMainHeight = 650;
+  const containerDiv = document.querySelector('#container');
+  containerDiv.style.height = Math.max(minMainHeight, window.innerHeight) + 'px';
 }
 
 /*
@@ -661,7 +640,7 @@ window.addEventListener ("load", function (e) {
   browser.tabs.onUpdated.addListener(handleTabUpdated, { properties: ["status"] });
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.windows.onFocusChanged.addListener(handleWindowFocusChanged);
-  // resizeView();
+  resizeView();
 });
 
 /*
