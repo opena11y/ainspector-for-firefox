@@ -30,6 +30,7 @@ table.rule tbody {
 
 table.group,
 table.rule {
+  display: block;
   border: 1px solid #aaa;
   overflow-y: scroll;
   height: 220px;
