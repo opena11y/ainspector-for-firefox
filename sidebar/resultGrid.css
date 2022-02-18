@@ -19,7 +19,8 @@ table.rule {
   display: block;
   border: 1px solid #aaa;
   overflow-y: auto;
-  height: 30vh;
+  height: 35vh;
+  min-height: 150px;
 }
 
 table.summary {

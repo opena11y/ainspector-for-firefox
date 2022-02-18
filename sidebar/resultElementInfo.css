@@ -16,8 +16,9 @@
   display: block;
   left:  2px;
   right:  2px;
-  height: 30vh;
-  overflow: scroll;
+  overflow: auto;
+  height: 25vh;
+  min-height: 150px;
   user-select: text;
 }
 

@@ -446,7 +446,7 @@ function showView (id) {
       view.classList.remove('show');
     }
   }
-resizeView();
+  resizeView();
 }
 
 function updateBackButton () {
@@ -481,7 +481,7 @@ function enableButtons() {
 */
 
 function resizeView () {
-  const  minContainerHeight = 650;
+  const minContainerHeight = 650;
   const containerDiv = document.querySelector('#container');
   containerDiv.style.height = Math.max(minContainerHeight, window.innerHeight) + 'px';
 }
