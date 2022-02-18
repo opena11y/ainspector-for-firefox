@@ -449,7 +449,7 @@ function showView (id) {
       view.classList.remove('show');
     }
   }
-  resizeView();
+//  resizeView();
 }
 
 function updateBackButton () {

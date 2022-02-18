@@ -15,8 +15,8 @@
   display: block;
   left:  2px;
   right:  2px;
-  height: 300px;
-  overflow: scroll;
+  height: 40vh;
+  overflow: auto;
   user-select:  text;
 }
 

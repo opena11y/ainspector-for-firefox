@@ -7,6 +7,11 @@ body {
   width:  100%;
 }
 
+div.container {
+  position: relative;
+  min-height: 900px;
+}
+
 header {
   margin: 0;
   margin-bottom: 1px;
@@ -90,6 +95,7 @@ footer {
   padding: 0.25em;
   padding-bottom: 1em;
   position: absolute;
+  bottom: 0;
   width: 100%;
   user-select: text;
 }
