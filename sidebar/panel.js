@@ -153,7 +153,7 @@ function callbackUpdateHighlight(position) {
 */
 function initControls () {
 
-  window.addEventListener('resize', resizeView);
+  // window.addEventListener('resize', resizeView);
 
   document.body.addEventListener('keydown', onShortcutsKeydown);
 
@@ -661,7 +661,7 @@ window.addEventListener ("load", function (e) {
   browser.tabs.onUpdated.addListener(handleTabUpdated, { properties: ["status"] });
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.windows.onFocusChanged.addListener(handleWindowFocusChanged);
-  resizeView();
+  // resizeView();
 });
 
 /*

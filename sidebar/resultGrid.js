@@ -3,7 +3,7 @@
 const template = document.createElement('template');
 template.innerHTML = `
   <section aria-labelledby="grid-label">
-    <table role="grid" class="result-grid">
+    <table role="grid">
       <thead>
         <tr></tr>
       </head>

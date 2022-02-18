@@ -18,8 +18,8 @@ table.group,
 table.rule {
   display: block;
   border: 1px solid #aaa;
-  overflow-y: scroll;
-  height: 220px;
+  overflow-y: auto;
+  height: 40vh;
 }
 
 table.summary {
