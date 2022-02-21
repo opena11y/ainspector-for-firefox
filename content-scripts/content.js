@@ -2,6 +2,12 @@
 *   content.js
 */
 
+var sidebarViews = {
+  summary : 'summary',
+  ruleResults: 'rule-results',
+  elementResults: 'element-results'
+};
+
 /*
 **  Connect to panel.js script and set up listener/handler
 */
@@ -40,17 +46,17 @@ function getEvaluationInfo(panelPort) {
   info.ruleset  = rulesetId;
 
   switch(view) {
-    case 'summary':
+    case sidebarViews.summary:
       highlightModule.removeHighlight(document);
       info.infoSummary = getSummaryInfo();
       break;
 
-    case 'rule-group':
+    case sidebarViews.ruleResults:
       highlightModule.removeHighlight(document);
       info.infoRuleGroup = getRuleGroupInfo(groupType, groupId);
       break;
 
-    case 'rule-result':
+    case sidebarViews.elementResults:
       if (highlightOnly) {
         info.infoHighlight = highlightElements(highlight, position);
       } else {
