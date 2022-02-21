@@ -19,8 +19,8 @@ export const defaultOptions = {
   exportFormat: 'CSV',  // other option is JSON
   filenamePrefix: 'ainspector',
   filenameSummary: 'summary{date}{time}',
-  filenameRuleGroup: 'rule-group-{group}{date}{time}',
-  filenameRuleResult: 'rule-result-{rule}{date}{time}',
+  filenameRuleGroup: 'rule-results-{group}{date}{time}',
+  filenameRuleResult: 'element-results-{rule}{date}{time}',
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,

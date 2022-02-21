@@ -72,12 +72,21 @@ var myWindowId;
 var logInfo = false;
 var debug = false;
 
-// Instantiate view classes with corresponding callbacks
-var vSummary = new ViewSummary('summary', onSummaryRowActivation);
-var vRuleGroup = new ViewRuleGroup('rule-group', onRuleGroupRowActivation);
-var vRuleResult = new ViewRuleResult('rule-result', onUpdateHighlight);
+// The sidebarViews object is used to both identify a view and
+// the ID of the associated DIV element that contains the rendered
+// content of the view
+const sidebarViews = {
+  summary : 'summary',
+  ruleResults: 'rule-results',
+  elementResults: 'element-results'
+};
 
-var sidebarView      = 'summary';  // other options 'group' or 'rule'
+// Instantiate view classes with corresponding callbacks
+var vSummary = new ViewSummary(sidebarViews.summary, onSummaryRowActivation);
+var vRuleGroup = new ViewRuleGroup(sidebarViews.ruleResults, onRuleGroupRowActivation);
+var vRuleResult = new ViewRuleResult(sidebarViews.elementResults, onUpdateHighlight);
+
+var sidebarView      = sidebarViews.summary;
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
@@ -110,14 +119,14 @@ function addSidebarLabels () {
 // Callback functions used by views for activation or selection of rows
 
 function onSummaryRowActivation (id) {
-  sidebarView      = 'rule-group';
+  sidebarView      = sidebarViews.ruleResults;
   sidebarGroupType = id.substring(0,2);
   sidebarGroupId   = parseInt(id.substring(2));
   runContentScripts('onSummaryRowActivation');
 }
 
 function onRuleGroupRowActivation (id) {
-  sidebarView   = 'rule-result';
+  sidebarView   = sidebarViews.elementResults;
   sidebarRuleId = id;
   runContentScripts('onRuleGroupRowActivation');
 }
@@ -125,11 +134,11 @@ function onRuleGroupRowActivation (id) {
 function onViewsMenuActivation(id) {
   if (id && id.length) {
     if (id === 'summary') {
-      sidebarView = 'summary';
+      sidebarView = sidebarViews.summary;
     }
 
     if (id === 'all-rules') {
-      sidebarView = 'rule-group';
+      sidebarView = sidebarViews.ruleResults;
       if (sidebarGroupType === 'rc') {
         sidebarGroupId = 0x0FFF;  // All rules id for rule categories
       } else {
@@ -140,7 +149,7 @@ function onViewsMenuActivation(id) {
     if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
       const groupType = id.substring(0, 2);
       const groupId = parseInt(id.substring(2));
-      sidebarView = 'rule-group';
+      sidebarView = sidebarViews.ruleResults;
       sidebarGroupType = groupType;
       sidebarGroupId   = groupId;
     }
@@ -209,11 +218,11 @@ function onError (error) {
 
 function shortcutCopy () {
   switch (sidebarView) {
-    case 'rule-group':
+    case sidebarViews.ruleResults:
       vRuleGroup.copyButton.click();
       break;
 
-    case 'rule-result':
+    case sidebarViews.elementResults:
       vRuleResult.elemCopyButton.click();
       break;
 
@@ -281,12 +290,12 @@ function onShortcutsKeydown (event) {
 function onBackButton() {
 
   switch (sidebarView) {
-    case 'rule-group':
-      sidebarView = 'summary';
+    case sidebarViews.ruleResults:
+      sidebarView = sidebarViews.summary;
       break;
 
-    case 'rule-result':
-      sidebarView = 'rule-group';
+    case sidebarViews.elementResults:
+      sidebarView = sidebarViews.ruleResults;
       break;
 
     default:
@@ -307,17 +316,17 @@ function onExportClick () {
     if (options.exportFormat === 'CSV') {
       switch (sidebarView) {
 
-        case 'summary':
+        case sidebarViews.summary:
           fname = options.filenameSummary;
           csv = vSummary.toCSV(options, pageTitle, pageLocation);
           break;
 
-        case 'rule-group':
+        case sidebarViews.ruleResults:
           fname = options.filenameRuleGroup;
           csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
           break;
 
-        case 'rule-result':
+        case sidebarViews.elementResults:
           fname = options.filenameRuleResult;
           csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
           break;
@@ -333,18 +342,18 @@ function onExportClick () {
 
       switch (sidebarView) {
 
-        case 'summary':
-          fname = getExportFileName(options.filenameSummary, options);
+        case sidebarViews.summary:
+          fname = options.filenameSummary;
           json = vSummary.toJSON();
           break;
 
-        case 'rule-group':
-          fname = getExportFileName(options.filenameRuleGroup, options);
+        case sidebarViews.ruleResults:
+          fname = options.filenameRuleGroup;
           json = vRuleGroup.toJSON();
           break;
 
-        case 'rule-result':
-          fname = getExportFileName(options.filenameRuleResult, options);
+        case sidebarViews.elementResults:
+          fname = options.filenameRuleResult;
           json = vRuleResult.toJSON();
           break;
 
@@ -352,9 +361,8 @@ function onExportClick () {
           break;
       }
       if (fname && json) {
-        download(fname, json, 'JSON');
-      } else {
-        alert('JSON is not available for this view.')
+        fname = getExportFileName(fname, options, sidebarGroupType, sidebarGroupId, sidebarRuleId);
+        download(fname, json);
       }
     }
   });
@@ -425,10 +433,10 @@ function handleWindowFocusChanged (windowId) {
 
 function showView (id) {
   // Get an array of DIV elements that contain view
-  const sidebarViews = document.querySelectorAll('main .view');
+  const views = document.querySelectorAll('main .view');
 
-  for (let i = 0; i < sidebarViews.length; i++) {
-    let view = sidebarViews[i];
+  for (let i = 0; i < views.length; i++) {
+    let view = views[i];
     if (view.id === id) {
       view.classList.add('show');
     } else {
@@ -440,7 +448,7 @@ function showView (id) {
 
 function updateBackButton () {
 
-  if (sidebarView === 'summary') {
+  if (sidebarView === sidebarViews.summary) {
     backButton.disabled = true;
   } else {
     backButton.disabled = false;
