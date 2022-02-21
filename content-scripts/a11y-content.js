@@ -63509,8 +63509,9 @@ var highlightModule = highlightModule || {
 /*
 *   content.js
 */
-
-var sidebarViews = {
+// viewId is a copy of viewId constant in
+// panel.js
+var viewId = {
   summary : 'summary',
   ruleResults: 'rule-results',
   elementResults: 'element-results'
@@ -63554,17 +63555,17 @@ function getEvaluationInfo(panelPort) {
   info.ruleset  = rulesetId;
 
   switch(view) {
-    case sidebarViews.summary:
+    case viewId.summary:
       highlightModule.removeHighlight(document);
       info.infoSummary = getSummaryInfo();
       break;
 
-    case sidebarViews.ruleResults:
+    case viewId.ruleResults:
       highlightModule.removeHighlight(document);
       info.infoRuleGroup = getRuleGroupInfo(groupType, groupId);
       break;
 
-    case sidebarViews.elementResults:
+    case viewId.elementResults:
       if (highlightOnly) {
         info.infoHighlight = highlightElements(highlight, position);
       } else {
