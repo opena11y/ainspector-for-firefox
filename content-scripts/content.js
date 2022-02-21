@@ -1,7 +1,8 @@
 /*
 *   content.js
 */
-
+// sidebarViews is a copy of sidebarViews constant in
+// panel.js
 var sidebarViews = {
   summary : 'summary',
   ruleResults: 'rule-results',
