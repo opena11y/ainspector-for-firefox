@@ -72,7 +72,7 @@ var myWindowId;
 var logInfo = false;
 var debug = false;
 
-// The sidebarViews object is used to both identify a view and
+// The viewId object is used to both identify a view and
 // the ID of the associated DIV element that contains the rendered
 // content of the view
 const viewId = {
