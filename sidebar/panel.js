@@ -1,19 +1,22 @@
 /* panel.js  */
 
-import { getOptions } from '../storage.js';
+import { getOptions }        from '../storage.js';
 import { getExportFileName } from './commonCSV.js';
 
-import ViewSummary     from './viewSummary.js';
-import ViewRuleGroup   from './viewRuleGroup.js';
-import ViewRuleResult  from './viewRuleResult.js';
+// Classes for manipulating views
+import ViewSummary           from './viewSummary.js';
+import ViewRuleGroup         from './viewRuleGroup.js';
+import ViewRuleResult        from './viewRuleResult.js';
 
-import ResultSummary     from './resultSummary.js';
-import ResultTablist     from './resultTablist.js';
-import ResultGrid        from './resultGrid.js';
-import ElementSummary    from './elementSummary.js';
-import ResultElementInfo from './resultElementInfo.js';
-import ResultRuleInfo    from './resultRuleInfo.js';
+// Custom elements for views
+import ResultSummary         from './resultSummary.js';
+import ResultTablist         from './resultTablist.js';
+import ResultGrid            from './resultGrid.js';
+import ElementSummary        from './elementSummary.js';
+import ResultElementInfo     from './resultElementInfo.js';
+import ResultRuleInfo        from './resultRuleInfo.js';
 
+// Custom elements for controls
 import HighlightSelect       from './highlightSelect.js';
 import ViewsMenuButton       from './viewsMenuButton.js';
 import RerunEvaluationButton from './rerunEvaluationButton.js';
@@ -47,27 +50,32 @@ const msg = {
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
 
+// Initialize custom elements
 var viewsMenuButton = document.querySelector('views-menu-button');
-viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
+viewsMenuButton.setActivationCallback(onViewsMenuActivation);
 
 var exportButton = document.querySelector('export-button');
 exportButton.setActivationCallback(onExportClick);
 
 var rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
-rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
+rerunEvaluationButton.setActivationCallback(onRerunEvaluation);
 
-var backButton;
-var preferencesButton;
+// Initialize HTML buttons
+var backButton = document.getElementById('back-button');
+backButton.addEventListener('click', onBackButton);
+
+var preferencesButton = document.getElementById('preferences-button');
+preferencesButton.addEventListener('click', onPreferencesClick);
 
 var contentPort;
 var myWindowId;
 var logInfo = false;
 var debug = false;
 
-var vSummary;
-var vRuleGroup;
-var vRuleResult;
-var views;
+// Instantiate view classes with corresponding callbacks
+var vSummary = new ViewSummary('summary', onSummaryRowActivation);
+var vRuleGroup = new ViewRuleGroup('rule-group', onRuleGroupRowActivation);
+var vRuleResult = new ViewRuleResult('rule-result', onUpdateHighlight);
 
 var sidebarView      = 'summary';  // other options 'group' or 'rule'
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
@@ -79,7 +87,7 @@ var sidebarHighlightOnly   = false;
 var pageTitle = '';
 var pageLocation = '';
 
-function addLabelsAndHelpContent () {
+function addSidebarLabels () {
   let elem;
   // Header titles and labels
   elem = document.getElementById('view-title');
@@ -101,20 +109,20 @@ function addLabelsAndHelpContent () {
 
 // Callback functions used by views for activation or selection of rows
 
-function callbackSummaryRowActivation (id) {
+function onSummaryRowActivation (id) {
   sidebarView      = 'rule-group';
   sidebarGroupType = id.substring(0,2);
   sidebarGroupId   = parseInt(id.substring(2));
-  runContentScripts('handleSummaryRowClick');
+  runContentScripts('onSummaryRowActivation');
 }
 
-function callbackRuleGroupRowActivation (id) {
+function onRuleGroupRowActivation (id) {
   sidebarView   = 'rule-result';
   sidebarRuleId = id;
-  runContentScripts('callbackSummaryRowActivation');
+  runContentScripts('onRuleGroupRowActivation');
 }
 
-function callbackViewsMenuActivation(id) {
+function onViewsMenuActivation(id) {
   if (id && id.length) {
     if (id === 'summary') {
       sidebarView = 'summary';
@@ -136,40 +144,18 @@ function callbackViewsMenuActivation(id) {
       sidebarGroupType = groupType;
       sidebarGroupId   = groupId;
     }
-    runContentScripts('callbackViewsMenuActivation');
+    runContentScripts('onViewsMenuActivation');
   }
 }
 
-function callbackRerunEvaluation() {
-  runContentScripts('callbackRerunEvaluation');
+function onRerunEvaluation() {
+  runContentScripts('onRerunEvaluation');
 }
 
-function callbackUpdateHighlight(position) {
+function onUpdateHighlight(position) {
   sidebarHighlightOnly = true;
   sidebarElementPosition = position;
-  runContentScripts('callbackUpdateHighlight');
-}
-
-/*
-** Initialize controls and views on the page
-*/
-function initControls () {
-
-  window.addEventListener('resize', resizeView);
-
-  document.body.addEventListener('keydown', onShortcutsKeydown);
-
-  backButton = document.getElementById('back-button');
-  backButton.addEventListener('click', onBackButton);
-
-  preferencesButton = document.getElementById('preferences-button');
-  preferencesButton.addEventListener('click', onPreferencesClick);
-
-  vSummary    = new ViewSummary('summary', callbackSummaryRowActivation);
-  vRuleGroup  = new ViewRuleGroup('rule-group', callbackRuleGroupRowActivation);
-  vRuleResult = new ViewRuleResult('rule-result', callbackUpdateHighlight);
-
-  showView(sidebarView);
+  runContentScripts('onUpdateHighlight');
 }
 
 /*
@@ -193,13 +179,19 @@ function portMessageHandler (message) {
 }
 
 /*
-*   When the sidebar loads, store the ID of the current window; update sidebar
-*   labels and help content, and run content scripts to establish connection.
+*   When the sidebar loads:
+*   1. Store the ID of the current window
+*   2. Initialize sidebar labels
+*   3. Add event listeners for 'resize' and 'keydown'
+*   4. Call showView with default value
+*   5. Run content scripts to establish connection and populate views
 */
 browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
   myWindowId = windowInfo.id;
-  addLabelsAndHelpContent();
-  initControls();
+  addSidebarLabels();
+  window.addEventListener('resize', resizeView);
+  document.body.addEventListener('keydown', onShortcutsKeydown);
+  showView(sidebarView);
   runContentScripts('windows.getCurrent');
 });
 
@@ -229,7 +221,6 @@ function shortcutCopy () {
       break;
   }
 }
-
 
 function onShortcutsKeydown (event) {
   let flag = false;
