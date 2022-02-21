@@ -47,6 +47,18 @@ const msg = {
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
 
+var viewsMenuButton = document.querySelector('views-menu-button');
+viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
+
+var exportButton = document.querySelector('export-button');
+exportButton.setActivationCallback(onExportClick);
+
+var rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
+rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
+
+var backButton;
+var preferencesButton;
+
 var contentPort;
 var myWindowId;
 var logInfo = false;
@@ -57,7 +69,6 @@ var vRuleGroup;
 var vRuleResult;
 var views;
 
-var sidebarViews;  // Array of elements containing the sidebar views
 var sidebarView      = 'summary';  // other options 'group' or 'rule'
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
@@ -67,12 +78,6 @@ var sidebarHighlightOnly   = false;
 
 var pageTitle = '';
 var pageLocation = '';
-
-var backButton;
-var viewsMenuButton;
-var preferencesButton;
-var exportButton;
-var rerunEvaluationButton;
 
 function addLabelsAndHelpContent () {
   let elem;
@@ -146,7 +151,7 @@ function callbackUpdateHighlight(position) {
 }
 
 /*
-** Initilize controls and views on the page
+** Initialize controls and views on the page
 */
 function initControls () {
 
@@ -157,23 +162,13 @@ function initControls () {
   backButton = document.getElementById('back-button');
   backButton.addEventListener('click', onBackButton);
 
-  viewsMenuButton = document.querySelector('views-menu-button');
-  viewsMenuButton.setActivationCallback(callbackViewsMenuActivation);
-
   preferencesButton = document.getElementById('preferences-button');
   preferencesButton.addEventListener('click', onPreferencesClick);
-
-  exportButton = document.querySelector('export-button');
-  exportButton.setActivationCallback(onExportClick);
-
-  rerunEvaluationButton = document.querySelector('rerun-evaluation-button');
-  rerunEvaluationButton.setActivationCallback(callbackRerunEvaluation);
 
   vSummary    = new ViewSummary('summary', callbackSummaryRowActivation);
   vRuleGroup  = new ViewRuleGroup('rule-group', callbackRuleGroupRowActivation);
   vRuleResult = new ViewRuleResult('rule-result', callbackUpdateHighlight);
 
-  sidebarViews = document.querySelectorAll('main .view');
   showView(sidebarView);
 }
 
@@ -438,6 +433,9 @@ function handleWindowFocusChanged (windowId) {
 */
 
 function showView (id) {
+  // Get an array of DIV elements that contain view
+  const sidebarViews = document.querySelectorAll('main .view');
+
   for (let i = 0; i < sidebarViews.length; i++) {
     let view = sidebarViews[i];
     if (view.id === id) {
