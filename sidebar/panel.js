@@ -86,7 +86,7 @@ var vSummary = new ViewSummary(viewId.summary, onSummaryRowActivation);
 var vRuleGroup = new ViewRuleGroup(viewId.ruleResults, onRuleGroupRowActivation);
 var vRuleResult = new ViewRuleResult(viewId.elementResults, onUpdateHighlight);
 
-var sidebarView      = viewId.summary;
+var sidebarView      = viewId.summary;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
@@ -433,10 +433,9 @@ function handleWindowFocusChanged (windowId) {
 
 function showView (id) {
   // Get an array of DIV elements that contain view
-  const views = document.querySelectorAll('main .view');
+  const viewContainers = document.querySelectorAll('main .view');
 
-  for (let i = 0; i < views.length; i++) {
-    let view = views[i];
+  for (const view of viewContainers) {
     if (view.id === id) {
       view.classList.add('show');
     } else {
