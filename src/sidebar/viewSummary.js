@@ -62,8 +62,8 @@ export default class ViewSummary {
 
     this.containerDiv   = document.getElementById(id);
 
-    this.resultSummary = document.createElement('result-summary');
-    this.containerDiv.appendChild(this.resultSummary);
+    this.ruleSummary = document.createElement('rule-summary');
+    this.containerDiv.appendChild(this.ruleSummary);
 
     this.resultTablist = document.createElement('result-tablist');
     this.containerDiv.appendChild(this.resultTablist);
@@ -114,7 +114,7 @@ export default class ViewSummary {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewSummaryCSV(this.resultSummary, this.rcResults, this.glResults, this.allRuleResults);
+    let viewCSV = new ViewSummaryCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -242,10 +242,10 @@ export default class ViewSummary {
     this.rcResultGrid.enable();
     this.glResultGrid.enable();
 
-    this.resultSummary.violations   = infoSummary.violations;
-    this.resultSummary.warnings     = infoSummary.warnings;
-    this.resultSummary.manualChecks = infoSummary.manual_checks;
-    this.resultSummary.passed       = infoSummary.passed;
+    this.ruleSummary.violations   = infoSummary.violations;
+    this.ruleSummary.warnings     = infoSummary.warnings;
+    this.ruleSummary.manualChecks = infoSummary.manual_checks;
+    this.ruleSummary.passed       = infoSummary.passed;
 
     this.json = infoSummary.json;
 
@@ -278,7 +278,7 @@ export default class ViewSummary {
   }
 
   clear () {
-    this.resultSummary.clear();
+    this.ruleSummary.clear();
 
     this.rcResultGrid.disable();
     ruleCategoryIds.forEach( (id) => {

@@ -43,10 +43,10 @@ const msg = {
 };
 
 export default class ViewSummaryCSV extends commonCSV {
-  constructor(resultSummary, rcResults, glResults, ruleResults) {
+  constructor(ruleSummary, rcResults, glResults, ruleResults) {
     super();
 
-    this.resultSummary = resultSummary;
+    this.ruleSummary = ruleSummary;
     this.rcResults     = rcResults;
     this.glResults     = glResults;
     this.ruleResults   = ruleResults;
@@ -62,7 +62,7 @@ export default class ViewSummaryCSV extends commonCSV {
     let csv = super.getCSV(options, title, location);
 
     csv += `\n"","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
-    csv += this.getRow(msg.allRulesLabel, this.resultSummary);
+    csv += this.getRow(msg.allRulesLabel, this.ruleSummary);
 
 
     csv += `\n"${msg.ruleCategoryLabel}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
@@ -71,7 +71,7 @@ export default class ViewSummaryCSV extends commonCSV {
       r = this.rcResults[i];
       csv += this.getRow(msg[getRuleCategoryLabelId(r.id)], r);
     }
-    csv += this.getRow(msg.allRulesLabel,this.resultSummary);
+    csv += this.getRow(msg.allRulesLabel,this.ruleSummary);
 
     csv += `\n\n"${msg.guidelineLabel}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
 
@@ -79,7 +79,7 @@ export default class ViewSummaryCSV extends commonCSV {
       r = this.glResults[i];
       csv += this.getRow(msg[getGuidelineLabelId(r.id).replaceAll('.','_')], r);
     }
-    csv += this.getRow(msg.allRulesLabel,this.resultSummary);
+    csv += this.getRow(msg.allRulesLabel,this.ruleSummary);
 
     csv += this.getRuleResultsCSV(options, msg.allRulesLabel, this.ruleResults, true, true);
 

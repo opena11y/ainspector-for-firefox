@@ -35,7 +35,7 @@ template.innerHTML = `
     </table>
 `;
 
-export default class ResultSummary extends HTMLElement {
+export default class RuleSummary extends HTMLElement {
   constructor () {
     super();
     this.attachShadow({ mode: 'open' });
