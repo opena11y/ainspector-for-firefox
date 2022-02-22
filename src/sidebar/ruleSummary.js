@@ -18,7 +18,7 @@ template.innerHTML = `
     <table aria-label="Summary of rule results">
       <thead>
         <tr>
-          <th id="violations-label" aria-label="Violaions">V</th>
+          <th id="violations-label" aria-label="Violations">V</th>
           <th id="warnings-label" aria-label="Warnings">W</th>
           <th id="manual-checks-label" aria-label="Manual Checks">MC</th>
           <th id="passed-label" aria-label="Passed">P</th>
