@@ -54,17 +54,19 @@ const msg = {
 // The summary view for AInspector WCAG
 
 export default class ViewSummary {
+  // The id is a reference to a DIV element used as the contaner
+  // for the summary view content
   constructor (id, handleRowActivation) {
 
     this.handleRowActivation = handleRowActivation;
 
-    this.summaryNode   = document.getElementById(id);
+    this.containerDiv   = document.getElementById(id);
 
     this.resultSummary = document.createElement('result-summary');
-    this.summaryNode.appendChild(this.resultSummary);
+    this.containerDiv.appendChild(this.resultSummary);
 
     this.resultTablist = document.createElement('result-tablist');
-    this.summaryNode.appendChild(this.resultTablist);
+    this.containerDiv.appendChild(this.resultTablist);
 
     // Rule Category tabpanel
     // create grid for rule category results

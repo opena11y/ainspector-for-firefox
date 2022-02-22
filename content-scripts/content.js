@@ -54,7 +54,7 @@ function getEvaluationInfo(panelPort) {
 
     case viewId.ruleResults:
       highlightModule.removeHighlight(document);
-      info.infoRuleGroup = getRuleGroupInfo(groupType, groupId);
+      info.infoRuleResults = getRuleResultsInfo(groupType, groupId);
       break;
 
     case viewId.elementResults:
@@ -62,7 +62,7 @@ function getEvaluationInfo(panelPort) {
         info.infoHighlight = highlightElements(highlight, position);
       } else {
         highlightModule.removeHighlight(document);
-        info.infoRuleResult = getRuleResultInfo(ruleId, highlight, position);
+        info.infoElementResults = getElementResultsInfo(ruleId, highlight, position);
         highlightElements(highlight, position);
       }
       break;

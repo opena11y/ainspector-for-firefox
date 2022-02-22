@@ -1,4 +1,4 @@
-/* viewRuleResultCSV.js */
+/* viewElementResultsCSV.js */
 
 import { cleanCSVItem, commonCSV } from './commonCSV.js';
 
@@ -9,7 +9,7 @@ const getMessage = browser.i18n.getMessage;
 const msg = {
   elementResultsLabel : getMessage('elementResultsLabel')
 };
-export default class ViewRuleResultCSV extends commonCSV{
+export default class ViewElementResultsCSV extends commonCSV{
   constructor(detailsAction, elementResults) {
     super();
     this.detailsAction = detailsAction;

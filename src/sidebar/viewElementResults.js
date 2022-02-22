@@ -1,7 +1,7 @@
-/* viewRuleResult.js */
+/* viewElementResults.js */
 
 import { getOptions } from '../storage.js';
-import ViewRuleResultCSV  from './viewRuleResultCSV.js';
+import ViewElementResultsCSV  from './viewElementResultsCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -23,31 +23,33 @@ const msg = {
   warningLabel         : getMessage('warningLabel')
 };
 
-export default class ViewRuleResult {
+export default class ViewElementResults {
+  // The id is a reference to a DIV element used as the contaner
+  // for the element results view content
   constructor(id, handleRowSelection) {
 
     this.handleRowSelection = handleRowSelection;
 
-    this.ruleResultDiv = document.getElementById(id);
+    this.containerDiv = document.getElementById(id);
     this.elementSummary = document.createElement('element-summary');
-    this.ruleResultDiv.appendChild(this.elementSummary);
+    this.containerDiv.appendChild(this.elementSummary);
 
     // Add heading for the element result details
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
     h2.textContent = msg.elementGridLabel;
-    this.ruleResultDiv.appendChild(h2);
+    this.containerDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
     this.elementResultGrid.addClassNameToTable('rule');
     this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
-    this.ruleResultDiv.appendChild(this.elementResultGrid);
+    this.containerDiv.appendChild(this.elementResultGrid);
 
     // Create container DIV with heading for element information
     const middleSectionDiv = document.createElement('div');
     middleSectionDiv.className = 'middle-section';
-    this.ruleResultDiv.appendChild(middleSectionDiv);
+    this.containerDiv.appendChild(middleSectionDiv);
 
     // Add highlight select box
     this.highlightSelect = document.createElement('highlight-select');
@@ -67,7 +69,7 @@ export default class ViewRuleResult {
     elemInfoHeaderDiv.appendChild(h2);
 
     this.resultElementInfo = document.createElement('result-element-info');
-    this.ruleResultDiv.appendChild(this.resultElementInfo);
+    this.containerDiv.appendChild(this.resultElementInfo);
 
     // Add copy element result details button
     this.elemCopyButton = document.createElement('copy-button');
@@ -85,7 +87,7 @@ export default class ViewRuleResult {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultCSV(this.detailsAction, this.elementResults);
+    let viewCSV = new ViewElementResultsCSV(this.detailsAction, this.elementResults);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -156,7 +158,7 @@ export default class ViewRuleResult {
     return accName;
   }
 
-  update (infoRuleResult) {
+  update (infoElementResults) {
     let i, id, pos, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
@@ -164,21 +166,21 @@ export default class ViewRuleResult {
 
     this.elementsResults = {};
 
-    this.elementSummary.violations   = infoRuleResult.violations;
-    this.elementSummary.warnings     = infoRuleResult.warnings;
-    this.elementSummary.manualChecks = infoRuleResult.manual_checks;
-    this.elementSummary.passed       = infoRuleResult.passed;
-    this.elementSummary.hidden       = infoRuleResult.hidden;
+    this.elementSummary.violations   = infoElementResults.violations;
+    this.elementSummary.warnings     = infoElementResults.warnings;
+    this.elementSummary.manualChecks = infoElementResults.manual_checks;
+    this.elementSummary.passed       = infoElementResults.passed;
+    this.elementSummary.hidden       = infoElementResults.hidden;
 
-    this.json = infoRuleResult.json;
+    this.json = infoElementResults.json;
 
-    this.detailsAction = infoRuleResult.detailsAction;
+    this.detailsAction = infoElementResults.detailsAction;
 
     this.elementResultGrid.deleteDataRows();
 
     getOptions().then( (options) => {
-      for (i = 0; i < infoRuleResult.elementResults.length; i += 1) {
-        er = infoRuleResult.elementResults[i];
+      for (i = 0; i < infoElementResults.elementResults.length; i += 1) {
+        er = infoElementResults.elementResults[i];
 
         // check to exclude pass and not applicable rules
         if (options.resultsIncludePassNa ||
@@ -246,7 +248,7 @@ export default class ViewRuleResult {
         id = this.elementResultGrid.setSelectedRowUsingLastId();
         this.resultElementInfo.update(this.elementResults[id]);
       } else {
-        if (infoRuleResult.elementResults.length === 0) {
+        if (infoElementResults.elementResults.length === 0) {
           label = msg.noResultsMsg;
         } else {
           label = msg.noViolationsWarningsMCResultsMsg;

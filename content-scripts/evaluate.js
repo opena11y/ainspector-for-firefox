@@ -114,7 +114,7 @@ function getSummaryInfo () {
 
   info.allRuleResults = [];
   for(let i = 0; i < ruleResults.length; i++) {
-    info.allRuleResults.push(getRuleGroupItem(ruleResults[i]));
+    info.allRuleResults.push(getRuleResultsItem(ruleResults[i]));
   }
   return info;
 }
@@ -123,7 +123,7 @@ function getSummaryInfo () {
 // Rule Group Result functions
 // ----------------------
 
-function getRuleGroupItem(ruleResult) {
+function getRuleResultsItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
   let rule = ruleResult.getRule();
@@ -153,11 +153,11 @@ function getRuleGroupItem(ruleResult) {
 }
 
 /*
-*   getRuleGroupInfo
+*   getRuleResultsInfo
 *   (1) Run evlauation library;
 *   (2) return result objec for the group view in the sidebar;
 */
-function getRuleGroupInfo (groupType, groupId) {
+function getRuleResultsInfo (groupType, groupId) {
 
   let info = {};
 
@@ -188,7 +188,7 @@ function getRuleGroupInfo (groupType, groupId) {
   info.json = ruleGroupResult.toJSON('');
 
   for(let i = 0; i < ruleResults.length; i++) {
-    info.ruleResults.push(getRuleGroupItem(ruleResults[i]));
+    info.ruleResults.push(getRuleResultsItem(ruleResults[i]));
   }
   return info;
 }
@@ -197,7 +197,7 @@ function getRuleGroupInfo (groupType, groupId) {
 // Rule Result functions
 // ----------------------
 
-function getResultInfo(ruleResult) {
+function getRuleResultInfo(ruleResult) {
 
   let rule   = ruleResult.getRule()
 
@@ -266,12 +266,12 @@ function getElementResultInfo(ruleResult) {
 }
 
 /*
-*   getRuleResultInfo
+*   getElementResultsInfo
 *   (1) Run evlauation library;
 *   (2) return result objec for the rule view in the sidebar;
 */
 
-function getRuleResultInfo(ruleId, highlight, position) {
+function getElementResultsInfo(ruleId, highlight, position) {
 
   const evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
   const ruleResult = evaluationResult.getRuleResult(ruleId);
@@ -292,7 +292,7 @@ function getRuleResultInfo(ruleId, highlight, position) {
   info.hidden         = elemSummaryResult.hidden;
 
   info.detailsAction  = getDetailsAction(ruleResult);
-  info.ruleResult     = getResultInfo(ruleResult);
+  info.ruleResult     = getRuleResultInfo(ruleResult);
   info.elementResults = getElementResultInfo(ruleResult);
 
   // get JSON with element result details
