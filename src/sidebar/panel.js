@@ -322,12 +322,12 @@ function onExportClick () {
           break;
 
         case viewId.ruleResults:
-          fname = options.filenameRuleGroup;
+          fname = options.filenameRuleResults;
           csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
           break;
 
         case viewId.elementResults:
-          fname = options.filenameRuleResult;
+          fname = options.filenameElementResults;
           csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
           break;
 
@@ -348,12 +348,12 @@ function onExportClick () {
           break;
 
         case viewId.ruleResults:
-          fname = options.filenameRuleGroup;
+          fname = options.filenameRuleResults;
           json = vRuleGroup.toJSON();
           break;
 
         case viewId.elementResults:
-          fname = options.filenameRuleResult;
+          fname = options.filenameElementResults;
           json = vRuleResult.toJSON();
           break;
 
