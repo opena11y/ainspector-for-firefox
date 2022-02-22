@@ -10,4 +10,4 @@ content-scripts/highlight.js \
 content-scripts/content.js > src/content-script.js
 
 echo "... Creating ainspector extension ..."
-web-ext build -s src -a dist --overwrite-dest
+web-ext build -s src -a releases --overwrite-dest
