@@ -1,7 +1,7 @@
-/* viewRuleGroup.js */
+/* viewRuleResults.js */
 import { getResultSortingValue, getSCSortingValue, getLevelSortingValue, getRequiredSortingValue } from './sortUtils.js';
 import { getOptions } from '../storage.js';
-import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
+import ViewRuleResultsCSV  from './viewRuleResultsCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -29,33 +29,35 @@ const msg = {
   warningLabel          : getMessage('warningLabel')
 };
 
-export default class ViewRuleGroup {
+export default class ViewRuleResults {
+  // The id is a reference to a DIV element used as the contaner
+  // for the rule results view content
   constructor(id, handleRowActivation) {
 
     this.handleRowActivation = handleRowActivation;
 
-    this.ruleGroupDiv = document.getElementById(id);
+    this.containerDiv = document.getElementById(id);
     this.resultSummary = document.createElement('result-summary');
-    this.ruleGroupDiv.appendChild(this.resultSummary);
+    this.containerDiv.appendChild(this.resultSummary);
 
     // Add heading for the rule result details
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
     h2.textContent = msg.ruleResultsGridLabel;
-    this.ruleGroupDiv.appendChild(h2);
+    this.containerDiv.appendChild(h2);
 
 
     this.ruleResultGrid = document.createElement('result-grid');
     this.ruleResultGrid.setRowActivationEventHandler(handleRowActivation);
     this.ruleResultGrid.setRowSelectionEventHandler(this.handleRowSelection.bind(this));
     this.ruleResultGrid.addClassNameToTable('group');
-    this.ruleGroupDiv.appendChild(this.ruleResultGrid);
+    this.containerDiv.appendChild(this.ruleResultGrid);
 
     // Create container DIV with heading for rule information
     const div = document.createElement('div');
     div.className = 'rule-info';
-    this.ruleGroupDiv.appendChild(div);
+    this.containerDiv.appendChild(div);
 
     const middleSectionDiv = document.createElement('div');
     middleSectionDiv.className = 'middle-section';
@@ -111,7 +113,7 @@ export default class ViewRuleGroup {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleGroupCSV(this.groupType, this.groupTitle, this.ruleResults, this.detailsActions, this.isAllRules);
+    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.detailsActions, this.isAllRules);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -167,31 +169,31 @@ export default class ViewRuleGroup {
     return accName;
   }
 
-  update (infoRuleGroup) {
+  update (infoRuleResults) {
     let i, rr, row, style, value, sortValue, rowAccName, cellAccName, label;
     let count = 0;
 
     this.ruleResultGrid.enable();
     this.detailsActions = {};
 
-    this.resultSummary.violations   = infoRuleGroup.violations;
-    this.resultSummary.warnings     = infoRuleGroup.warnings;
-    this.resultSummary.manualChecks = infoRuleGroup.manual_checks;
-    this.resultSummary.passed       = infoRuleGroup.passed;
+    this.resultSummary.violations   = infoRuleResults.violations;
+    this.resultSummary.warnings     = infoRuleResults.warnings;
+    this.resultSummary.manualChecks = infoRuleResults.manual_checks;
+    this.resultSummary.passed       = infoRuleResults.passed;
 
-    this.json = infoRuleGroup.json;
+    this.json = infoRuleResults.json;
 
     this.ruleResultGrid.deleteDataRows();
 
-    this.groupTitle = infoRuleGroup.groupLabel;
-    this.ruleResults = infoRuleGroup.ruleResults;
+    this.groupTitle = infoRuleResults.groupLabel;
+    this.ruleResults = infoRuleResults.ruleResults;
 
-    this.groupType = infoRuleGroup.groupType;
-    this.isAllRules = infoRuleGroup.ruleResults.length > 60;
+    this.groupType = infoRuleResults.groupType;
+    this.isAllRules = infoRuleResults.ruleResults.length > 60;
 
     getOptions().then( (options) => {
-      for (i = 0; i < infoRuleGroup.ruleResults.length; i += 1) {
-        rr = infoRuleGroup.ruleResults[i];
+      for (i = 0; i < infoRuleResults.ruleResults.length; i += 1) {
+        rr = infoRuleResults.ruleResults[i];
 
         // check to exclude pass and not applicable rules
         if (options.resultsIncludePassNa ||
@@ -249,7 +251,7 @@ export default class ViewRuleGroup {
           this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
         }
       } else {
-        if (infoRuleGroup.ruleResults.length === 0) {
+        if (infoRuleResults.ruleResults.length === 0) {
           label = msg.noResultsMsg;
         } else {
           label = msg.noViolationsWarningsMCResultsMsg;

@@ -5,8 +5,8 @@ import { getExportFileName } from './commonCSV.js';
 
 // Classes for manipulating views
 import ViewSummary           from './viewSummary.js';
-import ViewRuleGroup         from './viewRuleGroup.js';
-import ViewRuleResult        from './viewRuleResult.js';
+import ViewRuleResults       from './viewRuleResults.js';
+import ViewElementResults    from './viewElementResults.js';
 
 // Custom elements for views
 import ResultSummary         from './resultSummary.js';
@@ -83,8 +83,8 @@ const viewId = {
 
 // Instantiate view classes with corresponding callbacks
 var vSummary = new ViewSummary(viewId.summary, onSummaryRowActivation);
-var vRuleGroup = new ViewRuleGroup(viewId.ruleResults, onRuleGroupRowActivation);
-var vRuleResult = new ViewRuleResult(viewId.elementResults, onUpdateHighlight);
+var vRuleResults = new ViewRuleResults(viewId.ruleResults, onRuleResultsRowActivation);
+var vElementResults = new ViewElementResults(viewId.elementResults, onUpdateHighlight);
 
 var sidebarView      = viewId.summary;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
@@ -125,10 +125,10 @@ function onSummaryRowActivation (id) {
   runContentScripts('onSummaryRowActivation');
 }
 
-function onRuleGroupRowActivation (id) {
+function onRuleResultsRowActivation (id) {
   sidebarView   = viewId.elementResults;
   sidebarRuleId = id;
-  runContentScripts('onRuleGroupRowActivation');
+  runContentScripts('onRuleResultsRowActivation');
 }
 
 function onViewsMenuActivation(id) {
@@ -219,11 +219,11 @@ function onError (error) {
 function shortcutCopy () {
   switch (sidebarView) {
     case viewId.ruleResults:
-      vRuleGroup.copyButton.click();
+      vRuleResults.copyButton.click();
       break;
 
     case viewId.elementResults:
-      vRuleResult.elemCopyButton.click();
+      vElementResults.elemCopyButton.click();
       break;
 
     default:
@@ -322,13 +322,13 @@ function onExportClick () {
           break;
 
         case viewId.ruleResults:
-          fname = options.filenameRuleGroup;
-          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation);
+          fname = options.filenameRuleResults;
+          csv = vRuleResults.toCSV(options, pageTitle, pageLocation);
           break;
 
         case viewId.elementResults:
-          fname = options.filenameRuleResult;
-          csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
+          fname = options.filenameElementResults;
+          csv = vElementResults.toCSV(options, pageTitle, pageLocation);
           break;
 
         default:
@@ -348,13 +348,13 @@ function onExportClick () {
           break;
 
         case viewId.ruleResults:
-          fname = options.filenameRuleGroup;
-          json = vRuleGroup.toJSON();
+          fname = options.filenameRuleResults;
+          json = vRuleResults.toJSON();
           break;
 
         case viewId.elementResults:
-          fname = options.filenameRuleResult;
-          json = vRuleResult.toJSON();
+          fname = options.filenameElementResults;
+          json = vElementResults.toJSON();
           break;
 
         default:
@@ -509,17 +509,17 @@ function updateSidebar (info) {
       enableButtons();
     }
     else {
-      if (typeof info.infoRuleGroup === 'object') {
-        viewTitle.textContent = info.infoRuleGroup.groupLabel;
+      if (typeof info.infoRuleResults === 'object') {
+        viewTitle.textContent = info.infoRuleResults.groupLabel;
         viewTitle.title = '';
-        vRuleGroup.update(info.infoRuleGroup);
+        vRuleResults.update(info.infoRuleResults);
         enableButtons();
       }
       else {
-        if (info.infoRuleResult) {
-          viewTitle.textContent = info.infoRuleResult.title;
-          viewTitle.title = info.infoRuleResult.title;
-          vRuleResult.update(info.infoRuleResult);
+        if (info.infoElementResults) {
+          viewTitle.textContent = info.infoElementResults.title;
+          viewTitle.title = info.infoElementResults.title;
+          vElementResults.update(info.infoElementResults);
           enableButtons();
         }
         else {
@@ -527,8 +527,8 @@ function updateSidebar (info) {
             enableButtons();
           } else {
             vSummary.clear();
-            vRuleGroup.clear();
-            vRuleResult.clear();
+            vRuleResults.clear();
+            vElementResults.clear();
             disableButtons();
           }
         }
@@ -541,19 +541,19 @@ function updateSidebar (info) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;
       vSummary.clear(info);
-      vRuleGroup.clear(info);
-      vRuleResult.clear(info);
+      vRuleResults.clear(info);
+      vElementResults.clear(info);
     } else {
       if (parts.length == 2) {
         infoLocation.textContent = parts[0];
         infoTitle.textContent = parts[1];
         vSummary.clear(parts[0], parts[1]);
-        vRuleGroup.clear(parts[0], parts[1]);
-        vRuleResult.clear(parts[0], parts[1]);
+        vRuleResults.clear(parts[0], parts[1]);
+        vElementResults.clear(parts[0], parts[1]);
       } else {
         vSummary.clear();
-        vRuleGroup.clear();
-        vRuleResult.clear();
+        vRuleResults.clear();
+        vElementResults.clear();
       }
     }
     disableButtons();
@@ -590,7 +590,7 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../content-scripts/a11y-content.js' })
+        browser.tabs.executeScript({ file: '../content-script.js' })
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
         });

@@ -1,9 +1,9 @@
-/* viewRuleGroupCSV.js */
+/* viewRuleResultsCSV.js */
 
 import { commonCSV } from './commonCSV.js';
 import { getOptions } from '../storage.js';
 
-export default class ViewRuleGroupCSV extends commonCSV {
+export default class ViewRuleResultsCSV extends commonCSV {
   constructor(groupType, groupTitle, ruleResults, ruleDetails, isAllRules) {
     super();
     this.groupType   = groupType;

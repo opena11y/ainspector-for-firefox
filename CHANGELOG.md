@@ -11,7 +11,7 @@
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 
-## Version 2.0 — 2/15/22
+## Version 2.0 — 2/21/22
 
 * Renamed extension from "AInspector WCAG" to "AInspector", since most people just call it AInspector
 * Rewrote the entire code base to use web components for creating user interface controls
@@ -33,3 +33,4 @@
 * Improved keyboard focus styling indicator to supprt high contrast modes
 * Copy button provides temporal feedback if copy was successful
 * The header section with the title, back and view buttons is now sticky, so always visible as browser height changes
+* Reorganized the code repository to create "dist" and "src" directories
