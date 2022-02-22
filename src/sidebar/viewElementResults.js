@@ -164,7 +164,7 @@ export default class ViewElementResults {
 
     this.elementResultGrid.enable();
 
-    this.elementsResults = {};
+    this.elementResults = {};
 
     this.elementSummary.violations   = infoElementResults.violations;
     this.elementSummary.warnings     = infoElementResults.warnings;
