@@ -590,7 +590,7 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
         browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../content-scripts/a11y-content.js' })
+        browser.tabs.executeScript({ file: '../scripts/a11y-content.js' })
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
         });
