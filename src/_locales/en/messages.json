@@ -782,6 +782,11 @@
     "description": "Page URL label for CSV export."
   },
 
+  "csvRuleTotals": {
+    "message": "Rule Totals",
+    "description": "Used in rule results for CSV export for labeling summary results."
+  },
+
   "csvRuleset": {
     "message": "Ruleset:",
     "description": "Ruleset label for CSV export."

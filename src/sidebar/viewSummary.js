@@ -143,7 +143,7 @@ export default class ViewSummary {
   }
 
   onDetailsButtonClick (event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     let rowId = '';
 
     if (tgt.id) {

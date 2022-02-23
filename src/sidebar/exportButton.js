@@ -352,12 +352,12 @@ export default class ExportButton extends HTMLElement {
   }
 
   onFocus (event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     tgt.parentNode.classList.add('focus');
   }
 
   onBlur (event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     tgt.parentNode.classList.remove('focus');
   }
 

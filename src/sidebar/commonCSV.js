@@ -10,6 +10,7 @@ const getName    = browser.runtime.getManifest().name;
 const getVersion = browser.runtime.getManifest().version;
 
 const msg = {
+  allRulesLabel             : getMessage('allRulesLabel'),
   csvDate                   : getMessage('csvDate'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
@@ -84,13 +85,24 @@ export class commonCSV {
     return csv;
   }
 
-  getRuleResultsCSV (options, title, ruleResults, incRC=false, incGL=false) {
+  getGroupTitle (title) {
+    return this.arrayToCSV([msg.csvGroupTitle, title], 1);
+  }
+
+  getRuleSummaryRowHeaders (label) {
+    return `\n"${label}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
+  }
+
+  getRuleSummaryRow (label, result) {
+    return `"${label}","${result.violations}","${result.warnings}","${result.manual_checks}","${result.passed}"\n`;
+  }
+
+  getRuleResultsCSV (options, ruleResults, incRC=false, incGL=false) {
     const props = [];
     let csv = '\n';
 
     ruleResults = sortRuleResults(ruleResults);
 
-    csv += this.arrayToCSV([msg.csvGroupTitle, title], 2);
     props.push(msg.csvRuleId);
     props.push(msg.csvRuleSummary);
     props.push(msg.resultLabel);
@@ -109,7 +121,6 @@ export class commonCSV {
     props.push(msg.manualChecksLabel);
     props.push(msg.passedLabel);
     props.push(msg.hiddenLabel);
-
     csv += this.arrayToCSV(props);
 
     for (let i = 0; i < ruleResults.length; i += 1) {

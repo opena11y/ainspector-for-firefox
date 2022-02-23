@@ -39,6 +39,9 @@ export default class ResultGrid extends HTMLElement {
 
     this.lastSelectedRowId = '';
     this.activationDisabled = false;
+
+    // reference to associated details button
+    this.detailsButton = null
   }
 
   set disabled (value) {
@@ -475,8 +478,12 @@ export default class ResultGrid extends HTMLElement {
 
   // event handlers
 
+  onFocus (event) {
+    const tgt = event.currentTarget;
+  }
+
   onRowClick (event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     this.setSelectedRow(tgt);
     tgt.focus();
     this.tryHandleRowSelection(tgt.id);
@@ -486,7 +493,7 @@ export default class ResultGrid extends HTMLElement {
   }
 
   onRowDoubleClick (event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     tgt.focus();
     this.setSelectedRow(tgt);
     this.tryHandleRowActivation(tgt.id);
@@ -499,7 +506,7 @@ export default class ResultGrid extends HTMLElement {
     let nextItem = null;
     let flag = false;
 
-    let tgt = event.target;
+    const tgt = event.target;
     let rowPos = this.getRowCurrentPosition(tgt);
 
     switch(event.key) {
@@ -549,8 +556,8 @@ export default class ResultGrid extends HTMLElement {
     let nextRow = null;
     let flag = false;
 
-    let tgt   = event.target;
-    let tgtTr = tgt.parentNode;
+    const tgt   = event.target;
+    const tgtTr = tgt.parentNode;
 
     let colPos = this.getCellCurrentPosition(tgtTr, tgt);
     let rowPos = this.getRowCurrentPosition(tgtTr);

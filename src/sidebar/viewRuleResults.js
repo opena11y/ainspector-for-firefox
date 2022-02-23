@@ -113,7 +113,7 @@ export default class ViewRuleResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.detailsActions, this.isAllRules);
+    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.isAllRules);
     return viewCSV.getCSV(options, title, location);
   }
 
