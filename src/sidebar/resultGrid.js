@@ -159,7 +159,8 @@ export default class ResultGrid extends HTMLElement {
   // This grid only supports one row of headers
   addHeaderCell (txt, cName, title, isSortable) {
     let th = document.createElement('th');
-    th.tabIndex = -1;
+//    Do not make TH elements focusable until sorting function is implemented
+//    th.tabIndex = -1;
     th.textContent = txt;
     if (cName) {
       th.className = cName;
@@ -176,8 +177,10 @@ export default class ResultGrid extends HTMLElement {
       th.classList.add('sortable');
     }
     this.theadTr.appendChild(th);
-    this.theadTr.addEventListener('keydown', this.onRowKeydown.bind(this));
-    th.addEventListener('keydown', this.onCellKeydown.bind(this));
+//    Do not make TR and TH elements respond to keyboard events,
+//    until sorting function is implemented
+//    this.theadTr.addEventListener('keydown', this.onRowKeydown.bind(this));
+//    th.addEventListener('keydown', this.onCellKeydown.bind(this));
     return th;
   }
 
@@ -406,7 +409,7 @@ export default class ResultGrid extends HTMLElement {
       n = node.parentNode;
     }
     if (n) {
-      let trs = this.table.querySelectorAll('tr');
+      let trs = this.tbody.querySelectorAll('tr');
       if (flag) {
         this.lastSelectedRowId = n.id;
       }
@@ -426,7 +429,7 @@ export default class ResultGrid extends HTMLElement {
   setSelectedRowUsingLastId () {
     let tr, id = this.lastSelectedRowId;
     if (id) {
-      tr = this.table.querySelector('tr[id=' + id + ']')
+      tr = this.tbody.querySelector('tr[id=' + id + ']')
     }
     if (!tr) {
       tr = this.tbody.querySelector('tr[id]');
@@ -524,8 +527,10 @@ export default class ResultGrid extends HTMLElement {
         break;
 
       case 'ArrowUp':
-        nextItem = this.getRowByPosition(rowPos-1);
-        this.tryHandleRowSelection(nextItem.id);
+        if (rowPos > 2) {
+          nextItem = this.getRowByPosition(rowPos-1);
+          this.tryHandleRowSelection(nextItem.id);
+        }
         flag = true;
         break;
 
@@ -580,7 +585,7 @@ export default class ResultGrid extends HTMLElement {
         break;
 
       case 'ArrowUp':
-        if (rowPos && colPos) {
+        if ((rowPos > 2) && colPos) {
           nextRow = this.getRowByPosition(rowPos-1)
           nextItem = this.getCellByPosition(nextRow, colPos);
           this.tryHandleRowSelection(nextRow.id);
