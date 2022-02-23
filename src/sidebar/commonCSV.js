@@ -39,6 +39,7 @@ const msg = {
   ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
   ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel          : getMessage('rulePurposeLabel'),
+  ruleScopeLabel            : getMessage('ruleScopeLabel'),
   ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
   ruleTargetLabel           : getMessage('ruleTargetLabel'),
   viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
@@ -104,6 +105,7 @@ export class commonCSV {
     ruleResults = sortRuleResults(ruleResults);
 
     props.push(msg.csvRuleId);
+    props.push(msg.ruleScopeLabel);
     props.push(msg.csvRuleSummary);
     props.push(msg.resultLabel);
     props.push(msg.csvResultValue);
@@ -129,6 +131,7 @@ export class commonCSV {
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
         values.push(rr.ruleId.replace('_', ' '));
+        values.push(rr.scope);
         values.push(rr.summary);
         values.push(rr.result);
         values.push(rr.resultValue);
@@ -191,6 +194,7 @@ export class commonCSV {
     csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
     csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
     csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
+    csv += this.contentCSV(msg.ruleScopeLabel,        ruleInfo.scope);
     csv += this.contentCSV(msg.ruleActionLabel,       ruleInfo.action);
     csv += this.contentCSV(msg.rulePurposeLabel,      ruleInfo.purpose);
     csv += this.contentCSV(msg.ruleTechniquesLabel,   ruleInfo.techniques);

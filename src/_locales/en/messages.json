@@ -404,6 +404,11 @@
     "description": "Summary section label for rule information"
   },
 
+  "ruleScopeLabel": {
+    "message": "Rule Scope",
+    "description": "Rule Scope section label for rule information"
+  },
+
   "ruleDefinitionLabel": {
     "message": "Definition",
     "description": "Definition section label for rule information"
