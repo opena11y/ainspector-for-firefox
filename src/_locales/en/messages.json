@@ -797,6 +797,11 @@
     "description": "Used in rule results for CSV export for labeling summary results."
   },
 
+  "csvNumberOfElementsWith": {
+    "message": "Number of elements with",
+    "description": "Used in element results for CSV export for labeling summary results."
+  },
+
   "csvRuleset": {
     "message": "Ruleset:",
     "description": "Ruleset label for CSV export."

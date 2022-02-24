@@ -12,6 +12,7 @@ const getVersion = browser.runtime.getManifest().version;
 const msg = {
   allRulesLabel             : getMessage('allRulesLabel'),
   csvDate                   : getMessage('csvDate'),
+  csvNumberOfElementsWith   : getMessage('csvNumberOfElementsWith'),
   csvNumberOfRuleWith       : getMessage('csvNumberOfRuleWith'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
@@ -94,6 +95,17 @@ export class commonCSV {
     return this.arrayToCSV([msg.csvGroupTitle, title]);
   }
 
+  getElementSummary (result) {
+    let csv = '';
+    csv += this.arrayToCSV([msg.csvNumberOfElementsWith]);
+    csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
+    csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
+    csv += this.arrayToCSV([msg.manualChecksLabel, result.manual_checks]);
+    csv += this.arrayToCSV([msg.passedLabel, result.passed]);
+    csv += this.arrayToCSV([msg.hiddenLabel, result.hidden], 2);
+    return csv;;
+  }
+
   getRuleSummary (result) {
     let csv = '';
     csv += this.arrayToCSV([msg.csvNumberOfRuleWith]);
@@ -132,10 +144,10 @@ export class commonCSV {
     ruleResults = sortRuleResults(ruleResults);
 
     props.push(msg.csvRuleId);
-    props.push(msg.ruleScopeLabel);
     props.push(msg.csvRuleSummary);
     props.push(msg.resultLabel);
     props.push(msg.csvResultValue);
+    props.push(msg.ruleScopeLabel);
     if (incRC) {
       props.push(msg.ruleCategoryLabel);
     }
@@ -158,10 +170,10 @@ export class commonCSV {
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
         values.push(rr.ruleId.replace('_', ' '));
-        values.push(rr.scope);
         values.push(rr.summary);
         values.push(rr.result);
         values.push(rr.resultValue);
+        values.push(rr.scope);
         if (incRC) {
           values.push(rr.ruleCategory);
         }

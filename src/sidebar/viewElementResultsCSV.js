@@ -10,10 +10,11 @@ const msg = {
   elementResultsLabel : getMessage('elementResultsLabel')
 };
 export default class ViewElementResultsCSV extends commonCSV{
-  constructor(detailsAction, elementResults) {
+  constructor(detailsAction, elementResults, elementSummary) {
     super();
     this.detailsAction = detailsAction;
     this.elementResults = elementResults;
+    this.elementSummary = elementSummary;
   }
 
   // Not all element information objects
@@ -172,6 +173,8 @@ export default class ViewElementResultsCSV extends commonCSV{
     let ariaAttrProps    = this.getARIAAttributeProps();
 
     let csv = super.getCSV(options, title, location);
+
+    csv += this.getElementSummary(this.elementSummary);
 
     csv += this.getDetailsActionCSV(this.detailsAction);
 
