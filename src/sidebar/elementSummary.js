@@ -123,6 +123,7 @@ export default class ElementSummary extends HTMLElement {
   get hidden () {
     return this.hiddenTd.textContent;
   }
+
   clear () {
     this.violationsTd.textContent   = '-';
     this.violationsTd.title         = '';

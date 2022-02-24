@@ -174,9 +174,8 @@ export default class ViewElementResultsCSV extends commonCSV{
 
     let csv = super.getCSV(options, title, location);
 
+//    csv += this.getDetailsActionCSV(this.detailsAction);
     csv += this.getElementSummary(this.elementSummary);
-
-    csv += this.getDetailsActionCSV(this.detailsAction);
 
     csv += this.arrayToCSV([msg.elementResultsLabel]);
 
