@@ -37,8 +37,8 @@ export default class ViewRuleResults {
     this.handleRowActivation = handleRowActivation;
 
     this.containerDiv = document.getElementById(id);
-    this.resultSummary = document.createElement('result-summary');
-    this.containerDiv.appendChild(this.resultSummary);
+    this.ruleSummary = document.createElement('rule-summary');
+    this.containerDiv.appendChild(this.ruleSummary);
 
     // Add heading for the rule result details
     let h2 = document.createElement('h2');
@@ -113,7 +113,7 @@ export default class ViewRuleResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.detailsActions, this.isAllRules);
+    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.isAllRules);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -176,10 +176,10 @@ export default class ViewRuleResults {
     this.ruleResultGrid.enable();
     this.detailsActions = {};
 
-    this.resultSummary.violations   = infoRuleResults.violations;
-    this.resultSummary.warnings     = infoRuleResults.warnings;
-    this.resultSummary.manualChecks = infoRuleResults.manual_checks;
-    this.resultSummary.passed       = infoRuleResults.passed;
+    this.ruleSummary.violations   = infoRuleResults.violations;
+    this.ruleSummary.warnings     = infoRuleResults.warnings;
+    this.ruleSummary.manualChecks = infoRuleResults.manual_checks;
+    this.ruleSummary.passed       = infoRuleResults.passed;
 
     this.json = infoRuleResults.json;
 
@@ -270,7 +270,7 @@ export default class ViewRuleResults {
     this.groupTitle = '';
 
     this.ruleResultGrid.disable();
-    this.resultSummary.clear();
+    this.ruleSummary.clear();
     this.ruleResultGrid.deleteDataRows(message1, message2);
     this.resultRuleInfo.clear(message1, message2);
   }

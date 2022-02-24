@@ -9,6 +9,7 @@ const msg = {
   ruleDefinitionLabel : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel    : getMessage('rulePurposeLabel'),
   ruleSCLabel         : getMessage('ruleSCLabel'),
+  ruleScopeLabel      : getMessage('ruleScopeLabel'),
   ruleSelectedLabel   : getMessage('ruleSelectedLabel'),
   ruleSummaryLabel    : getMessage('ruleSummaryLabel'),
   ruleTargetLabel     : getMessage('ruleTargetLabel'),
@@ -28,6 +29,9 @@ template.innerHTML = `
 
         <h3  id="definition-label">Definition</h3>
         <div id="definition-content"></div>
+
+        <h3  id="scope-label">Action</h3>
+        <div id="scope-content"></div>
 
         <h3  id="action-label">Action</h3>
         <div id="action-content"></div>
@@ -70,6 +74,7 @@ export default class ResultRuleInfo extends HTMLElement {
     // Initialize headings
     this.setHeading('#summary-label',    msg.ruleSummaryLabel);
     this.setHeading('#definition-label', msg.ruleDefinitionLabel);
+    this.setHeading('#scope-label',      msg.ruleScopeLabel);
     this.setHeading('#action-label',     msg.ruleActionLabel);
     this.setHeading('#purpose-label',    msg.rulePurposeLabel);
     this.setHeading('#techniques-label', msg.ruleTechniquesLabel);
@@ -86,8 +91,9 @@ export default class ResultRuleInfo extends HTMLElement {
     this.message2Div    = this.shadowRoot.querySelector('#message2');
 
     this.infoDiv       = this.shadowRoot.querySelector('#info');
-    this.summaryDiv = this.shadowRoot.querySelector('#summary-content');
+    this.summaryDiv    = this.shadowRoot.querySelector('#summary-content');
     this.definitionDiv = this.shadowRoot.querySelector('#definition-content');
+    this.scopeDiv      = this.shadowRoot.querySelector('#scope-content');
     this.actionDiv     = this.shadowRoot.querySelector('#action-content');
     this.purposeDiv    = this.shadowRoot.querySelector('#purpose-content');
     this.techniquesDiv = this.shadowRoot.querySelector('#techniques-content');
@@ -192,6 +198,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.infoDiv.classList.remove('hide');
     this.renderContent(this.summaryDiv,    ruleInfo.summary);
     this.renderContent(this.definitionDiv, ruleInfo.definition);
+    this.renderContent(this.scopeDiv,      ruleInfo.scope);
     this.renderContent(this.actionDiv,     ruleInfo.action);
     this.renderContent(this.purposeDiv,    ruleInfo.purpose);
     this.renderContent(this.techniquesDiv, ruleInfo.techniques);
@@ -203,6 +210,7 @@ export default class ResultRuleInfo extends HTMLElement {
     this.copyText = ruleId + ruleInfo.summary + '\n\n';
     this.appendToCopyText(msg.ruleSummaryLabel,    ruleInfo.summary);
     this.appendToCopyText(msg.ruleDefinitionLabel, ruleInfo.definition);
+    this.appendToCopyText(msg.ruleScopeLabel,      ruleInfo.scope);
     this.appendToCopyText(msg.ruleActionLabel,     ruleInfo.action);
     this.appendToCopyText(msg.rulePurposeLabel,    ruleInfo.purpose);
     this.appendToCopyText(msg.ruleTechniquesLabel, ruleInfo.techniques, '* ');
@@ -226,8 +234,9 @@ export default class ResultRuleInfo extends HTMLElement {
       this.message2Div.textContent = message2;
     }
 
-    this.renderContent(this.summaryDiv, '');
+    this.renderContent(this.summaryDiv,    '');
     this.renderContent(this.definitionDiv, '');
+    this.renderContent(this.scopeDiv,      '');
     this.renderContent(this.actionDiv,     '');
     this.renderContent(this.purposeDiv,    '');
     this.renderContent(this.techniquesDiv, '');

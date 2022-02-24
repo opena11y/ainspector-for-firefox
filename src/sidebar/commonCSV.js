@@ -10,7 +10,10 @@ const getName    = browser.runtime.getManifest().name;
 const getVersion = browser.runtime.getManifest().version;
 
 const msg = {
+  allRulesLabel             : getMessage('allRulesLabel'),
   csvDate                   : getMessage('csvDate'),
+  csvNumberOfElementsWith   : getMessage('csvNumberOfElementsWith'),
+  csvNumberOfRuleWith       : getMessage('csvNumberOfRuleWith'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
   csvTime                   : getMessage('csvTime'),
@@ -38,6 +41,7 @@ const msg = {
   ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
   ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel          : getMessage('rulePurposeLabel'),
+  ruleScopeLabel            : getMessage('ruleScopeLabel'),
   ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
   ruleTargetLabel           : getMessage('ruleTargetLabel'),
   viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
@@ -77,24 +81,73 @@ export class commonCSV {
     let csv = '';
     csv += this.arrayToCSV([msg.csvPageTitle, title]);
     csv += this.arrayToCSV([msg.csvPageURL, location]);
-    csv += this.arrayToCSV([msg.csvRuleset, this.getRulesetTitle(options.rulesetId)]);
     csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
     csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
     csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);
     return csv;
   }
 
-  getRuleResultsCSV (options, title, ruleResults, incRC=false, incGL=false) {
+  getBlankRow () {
+    return '\n';
+  }
+
+  getGroupTitle (title) {
+    return this.arrayToCSV([msg.csvGroupTitle, title]);
+  }
+
+  getElementSummary (result) {
+    let csv = '';
+    csv += this.arrayToCSV([msg.csvNumberOfElementsWith]);
+    csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
+    csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
+    csv += this.arrayToCSV([msg.manualChecksLabel, result.manualChecks]);
+    csv += this.arrayToCSV([msg.passedLabel, result.passed]);
+    csv += this.arrayToCSV([msg.hiddenLabel, result.hidden], 2);
+    return csv;;
+  }
+
+  getRuleSummary (result) {
+    let csv = '';
+    csv += this.arrayToCSV([msg.csvNumberOfRuleWith]);
+    csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
+    csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
+    csv += this.arrayToCSV([msg.manualChecksLabel, result.manual_checks]);
+    csv += this.arrayToCSV([msg.passedLabel, result.passed], 2);
+    return csv;;
+  }
+
+  getRuleSummaryRowHeaders (label) {
+    const headers = [];
+    headers.push(label);
+    headers.push(msg.violationsLabel);
+    headers.push(msg.warningsLabel);
+    headers.push(msg.manualChecksLabel);
+    headers.push(msg.passedLabel);
+
+    return this.arrayToCSV(headers);
+  }
+
+  getRuleSummaryRow (label, result) {
+    const summ = [];
+    summ.push(label);
+    summ.push(result.violations);
+    summ.push(result.warnings);
+    summ.push(result.manual_checks);
+    summ.push(result.passed);
+    return this.arrayToCSV(summ);
+  }
+
+  getRuleResultsCSV (options, ruleResults, incRC=false, incGL=false) {
     const props = [];
     let csv = '\n';
 
     ruleResults = sortRuleResults(ruleResults);
 
-    csv += this.arrayToCSV([msg.csvGroupTitle, title], 2);
     props.push(msg.csvRuleId);
     props.push(msg.csvRuleSummary);
     props.push(msg.resultLabel);
     props.push(msg.csvResultValue);
+    props.push(msg.ruleScopeLabel);
     if (incRC) {
       props.push(msg.ruleCategoryLabel);
     }
@@ -109,7 +162,6 @@ export class commonCSV {
     props.push(msg.manualChecksLabel);
     props.push(msg.passedLabel);
     props.push(msg.hiddenLabel);
-
     csv += this.arrayToCSV(props);
 
     for (let i = 0; i < ruleResults.length; i += 1) {
@@ -121,6 +173,7 @@ export class commonCSV {
         values.push(rr.summary);
         values.push(rr.result);
         values.push(rr.resultValue);
+        values.push(rr.scope);
         if (incRC) {
           values.push(rr.ruleCategory);
         }
@@ -174,12 +227,21 @@ export class commonCSV {
     return csv;
   }
 
+  getRuleTitle (ruleInfo) {
+    let csv = '\n';
+    csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
+    csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
+    csv += this.contentCSV(msg.ruleScopeLabel,        ruleInfo.scope);
+    return csv;
+  }
+
   getDetailsActionCSV (ruleInfo) {
     let csv = '\n';
     csv += this.arrayToCSV([msg.detailsActionLabel]);
     csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
     csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
     csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
+    csv += this.contentCSV(msg.ruleScopeLabel,        ruleInfo.scope);
     csv += this.contentCSV(msg.ruleActionLabel,       ruleInfo.action);
     csv += this.contentCSV(msg.rulePurposeLabel,      ruleInfo.purpose);
     csv += this.contentCSV(msg.ruleTechniquesLabel,   ruleInfo.techniques);
@@ -290,15 +352,19 @@ export function getExportFileName (fname, options, groupType, groupId, ruleId) {
 }
 
 export function cleanCSVItem (item) {
-  if (!item) {
-    item = '';
+  if (typeof item === 'number') {
+    item = item.toString();
   } else {
-    if (typeof item !== 'string') {
-      if (typeof item.toString === 'function') {
-        item = item.toString();
-      } else {
-        item = ' ' + item;
-        item = item.substring(1);
+    if (!item) {
+      item = '';
+    } else {
+      if (typeof item !== 'string') {
+        if (typeof item.toString === 'function') {
+          item = item.toString();
+        } else {
+          item = ' ' + item;
+          item = item.substring(1);
+        }
       }
     }
   }

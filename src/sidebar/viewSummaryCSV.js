@@ -43,17 +43,13 @@ const msg = {
 };
 
 export default class ViewSummaryCSV extends commonCSV {
-  constructor(resultSummary, rcResults, glResults, ruleResults) {
+  constructor(ruleSummary, rcResults, glResults, ruleResults) {
     super();
 
-    this.resultSummary = resultSummary;
+    this.ruleSummary = ruleSummary;
     this.rcResults     = rcResults;
     this.glResults     = glResults;
     this.ruleResults   = ruleResults;
-  }
-
-  getRow (label, result) {
-    return `"${label}","${result.violations}","${result.warnings}","${result.manual_checks}","${result.passed}"\n`;
   }
 
   getCSV (options, title, location) {
@@ -61,27 +57,26 @@ export default class ViewSummaryCSV extends commonCSV {
 
     let csv = super.getCSV(options, title, location);
 
-    csv += `\n"","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
-    csv += this.getRow(msg.allRulesLabel, this.resultSummary);
+    csv += this.getRuleSummary(this.ruleSummary);
 
-
-    csv += `\n"${msg.ruleCategoryLabel}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
-
+    csv += this.getRuleSummaryRowHeaders(msg.ruleCategoryLabel);
     for (i = 0; i < this.rcResults.length; i += 1) {
       r = this.rcResults[i];
-      csv += this.getRow(msg[getRuleCategoryLabelId(r.id)], r);
+      csv += this.getRuleSummaryRow(msg[getRuleCategoryLabelId(r.id)], r);
     }
-    csv += this.getRow(msg.allRulesLabel,this.resultSummary);
+    csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
+    csv += this.getBlankRow();
 
-    csv += `\n\n"${msg.guidelineLabel}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
-
+    csv += this.getRuleSummaryRowHeaders(msg.guidelineLabel);
     for (i = 0; i < this.glResults.length; i += 1) {
       r = this.glResults[i];
-      csv += this.getRow(msg[getGuidelineLabelId(r.id).replaceAll('.','_')], r);
+      csv += this.getRuleSummaryRow(msg[getGuidelineLabelId(r.id).replaceAll('.','_')], r);
     }
-    csv += this.getRow(msg.allRulesLabel,this.resultSummary);
+    csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
+    csv += this.getBlankRow();
 
-    csv += this.getRuleResultsCSV(options, msg.allRulesLabel, this.ruleResults, true, true);
+    csv += this.getGroupTitle(msg.allRulesLabel);
+    csv += this.getRuleResultsCSV(options, this.ruleResults, true, true);
 
     return csv;
   }

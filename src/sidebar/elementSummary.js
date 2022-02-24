@@ -103,6 +103,27 @@ export default class ElementSummary extends HTMLElement {
     this.hiddenTd.textContent = value;
   }
 
+
+  get violations () {
+    return this.violationsTd.textContent;
+  }
+
+  get warnings () {
+    return this.warningsTd.textContent;
+  }
+
+  get manualChecks () {
+    return this.manualChecksTd.textContent;
+  }
+
+  get passed () {
+    return this.passedTd.textContent;
+  }
+
+  get hidden () {
+    return this.hiddenTd.textContent;
+  }
+
   clear () {
     this.violationsTd.textContent   = '-';
     this.violationsTd.title         = '';

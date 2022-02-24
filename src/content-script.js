@@ -62607,6 +62607,7 @@ function getRuleResultsItem(ruleResult) {
 
   let item = {
     'ruleId'         : ruleId,
+    'scope'          : rule.getScopeNLS(),
     'summary'        : ruleResult.getRuleSummary(),
     'required'       : ruleResult.isRuleRequired(),
     'ruleCategory'   : rule.rule_category_info.title,
@@ -62679,6 +62680,7 @@ function getRuleResultInfo(ruleResult) {
 
   var info = {
     'ruleId'        : rule.getId(),
+    'scope'         : rule.getScopeNLS(),
     'summary'       : ruleResult.getRuleSummary(),
     'required'      : ruleResult.isRuleRequired(),
     'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
@@ -62899,16 +62901,17 @@ function getDetailsAction(ruleResult) {
   wcag = wcag.concat(rule.getRelatedSuccessCriteria());
 
   let detailsAction = {
-    'ruleId'             : rule.getId(),
-    'summary'            : rule.getSummary(required),
-    'definition'         : rule.getDefinition(required),
-    'action'             : ruleResult.getResultMessagesArray(),
-    'purpose'            : rule.getPurpose(),
-    'techniques'         : getInformationalInfoArray(rule.getTechniques()),
-    'targets'            : rule.getTargetResources(),
-    'compliance'         : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
-    'sc'                 : getInformationalInfoArray(wcag),
-    'additionalLinks'    : getInformationalInfoArray(rule.getInformationalLinks())
+    'ruleId'          : rule.getId(),
+    'scope'           : rule.getScopeNLS(),
+    'summary'         : rule.getSummary(required),
+    'definition'      : rule.getDefinition(required),
+    'action'          : ruleResult.getResultMessagesArray(),
+    'purpose'         : rule.getPurpose(),
+    'techniques'      : getInformationalInfoArray(rule.getTechniques()),
+    'targets'         : rule.getTargetResources(),
+    'compliance'      : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
+    'sc'              : getInformationalInfoArray(wcag),
+    'additionalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
   }
 
   return detailsAction;
