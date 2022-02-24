@@ -59,6 +59,7 @@ export default class ViewSummaryCSV extends commonCSV {
 
     csv += this.getRuleSummaryRowHeaders("");
     csv += this.getRuleSummaryRow(msg.allRulesLabel, this.ruleSummary);
+    csv += this.getBlankRow();
 
     csv += this.getRuleSummaryRowHeaders(msg.ruleCategoryLabel);
     for (i = 0; i < this.rcResults.length; i += 1) {
@@ -66,6 +67,7 @@ export default class ViewSummaryCSV extends commonCSV {
       csv += this.getRuleSummaryRow(msg[getRuleCategoryLabelId(r.id)], r);
     }
     csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
+    csv += this.getBlankRow();
 
     csv += this.getRuleSummaryRowHeaders(msg.guidelineLabel);
     for (i = 0; i < this.glResults.length; i += 1) {
@@ -73,6 +75,7 @@ export default class ViewSummaryCSV extends commonCSV {
       csv += this.getRuleSummaryRow(msg[getGuidelineLabelId(r.id).replaceAll('.','_')], r);
     }
     csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
+    csv += this.getBlankRow();
 
     csv += this.getGroupTitle(msg.allRulesLabel);
     csv += this.getRuleResultsCSV(options, this.ruleResults, true, true);

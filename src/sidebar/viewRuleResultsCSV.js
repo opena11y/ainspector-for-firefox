@@ -25,6 +25,7 @@ export default class ViewRuleResultsCSV extends commonCSV {
     let csv = super.getCSV(options, title, url);
 
     csv += this.getGroupTitle(this.groupTitle);
+    csv += this.getBlankRow()
 
     csv += this.getRuleSummaryRowHeaders("");
     csv += this.getRuleSummaryRow(msg.csvRuleTotals, this.ruleSummary);

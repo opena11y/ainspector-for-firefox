@@ -86,16 +86,33 @@ export class commonCSV {
     return csv;
   }
 
+  getBlankRow () {
+    return '\n';
+  }
+
   getGroupTitle (title) {
-    return this.arrayToCSV([msg.csvGroupTitle, title], 1);
+    return this.arrayToCSV([msg.csvGroupTitle, title]);
   }
 
   getRuleSummaryRowHeaders (label) {
-    return `\n"${label}","${msg.violationsLabel}","${msg.warningsLabel}","${msg.manualChecksLabel}","${msg.passedLabel}"\n`;
+    const headers = [];
+    headers.push(label);
+    headers.push(msg.violationsLabel);
+    headers.push(msg.warningsLabel);
+    headers.push(msg.manualChecksLabel);
+    headers.push(msg.passedLabel);
+
+    return this.arrayToCSV(headers);
   }
 
   getRuleSummaryRow (label, result) {
-    return `"${label}","${result.violations}","${result.warnings}","${result.manual_checks}","${result.passed}"\n`;
+    const summ = [];
+    summ.push(label);
+    summ.push(result.violations);
+    summ.push(result.warnings);
+    summ.push(result.manual_checks);
+    summ.push(result.passed);
+    return this.arrayToCSV(summ);
   }
 
   getRuleResultsCSV (options, ruleResults, incRC=false, incGL=false) {
@@ -305,15 +322,19 @@ export function getExportFileName (fname, options, groupType, groupId, ruleId) {
 }
 
 export function cleanCSVItem (item) {
-  if (!item) {
-    item = '';
+  if (typeof item === 'number') {
+    item = item.toString();
   } else {
-    if (typeof item !== 'string') {
-      if (typeof item.toString === 'function') {
-        item = item.toString();
-      } else {
-        item = ' ' + item;
-        item = item.substring(1);
+    if (!item) {
+      item = '';
+    } else {
+      if (typeof item !== 'string') {
+        if (typeof item.toString === 'function') {
+          item = item.toString();
+        } else {
+          item = ' ' + item;
+          item = item.substring(1);
+        }
       }
     }
   }
