@@ -227,6 +227,14 @@ export class commonCSV {
     return csv;
   }
 
+  getRuleTitle (ruleInfo) {
+    let csv = '\n';
+    csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
+    csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
+    csv += this.contentCSV(msg.ruleScopeLabel,        ruleInfo.scope);
+    return csv;
+  }
+
   getDetailsActionCSV (ruleInfo) {
     let csv = '\n';
     csv += this.arrayToCSV([msg.detailsActionLabel]);
