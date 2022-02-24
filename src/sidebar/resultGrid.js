@@ -157,10 +157,8 @@ export default class ResultGrid extends HTMLElement {
   }
 
   // This grid only supports one row of headers
-  addHeaderCell (txt, cName, title, isSortable) {
+  addHeaderCell (txt, cName, title) {
     let th = document.createElement('th');
-//    Do not make TH elements focusable until sorting function is implemented
-//    th.tabIndex = -1;
     th.textContent = txt;
     if (cName) {
       th.className = cName;
@@ -168,19 +166,7 @@ export default class ResultGrid extends HTMLElement {
     if (title) {
       th.title = title;
     }
-    if (isSortable) {
-      let span = document.createElement('span');
-      span.className = 'icon';
-      span.textContent = '▼';
-      span.setAttribute('aria-hidden', 'true');
-      th.appendChild(span);
-      th.classList.add('sortable');
-    }
     this.theadTr.appendChild(th);
-//    Do not make TR and TH elements respond to keyboard events,
-//    until sorting function is implemented
-//    this.theadTr.addEventListener('keydown', this.onRowKeydown.bind(this));
-//    th.addEventListener('keydown', this.onCellKeydown.bind(this));
     return th;
   }
 
