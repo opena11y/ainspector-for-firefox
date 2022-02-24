@@ -100,7 +100,7 @@ export class commonCSV {
     csv += this.arrayToCSV([msg.csvNumberOfElementsWith]);
     csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
     csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
-    csv += this.arrayToCSV([msg.manualChecksLabel, result.manual_checks]);
+    csv += this.arrayToCSV([msg.manualChecksLabel, result.manualChecks]);
     csv += this.arrayToCSV([msg.passedLabel, result.passed]);
     csv += this.arrayToCSV([msg.hiddenLabel, result.hidden], 2);
     return csv;;
