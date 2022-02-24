@@ -12,6 +12,7 @@ const getVersion = browser.runtime.getManifest().version;
 const msg = {
   allRulesLabel             : getMessage('allRulesLabel'),
   csvDate                   : getMessage('csvDate'),
+  csvNumberOfRuleWith       : getMessage('csvNumberOfRuleWith'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
   csvTime                   : getMessage('csvTime'),
@@ -79,7 +80,6 @@ export class commonCSV {
     let csv = '';
     csv += this.arrayToCSV([msg.csvPageTitle, title]);
     csv += this.arrayToCSV([msg.csvPageURL, location]);
-    csv += this.arrayToCSV([msg.csvRuleset, this.getRulesetTitle(options.rulesetId)]);
     csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
     csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
     csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);
@@ -92,6 +92,16 @@ export class commonCSV {
 
   getGroupTitle (title) {
     return this.arrayToCSV([msg.csvGroupTitle, title]);
+  }
+
+  getRuleSummary (result) {
+    let csv = '';
+    csv += this.arrayToCSV([msg.csvNumberOfRuleWith]);
+    csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
+    csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
+    csv += this.arrayToCSV([msg.manualChecksLabel, result.manual_checks]);
+    csv += this.arrayToCSV([msg.passedLabel, result.passed], 2);
+    return csv;;
   }
 
   getRuleSummaryRowHeaders (label) {

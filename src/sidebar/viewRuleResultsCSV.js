@@ -11,7 +11,7 @@ const msg = {
 
 
 export default class ViewRuleResultsCSV extends commonCSV {
-  constructor(groupType, groupTitle, ruleResults, ruleSummary=false, isAllRules=false) {
+  constructor(groupType, groupTitle, ruleResults, ruleSummary, isAllRules=false) {
     super();
     this.groupType   = groupType;
     this.groupTitle  = groupTitle;
@@ -27,8 +27,7 @@ export default class ViewRuleResultsCSV extends commonCSV {
     csv += this.getGroupTitle(this.groupTitle);
     csv += this.getBlankRow()
 
-    csv += this.getRuleSummaryRowHeaders("");
-    csv += this.getRuleSummaryRow(msg.csvRuleTotals, this.ruleSummary);
+    csv += this.getRuleSummary(this.ruleSummary);
 
     if (this.groupType === 'gl' || this.isAllRules) {
       incRC = true;

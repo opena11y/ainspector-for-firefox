@@ -57,9 +57,7 @@ export default class ViewSummaryCSV extends commonCSV {
 
     let csv = super.getCSV(options, title, location);
 
-    csv += this.getRuleSummaryRowHeaders("");
-    csv += this.getRuleSummaryRow(msg.allRulesLabel, this.ruleSummary);
-    csv += this.getBlankRow();
+    csv += this.getRuleSummary(this.ruleSummary);
 
     csv += this.getRuleSummaryRowHeaders(msg.ruleCategoryLabel);
     for (i = 0; i < this.rcResults.length; i += 1) {
