@@ -659,8 +659,6 @@
     "description": "Label for prefix string input in the export section of the options page"
   },
 
-
-
   "optionsExportPrefixErrorToLong": {
     "message": "Prefix can only be 16 characters long.",
     "description": "Error feedback for prefix string being too long"
@@ -669,12 +667,6 @@
   "optionsExportPrefixErrorCharNotAllowed": {
     "message": "Prefix cannot contain the $key character.",
     "description": "Error feedback on characters that cannot not be in prefix."
-  },
-
-
-  "optionsExportPrefixDesc": {
-    "message": "Can be used to customize export file names for specific projects.",
-    "description": "Description of pottenial use of the prefix string in the export section of the options page"
   },
 
   "optionsExportIncludeDate": {

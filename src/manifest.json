@@ -3,7 +3,7 @@
   "default_locale": "en",
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
-  "version": "2.0.0-beta.1",
+  "version": "2.0-beta.1",
   "author": "__MSG_extensionAuthor__",
   "icons": {
     "64": "icons/ainspector-icon.png"
