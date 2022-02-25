@@ -130,12 +130,12 @@ export default class ResultTablist extends HTMLElement {
   // Event handlers
 
   handleTabClick(event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     this.showTabpanel(tgt.getAttribute('aria-controls'));
   }
 
   handleTabKeydown(event) {
-    let tgt = event.currentTarget;
+    const tgt = event.currentTarget;
     let flag = false;
 
     switch(event.key) {

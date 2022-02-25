@@ -87,7 +87,7 @@ export default class ViewElementResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewElementResultsCSV(this.detailsAction, this.elementResults);
+    let viewCSV = new ViewElementResultsCSV(this.detailsAction, this.elementResults, this.elementSummary);
     return viewCSV.getCSV(options, title, location);
   }
 

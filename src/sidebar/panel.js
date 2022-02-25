@@ -9,7 +9,7 @@ import ViewRuleResults       from './viewRuleResults.js';
 import ViewElementResults    from './viewElementResults.js';
 
 // Custom elements for views
-import ResultSummary         from './resultSummary.js';
+import RuleSummary           from './ruleSummary.js';
 import ResultTablist         from './resultTablist.js';
 import ResultGrid            from './resultGrid.js';
 import ElementSummary        from './elementSummary.js';
@@ -23,7 +23,7 @@ import RerunEvaluationButton from './rerunEvaluationButton.js';
 import ExportButton          from './exportButton.js';
 import CopyButton            from './copyButton.js';
 
-customElements.define('result-summary',      ResultSummary);
+customElements.define('rule-summary',        RuleSummary);
 customElements.define('result-tablist',      ResultTablist);
 customElements.define('result-grid',         ResultGrid);
 customElements.define('element-summary',     ElementSummary);
