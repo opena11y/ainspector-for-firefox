@@ -2,7 +2,7 @@
 
 import { cleanCSVItem, commonCSV } from './commonCSV.js';
 
-const basicProps = ['result', 'tagName', 'position', 'role', 'actionMessage'];
+const basicProps = ['tagName', 'result',  'resultValue', 'position', 'role', 'actionMessage'];
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -164,6 +164,25 @@ export default class ViewElementResultsCSV extends commonCSV{
     return this.arrayToCSV(values);
   }
 
+  getElementResultsArray (elementResults) {
+
+    const elemResults = [];
+
+    for (let er in elementResults) {
+      elemResults.push(elementResults[er]);
+    }
+
+    elemResults.sort((a, b) => {
+      if (a.result === b.result) {
+        return a.position - b.position;
+      } else {
+        return b.resultValue - a.resultValue;
+      }
+    });
+
+    return elemResults;
+  }
+
   getCSV (options, title, location) {
 
     let accNameProps = this.getAccNameProps();
@@ -189,8 +208,9 @@ export default class ViewElementResultsCSV extends commonCSV{
 
     csv += this.arrayToCSV(cols);
 
-    for (let er in this.elementResults) {
-      let info = this.elementResults[er];
+    const elemResults = this.getElementResultsArray(this.elementResults)
+
+    for (const info of elemResults) {
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(info.result) > 0)) {
         csv += this.elementResultToCSV(info, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps);
