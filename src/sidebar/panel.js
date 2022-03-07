@@ -621,17 +621,21 @@ function getActiveTabFor (windowId) {
 /*
 *   Add event listeners when sidebar loads
 */
-window.addEventListener ("load", function (e) {
+window.addEventListener('load', function (e) {
   browser.tabs.onUpdated.addListener(handleTabUpdated, { properties: ["status"] });
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.windows.onFocusChanged.addListener(handleWindowFocusChanged);
   resizeView();
 });
 
+window.addEventListener('unload', function (e) {
+  let page = browser.extension.getBackgroundPage();
+  page.removeHighlight();
+});
+
 /*
 **  Export report download function
 */
-
 
 function onStartedDownload(id) {
 //  console.log(`Started downloading: ${id}`);
@@ -667,4 +671,3 @@ function download(filename, content, format) {
   downloading.then(onStartedDownload, onFailed);
 
 }
-
