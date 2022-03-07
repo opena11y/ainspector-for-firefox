@@ -15,7 +15,7 @@
   },
 
   "extensionDescription": {
-    "message": "Analyze web pages for WCAG 2.0 level A and AA requirements using the OpenAjax evaluation library.",
+    "message": "Analyze web pages for WCAG 2.0 level A and AA requirements using the OpenA11y evaluation library.",
     "description": "Description of the extension"
   },
 
