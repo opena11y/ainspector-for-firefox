@@ -7,47 +7,23 @@ browser.browserAction.onClicked.addListener(function (evt) {
 });
 
 /*
-* The following code checks to see if the sidebar has closed
-* If it is closed it semds a message to the content script
-* to remove any element highlighting.  It only needs to
-* remove the highlighting once.
+*  removeHighlight is called from panel.js when the 'unload'
+*  event is dispatched (i.e., the sidebar is closed).
 */
+function removeHighlight () {
+  browser.tabs.query({ currentWindow: true })
+  .then(sendMessageToTabs)
+  .catch(onError);
+}
 
-var sidebarOpen = false;
-var previousSidebarOpen = false;
-var messageArgs = {};
-
-setInterval( function () {
-  browser.sidebarAction.isOpen({}).then(result => {
-    previousSidebarOpen = sidebarOpen;
-    sidebarOpen = result;
-
-    // Only remove the highlighiting once
-    if (!sidebarOpen && (sidebarOpen !== previousSidebarOpen)) {
-      removeHighlight();
-    }
-  });
-}, 500);
-
-function sendMessageToTabs(tabs) {
+function sendMessageToTabs (tabs) {
+  let message = { option: 'highlight', highlight: 'none' };
   for (let tab of tabs) {
-    browser.tabs.sendMessage(
-      tab.id,
-      messageArgs
-    ).then(response => {}).catch(onError);
+    browser.tabs.sendMessage(tab.id, message)
+    .catch(onError);
   }
-};
+}
 
-function removeHighlight() {
-  messageArgs.option    = 'highlight';
-  messageArgs.highlight = 'none';
-
-  browser.tabs.query({
-      currentWindow: true,
-      active: true
-  }).then(sendMessageToTabs).catch(onError);
-};
-
-function onError(err) {
-  console.error('[BACKGROUND][ERROR]: ' + err);
+function onError (err) {
+  console.error(`Error in background.js: ${err}`);
 }
