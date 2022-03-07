@@ -11,7 +11,7 @@ browser.browserAction.onClicked.addListener(function (evt) {
 *  event is dispatched (i.e., the sidebar is closed).
 */
 function removeHighlight () {
-  browser.tabs.query({ currentWindow: true, active: true })
+  browser.tabs.query({ currentWindow: true })
   .then(sendMessageToTabs)
   .catch(onError);
 }
