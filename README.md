@@ -1,6 +1,6 @@
 # AInspector
 
-[AInspector](https://ainspector.disability.illinois.edu) uses the web extension APIs for the Firefox browser to create a sidebar for evaluating web accessibility and the user interface is based on the [AInspector Sidebar](https://ainspector.github.io/) using XUL.  Firefox support for the sidebar API is ideal for allowing evaluation information to always be visible and updated as links are followed and new tabs and windows are opened.  AInspector is available from the Firefox add-ons page:
+[AInspector](https://ainspector.disability.illinois.edu) uses the web extension APIs for the Firefox browser to create a sidebar for evaluating web accessibility and the use   r interface is based on [AInspector Sidebar](https://ainspector.github.io/) using XUL.  Firefox support for the sidebar API is ideal for allowing evaluation information to always be visible and updated as links are followed and new tabs and windows are opened.  AInspector is available from the Firefox add-ons page:
 
 [Install AInspector for Firefox](https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag)
 
