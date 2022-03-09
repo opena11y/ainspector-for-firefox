@@ -63090,7 +63090,6 @@ var highlightModule = highlightModule || {
   highlightElementResults: function (document, element_results) {
 
     let RESULT_VALUE = OpenAjax.a11y.ELEMENT_RESULT_VALUE;
-    let VISIBILITY   = OpenAjax.a11y.VISIBILITY;
 
     // counters
     let v = 0; // violations
@@ -63115,7 +63114,6 @@ var highlightModule = highlightModule || {
       try {
         let element_result = element_results[i];
         let dom_element    = element_result.getDOMElement();
-        let computed_style = dom_element.computed_style;
         let tag_name       = dom_element.tag_name;
 
         // The node property of DOMElement is a reference to the DOM node in
@@ -63124,72 +63122,40 @@ var highlightModule = highlightModule || {
 
         if (node) {
 
-          // check if the node is off-screen or hidden from assistive technologies
-          if (false && computed_style.is_visible_onscreen === VISIBILITY.HIDDEN) {
-
-            // always do this...
-            off_screen_elements.push(element_result);
-
-            // then increment corresponding counter
-            switch (element_result.getResultValue()) {
-            case RESULT_VALUE.VIOLATION:
-              v += 1;
-              break;
-
-            case RESULT_VALUE.WARNING:
-              w += 1;
-              break;
-
-            case RESULT_VALUE.MANUAL_CHECK:
-              if (this.show_page_manual_check) m += 1;
-              break;
-
-            case RESULT_VALUE.PASS:
-              if (this.show_pass) p += 1;
-              break;
-
-            case RESULT_VALUE.HIDDEN:
-              if (this.show_hidden) h += 1;
-              break;
-
-            default:
-              break;
-            }
+          // store reference to first visible node
+          if (first_visible_node === null) {
+            first_visible_node = node;
           }
-          else {
-            // store reference to first visible node
-            if (first_visible_node === null) first_visible_node = node;
 
-            switch (element_result.getResultValue()) {
-            case RESULT_VALUE.VIOLATION:
-              this.insertDIV(document, node, tag_name, this.STYLES.violations, 1, 0, 0, 0, 0);
-              break;
+          switch (element_result.getResultValue()) {
+          case RESULT_VALUE.VIOLATION:
+            this.insertDIV(document, node, tag_name, this.STYLES.violations, 1, 0, 0, 0, 0);
+            break;
 
-            case RESULT_VALUE.WARNING:
-              this.insertDIV(document, node, tag_name, this.STYLES.warnings, 0, 1, 0, 0, 0);
-              break;
+          case RESULT_VALUE.WARNING:
+            this.insertDIV(document, node, tag_name, this.STYLES.warnings, 0, 1, 0, 0, 0);
+            break;
 
-            case RESULT_VALUE.MANUAL_CHECK:
-              if (this.isElementScopeRule(element_result) && !this.show_element_manual_check)
-                continue;
-              if (this.isPageScopeRule(element_result) && !this.show_page_manual_check)
-                continue;
-              this.insertDIV(document, node, tag_name, this.STYLES.manualChecks, 0, 0, 1, 0, 0);
-              break;
+          case RESULT_VALUE.MANUAL_CHECK:
+            if (this.isElementScopeRule(element_result) && !this.show_element_manual_check)
+              continue;
+            if (this.isPageScopeRule(element_result) && !this.show_page_manual_check)
+              continue;
+            this.insertDIV(document, node, tag_name, this.STYLES.manualChecks, 0, 0, 1, 0, 0);
+            break;
 
-            case RESULT_VALUE.PASS:
-              if (this.show_pass)
-                this.insertDIV(document, node, tag_name, this.STYLES.passes, 0, 0, 0, 1, 0);
-              break;
+          case RESULT_VALUE.PASS:
+            if (this.show_pass)
+              this.insertDIV(document, node, tag_name, this.STYLES.passes, 0, 0, 0, 1, 0);
+            break;
 
-            case RESULT_VALUE.HIDDEN:
-              if (this.show_hidden)
-                this.insertDIV(document, node, tag_name, this.STYLES.hidden, 0, 0, 0, 0, 1);
-              break;
+          case RESULT_VALUE.HIDDEN:
+            if (this.show_hidden)
+              this.insertDIV(document, node, tag_name, this.STYLES.hidden, 0, 0, 0, 0, 1);
+            break;
 
-            default:
-              break;
-            }
+          default:
+            break;
           }
         }
       }
@@ -63243,36 +63209,63 @@ var highlightModule = highlightModule || {
   removeHighlight: function (document) {
     let highlightClass = this.highlightDivClass;
 
-    function removeFromDocument(document) {
-      let elements = document.getElementsByClassName(highlightClass);
+    function removeHighlightedElems (elems) {
+      elems.forEach(elem => {
+        if (elem.classList && elem.classList.contains(highlightClass)) {
+          let parentNode = elem.parentNode;
 
-      while (elements[0]) {
-        let element = elements[0];
-
-        if (element) {
-          let parent_node = element.parentNode;
-
-          while(element.firstChild) {
-            parent_node.insertBefore(element.firstChild, element);
+          if (parentNode) {
+            while(elem.firstChild) {
+              parentNode.insertBefore(elem.firstChild, elem);
+            }
+            parentNode.removeChild(elem);
           }
+        }
+      })
+    }
 
-          parent_node.removeChild(element);
+    function getHighlightedElements(elems, node) {
+
+      for (let n = node.firstChild; n !== null; n = n.nextSibling ) {
+        if (n.nodeType === Node.ELEMENT_NODE) {
+          if (n.tagName.indexOf('-') >= 0) {
+            let rn = n.shadowRoot;
+            for (let n1 = rn.firstElementChild; n1 !== null; n1 = n1.nextElementSibling ) {
+              elems = getHighlightedElements(elems, n1);
+            } // end loop
+          } else {
+            switch (n.tagName.toLowerCase()) {
+
+              case 'base':
+              case 'link':
+              case 'noscript':
+              case 'script':
+              case 'style':
+              case 'template':
+              case 'content':
+              case 'shadow':
+                break;
+
+              case 'frame':
+              case 'iframe':
+                try {
+                  elems = getHighlightedElements(elems, n.contentWindow.document);
+                } catch (e) {
+                  console.log('[removeFromDocument][catch]' + e);
+                }
+                break;
+
+              default:
+                if (n.classList.contains(highlightClass)) {
+                  elems.push(n);
+                }
+                elems = getHighlightedElements(elems, n);
+                break;
+            }
+          }
         }
       }
-
-      // remove highlighting inside iframes
-      let iframes = document.getElementsByTagName( "iframe" );
-
-      for (let i = 0; i < iframes.length; i++) {
-        try {
-          let doc = iframes[i].contentDocument;
-          if (doc) removeFromDocument(doc);
-        }
-        catch (error) {
-          console.log('[removeFromDocument][catch]: ' + error);
-        }
-      }
-
+      return elems;
     }
 
     function removeFromFrames(frames) {
@@ -63282,7 +63275,10 @@ var highlightModule = highlightModule || {
       for (let i=0; i < frames.length; i++) {
         try {
           let frame = frames[i];
-          if (frame.document) removeFromDocument(frame.document);
+          if (frame.document) {
+            let elems = getHighlightedElements([], frame.document);
+            removeHighlightedElems(elems);
+          }
           removeFromFrames(frame.frames);
         }
         catch (error) {
@@ -63291,7 +63287,8 @@ var highlightModule = highlightModule || {
       }
     }
 
-    removeFromDocument(document);  //unhighlighting in the actual document
+    let elems = getHighlightedElements([], document);
+    removeHighlightedElems(elems);
 
     let frames = window.frames;
     removeFromFrames(frames);
