@@ -310,7 +310,7 @@ var highlightModule = highlightModule || {
         if (n.nodeType === Node.ELEMENT_NODE) {
           if (n.tagName.indexOf('-') >= 0) {
             let rn = n.shadowRoot;
-            for (let n1 = rn.firstElementChild; n1 !== null; n1 = n1.nextElementSibling ) {
+            for (let n1 = rn.firstChild; n1 !== null; n1 = n1.nextSibling ) {
               elems = getHighlightedElements(elems, n1);
             } // end loop
           } else {
@@ -370,19 +370,19 @@ var highlightModule = highlightModule || {
     let elems = getHighlightedElements([], document);
     removeHighlightedElements(elems);
 
-    let frames = window.frames;
-    removeFromFrames(frames);
+    removeFromFrames(window.frames);
 
     let off_screen_elements = document.getElementsByClassName(this.offScreenDivClass);
 
     for (let j = 0; j < off_screen_elements.length; j++) {
-      if (off_screen_elements[j])
+      if (off_screen_elements[j]) {
         try {
           document.body.removeChild(off_screen_elements[j]);
         }
         catch (error) {
           console.log('[offScreen][catch]: ' + error);
         }
+      }
     }
   },
 
