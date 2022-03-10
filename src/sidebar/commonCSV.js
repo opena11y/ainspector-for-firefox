@@ -139,8 +139,6 @@ export class commonCSV {
   getRuleSummary (result, msgId) {
     let csv = '';
     let m = msg[msgId];
-    console.log('[getRuleSummary][msgId]: ' + msgId);
-    console.log('[getRuleSummary][  msg]: ' + m + ' ' + typeof m);
     if ( m ) {
       csv += this.arrayToCSV([m]);
     } else {
@@ -268,7 +266,7 @@ export class commonCSV {
     let csv = '\n';
     csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
     csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
-    csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.defintion);
+    csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
     // get only primary Success Criteria, the first item in ruleInfo.sc array
     csv += this.contentCSV(msg.ruleSCLabel,           [ruleInfo.sc[0]]);
     csv += this.contentCSV(msg.ruleComplianceLabel,   ruleInfo.compliance);
