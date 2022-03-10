@@ -784,7 +784,7 @@
     "description": "Used in rule results for CSV export for labeling summary results."
   },
 
-  "csvNumberOfRuleWith": {
+  "csvNumberOfRulesWith": {
     "message": "Number of rules with",
     "description": "Used in rule results for CSV export for labeling summary results."
   },
@@ -837,6 +837,131 @@
   "csvSuccessCriteria": {
     "message": "Success Criteria",
     "description": "Success Criteria column header for CSV export"
+  },
+
+  "csvSummary-landmarksLabel": {
+    "message": "Number of Landmark rules with",
+    "description": "CSV label for Landmark rule category for number of rules with"
+  },
+
+  "csvSummary-headingsLabel": {
+    "message": "Number of Heading rules with",
+    "description": "CSV label for Headings rule category for number of rules with"
+  },
+
+  "csvSummary-stylesContentLabel": {
+    "message": "Number of Styles/Content rules with",
+    "description": "CSV label for Styles/Content rule category for number of rules with"
+  },
+
+  "csvSummary-imagesLabel": {
+    "message": "Number of Image rules with",
+    "description": "CSV label for Images rule category for number of rules with"
+  },
+
+  "csvSummary-formsLabel": {
+    "message": "Number of Form rules with",
+    "description": "CSV label for Forms rule category for number of rules with"
+  },
+
+  "csvSummary-linksLabel": {
+    "message": "Number of Link rules with",
+    "description": "CSV label for Links rule category for number of rules with"
+  },
+
+  "csvSummary-tablesLabel": {
+    "message": "Number of Link rules with",
+    "description": "CSV label for Links rule category for number of rules with"
+  },
+
+  "csvSummary-widgetsScriptsLabel": {
+    "message": "Number of Script rules with",
+    "description": "CSV label for Scripts rule category for number of rules with"
+  },
+
+  "csvSummary-audioVideoLabel": {
+    "message": "Number of Audio/Video rules with",
+    "description": "CSV label for Audo/Video rule category for number of rules with"
+  },
+
+  "csvSummary-keyboardLabel": {
+    "message": "Number of Keyboard Support rules with",
+    "description": "CSV label for Keyboard Support rule category for number of rules with"
+  },
+
+  "csvSummary-timingLabel": {
+    "message": "Number of Timing rules with",
+    "description": "CSV label for Timing rule category for number of rules with"
+  },
+
+  "csvSummary-siteNavigationLabel": {
+    "message": "Number of Site Navigation rules with",
+    "description": "CSV label for Site Navigation rule category for number of rules with"
+  },
+
+  "csvSummary-allRulesLabel": {
+    "message": "Number of rules with",
+    "description": "CSV label for All Rules for number of rules with"
+  },
+
+  "csvSummary-g1.1": {
+    "message": "Number of 1.1 Text Alternative rules with",
+    "description": "CSV label for Guideline 1.1 Text Alternative guideline for number of rules with"
+  },
+
+  "csvSummary-g1.2": {
+    "message": "Number of 1.2 Time-based Media rules with",
+    "description": "CSV label for Guideline 1.2 Time-based Media guideline for number of rules with"
+  },
+
+  "csvSummary-g1.3": {
+    "message": "Number of 1.3 Adaptable rules with",
+    "description": "CSV label for Guideline 1.3 Adaptable guideline for number of rules with"
+  },
+
+  "csvSummary-g1.4": {
+    "message": "Number of 1.4 Distinguishable rules with",
+    "description": "CSV label for Guideline 1.4 Distinguishable guideline for number of rules with"
+  },
+
+  "csvSummary-g2.1": {
+    "message": "Number of 2.1 Keyboard Accessible rules with",
+    "description": "CSV label for Guideline 2.1 Keyboard Accessible guideline for number of rules with"
+  },
+
+  "csvSummary-g2.2": {
+    "message": "Number of 2.2 Enough Time rules with",
+    "description": "CSV label for Guideline 2.2 Enough Time guideline for number of rules with"
+  },
+
+  "csvSummary-g2.3": {
+    "message": "Number of 2.3 Seizures rules with",
+    "description": "CSV label for Guideline 2.3 Seizures guideline for number of rules with"
+  },
+
+  "csvSummary-g2.4": {
+    "message": "Number of 2.4 Navigable rules with",
+    "description": "CSV label for Guideline 2.4 Navigable guideline for number of rules with"
+  },
+
+  "csvSummary-g3.1": {
+    "message": "Number of 3.1 Readable rules with",
+    "description": "CSV label for Guideline 3.1 Readable guideline for number of rules with"
+  },
+
+  "csvSummary-g3.2": {
+    "message": "Number of 3.2 Predictable rules with",
+    "description": "CSV label for Guideline 3.2 Predictable guideline for number of rules with"
+  },
+
+  "csvSummary-g3.3": {
+    "message": "Number of 3.3 Input Assistance rules with",
+    "description": "CSV label for Guideline 3.3 Input Assistance guideline for number of rules with"
+  },
+
+  "csvSummary-g4.1": {
+    "message": "Number of 4.1 Compatible rules with",
+    "description": "CSV label for Guideline 4.1 Compatible guideline for number of rules with"
   },
 
   "shortcutsHeading": {

@@ -12,7 +12,7 @@ const msg = {
 export default class ViewElementResultsCSV extends commonCSV{
   constructor(detailsAction, elementResults, elementSummary) {
     super();
-    this.detailsAction = detailsAction;
+    this.detailsAction  = detailsAction;
     this.elementResults = elementResults;
     this.elementSummary = elementSummary;
   }

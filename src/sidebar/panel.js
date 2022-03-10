@@ -323,7 +323,7 @@ function onExportClick () {
 
         case viewId.ruleResults:
           fname = options.filenameRuleResults;
-          csv = vRuleResults.toCSV(options, pageTitle, pageLocation);
+          csv = vRuleResults.toCSV(options, pageTitle, pageLocation, sidebarGroupId);
           break;
 
         case viewId.elementResults:
@@ -512,7 +512,7 @@ function updateSidebar (info) {
       if (typeof info.infoRuleResults === 'object') {
         viewTitle.textContent = info.infoRuleResults.groupLabel;
         viewTitle.title = '';
-        vRuleResults.update(info.infoRuleResults);
+        vRuleResults.update(info.infoRuleResults, sidebarGroupId);
         enableButtons();
       }
       else {
