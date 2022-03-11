@@ -19190,13 +19190,11 @@ OpenAjax.a11y.cache.DOMCache.prototype.updateDOMElements = function (node, paren
             break;
 
           case 'slot':
-            nodes = node.assignedNodes();
-            if (nodes.length) {
-              for (var i = 0; i < nodes.length; i += 1) {
-                n = nodes[i];
-                ps = this.updateDOMElements(n, dom_element, ps, showElements);
-              } // end loop
-            }
+            nodes = node.assignedNodes({ flatten: true });
+            for (var i = 0; i < nodes.length; i += 1) {
+              n = nodes[i];
+              ps = this.updateDOMElements(n, dom_element, ps, showElements);
+            } // end loop
             break;
 
           default:
@@ -63199,6 +63197,31 @@ var highlightModule = highlightModule || {
   },
 
   /**
+   * @function removeHighlightedElements
+   *
+   * @desc Removes the DIV used to highlight elements and restores the content
+   *       nodes to their orginal parent nodes.
+   *
+   * @param {Array}  elems  - Array of elements with highlight class
+   */
+  removeHighlightedElements: function (elems) {
+    let highlightClass = this.highlightDivClass;
+    elems.forEach(elem => {
+      // Verify the element has the highlight class and is a element node
+      if (elem.classList && elem.classList.contains(highlightClass)) {
+        let parentNode = elem.parentNode;
+
+        if (parentNode) {
+          while(elem.firstChild) {
+            parentNode.insertBefore(elem.firstChild, elem);
+          }
+          parentNode.removeChild(elem);
+        }
+      }
+    })
+  },
+
+  /**
    * @function removeHighlight
    *
    * @desc Unhighlights the nodes that were highlighted earlier and
@@ -63210,33 +63233,31 @@ var highlightModule = highlightModule || {
   removeHighlight: function (document) {
     let highlightClass = this.highlightDivClass;
 
-    function removeHighlightedElements (elems) {
-      elems.forEach(elem => {
-        if (elem.classList && elem.classList.contains(highlightClass)) {
-          let parentNode = elem.parentNode;
+    /**
+     * @function getHighlightedElements
+     *
+     * @desc  A recursive function to traverse the DOM, including custom elements,
+     *        for accumulating an array of elements with the highlight class.
+     *        This is initally called using the document as the startingNode
+     *
+     *
+     * @param {DOM node}  startingNode  - Dom element to start (e.g. continue)
+     *                                    traversal of the DOM
+     * @param {Array}     elems         - Array of elements with the highliht class,
+     *                                    it is undefined when the root starting node is
+     *                                    calling the function for the first time
+     *
+     * @return {Array} Accummulated elements with the highlight class
+     */
 
-          if (parentNode) {
-            while(elem.firstChild) {
-              parentNode.insertBefore(elem.firstChild, elem);
-            }
-            parentNode.removeChild(elem);
-          }
-        }
-      })
-    }
+    function getHighlightedElements(startingNode, elems) {
 
-    function getHighlightedElements(elems, node) {
-      let nodes = [];
-
-      for (let n = node.firstChild; n !== null; n = n.nextSibling ) {
-        if (n.nodeType === Node.ELEMENT_NODE) {
-          if (n.tagName.indexOf('-') >= 0) {
-            let rn = n.shadowRoot;
-            for (let n1 = rn.firstChild; n1 !== null; n1 = n1.nextSibling ) {
-              elems = getHighlightedElements(elems, n1);
-            } // end loop
+      for (let node = startingNode.firstChild; node !== null; node = node.nextSibling ) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName.indexOf('-') >= 0) {
+            elems = getHighlightedElements(node.shadowRoot, elems);
           } else {
-            switch (n.tagName.toLowerCase()) {
+            switch (node.tagName.toLowerCase()) {
 
               case 'base':
               case 'link':
@@ -63251,25 +63272,25 @@ var highlightModule = highlightModule || {
               case 'frame':
               case 'iframe':
                 try {
-                  elems = getHighlightedElements(elems, n.contentWindow.document);
-                } catch (e) {
-                  console.log('[removeFromDocument][catch]' + e);
+                  elems = getHighlightedElements(node.contentWindow.document, elems);
+                } catch (error) {
+                  console.log('[removeFromDocument][catch]' + error);
                 }
                 break;
 
               case 'slot':
-                n.assignedNodes().forEach( n2 => {
-                  if (n2.parentNode) {
-                    elems = getHighlightedElements(elems, n2.parentNode);
+                node.assignedNodes({ flatten: true }).forEach( assignedNode => {
+                  if (assignedNode.parentNode) {
+                    elems = getHighlightedElements(assignedNode.parentNode, elems);
                   }
                 });
                 break;
 
               default:
-                if (n.classList.contains(highlightClass)) {
-                  elems.push(n);
+                if (node.classList.contains(highlightClass)) {
+                  elems.push(node);
                 }
-                elems = getHighlightedElements(elems, n);
+                elems = getHighlightedElements(node, elems);
                 break;
             }
           }
@@ -63286,8 +63307,8 @@ var highlightModule = highlightModule || {
         try {
           let frame = frames[i];
           if (frame.document) {
-            let elems = getHighlightedElements([], frame.document);
-            removeHighlightedElements(elems);
+            let elems = getHighlightedElements(frame.document, []);
+            this.removeHighlightedElements(elems);
           }
           removeFromFrames(frame.frames);
         }
@@ -63297,8 +63318,8 @@ var highlightModule = highlightModule || {
       }
     }
 
-    let elems = getHighlightedElements([], document);
-    removeHighlightedElements(elems);
+    let elems = getHighlightedElements(document, []);
+    this.removeHighlightedElements(elems);
 
     removeFromFrames(window.frames);
 

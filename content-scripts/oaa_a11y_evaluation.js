@@ -19190,7 +19190,7 @@ OpenAjax.a11y.cache.DOMCache.prototype.updateDOMElements = function (node, paren
             break;
 
           case 'slot':
-            nodes = node.assignedNodes();
+            nodes = node.assignedNodes({ flatten: true });
             for (var i = 0; i < nodes.length; i += 1) {
               n = nodes[i];
               ps = this.updateDOMElements(n, dom_element, ps, showElements);
