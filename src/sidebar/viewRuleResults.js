@@ -95,7 +95,7 @@ export default class ViewRuleResults {
     this.ruleResults = [];
     this.detailsActions = {};
     this.groupType = 'rc';
-    this.isAllRules = false;
+    this.groupId = '';
 
     this.json = '{}';
 
@@ -113,7 +113,7 @@ export default class ViewRuleResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.isAllRules);
+    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.groupId);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -169,7 +169,7 @@ export default class ViewRuleResults {
     return accName;
   }
 
-  update (infoRuleResults) {
+  update (infoRuleResults, groupId) {
     let i, rr, row, style, value, sortValue, rowAccName, cellAccName, label;
     let count = 0;
 
@@ -189,7 +189,7 @@ export default class ViewRuleResults {
     this.ruleResults = infoRuleResults.ruleResults;
 
     this.groupType = infoRuleResults.groupType;
-    this.isAllRules = infoRuleResults.ruleResults.length > 60;
+    this.groupId = groupId;
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleResults.ruleResults.length; i += 1) {

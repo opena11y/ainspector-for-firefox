@@ -19176,7 +19176,6 @@ OpenAjax.a11y.cache.DOMCache.prototype.updateDOMElements = function (node, paren
           for (n = rn.firstElementChild; n !== null; n = n.nextElementSibling ) {
             ps = this.updateDOMElements(n, dom_element, ps);
           } // end loop
-
         }
       } else {
         switch (dom_element.tag_name) {
@@ -19192,10 +19191,12 @@ OpenAjax.a11y.cache.DOMCache.prototype.updateDOMElements = function (node, paren
 
           case 'slot':
             nodes = node.assignedNodes();
-            for (var i = 0; i < nodes.length; i += 1) {
-              n = nodes[i];
-              ps = this.updateDOMElements(n, dom_element, ps, showElements);
-            } // end loop
+            if (nodes.length) {
+              for (var i = 0; i < nodes.length; i += 1) {
+                n = nodes[i];
+                ps = this.updateDOMElements(n, dom_element, ps, showElements);
+              } // end loop
+            }
             break;
 
           default:

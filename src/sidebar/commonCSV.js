@@ -13,7 +13,7 @@ const msg = {
   allRulesLabel             : getMessage('allRulesLabel'),
   csvDate                   : getMessage('csvDate'),
   csvNumberOfElementsWith   : getMessage('csvNumberOfElementsWith'),
-  csvNumberOfRuleWith       : getMessage('csvNumberOfRuleWith'),
+  csvNumberOfRulesWith      : getMessage('csvNumberOfRulesWith'),
   csvPageTitle              : getMessage('csvPageTitle'),
   csvPageURL                : getMessage('csvPageURL'),
   csvTime                   : getMessage('csvTime'),
@@ -39,14 +39,44 @@ const msg = {
   ruleActionLabel           : getMessage('ruleActionLabel'),
   ruleAdditionalLabel       : getMessage('ruleAdditionalLabel'),
   ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
+  ruleComplianceLabel       : getMessage('ruleComplianceLabel'),
   ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel          : getMessage('rulePurposeLabel'),
   ruleScopeLabel            : getMessage('ruleScopeLabel'),
+  ruleSCLabel               : getMessage('ruleSCLabel'),
   ruleTechniquesLabel       : getMessage('ruleTechniquesLabel'),
   ruleTargetLabel           : getMessage('ruleTargetLabel'),
   viewTitleSummaryLabel     : getMessage('viewTitleSummaryLabel'),
   violationsLabel           : getMessage('violationsLabel'),
-  warningsLabel             : getMessage('warningsLabel')
+  warningsLabel             : getMessage('warningsLabel'),
+
+  // Labels for "Number of XXX with" in CVS files
+  // Uses the Ids returned from getGuidelineLabelId and
+  // getRuleCategoryId in constants.js
+  allRulesLabel       : getMessage('csvSummary-allRulesLabel'),
+  formsLabel          : getMessage('csvSummary-formsLabel'),
+  g1_1                : getMessage('csvSummary-g1.1'),
+  g1_2                : getMessage('csvSummary-g1.2'),
+  g1_3                : getMessage('csvSummary-g1.3'),
+  g1_4                : getMessage('csvSummary-g1.4'),
+  g2_1                : getMessage('csvSummary-g2.1'),
+  g2_2                : getMessage('csvSummary-g2.2'),
+  g2_3                : getMessage('csvSummary-g2.3'),
+  g2_4                : getMessage('csvSummary-g2.4'),
+  g3_1                : getMessage('csvSummary-g3.1'),
+  g3_2                : getMessage('csvSummary-g3.2'),
+  g3_3                : getMessage('csvSummary-g3.3'),
+  g4_1                : getMessage('csvSummary-g4.1'),
+  headingsLabel       : getMessage('csvSummary-headingsLabel'),
+  imagesLabel         : getMessage('csvSummary-imagesLabel'),
+  keyboardLabel       : getMessage('csvSummary-keyboardLabel'),
+  landmarksLabel      : getMessage('csvSummary-landmarksLabel'),
+  linksLabel          : getMessage('csvSummary-linksLabel'),
+  siteNavigationLabel : getMessage('csvSummary-siteNavigationLabel'),
+  stylesContentLabel  : getMessage('csvSummary-stylesContentLabel'),
+  tablesLabel         : getMessage('csvSummary-tablesLabel'),
+  timingLabel         : getMessage('csvSummary-timingLabel'),
+  widgetsScriptsLabel : getMessage('csvSummary-widgetsScriptsLabel')
 };
 
 export class commonCSV {
@@ -106,9 +136,14 @@ export class commonCSV {
     return csv;;
   }
 
-  getRuleSummary (result) {
+  getRuleSummary (result, msgId) {
     let csv = '';
-    csv += this.arrayToCSV([msg.csvNumberOfRuleWith]);
+    let m = msg[msgId];
+    if ( m ) {
+      csv += this.arrayToCSV([m]);
+    } else {
+      csv += this.arrayToCSV([msg.csvNumberOfRuleWith]);
+    }
     csv += this.arrayToCSV([msg.violationsLabel, result.violations]);
     csv += this.arrayToCSV([msg.warningsLabel, result.warnings]);
     csv += this.arrayToCSV([msg.manualChecksLabel, result.manual_checks]);
@@ -231,6 +266,10 @@ export class commonCSV {
     let csv = '\n';
     csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
     csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
+    csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
+    // get only primary Success Criteria, the first item in ruleInfo.sc array
+    csv += this.contentCSV(msg.ruleSCLabel,           [ruleInfo.sc[0]]);
+    csv += this.contentCSV(msg.ruleComplianceLabel,   ruleInfo.compliance);
     csv += this.contentCSV(msg.ruleScopeLabel,        ruleInfo.scope);
     return csv;
   }

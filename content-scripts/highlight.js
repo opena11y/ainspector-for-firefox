@@ -305,6 +305,7 @@ var highlightModule = highlightModule || {
     }
 
     function getHighlightedElements(elems, node) {
+      let nodes = [];
 
       for (let n = node.firstChild; n !== null; n = n.nextSibling ) {
         if (n.nodeType === Node.ELEMENT_NODE) {
@@ -333,6 +334,14 @@ var highlightModule = highlightModule || {
                 } catch (e) {
                   console.log('[removeFromDocument][catch]' + e);
                 }
+                break;
+
+              case 'slot':
+                n.assignedNodes().forEach( n2 => {
+                  if (n2.parentNode) {
+                    elems = getHighlightedElements(elems, n2.parentNode);
+                  }
+                });
                 break;
 
               default:
