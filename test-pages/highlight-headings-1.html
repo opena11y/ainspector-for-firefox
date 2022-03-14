@@ -1,76 +1,64 @@
-
-  <!DOCTYPE html>
-  <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
   <head>
-      <title>Highlight Headings with Nesting Errors | AInspector Web Compontent Test Page</title>
-      <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-      <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
+    <title>Highlight Headings with Nesting Errors | AInspector Test Pages</title>
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
+    <link href="test.css" rel="stylesheet" type="text/css"/>
+    <script src="headingWebComponent.js"></script>
   </head>
   <body>
-      <template id="heading-template">
-        <h3><slot name="h3">Default Slotted H3 content</slot></h3>
-        <slot name="h4"><h4>Default Slotted H4 content</h4></slot>
-        <slot name="h5"><h5>Default Slotted H5 content</h5></slot>
-        <slot name="h6"><h6>Default Slotted H6 content</h6></slot>
-      </template>
+    <header>
+      <div class="title">AInspector Test Pages</div>
+      <div><a href="index.html">All test pages</a></div>
+    </header>
 
-      <script>
-        class HeadingWebcomponent extends HTMLElement {
-          constructor() {
-            super();
+    <main>
+      <h1>Highlight Headings with Nesting Errors</h1>
+      <p>Can be used to test AInspector for:</p>
+      <ul>
+        <li>Detecting heading elements (H1-H6) in custom web components, including default slotted content.</li>
+        <li>Highlighting and removing highlighting from custom web components.</li>
+        <li>For the heading nesting rule the results of this page are 6 Violations and 12 Pass.</li>
+      </ul>
 
-            this.attachShadow({ mode: 'open' }); // Creates a shadow DOM root node for the element
+      <h2>Section 1</h2>
 
-            const template = document.getElementById('heading-template');
-            const templateInstance = template.content.cloneNode(true); // Clones the contents of the template
-            this.shadowRoot.appendChild(templateInstance); // Inserts the template contents into the shadow DOM
-          }
-        }
+      <heading-webcomponent>
+        <span slot="h3">Sub Section 1.1</span>
+        <h4 slot="h4">Sub Section 1.1.1</h4>
+        <div slot="h5">
+          <h6>Sub Section 1.1.1.1</h6>
+          <p><em>Content for 1.1.1.1</em></p>
+          <h6>Sub Section 1.1.1.2</h6></h6>
+          <p><em>Content for 1.1.1.2</em></p>
+          <h6>Sub Section 1.1.1.3</h6>
+          <p><em>Content for 1.1.1.3</em></p>
+        </div>
+      </heading-webcomponent>
 
-        customElements.define('heading-webcomponent', HeadingWebcomponent);
-      </script>
+      <h2>Section 2 (sub sections hidden)</h2>
 
-      <main>
-        <h1>AInspector Web Component Test Page: Highlight Headings with Nesting Errors</h1>
+      <heading-webcomponent hidden>
+        <span slot="h3">Sub Section 2.1</span>
+        <h4 slot="h4">Sub Section 2.1</h4>
+        <h5 slot="h5">Sub Section 2.1.1.1</h5>
+      </heading-webcomponent>
 
-        <h2>Section 1</h2>
+      <h2>Section 3</h2>
 
-        <heading-webcomponent>
-          <span slot="h3">Sub Section 1.1</span>
-          <h4 slot="h4">Sub Section 1.1.1</h4>
-          <div slot="h5">
-            <h6>Sub Section 1.1.1.1</h6>
-            <p><em>Content for 1.1.1.1</em></p>
-            <h6>Sub Section 1.1.1.2</h6></h6>
-            <p><em>Content for 1.1.1.2</em></p>
-            <h6>Sub Section 1.1.1.3</h6>
-            <p><em>Content for 1.1.1.3</em></p>
-          </div>
-        </heading-webcomponent>
+      <heading-webcomponent>
+        <span slot="h3">Sub Section 3.1</span>
+        <h5 slot="h5">Sub Section 3.1.1.1</h5>
+      </heading-webcomponent>
 
-       <h2>Section 2 (sub sections hidden)</h2>
+      <h2>Section 4</h2>
 
-        <heading-webcomponent hidden>
-          <span slot="h3">Sub Section 2.1</span>
-          <h4 slot="h4">Sub Section 2.1</h4>
-          <h5 slot="h5">Sub Section 2.1.1.1</h5>
-        </heading-webcomponent>
+      <heading-webcomponent>
+        <span slot="h3">Sub Section 4.1</span>
+        <h4 slot="h4" hidden>Sub Section 4.1.1</h4>
+      </heading-webcomponent>
 
-        <h2>Section 3</h2>
-
-        <heading-webcomponent>
-          <span slot="h3">Sub Section 3.1</span>
-          <h5 slot="h5">Sub Section 3.1.1.1</h5>
-        </heading-webcomponent>
-
-        <h2>Section 4</h2>
-
-        <heading-webcomponent>
-          <span slot="h3">Sub Section 4.1</span>
-          <h4 slot="h4" hidden>Sub Section 4.1.1</h4>
-        </heading-webcomponent>
-
-      </main>
-
+    </main>
   </body>
 </html>

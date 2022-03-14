@@ -325,8 +325,8 @@ var highlightModule = highlightModule || {
      * @param {DOM node}  startingNode  - Dom element to start (e.g. continue)
      *                                    traversal of the DOM
      * @param {Array}     elems         - Array of elements with the highliht class,
-     *                                    it is undefined when the root starting node is
-     *                                    calling the function for the first time
+     *                                    it is empty array when starting the 
+     *                                    transversal
      *
      * @return {Array} Accummulated elements with the highlight class
      */
@@ -378,7 +378,20 @@ var highlightModule = highlightModule || {
         }
       }
       return elems;
-    }
+    } // end of getHighlightedElements
+
+    /**
+     * @function removeFromFrames
+     *
+     * @desc  A recursive function to traverse a frameset, as frames
+     *        are traversed the highlighted elements are rmeoved from
+     *        them
+     *
+     *
+     * @param {Array}  frames  - Array of frames defined on a page
+     *                           (NOTE: frames are rarely used in 
+     *                           modern web development)
+     */
 
     function removeFromFrames(frames) {
 
@@ -397,25 +410,17 @@ var highlightModule = highlightModule || {
           console.log('[removeFromFrames][catch]: ' + error);
         }
       }
-    }
+    } // end of removeFromFrames
 
+    // Start transversal of DOM to get all highlighted elements
     let elems = getHighlightedElements(document, []);
+
+    // Remove highlighted elements
     this.removeHighlightedElements(elems);
 
+    // If the page uses frameset start transversal of frameset
     removeFromFrames(window.frames);
 
-    let off_screen_elements = document.getElementsByClassName(this.offScreenDivClass);
-
-    for (let j = 0; j < off_screen_elements.length; j++) {
-      if (off_screen_elements[j]) {
-        try {
-          document.body.removeChild(off_screen_elements[j]);
-        }
-        catch (error) {
-          console.log('[offScreen][catch]: ' + error);
-        }
-      }
-    }
   },
 
   /**
