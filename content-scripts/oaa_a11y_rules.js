@@ -17607,9 +17607,12 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
 
        for (var i = 0; i < elements_with_aria_attributes_len; i++) {
          var de = elements_with_aria_attributes[i];
+
          var style = de.computed_style;
          var aria_attrs = de.aria_attributes;
          var aria_attrs_len = aria_attrs.length;
+
+         console.log('[WIDGET_5][tag]: ' + de.tag_name);
 
          for (var j = 0; j < aria_attrs_len; j++) {
 
@@ -17618,6 +17621,7 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
            var prop = makeProp(attr.name, attr.value);
 
            if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
+             console.log('  ' + attr.name + ' ' + attr.is_valid_attribute);
 
              if (attr.is_valid_attribute) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name], [prop]);
              else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name], [prop]);
