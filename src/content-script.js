@@ -15961,7 +15961,6 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       }
     }
     else {
-      console.log('[domElement][invalid][name]: ' + name);
       av.is_valid_attribute = false;
       invalid_aria_attributes.push(av);
     }
@@ -16254,7 +16253,7 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       if (attr_value.length > 0) this.has_headers = true;
       break;
 
-    case 'headers':
+    case 'href':
       this.has_href = true;
       this.href = attr_value;
       addOtherAttribute('href', attr_value);
@@ -59664,20 +59663,14 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
          var aria_attrs = de.aria_attributes;
          var aria_attrs_len = aria_attrs.length;
 
-         console.log('[WIDGET_5][tag]: ' + de.tag_name);
-
          for (var j = 0; j < aria_attrs_len; j++) {
 
            var attr = aria_attrs[j];
-
            var prop = makeProp(attr.name, attr.value);
 
            if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-             console.log('  ' + attr.name + ' ' + attr.is_valid_attribute);
-
              if (attr.is_valid_attribute) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name], [prop]);
              else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name], [prop]);
-
            }
            else {
              rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, attr.value], [prop]);

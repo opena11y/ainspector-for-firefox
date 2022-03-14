@@ -15961,7 +15961,6 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       }
     }
     else {
-      console.log('[domElement][invalid][name]: ' + name);
       av.is_valid_attribute = false;
       invalid_aria_attributes.push(av);
     }
@@ -16254,7 +16253,7 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       if (attr_value.length > 0) this.has_headers = true;
       break;
 
-    case 'headers':
+    case 'href':
       this.has_href = true;
       this.href = attr_value;
       addOtherAttribute('href', attr_value);
