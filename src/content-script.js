@@ -16133,31 +16133,6 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
   this.aria_required  = false;
   this.title = '';
 
-  this.src = "";
-  if (node.src && (node.src.length > 0)) {
-    this.has_src = true;
-    this.src = node.src;
-    addOtherAttribute('src', node.src);
-  }
-
-  this.href = "";
-  if (node.href && (node.href.length > 0)) {
-    this.has_href = true;
-    this.href = node.href;
-    addOtherAttribute('href', node.href);
-  }
-
-  this.value = "";
-  if (node.value && (node.value.length > 0)) {
-    this.has_value = true;
-    this.value = node.value;
-  }
-
-  this.aria_labelledby = node.getAttribute('aria-labelledby');
-  if (this.aria_labelledby && this.aria_labelledby.length) {
-    addAriaAttribute('aria-labelledby', this.aria_labelledby);
-    this.has_aria_labelledby = true;
-  }
 
   this.ancestor_has_aria_activedescendant = false;
   if (parent_dom_element) this.ancestor_has_aria_activedescendant = parent_dom_element.ancestor_has_aria_activedescendant;
@@ -16234,6 +16209,9 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       break;
 
     case 'aria-labelledby':
+      this.has_aria_labelledby = true;
+      this.aria_labelledby = attr_value;;
+      addAriaAttribute('aria-labelledby', attr_value);
       break;
 
     case 'aria-live':
@@ -16273,6 +16251,12 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
 
     case 'headers':
       if (attr_value.length > 0) this.has_headers = true;
+      break;
+
+    case 'href':
+      this.has_href = true;
+      this.href = attr_value;
+      addOtherAttribute('href', attr_value);
       break;
 
     case 'lang':
@@ -16357,6 +16341,12 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
       if (attr_value.length > 0) this.has_scope = true;
       break;
 
+    case 'src':
+      this.has_src = true;
+      this.src = attr.value;
+      addOtherAttribute('src', attr.value);
+      break;
+
     case 'summary':
       this.summary = attr.value;
       if (attr_value.length > 0) this.has_summary = true;
@@ -16372,6 +16362,11 @@ OpenAjax.a11y.cache.DOMElement = function (node, parent_dom_element, doc) {
     case 'title':
       this.has_title = true;
       this.title = attr.value;
+      break;
+
+    case 'value':
+      this.has_value = true;
+      this.value = attr.value;
       break;
 
     default:
@@ -59665,6 +59660,7 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
 
        for (var i = 0; i < elements_with_aria_attributes_len; i++) {
          var de = elements_with_aria_attributes[i];
+
          var style = de.computed_style;
          var aria_attrs = de.aria_attributes;
          var aria_attrs_len = aria_attrs.length;
@@ -59672,14 +59668,11 @@ OpenAjax.a11y.RuleManager.addRulesFromJSON([
          for (var j = 0; j < aria_attrs_len; j++) {
 
            var attr = aria_attrs[j];
-
            var prop = makeProp(attr.name, attr.value);
 
            if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-
              if (attr.is_valid_attribute) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name], [prop]);
              else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name], [prop]);
-
            }
            else {
              rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, attr.value], [prop]);
@@ -63221,8 +63214,8 @@ var highlightModule = highlightModule || {
      * @param {DOM node}  startingNode  - Dom element to start (e.g. continue)
      *                                    traversal of the DOM
      * @param {Array}     elems         - Array of elements with the highliht class,
-     *                                    it is undefined when the root starting node is
-     *                                    calling the function for the first time
+     *                                    it is empty array when starting the 
+     *                                    transversal
      *
      * @return {Array} Accummulated elements with the highlight class
      */
@@ -63274,7 +63267,20 @@ var highlightModule = highlightModule || {
         }
       }
       return elems;
-    }
+    } // end of getHighlightedElements
+
+    /**
+     * @function removeFromFrames
+     *
+     * @desc  A recursive function to traverse a frameset, as frames
+     *        are traversed the highlighted elements are rmeoved from
+     *        them
+     *
+     *
+     * @param {Array}  frames  - Array of frames defined on a page
+     *                           (NOTE: frames are rarely used in 
+     *                           modern web development)
+     */
 
     function removeFromFrames(frames) {
 
@@ -63293,25 +63299,17 @@ var highlightModule = highlightModule || {
           console.log('[removeFromFrames][catch]: ' + error);
         }
       }
-    }
+    } // end of removeFromFrames
 
+    // Start transversal of DOM to get all highlighted elements
     let elems = getHighlightedElements(document, []);
+
+    // Remove highlighted elements
     this.removeHighlightedElements(elems);
 
+    // If the page uses frameset start transversal of frameset
     removeFromFrames(window.frames);
 
-    let off_screen_elements = document.getElementsByClassName(this.offScreenDivClass);
-
-    for (let j = 0; j < off_screen_elements.length; j++) {
-      if (off_screen_elements[j]) {
-        try {
-          document.body.removeChild(off_screen_elements[j]);
-        }
-        catch (error) {
-          console.log('[offScreen][catch]: ' + error);
-        }
-      }
-    }
   },
 
   /**

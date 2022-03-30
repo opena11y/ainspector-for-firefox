@@ -1,0 +1,19 @@
+body {
+	margin: 0.5em;
+	padding: 0;
+	border: #ddd solid 1px;
+}
+
+header {
+	background-color: #ddd;
+	padding: 0.5em;
+}
+
+header .title {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+main {
+	padding: 0.5em;
+}
