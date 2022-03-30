@@ -19165,7 +19165,9 @@ OpenAjax.a11y.cache.DOMCache.prototype.updateDOMElements = function (node, paren
             break;
 
           case 'slot':
-            nodes = node.assignedNodes({ flatten: true });
+            nodes = node.assignedNodes();
+            // if not slotted elements, check for default content
+            nodes = nodes.length ? nodes : node.assignedNodes({flatten: true});
             for (var i = 0; i < nodes.length; i += 1) {
               n = nodes[i];
               ps = this.updateDOMElements(n, dom_element, ps, showElements);
