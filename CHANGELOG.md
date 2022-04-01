@@ -11,7 +11,7 @@
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 
-## Version 2.0 — 2/21/22
+## Version 2.0 — 3/30/22
 
 * Renamed extension from "AInspector WCAG" to "AInspector", since most people just call it AInspector
 * Rewrote the entire code base to use web components for creating user interface controls
