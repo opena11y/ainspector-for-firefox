@@ -4,20 +4,10 @@ var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
 
 function evaluate (ruleset) {
 
-  if (ruleset !== 'ARIA_TRANS' && ruleset !== 'ARIA_STRICT') {
-    ruleset = 'ARIA_STRICT';
-  }
-
   // evaluation script
   let doc = window.document;
-  let rs = OpenAjax.a11y.RulesetManager.getRuleset(ruleset);
-  let evaluator_factory = OpenAjax.a11y.EvaluatorFactory.newInstance();
-  evaluator_factory.setParameter('ruleset', rs);
-  evaluator_factory.setFeature('eventProcessing', 'fae-util');
-  evaluator_factory.setFeature('groups', 7);
-  let evaluator = evaluator_factory.newEvaluator();
-  let evaluationResult = evaluator.evaluate(doc, doc.title, doc.location.href);
-
+  let evaluationLibrary = new EvaluationLibrary();
+  let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href);
   return evaluationResult;
 }
 
@@ -127,7 +117,7 @@ function getRuleResultsItem(ruleResult) {
 
   let ruleId = ruleResult.getRule().getId();
   let rule = ruleResult.getRule();
-  let elemResults = ruleResult.getElementResultsSummary();
+  let elemResults = ruleResult.getResultsSummary();
 
   let item = {
     'ruleId'         : ruleId,
@@ -258,7 +248,7 @@ function getElementResultInfo(ruleResult) {
 
   var elementResults = [];
 
-  var results = ruleResult.getElementResultsArray();
+  var results = ruleResult.getResultsArray();
 
   for(let i = 0; i < results.length; i++) {
     addElementResult(results[i]);

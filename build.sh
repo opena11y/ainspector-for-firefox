@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 echo "... Creating content-script.js ..."
+cp ../evaluation-library/releases/opena11y-evaluation-library.js  temp.js
+sed '$d' temp.js > content-scripts/opena11y-evaluation-library.js
+rm temp.js
 cat \
-content-scripts/oaa_a11y_evaluation.js \
-content-scripts/oaa_a11y_rules.js \
-content-scripts/oaa_a11y_rulesets.js \
+content-scripts/opena11y-evaluation-library.js \
 content-scripts/evaluate.js \
 content-scripts/highlight.js \
 content-scripts/content.js > src/content-script.js
