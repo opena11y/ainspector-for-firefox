@@ -91,7 +91,7 @@ function getSummaryInfo () {
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
-  info.ruleset  = evaluationResult.getRuleset().getId();
+  info.ruleset  = 'ARIA_STRICT';
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
