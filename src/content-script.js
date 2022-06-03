@@ -17165,26 +17165,26 @@ class Rule {
   }
 
   /**
-   * @method getCategory
+   * @method getRuleCategory
    *
    * @desc Get a numerical constant representing the rule category
    *
    * @return {Integer}  see @desc
    */
 
-  getCategory () {
+  getRuleCategory () {
     return this.rule_category_id;
   }
 
   /**
-   * @method getCategoryInfo
+   * @method getRuleCategoryInfo
    *
    * @desc Get a localized title, url and description of the rule category
    *
    * @return {RuleCategoryInfoItem}  see @desc
    */
 
-  getCategoryInfo () {
+  getRuleCategoryInfo () {
     return this.rule_category_info;
   }
 
@@ -18857,6 +18857,17 @@ class RuleResult {
   }
 
   /**
+   * @method getRule
+   *
+   * @desc Gets the associated rule
+   *
+   * @return {Object} Rule object
+   */
+  getRule () {
+    return this.rule;
+  }
+
+  /**
    * @method getRuleDefinition
    *
    * @desc Gets the definition of the rule
@@ -18864,7 +18875,7 @@ class RuleResult {
    * @return {String} Localized string of the rule definition based on being
    *                  required or recommended
    */
-  getRuleDefinition   () {
+  getRuleDefinition () {
     return this.rule.getDefinition(this.isRuleRequired());
   }
 
@@ -18882,7 +18893,7 @@ class RuleResult {
   }
 
   /**
-   * @method getWCAG20Level
+   * @method getWCAGLevel
    *
    * @desc Get the string representation of the the WCAG 2.0 Success Criterion Level
    *       based on the primary id of the rule
@@ -18891,12 +18902,12 @@ class RuleResult {
    *                    (i.e. A, AA or AAA)
    */
 
-  getWCAG20Level   () {
+  getWCAGLevel   () {
     return this.rule.getWCAG20Level();
   }
 
   /**
-   * @method getWCAG20LevelNLS
+   * @method getWCAGLevelNLS
    *
    * @desc Get the string representation of the the WCAG 2.0 Success Criterion Level
    *       based on the primary id of the rule
@@ -18905,8 +18916,8 @@ class RuleResult {
    *                    (i.e. A, AA or AAA)
    */
 
-  getWCAG20LevelNLS   () {
-    return this.rule.getWCAG20Level();
+  getWCAGLevelNLS   () {
+    return this.rule.getWCAGLevel();
   }
 
   /**
@@ -18957,8 +18968,8 @@ class RuleResult {
       guideline_nls:  this.rule.getGuidelineInfo().title,
       guideline_code: this.rule.getGuidelineInfo().id,
 
-      rule_category_nls:  this.rule.getCategoryInfo().title,
-      rule_category_code: this.rule.getCategoryInfo().id,
+      rule_category_nls:  this.rule.getRuleCategoryInfo().title,
+      rule_category_code: this.rule.getRuleCategoryInfo().id,
 
       rule_scope_code_nls: this.rule.getScopeNLS(),
       rule_scope_code:     this.rule.getScope(),
@@ -19285,18 +19296,18 @@ function getSummaryItem (summary, id) {
 function getRuleCategoryResults (evalResult) {
 
   const rcIds = [
-    OpenAjax.a11y.RULE_CATEGORIES.LANDMARKS,
-    OpenAjax.a11y.RULE_CATEGORIES.HEADINGS,
-    OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY,
-    OpenAjax.a11y.RULE_CATEGORIES.IMAGES,
-    OpenAjax.a11y.RULE_CATEGORIES.LINKS,
-    OpenAjax.a11y.RULE_CATEGORIES.FORMS,
-    OpenAjax.a11y.RULE_CATEGORIES.TABLES,
-    OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    OpenAjax.a11y.RULE_CATEGORIES.AUDIO_VIDEO,
-    OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    OpenAjax.a11y.RULE_CATEGORIES.TIMING,
-    OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION
+    RULE_CATEGORIES.LANDMARKS,
+    RULE_CATEGORIES.HEADINGS,
+    RULE_CATEGORIES.STYLES_READABILITY,
+    RULE_CATEGORIES.IMAGES,
+    RULE_CATEGORIES.LINKS,
+    RULE_CATEGORIES.FORMS,
+    RULE_CATEGORIES.TABLES,
+    RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    RULE_CATEGORIES.AUDIO_VIDEO,
+    RULE_CATEGORIES.KEYBOARD_SUPPORT,
+    RULE_CATEGORIES.TIMING,
+    RULE_CATEGORIES.SITE_NAVIGATION
   ];
 
   let rcResults = [];
@@ -19310,18 +19321,18 @@ function getRuleCategoryResults (evalResult) {
 function getGuidelineResults (evalResult) {
 
   const glIds = [
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_4,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_4,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1
+    WCAG_GUIDELINE.G_1_1,
+    WCAG_GUIDELINE.G_1_2,
+    WCAG_GUIDELINE.G_1_3,
+    WCAG_GUIDELINE.G_1_4,
+    WCAG_GUIDELINE.G_2_1,
+    WCAG_GUIDELINE.G_2_2,
+    WCAG_GUIDELINE.G_2_3,
+    WCAG_GUIDELINE.G_2_4,
+    WCAG_GUIDELINE.G_3_1,
+    WCAG_GUIDELINE.G_3_2,
+    WCAG_GUIDELINE.G_3_3,
+    WCAG_GUIDELINE.G_4_1
   ];
 
   let glResults = [];
@@ -19346,7 +19357,7 @@ function getSummaryInfo () {
   let ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
   let ruleResults       = ruleGroupResult.getRuleResultsArray();
 
-  info.ruleset  = evaluationResult.getRuleset().getId();
+  info.ruleset  = 'ARIA_STRICT';
 
   info.violations    = ruleSummaryResult.violations;
   info.warnings      = ruleSummaryResult.warnings;
@@ -19384,7 +19395,7 @@ function getRuleResultsItem(ruleResult) {
     'wcag'           : rule.getPrimarySuccessCriterion().id,
     'result'         : ruleResult.getResultValueNLS(),
     'resultValue'    : ruleResult.getResultValue(),
-    'level'          : ruleResult.getWCAG20LevelNLS(),
+    'level'          : ruleResult.getWCAGLevelNLS(),
     'messages'       : ruleResult.getResultMessagesArray(),
     'detailsAction'  : getDetailsAction(ruleResult),
     'elemViolations'   : elemResults.violations,
@@ -19490,11 +19501,11 @@ function getElementResultInfo(ruleResult) {
     };
 
     // Adjust sort order of element results for AInspector Sidebar
-    if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
+    if (item.resultValue === ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
     }
     else {
-      if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.PASS) {
+      if (item.resultValue === ELEMENT_RESULT_VALUE.PASS) {
         item.resultValue = 2;
       }
     }
@@ -19675,10 +19686,10 @@ function getDetailsAction(ruleResult) {
     'summary'         : rule.getSummary(required),
     'definition'      : rule.getDefinition(required),
     'action'          : ruleResult.getResultMessagesArray(),
-    'purpose'         : rule.getPurpose(),
+    'purpose'         : rule.getPurposes(),
     'techniques'      : getInformationalInfoArray(rule.getTechniques()),
     'targets'         : rule.getTargetResources(),
-    'compliance'      : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
+    'compliance'      : 'WCAG Level ' + rule.getWCAGLevel() + ', ' + (required ? 'Required' : 'Recommended'),
     'sc'              : getInformationalInfoArray(wcag),
     'additionalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
   }

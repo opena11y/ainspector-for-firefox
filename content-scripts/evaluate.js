@@ -30,18 +30,18 @@ function getSummaryItem (summary, id) {
 function getRuleCategoryResults (evalResult) {
 
   const rcIds = [
-    OpenAjax.a11y.RULE_CATEGORIES.LANDMARKS,
-    OpenAjax.a11y.RULE_CATEGORIES.HEADINGS,
-    OpenAjax.a11y.RULE_CATEGORIES.STYLES_READABILITY,
-    OpenAjax.a11y.RULE_CATEGORIES.IMAGES,
-    OpenAjax.a11y.RULE_CATEGORIES.LINKS,
-    OpenAjax.a11y.RULE_CATEGORIES.FORMS,
-    OpenAjax.a11y.RULE_CATEGORIES.TABLES,
-    OpenAjax.a11y.RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    OpenAjax.a11y.RULE_CATEGORIES.AUDIO_VIDEO,
-    OpenAjax.a11y.RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    OpenAjax.a11y.RULE_CATEGORIES.TIMING,
-    OpenAjax.a11y.RULE_CATEGORIES.SITE_NAVIGATION
+    RULE_CATEGORIES.LANDMARKS,
+    RULE_CATEGORIES.HEADINGS,
+    RULE_CATEGORIES.STYLES_READABILITY,
+    RULE_CATEGORIES.IMAGES,
+    RULE_CATEGORIES.LINKS,
+    RULE_CATEGORIES.FORMS,
+    RULE_CATEGORIES.TABLES,
+    RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    RULE_CATEGORIES.AUDIO_VIDEO,
+    RULE_CATEGORIES.KEYBOARD_SUPPORT,
+    RULE_CATEGORIES.TIMING,
+    RULE_CATEGORIES.SITE_NAVIGATION
   ];
 
   let rcResults = [];
@@ -55,18 +55,18 @@ function getRuleCategoryResults (evalResult) {
 function getGuidelineResults (evalResult) {
 
   const glIds = [
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_1_4,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_2_4,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_1,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_2,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_3_3,
-    OpenAjax.a11y.WCAG20_GUIDELINE.G_4_1
+    WCAG_GUIDELINE.G_1_1,
+    WCAG_GUIDELINE.G_1_2,
+    WCAG_GUIDELINE.G_1_3,
+    WCAG_GUIDELINE.G_1_4,
+    WCAG_GUIDELINE.G_2_1,
+    WCAG_GUIDELINE.G_2_2,
+    WCAG_GUIDELINE.G_2_3,
+    WCAG_GUIDELINE.G_2_4,
+    WCAG_GUIDELINE.G_3_1,
+    WCAG_GUIDELINE.G_3_2,
+    WCAG_GUIDELINE.G_3_3,
+    WCAG_GUIDELINE.G_4_1
   ];
 
   let glResults = [];
@@ -129,7 +129,7 @@ function getRuleResultsItem(ruleResult) {
     'wcag'           : rule.getPrimarySuccessCriterion().id,
     'result'         : ruleResult.getResultValueNLS(),
     'resultValue'    : ruleResult.getResultValue(),
-    'level'          : ruleResult.getWCAG20LevelNLS(),
+    'level'          : ruleResult.getWCAGLevelNLS(),
     'messages'       : ruleResult.getResultMessagesArray(),
     'detailsAction'  : getDetailsAction(ruleResult),
     'elemViolations'   : elemResults.violations,
@@ -235,11 +235,11 @@ function getElementResultInfo(ruleResult) {
     };
 
     // Adjust sort order of element results for AInspector Sidebar
-    if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.HIDDEN) {
+    if (item.resultValue === ELEMENT_RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
     }
     else {
-      if (item.resultValue === OpenAjax.a11y.ELEMENT_RESULT_VALUE.PASS) {
+      if (item.resultValue === ELEMENT_RESULT_VALUE.PASS) {
         item.resultValue = 2;
       }
     }
@@ -420,10 +420,10 @@ function getDetailsAction(ruleResult) {
     'summary'         : rule.getSummary(required),
     'definition'      : rule.getDefinition(required),
     'action'          : ruleResult.getResultMessagesArray(),
-    'purpose'         : rule.getPurpose(),
+    'purpose'         : rule.getPurposes(),
     'techniques'      : getInformationalInfoArray(rule.getTechniques()),
     'targets'         : rule.getTargetResources(),
-    'compliance'      : 'WCAG Level ' + rule.getWCAG20Level() + ', ' + (required ? 'Required' : 'Recommended'),
+    'compliance'      : 'WCAG Level ' + rule.getWCAGLevel() + ', ' + (required ? 'Required' : 'Recommended'),
     'sc'              : getInformationalInfoArray(wcag),
     'additionalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
   }
