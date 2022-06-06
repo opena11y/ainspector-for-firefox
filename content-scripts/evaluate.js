@@ -84,6 +84,8 @@ function getGuidelineResults (evalResult) {
 */
 function getSummaryInfo () {
 
+  console.log(`[getSummaryInfo][A]`);
+
   let info = {};
 
   let evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
@@ -106,6 +108,9 @@ function getSummaryInfo () {
   for(let i = 0; i < ruleResults.length; i++) {
     info.allRuleResults.push(getRuleResultsItem(ruleResults[i]));
   }
+
+  console.log(`[getSummaryInfo][B]: ${info}`);
+
   return info;
 }
 
@@ -126,10 +131,10 @@ function getRuleResultsItem(ruleResult) {
     'required'       : ruleResult.isRuleRequired(),
     'ruleCategory'   : rule.rule_category_info.title,
     'guideline'      : rule.guideline_info.title.replace('Guideline ',''),
-    'wcag'           : rule.getPrimarySuccessCriterion().id,
+    'wcag'           : rule.getPrimarySuccessCriterionInfo().id,
     'result'         : ruleResult.getResultValueNLS(),
     'resultValue'    : ruleResult.getResultValue(),
-    'level'          : ruleResult.getWCAGLevelNLS(),
+    'level'          : ruleResult.getWCAGLevel(),
     'messages'       : ruleResult.getResultMessagesArray(),
     'detailsAction'  : getDetailsAction(ruleResult),
     'elemViolations'   : elemResults.violations,
@@ -149,6 +154,8 @@ function getRuleResultsItem(ruleResult) {
 *   (2) return result objec for the group view in the sidebar;
 */
 function getRuleResultsInfo (groupType, groupId) {
+
+  console.log(`[getRuleResultsInfo][A]`);
 
   let info = {};
 
@@ -181,6 +188,9 @@ function getRuleResultsInfo (groupType, groupId) {
   for(let i = 0; i < ruleResults.length; i++) {
     info.ruleResults.push(getRuleResultsItem(ruleResults[i]));
   }
+
+  console.log(`[getRuleResultsInfo][B]: ${info}`);
+
   return info;
 }
 
@@ -197,12 +207,12 @@ function getRuleResultInfo(ruleResult) {
     'scope'         : rule.getScopeNLS(),
     'summary'       : ruleResult.getRuleSummary(),
     'required'      : ruleResult.isRuleRequired(),
-    'wcag'          : ruleResult.getRule().getPrimarySuccessCriterion().id,
+    'wcag'          : ruleResult.getRule().getPrimarySuccessCriterionInfo().id,
     'result'        : ruleResult.getResultValueNLS(),
     'category'      : rule.getCategoryInfo().title,
     'guideline'     : rule.getGuidelineInfo().title,
     'resultValue'   : ruleResult.getResultValue(),
-    'level'         : ruleResult.getWCAG20LevelNLS(),
+    'level'         : ruleResult.getWCAGLevel(),
     'messages'      : ruleResult.getResultMessagesArray(),
     'detailsAction' : getDetailsAction(ruleResult)
   };
@@ -235,11 +245,11 @@ function getElementResultInfo(ruleResult) {
     };
 
     // Adjust sort order of element results for AInspector Sidebar
-    if (item.resultValue === ELEMENT_RESULT_VALUE.HIDDEN) {
+    if (item.resultValue === RESULT_VALUE.HIDDEN) {
       item.resultValue = 1;
     }
     else {
-      if (item.resultValue === ELEMENT_RESULT_VALUE.PASS) {
+      if (item.resultValue === RESULT_VALUE.PASS) {
         item.resultValue = 2;
       }
     }
@@ -248,10 +258,12 @@ function getElementResultInfo(ruleResult) {
 
   var elementResults = [];
 
-  var results = ruleResult.getResultsArray();
+  var results = ruleResult.getAllResultsArray();
 
   for(let i = 0; i < results.length; i++) {
-    addElementResult(results[i]);
+    if (results[i].isElementResult) {
+      addElementResult(results[i]);
+    }
   }
 
   return elementResults;
@@ -267,7 +279,7 @@ function getElementResultsInfo(ruleId, highlight, position) {
 
   const evaluationResult  = evaluate(infoAInspectorEvaluation.ruleset);
   const ruleResult = evaluationResult.getRuleResult(ruleId);
-  const elemSummaryResult = ruleResult.getElementResultsSummary();
+  const elemSummaryResult = ruleResult.getResultsSummary();
 
   const rule = ruleResult.getRule();
   const required = ruleResult.isRuleRequired()
@@ -392,6 +404,10 @@ function getDetailsAction(ruleResult) {
 
     let items = [];
 
+    if (!infoItems || !infoItems.length) {
+      return [];
+    }
+
     for (let i = 0; i < infoItems.length; i++) {
       let item = infoItems[i];
       if (item.url_spec) {
@@ -409,10 +425,10 @@ function getDetailsAction(ruleResult) {
 
   let primarySC = {};
   let wcag = [];
-  primarySC.title    = rule.getPrimarySuccessCriterion().title + ' (Primary)';
-  primarySC.url_spec = rule.getPrimarySuccessCriterion().url_spec;
+  primarySC.title    = rule.getPrimarySuccessCriterionInfo().title + ' (Primary)';
+  primarySC.url_spec = rule.getPrimarySuccessCriterionInfo().url_spec;
   wcag.push(primarySC);
-  wcag = wcag.concat(rule.getRelatedSuccessCriteria());
+  wcag = wcag.concat(rule.getRelatedSuccessCriteriaInfo());
 
   let detailsAction = {
     'ruleId'          : rule.getId(),

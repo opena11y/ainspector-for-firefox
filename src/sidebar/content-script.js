@@ -34249,8 +34249,8 @@ OpenAjax.a11y.RuleResult.prototype.toJSON = function(prefix, flag) {
 
   json += prefix + "{ \"rule_id\"               : \"" + rule.getId()                            + "\",\n";
   json += prefix + "  \"rule_summary\"          :   " + JSON.stringify(this.getRuleSummary())   + ",\n";
-  json += prefix + "  \"success_criteria_nls\"  : \"" + rule.getPrimarySuccessCriterion().title + "\",\n";
-  json += prefix + "  \"success_criteria_code\" : \"" + rule.getPrimarySuccessCriterion().id    + "\",\n";
+  json += prefix + "  \"success_criteria_nls\"  : \"" + rule.getPrimarySuccessCriterionInfo().title + "\",\n";
+  json += prefix + "  \"success_criteria_code\" : \"" + rule.getPrimarySuccessCriterionInfo().id    + "\",\n";
   json += prefix + "  \"guideline_nls\"         : \"" + rule.getGuidelineInfo().title           + "\",\n";
   json += prefix + "  \"guideline_code\"        : \"" + rule.getGuidelineInfo().id              + "\",\n";
   json += prefix + "  \"rule_category_nls\"     : \"" + rule.getCategoryInfo().title            + "\",\n";

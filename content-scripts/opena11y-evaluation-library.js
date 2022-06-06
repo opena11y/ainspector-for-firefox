@@ -5812,6 +5812,9 @@ function getFormattedDate() {
  */
 
 function cleanForUTF8 (str) {
+  if (typeof str !== 'string') {
+    return "[cleanForUTF8]: Not a string";
+  }
   let nstr = '';
   str.split().forEach( c => {
     if (c >= ' ' && c < '~') nstr += c;
@@ -16760,6 +16763,7 @@ function getSuccessCriterionInfo(successCriterionId) {
         if (sc === successCriterionId) {
           debug$b.flag && debug$b.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
           return {
+            id: successCriterionId,
             level: success_criterion.level,
             title: success_criterion.title,
             url: success_criterion.url_spec,
@@ -17165,26 +17169,26 @@ class Rule {
   }
 
   /**
-   * @method getRuleCategory
+   * @method getCategoryInfo
    *
    * @desc Get a numerical constant representing the rule category
    *
    * @return {Integer}  see @desc
    */
 
-  getRuleCategory () {
+  getCategory () {
     return this.rule_category_id;
   }
 
   /**
-   * @method getRuleCategoryInfo
+   * @method getCategoryInfo
    *
    * @desc Get a localized title, url and description of the rule category
    *
    * @return {RuleCategoryInfoItem}  see @desc
    */
 
-  getRuleCategoryInfo () {
+  getCategoryInfo () {
     return this.rule_category_info;
   }
 
@@ -17354,38 +17358,38 @@ class Rule {
   }
 
   /**
-   * @method getPrimarySuccessCriterion
+   * @method getPrimarySuccessCriterionId
    *
    * @desc Get id of the primary WCAG Success Criteria for the rule
    *
    * @return  {Integer}  see description
    */
 
-  getPrimarySuccessCriterion () {
+  getPrimarySuccessCriterionId () {
     return this.wcag_primary_id;
   }
 
   /**
-   * @method getPrimarySuccessCriterionNLS
+   * @method getPrimarySuccessCriterionInfo
    *
    * @desc Get information about primary WCAG Success Criteria for the rule
    *
    * @return  {SuccessCriterionInfo}  Object representing information about the SC
    */
 
-  getPrimarySuccessCriterionNLS () {
+  getPrimarySuccessCriterionInfo () {
     return this.wcag_primary;
   }
 
   /**
-   * @method getRelatedSuccessCriteria
+   * @method getRelatedSuccessCriteriaInfo
    *
    * @desc Get information about the related WCAG Success Criteria for the rule
    *
    * @return  {Array}  Array of SuccessCriterionInfo objects
    */
 
-  getRelatedSuccessCriteria () {
+  getRelatedSuccessCriteriaInfo () {
     return this.wcag_related;
   }
 
@@ -17653,12 +17657,14 @@ class RuleGroupResult {
   constructor (evaluationResult, title, url, desc, ruleset=RULESET.ALL) {
     this.evaluation_result = evaluationResult;
 
-    this.title       = title;
-    this.url         = url;
-    this.description = desc;
+    this.rule_group_information = {};
 
-    this.rules_required    = 0;
-    this.rules_recommended = 0;
+    this.rule_group_information.title       = title;
+    this.rule_group_information.url         = url;
+    this.rule_group_information.description = desc;
+
+    this.rule_group_information.rules_required    = 0;
+    this.rule_group_information.rules_recommended = 0;
 
     this.ruleset = ruleset;
 
@@ -17666,6 +17672,18 @@ class RuleGroupResult {
     this.rule_results_summary = new RuleResultsSummary();
 
     debug$8.flag && debug$8.log(`[title]: ${this.title} (${ruleset})`);
+  }
+
+  /**
+   * @method getRuleGroupInfo
+   *
+   * @desc Return information on the group of rules
+   *
+   * @return {RuleGroupInfo}  RuleGroupInfo object
+   */
+
+  getRuleGroupInfo () {
+    return this.rule_group_information;
   }
 
   /**
@@ -17786,10 +17804,10 @@ class RuleGroupResult {
       this.rule_results_summary.updateSummary(rule_result);
 
       if (rule_result.isRuleRequired()) {
-        this.rules_required += 1;
+        this.rule_group_information.rules_required += 1;
       }
       else {
-        this.rules_recommended += 1;
+        this.rule_group_information.rules_recommended += 1;
       }
     }
   }
@@ -17855,7 +17873,7 @@ const debug$7 = new DebugLogging('baseResult', false);
  */
 
 class BaseResult {
-  constructor (ruleResult, resultValue, msgId, msgArgs, result_identifier, ordinal_position) {
+  constructor (ruleResult, resultValue, msgId, msgArgs, result_identifier) {
 
     const msg = ruleResult.rule.base_result_msgs[msgId];
 
@@ -17867,7 +17885,6 @@ class BaseResult {
     debug$7.flag && debug$7.log(`[msgArgs]: ${msgArgs}`);
     this.result_message    = getBaseResultMessage(msg, msgArgs);
     this.result_identifier = result_identifier;
-    this.ordinal_position  = ordinal_position;
 
   }
 
@@ -17947,20 +17964,6 @@ class BaseResult {
   }
 
   /**
-   * @method getOrdinalPosition
-   *
-   * @desc Gets a string identifying the ordinal position,
-   *       is overrided by ElementResult and not needed for
-   *       PageResults
-   *
-   * @return {String} see @desc
-   */
-
-  getOrdinalPosition () {
-    return this.ordinal_position;
-  }
-
-  /**
    * @method getResultValue
    *
    * @desc Returns an numerical constant representing the element result
@@ -17983,6 +17986,19 @@ class BaseResult {
     return getCommonMessage('ruleResult', this.result_value);
   }
 
+
+  /**
+   * @method getResultMessage
+   *
+   * @desc Gets a string representation of the result message
+   *
+   * @return {String} see @desc
+   */
+
+  getResultMessage () {
+    return this.result_message;
+  }
+  
  /**
    * @method getDataForJSON
    *
@@ -17997,7 +18013,6 @@ class BaseResult {
       result_value:       this.result_value,
       result_value_nls:   this.result_value_nls,
       result_identifier:  this.result_identifier,
-      ordinal_position:   this.ordinal_position,
       message:            this.result_message
     }
   }
@@ -18053,8 +18068,7 @@ class ElementResult extends BaseResult {
           result_value,
           message_id,
           message_arguments,
-          domElement.getIdentifier(),
-          domElement.ordinalPosition);
+          domElement.getIdentifier());
 
     this.domElement = domElement;
     this.result_type    = RESULT_TYPE.ELEMENT;
@@ -18062,6 +18076,59 @@ class ElementResult extends BaseResult {
     if (debug$6.flag) {
       debug$6.log(`${this.result_value}: ${this.result_message}`);
     }
+  }
+  /**
+   * @method getResultIdentifier
+   *
+   * @desc Gets a string identifying the element, typically element and//or a key attribute
+   *       or property value
+   *
+   * @return {String} see description
+   */
+
+  getResultIdentifier () {
+    const de = this.domElement;
+    const identifier =  de.node.hasAttribute('type') ?
+                        `${de.tagName}[${de.getAttribute('type')}]` :
+                        de.tagName;
+    return identifier;
+  }
+
+  /**
+   * @method getTagName
+   *
+   * @desc Gets a string identifying the elements tag
+   *
+   * @return {String} see description
+   */
+
+  getTagName () {
+    return this.domElement.tagName;
+  }
+
+  /**
+   * @method getRole
+   *
+   * @desc Gets a string identifying the elements role
+   *
+   * @return {String} see description
+   */
+
+  getRole () {
+    return this.domElement.role;
+  }
+
+  /**
+   * @method getOrdinalPosition
+   *
+   * @desc Gets a string identifying the ordinal position,
+   *       is overrided by ElementResult and PageResult
+   *
+   * @return {String} see description
+   */
+
+  getOrdinalPosition () {
+    return this.domElement.ordinalPosition;
   }
 
   /**
@@ -18156,36 +18223,6 @@ class ElementResult extends BaseResult {
     return info;
   }
 
-  /**
-   * @method getResultIdentifier
-   *
-   * @desc Gets a string identifying the element, typically element and//or a key attribute
-   *       or property value
-   *
-   * @return {String} see description
-   */
-
-  getResultIdentifier () {
-    const de = this.domElement;
-    const identifier =  de.node.hasAttribute('type') ?
-                        `${de.tagName}[${de.getAttribute('type')}]` :
-                        de.tagName;
-    return identifier;
-  }
-
-
-  /**
-   * @method getOrdinalPosition
-   *
-   * @desc Gets a string identifying the ordinal position,
-   *       is overrided by ElementResult and PageResult
-   *
-   * @return {String} see description
-   */
-
-  getOrdinalPosition () {
-    return this.domElement.ordinalPosition;
-  }
 
 }
 
@@ -18363,7 +18400,7 @@ const debug$4 = new DebugLogging('PageResult', false);
 
 class PageResult extends BaseResult {
   constructor (rule_result, result_value, domCache, message_id, message_arguments) {
-    super(rule_result, result_value, message_id, message_arguments, 'page', -1);
+    super(rule_result, result_value, message_id, message_arguments, 'page');
 
     this.domCache     = domCache;
     this.result_type  = RESULT_TYPE.PAGE;
@@ -18903,20 +18940,6 @@ class RuleResult {
    */
 
   getWCAGLevel   () {
-    return this.rule.getWCAG20Level();
-  }
-
-  /**
-   * @method getWCAGLevelNLS
-   *
-   * @desc Get the string representation of the the WCAG 2.0 Success Criterion Level
-   *       based on the primary id of the rule
-   *
-   * @return  {String}  String representing the WCAG 2.0 success criterion level
-   *                    (i.e. A, AA or AAA)
-   */
-
-  getWCAGLevelNLS   () {
     return this.rule.getWCAGLevel();
   }
 
@@ -18962,14 +18985,14 @@ class RuleResult {
       rule_id: this.rule.getId(),
       rule_summary: this.getRuleSummary(),
 
-      success_criteria_nls:  this.rule.getPrimarySuccessCriterion().title,
-      success_criteria_code: this.rule.getPrimarySuccessCriterion().id,
+      success_criteria_nls:  this.rule.getPrimarySuccessCriterionInfo().title,
+      success_criteria_code: this.rule.getPrimarySuccessCriterionInfo().id,
 
       guideline_nls:  this.rule.getGuidelineInfo().title,
       guideline_code: this.rule.getGuidelineInfo().id,
 
-      rule_category_nls:  this.rule.getRuleCategoryInfo().title,
-      rule_category_code: this.rule.getRuleCategoryInfo().id,
+      rule_category_nls:  this.rule.getCategoryInfo().title,
+      rule_category_code: this.rule.getCategoryInfo().id,
 
       rule_scope_code_nls: this.rule.getScopeNLS(),
       rule_scope_code:     this.rule.getScope(),
@@ -19176,7 +19199,7 @@ class EvaluationResult {
     var rgr = new RuleGroupResult(this, rcInfo.title, rcInfo.url, rcInfo.description, ruleset);
 
     this.allRuleResults.forEach( rr => {
-      if (rr.getRule().getRuleCategory() & categoryId) {
+      if (rr.getRule().getCategory() & categoryId) {
         rgr.addRuleResult(rr);
       }
     });
