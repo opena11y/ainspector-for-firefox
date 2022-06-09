@@ -179,6 +179,40 @@ export default class ViewElementResults {
     this.elementResultGrid.deleteDataRows();
 
     getOptions().then( (options) => {
+
+      const or = infoElementResults.otherResult;
+
+      // Check for Page or Website result
+      if (or && 
+          (options.resultsIncludePassNa ||
+          (['', 'V', 'W', 'MC'].indexOf(or.result) > 0))) {
+
+          rowId = this.getRowId(or.otherName);
+
+          // Save element result object
+          this.elementResults[rowId] = or;
+          row = this.elementResultGrid.addRow(rowId);
+
+          rowAccName = or.otherName;
+          this.elementResultGrid.addDataCell(row, or.otherName, '', 'element-info');
+
+          // Add result information cell (column 2)
+          style = 'result ' + this.getResultStyle(or.result);
+          sortValue = this.getResultSortingValue(or.result);
+          cellAccName = this.getResultAccessibleName(or.result);
+          rowAccName += ', ' + cellAccName;
+          this.elementResultGrid.addDataCell(row, or.result, cellAccName, style, sortValue);
+
+          // Add position information cell (column 3)
+          this.elementResultGrid.addDataCell(row, '', '', 'position', 0);
+
+          // Add action information cell (column 4)
+          rowAccName += ', ' + or.actionMessage;
+          this.elementResultGrid.addDataCell(row, or.actionMessage, '', 'action');
+          row.setAttribute('aria-label', rowAccName);
+
+      }
+
       for (i = 0; i < infoElementResults.elementResults.length; i += 1) {
         er = infoElementResults.elementResults[i];
 

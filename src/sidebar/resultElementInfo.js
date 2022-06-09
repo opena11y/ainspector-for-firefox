@@ -29,8 +29,11 @@ template.innerHTML = `
         <h3  id="action-label" class="first">Action</h3>
         <div id="action"></div>
 
-        <h3  id="tagname-label">Tag Name</h3>
-        <div id="tagname"></div>
+
+        <div id="tagname-info">
+          <h3  id="tagname-label">Tag Name</h3>
+          <div id="tagname"></div>
+        </div>
 
         <div id="accname-info">
           <h3><span id="accname-info-label">Accessible Name</span> <span id="accname-info-label-more"></span></h3>
@@ -106,7 +109,9 @@ export default class ResultElementInfo extends HTMLElement {
 
     this.infoDiv = this.shadowRoot.querySelector('#info');
     this.actionDiv   = this.shadowRoot.querySelector('#action');
-    this.tagNameDiv  = this.shadowRoot.querySelector('#tagname');
+
+    this.tagNameInfoDiv  = this.shadowRoot.querySelector('#tagname-info');
+    this.tagNameDiv      = this.shadowRoot.querySelector('#tagname');
 
     this.accNameInfoLabelMoreSpan = this.shadowRoot.querySelector('#accname-info-label-more');
     this.accNameInfoDiv    = this.shadowRoot.querySelector('#accname-info');
@@ -285,12 +290,16 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  updateActionAndTagName(elementInfo) {
+  updateAction(elementInfo) {
+    this.renderContent(this.actionDiv, elementInfo.actionMessage);
+  }
+
+  updateTagName(elementInfo) {
+    this.tagNameInfoDiv.classList.remove('hide');
     let tagName = elementInfo.tagName;
     if (elementInfo.role) {
       tagName += '[role=' + elementInfo.role + ']';
     }
-    this.renderContent(this.actionDiv, elementInfo.actionMessage);
     this.renderContent(this.tagNameDiv, tagName);
   }
 
@@ -384,20 +393,32 @@ export default class ResultElementInfo extends HTMLElement {
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
 
-    // Action and tag name Information
-    this.updateActionAndTagName(elementInfo);
+    // Update action Information
+    this.updateAction(elementInfo);
 
-    // Accessible name and description information
-    this.updateAccessibleNameInfo(elementInfo);
+    if (elementInfo.isElementResult) {
+      this.updateTagName(elementInfo);
 
-    // Color contrast information
-    this.updateCCRInfo(elementInfo);
+      // Accessible name and description information
+      this.updateAccessibleNameInfo(elementInfo);
 
-    // Visibility information
-    this.updateVisibilityInfo(elementInfo);
+      // Color contrast information
+      this.updateCCRInfo(elementInfo);
 
-    // Attribute information
-    this.updateAttributeInformation(elementInfo);
+      // Visibility information
+      this.updateVisibilityInfo(elementInfo);
+
+      // Attribute information
+      this.updateAttributeInformation(elementInfo);
+    }
+    else {
+      this.tagNameInfoDiv.classList.add('hide');
+      this.accNameInfoDiv.classList.add('hide');
+      this.accDescInfoDiv.classList.add('hide');
+      this.errorDescInfoDiv.classList.add('hide');
+      this.visInfoDiv.classList.add('hide');
+      this.attrsInfoTable.classList.add('hide');
+    }
 
     this.updateCopyText(elementInfo);
   }
@@ -421,58 +442,61 @@ export default class ResultElementInfo extends HTMLElement {
     this.copyText = '';
 
     this.copyText += msg.elementResultAction + '\n';
-    this.copyText += elementInfo.actionMessage + '\n\n';
 
-    this.copyText += msg.elementResultTagName + '\n';
-    if (elementInfo.role) {
-      this.copyText += elementInfo.tagName + '[role=' + elementInfo.role+ ']\n\n';
-    } else {
-      this.copyText += elementInfo.tagName + '\n\n';
-    }
+    if (elementInfo.isElementResult) {
+      this.copyText += elementInfo.actionMessage + '\n\n';
 
-    const visText = this.appendToCopyText(elementInfo.visibilityInfo);
-    if (visText) {
-      this.copyText += msg.elementResultVisibility + '\n';
-      this.copyText += visText + '\n\n';;
-    }
-
-    const accNameInfo = elementInfo.accNameInfo;
-    if (accNameInfo.name) {
-      this.copyText += msg.elementResultAccName + '\n';
-      this.copyText += 'text: ' + accNameInfo.name + '\n';
-      this.copyText += 'source: ' + accNameInfo.name_source + '\n\n';
-    } else {
-      if (accNameInfo.name_required && accNameInfo.name_possible) {
-        this.copyText += msg.elementResultAccName + '\n';
-      this.copyText += 'text: none' + '\n';
-      this.copyText += 'source: none' + '\n\n';
+      this.copyText += msg.elementResultTagName + '\n';
+      if (elementInfo.role) {
+        this.copyText += elementInfo.tagName + '[role=' + elementInfo.role+ ']\n\n';
+      } else {
+        this.copyText += elementInfo.tagName + '\n\n';
       }
-    }
 
-    if (accNameInfo.desc) {
-      this.copyText += msg.elementResultAccDesc + '\n';
-      this.copyText += 'text: ' + accNameInfo.desc + '\n';
-      this.copyText += 'source: ' + accNameInfo.desc_source + '\n\n';
-    }
+      const visText = this.appendToCopyText(elementInfo.visibilityInfo);
+      if (visText) {
+        this.copyText += msg.elementResultVisibility + '\n';
+        this.copyText += visText + '\n\n';;
+      }
 
-    if (accNameInfo.error_desc) {
-      this.copyText += msg.elementResultErrorDesc + '\n';
-      this.copyText += 'text: ' + accNameInfo.error_desc + '\n';
-      this.copyText += 'source: ' + accNameInfo.error_desc_source + '\n\n';
-    }
+      const accNameInfo = elementInfo.accNameInfo;
+      if (accNameInfo.name) {
+        this.copyText += msg.elementResultAccName + '\n';
+        this.copyText += 'text: ' + accNameInfo.name + '\n';
+        this.copyText += 'source: ' + accNameInfo.name_source + '\n\n';
+      } else {
+        if (accNameInfo.name_required && accNameInfo.name_possible) {
+          this.copyText += msg.elementResultAccName + '\n';
+        this.copyText += 'text: none' + '\n';
+        this.copyText += 'source: none' + '\n\n';
+        }
+      }
 
-    const ccrText = this.appendToCopyText(elementInfo.ccrInfo);
-    if (ccrText) {
-      this.copyText += msg.elementResultCCR + '\n';
-      this.copyText += ccrText + '\n\n';
-    }
+      if (accNameInfo.desc) {
+        this.copyText += msg.elementResultAccDesc + '\n';
+        this.copyText += 'text: ' + accNameInfo.desc + '\n';
+        this.copyText += 'source: ' + accNameInfo.desc_source + '\n\n';
+      }
 
-    const htmlAttrText = this.appendToCopyText(elementInfo.htmlAttrInfo);
-    const ariaAttrText = this.appendToCopyText(elementInfo.ariaAttrInfo);
-    if (htmlAttrText || ariaAttrText) {
-      this.copyText += msg.elementResultAttributeHeader + '\n';
-      this.copyText += htmlAttrText;
-      this.copyText += ariaAttrText;
+      if (accNameInfo.error_desc) {
+        this.copyText += msg.elementResultErrorDesc + '\n';
+        this.copyText += 'text: ' + accNameInfo.error_desc + '\n';
+        this.copyText += 'source: ' + accNameInfo.error_desc_source + '\n\n';
+      }
+
+      const ccrText = this.appendToCopyText(elementInfo.ccrInfo);
+      if (ccrText) {
+        this.copyText += msg.elementResultCCR + '\n';
+        this.copyText += ccrText + '\n\n';
+      }
+
+      const htmlAttrText = this.appendToCopyText(elementInfo.htmlAttrInfo);
+      const ariaAttrText = this.appendToCopyText(elementInfo.ariaAttrInfo);
+      if (htmlAttrText || ariaAttrText) {
+        this.copyText += msg.elementResultAttributeHeader + '\n';
+        this.copyText += htmlAttrText;
+        this.copyText += ariaAttrText;
+      }
     }
 
   }
