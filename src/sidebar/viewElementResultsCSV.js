@@ -7,7 +7,9 @@ const basicProps = ['tagName', 'result',  'resultValue', 'position', 'role', 'ac
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  elementResultsLabel : getMessage('elementResultsLabel')
+  elementResultsLabel : getMessage('elementResultsLabel'),
+  pageResultLabel:      getMessage('pageResultLabel'),
+  websiteResultLabel:   getMessage('websiteResultLabel')
 };
 export default class ViewElementResultsCSV extends commonCSV{
   constructor(detailsAction, elementResults, elementSummary) {
@@ -154,6 +156,15 @@ export default class ViewElementResultsCSV extends commonCSV{
     return values;
   }
 
+  otherResultToCSV (otherInfo) {
+    const values = [];
+    const label = otherInfo.isPageResult ? msg.pageResultLabel : msg.websiteResultLabel;
+    values.push(label);    
+    values.push(otherInfo.resultLong);    
+    values.push(otherInfo.actionMessage);    
+    return this.arrayToCSV(values);
+  }
+
   elementResultToCSV (elementInfo, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps) {
     let values = this.getValuesFromObject(elementInfo, basicProps);
     values = values.concat(this.getValuesFromObject(elementInfo.accNameInfo, accNameProps));
@@ -169,7 +180,9 @@ export default class ViewElementResultsCSV extends commonCSV{
     const elemResults = [];
 
     for (let er in elementResults) {
-      elemResults.push(elementResults[er]);
+      if (elementResults[er].isElementResult) {
+        elemResults.push(elementResults[er]);
+      }
     }
 
     elemResults.sort((a, b) => {
@@ -181,6 +194,15 @@ export default class ViewElementResultsCSV extends commonCSV{
     });
 
     return elemResults;
+  }
+
+  getOtherResult (elementResults) {
+    for (let er in elementResults) {
+      if (!elementResults[er].isElementResult) {
+        return elementResults[er];
+      }
+    }
+    return null;
   }
 
   getCSV (options, title, location) {
@@ -197,6 +219,12 @@ export default class ViewElementResultsCSV extends commonCSV{
     csv += this.getBlankRow();
     csv += this.getElementSummary(this.elementSummary);
 
+    const otherResult = this.getOtherResult(this.elementResults);
+    if (otherResult) {
+      csv += this.otherResultToCSV(otherResult);
+      csv += this.getBlankRow();
+    }
+
     csv += this.arrayToCSV([msg.elementResultsLabel]);
 
     let cols = this.getColumnHeaders(basicProps);
@@ -208,7 +236,7 @@ export default class ViewElementResultsCSV extends commonCSV{
 
     csv += this.arrayToCSV(cols);
 
-    const elemResults = this.getElementResultsArray(this.elementResults)
+    const elemResults = this.getElementResultsArray(this.elementResults);
 
     for (const info of elemResults) {
       if (options.resultsIncludePassNa ||

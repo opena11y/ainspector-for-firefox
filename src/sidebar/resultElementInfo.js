@@ -1,5 +1,7 @@
 /* resultElementInfojs */
 
+import { getResultStyle }     from './utils.js';
+
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
@@ -12,7 +14,9 @@ const msg = {
   elementResultAttributeHeader : getMessage('elementResultAttributeHeader'),
   elementResultCCR             : getMessage('elementResultCCR'),
   elementResultErrorDesc       : getMessage('elementResultErrorDesc'),
+  elementResultMessage         : getMessage('elementResultMessage'),
   elementResultTagName         : getMessage('elementResultTagName'),
+  elementResultType            : getMessage('elementResultType'),
   elementResultValueHeader     : getMessage('elementResultValueHeader'),
   elementResultVisibility      : getMessage('elementResultVisibility'),
   ruleActionLabel              : getMessage('ruleActionLabel')
@@ -26,9 +30,17 @@ template.innerHTML = `
         <div id="message2" class="message"></div>
       </div>
       <div id="info" class="hide">
-        <h3  id="action-label" class="first">Action</h3>
-        <div id="action"></div>
 
+        <div id="result-type">
+          <h3  id="result-type-label" class="first">Result Type</h3>
+          <div id="result-type-value"></div>
+        </div>
+
+        <div id="message-info">
+          <h3  id="message-label">Message</h3>
+          <h3  id="action-label">Action</h3>
+          <div><span id="message-result"></span><span id="message-value"></span></div>
+        </div>
 
         <div id="tagname-info">
           <h3  id="tagname-label">Tag Name</h3>
@@ -108,7 +120,13 @@ export default class ResultElementInfo extends HTMLElement {
     this.message2Div = this.shadowRoot.querySelector('#message2');
 
     this.infoDiv = this.shadowRoot.querySelector('#info');
-    this.actionDiv   = this.shadowRoot.querySelector('#action');
+
+    this.resultTypeDiv = this.shadowRoot.querySelector('#result-type-value');
+
+    this.messageH3   = this.shadowRoot.querySelector('#message-label');
+    this.actionH3    = this.shadowRoot.querySelector('#action-label');
+    this.messageResultSpan = this.shadowRoot.querySelector('#message-result');
+    this.messageValueSpan  = this.shadowRoot.querySelector('#message-value');
 
     this.tagNameInfoDiv  = this.shadowRoot.querySelector('#tagname-info');
     this.tagNameDiv      = this.shadowRoot.querySelector('#tagname');
@@ -146,6 +164,13 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   initLabels () {
+
+    const resultTypeLabel = this.shadowRoot.querySelector('#result-type-label');
+    resultTypeLabel.textContent = msg.elementResultType;
+
+    const messageLabel = this.shadowRoot.querySelector('#message-label');
+    messageLabel.textContent = msg.elementResultMessage;
+
     const actionLabel = this.shadowRoot.querySelector('#action-label');
     actionLabel.textContent = msg.elementResultAction;
 
@@ -290,8 +315,21 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  updateAction(elementInfo) {
-    this.renderContent(this.actionDiv, elementInfo.actionMessage);
+  updateMessageOrAction(elementInfo) {
+    console.log(`[updateMessageOrAction][isActionMessage]: ${elementInfo.isActionMessage} (typeof ${elementInfo.isActionMessage})`);
+    console.log(`[updateMessageOrAction][     resultType]: ${elementInfo.resultType}`);
+    if (elementInfo.isActionMessage) {
+      this.actionH3.classList.remove('hide');
+      this.messageH3.classList.add('hide');
+    }
+    else {
+      this.messageH3.classList.remove('hide');
+      this.actionH3.classList.add('hide');
+    }
+    this.renderContent(this.resultTypeDiv, elementInfo.resultType);
+    this.renderContent(this.messageValueSpan,    elementInfo.actionMessage);
+    this.renderContent(this.messageResultSpan,   elementInfo.resultLong);
+    this.messageResultSpan.className = getResultStyle(elementInfo.result);
   }
 
   updateTagName(elementInfo) {
@@ -394,7 +432,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.infoDiv.classList.remove('hide');
 
     // Update action Information
-    this.updateAction(elementInfo);
+    this.updateMessageOrAction(elementInfo);
 
     if (elementInfo.isElementResult) {
       this.updateTagName(elementInfo);
@@ -416,6 +454,7 @@ export default class ResultElementInfo extends HTMLElement {
       this.accNameInfoDiv.classList.add('hide');
       this.accDescInfoDiv.classList.add('hide');
       this.errorDescInfoDiv.classList.add('hide');
+      this.ccrInfoDiv.classList.add('hide');
       this.visInfoDiv.classList.add('hide');
       this.attrsInfoTable.classList.add('hide');
     }

@@ -1,6 +1,13 @@
 /* viewRuleResults.js */
-import { getResultSortingValue, getSCSortingValue, getLevelSortingValue, getRequiredSortingValue } from './sortUtils.js';
-import { getOptions } from '../storage.js';
+import { 
+  getResultSortingValue, 
+  getSCSortingValue, 
+  getLevelSortingValue, 
+  getRequiredSortingValue 
+} from './sortUtils.js';
+
+import { getResultStyle }  from './utils.js';
+import { getOptions }      from '../storage.js';
 import ViewRuleResultsCSV  from './viewRuleResultsCSV.js';
 
 // Get message strings from locale-specific messages.json file
@@ -121,28 +128,6 @@ export default class ViewRuleResults {
     return this.json;
   }
 
-  getResultStyle (result) {
-    let style = 'not-applicable';
-
-    switch (result){
-      case 'MC':
-        style = 'manual-check';
-        break;
-      case 'P':
-        style = 'passed';
-        break;
-      case 'V':
-        style = 'violation';
-        break;
-      case 'W':
-        style = 'warning';
-        break;
-      default:
-        break;
-    }
-    return style;
-  }
-
   getResultAccessibleName (result) {
     let accName = msg.notApplicableLabel;
 
@@ -206,7 +191,7 @@ export default class ViewRuleResults {
 
           rowAccName = cellAccName;
 
-          style = 'result ' + this.getResultStyle(rr.result);
+          style = 'result ' + getResultStyle(rr.result);
           sortValue = getResultSortingValue(rr.result);
           cellAccName = this.getResultAccessibleName(rr.result);
           rowAccName += ', ' + cellAccName;

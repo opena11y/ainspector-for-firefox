@@ -63,7 +63,7 @@
 }
 
 .result-element-info table.ccr-info tr:nth-child(odd) {
-  background-color: #eee;
+  background-color: #ddd;
 }
 
 .result-element-info table.ccr-info th,
@@ -110,5 +110,34 @@
 .result-element-info table.attrs-info tbody td.value {
   font-weight:  normal;
   text-align: left;
+}
+
+#message-result,
+#message-value {
+  padding-left: 0.25em;
+}
+
+#message-result:after {
+  content: ': ';
+}
+
+span.hidden {
+  background-color: #ddd;
+}
+
+span.manual-check {
+  background-color: hsl(198, 52%, 81%);
+}
+
+span.passed {
+  background-color: hsl(90, 67%, 69%);
+}
+
+span.violation {
+  background-color: hsl(0, 100%, 84%);
+}
+
+span.warning {
+  background-color: hsl(49, 100%, 79%);
 }
 

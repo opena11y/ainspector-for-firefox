@@ -12794,6 +12794,8 @@
   const common = {
     level: ['undefined', 'AAA', 'AA', 'undefined', 'A'],
     baseResult: ['undefined','P','H','MC','W','V'],
+    baseResultLong: ['undefined','Pass','Hidden','Manual Check','Warining','Violation'],
+    resultType: ['base','element','page','website'],
     ruleResult: ['undefined', 'N/A', 'P', 'MC', 'W', 'V'],
     ruleScopes: ['undefined', 'element', 'page', 'website'],
     allRuleResults: 'All Rule Results',
@@ -17903,6 +17905,20 @@
     }
 
     /**
+     * @getter isActionMessage
+     *
+     * @desc Returns true if the result is a violation, warning or manual check
+     *    
+     * @return {Boolean} see @desc
+     */
+
+    get isActionMessage () {
+      return (this.result_value === RESULT_VALUE.VIOLATION) ||
+             (this.result_value === RESULT_VALUE.WARNING) ||
+             (this.result_value === RESULT_VALUE.MANUAL_CHECK);
+    }
+
+    /**
      * @getter isElementResult
      *
      * @desc Returns true if the result type is element,
@@ -17949,7 +17965,7 @@
      * @return {Object} see @desc
      */
     getResultType () {
-       return this.rule_result;
+      return getCommonMessage('resultType', this.result_type);
     }
 
     /**
@@ -17991,7 +18007,7 @@
     /**
      * @method getResultValueNLS
      *
-     * @desc Gets a string representation of the rule result value
+     * @desc Gets a abbreviated string representing of the rule result value
      *
      * @return {String} see @desc
      */
@@ -18000,6 +18016,17 @@
       return getCommonMessage('baseResult', this.result_value);
     }
 
+    /**
+     * @method getResultValueLongNLS
+     *
+     * @desc Gets a verbose string representing of the rule result value
+     *
+     * @return {String} see @desc
+     */
+
+    getResultValueLongNLS () {
+      return getCommonMessage('baseResultLong', this.result_value);
+    }
 
     /**
      * @method getResultMessage
@@ -19628,6 +19655,8 @@
 
     function addElementResult(elementResult) {
 
+      console.log(`[addElementResult][A]`);
+
       let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
       let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
       let visibilityInfo = JSON.stringify(elementResult.getVisibilityInfo());
@@ -19639,8 +19668,10 @@
         'role'             : elementResult.getRole(),
         'position'         : elementResult.getOrdinalPosition(),
         'result'           : elementResult.getResultValueNLS(),
+        'resultLong'       : elementResult.getResultValueLongNLS(),
         'resultValue'      : elementResult.getResultValue(),
         'actionMessage'    : elementResult.getResultMessage(),
+        'resultType'       : elementResult.getResultType(),
         'accNameInfo'      : accNameInfo,
         'ccrInfo'          : ccrInfo,
         'visibilityInfo'   : visibilityInfo,
@@ -19648,8 +19679,11 @@
         'ariaAttrInfo'     : ariaAttrInfo,
         'isElementResult'  : elementResult.isElementResult,
         'isPageResult'     : elementResult.isPageResult,
-        'isWebsiteResult'  : elementResult.isWebsiteesult
+        'isWebsiteResult'  : elementResult.isWebsiteResult,
+        'isActionMessage'  : elementResult.isActionMessage,
       };
+
+      console.log(`[addElementResult][item]: ${JSON.stringify(item)}`);
 
       // Adjust sort order of element results for AInspector Sidebar
       if (item.resultValue === RESULT_VALUE.HIDDEN) {
@@ -19687,11 +19721,14 @@
           'otherName'        : result.getResultIdentifier(),
           'position'         : 0,
           'result'           : result.getResultValueNLS(),
+          'resultLong'       : result.getResultValueLongNLS(),
           'resultValue'      : result.getResultValue(),
           'actionMessage'    : result.getResultMessage(),
+          'resultType'       : result.getResultType(),
           'isElementResult'  : result.isElementResult,
           'isPageResult'     : result.isPageResult,
-          'isWebsiteResult'  : result.isWebsiteesult
+          'isWebsiteResult'  : result.isWebsiteResult,
+          'isActionMessage'  : result.isActionMessage,
         };
       }
     }

@@ -454,9 +454,19 @@
     "description": "Details/action tab label in rule results view"
   },
 
+  "websiteResultLabel": {
+    "message": "Website Result",
+    "description": "Website result label in rule results CSV"
+  },
+
+  "pageResultLabel": {
+    "message": "Page Result",
+    "description": "Page result label in rule results CSV"
+  },
+
   "elementResultsLabel": {
     "message": "Element Results",
-    "description": "Element results tab label in rule results view"
+    "description": "Element results label in rule results CSV"
   },
 
   "elementLabel": {
@@ -505,13 +515,13 @@
   },
 
   "elementGridLabel": {
-    "message": "Element Results",
+    "message": "Results",
     "description": "Label for Rule/Element results grid"
   },
 
   "elementSelectedLabel": {
-    "message": "Selected Element",
-    "description": "Selected element details label for rule information"
+    "message": "Selected Result",
+    "description": "Selected element, page or website details label for rule information"
   },
 
   "viewsMenuButtonLabel": {
@@ -689,9 +699,20 @@
     "description": "Label for disable prompting for export export file name options when activating the export button."
   },
 
+  "elementResultType": {
+    "message": "Result Type",
+    "description": "Result type heading in element, page or website results view."
+  },
+
+
   "elementResultAction": {
     "message": "Action",
-    "description": "Action heading in element results view."
+    "description": "Action heading in element, page or website results view."
+  },
+
+  "elementResultMessage": {
+    "message": "Message",
+    "description": "Message heading in element, page or website results view."
   },
 
   "elementResultTagName": {
@@ -790,8 +811,8 @@
   },
 
   "csvNumberOfElementsWith": {
-    "message": "Number of elements with",
-    "description": "Used in element results for CSV export for labeling summary results."
+    "message": "Number of results with",
+    "description": "Used in element, page and website results for CSV export for labeling summary results."
   },
 
   "csvRuleset": {

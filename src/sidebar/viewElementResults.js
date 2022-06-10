@@ -1,6 +1,7 @@
 /* viewElementResults.js */
 
-import { getOptions } from '../storage.js';
+import { getOptions }         from '../storage.js';
+import { getResultStyle }     from './utils.js';
 import ViewElementResultsCSV  from './viewElementResultsCSV.js';
 
 // Get message strings from locale-specific messages.json file
@@ -102,31 +103,6 @@ export default class ViewElementResults {
     this.elementResultGrid.addHeaderCell(msg.actionLabel, 'action');
   }
 
-  getResultStyle(result) {
-    let style = 'not-applicable';
-
-    switch (result){
-      case 'MC':
-        style = 'manual-check';
-        break;
-      case 'P':
-        style = 'passed';
-        break;
-      case 'V':
-        style = 'violation';
-        break;
-      case 'W':
-        style = 'warning';
-        break;
-      case 'H':
-        style = 'hidden';
-        break;
-      default:
-        break;
-    }
-    return style;
-  }
-
   // returns a number for the sorting the result value
   getResultSortingValue(result) {
     return ['', 'H', 'P', 'MC', 'W', 'V'].indexOf(result);
@@ -197,7 +173,7 @@ export default class ViewElementResults {
           this.elementResultGrid.addDataCell(row, or.otherName, '', 'element-info');
 
           // Add result information cell (column 2)
-          style = 'result ' + this.getResultStyle(or.result);
+          style = 'result ' + getResultStyle(or.result);
           sortValue = this.getResultSortingValue(or.result);
           cellAccName = this.getResultAccessibleName(or.result);
           rowAccName += ', ' + cellAccName;
@@ -210,6 +186,8 @@ export default class ViewElementResults {
           rowAccName += ', ' + or.actionMessage;
           this.elementResultGrid.addDataCell(row, or.actionMessage, '', 'action');
           row.setAttribute('aria-label', rowAccName);
+
+          count += 1;
 
       }
 
@@ -258,7 +236,7 @@ export default class ViewElementResults {
           this.elementResultGrid.addDataCell(row, elemName, '', 'element-info');
 
           // Add result information cell (column 2)
-          style = 'result ' + this.getResultStyle(er.result);
+          style = 'result ' + getResultStyle(er.result);
           sortValue = this.getResultSortingValue(er.result);
           cellAccName = this.getResultAccessibleName(er.result);
           rowAccName += ', ' + cellAccName;
