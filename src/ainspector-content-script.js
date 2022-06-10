@@ -17368,7 +17368,7 @@
      */
 
     getInformationalLinks () {
-      return this.informationa_links;
+      return this.informational_links;
     }
 
     /**
@@ -19366,12 +19366,14 @@
       'definition'      : rule.getDefinition(required),
       'action'          : ruleResult.getResultMessagesArray(),
       'purpose'         : rule.getPurposes(),
-      'techniques'      : getInformationalInfoArray(rule.getTechniques()),
+      'techniques'      : rule.getTechniques(),
       'targets'         : rule.getTargetResources(),
       'compliance'      : 'WCAG Level ' + rule.getWCAGLevel() + ', ' + (required ? 'Required' : 'Recommended'),
       'sc'              : getInformationalInfoArray(wcag),
       'additionalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
     };
+
+    console.log(`[additionalLinks]: ${detailsAction.additionalLinks.length}`);
 
     return detailsAction;
 
