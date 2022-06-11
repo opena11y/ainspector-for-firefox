@@ -316,8 +316,6 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   updateMessageOrAction(elementInfo) {
-    console.log(`[updateMessageOrAction][isActionMessage]: ${elementInfo.isActionMessage} (typeof ${elementInfo.isActionMessage})`);
-    console.log(`[updateMessageOrAction][     resultType]: ${elementInfo.resultType}`);
     if (elementInfo.isActionMessage) {
       this.actionH3.classList.remove('hide');
       this.messageH3.classList.add('hide');
@@ -326,7 +324,7 @@ export default class ResultElementInfo extends HTMLElement {
       this.messageH3.classList.remove('hide');
       this.actionH3.classList.add('hide');
     }
-    this.renderContent(this.resultTypeDiv, elementInfo.resultType);
+    this.renderContent(this.resultTypeDiv,       elementInfo.resultType);
     this.renderContent(this.messageValueSpan,    elementInfo.actionMessage);
     this.renderContent(this.messageResultSpan,   elementInfo.resultLong);
     this.messageResultSpan.className = getResultStyle(elementInfo.result);
@@ -436,16 +434,12 @@ export default class ResultElementInfo extends HTMLElement {
 
     if (elementInfo.isElementResult) {
       this.updateTagName(elementInfo);
-
       // Accessible name and description information
       this.updateAccessibleNameInfo(elementInfo);
-
       // Color contrast information
       this.updateCCRInfo(elementInfo);
-
       // Visibility information
       this.updateVisibilityInfo(elementInfo);
-
       // Attribute information
       this.updateAttributeInformation(elementInfo);
     }
@@ -458,7 +452,6 @@ export default class ResultElementInfo extends HTMLElement {
       this.visInfoDiv.classList.add('hide');
       this.attrsInfoTable.classList.add('hide');
     }
-
     this.updateCopyText(elementInfo);
   }
 
@@ -480,10 +473,13 @@ export default class ResultElementInfo extends HTMLElement {
   updateCopyText (elementInfo) {
     this.copyText = '';
 
-    this.copyText += msg.elementResultAction + '\n';
+    this.copyText += msg.elementResultType  + '\n';
+    this.copyText += elementInfo.resultType + '\n\n';
+
+    this.copyText += elementInfo.isActionMessage ? msg.elementResultAction + '\n' : msg.elementResultMessage + '\n';
+    this.copyText += elementInfo.actionMessage + '\n\n';
 
     if (elementInfo.isElementResult) {
-      this.copyText += elementInfo.actionMessage + '\n\n';
 
       this.copyText += msg.elementResultTagName + '\n';
       if (elementInfo.role) {
