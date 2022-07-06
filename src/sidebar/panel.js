@@ -573,26 +573,34 @@ function updateSidebar (info) {
 */
 function runContentScripts (callerfn) {
 
+  console.log(`[runContentScripts]: ${callerfn}`);
+
   if (!sidebarHighlightOnly) {
     updateSidebar (msg.tabIsLoading);
     showView(sidebarView);
   }
 
+
   getOptions().then( (options) => {
     getActiveTabFor(myWindowId).then(tab => {
+
+      let contentCode = '';
+      contentCode += `var ainspectorSidebarRuleResult = {};`;
+      contentCode += `var infoAInspectorEvaluation = {`;
+      contentCode += `  view: "${sidebarView}",`;
+      contentCode += `  groupType: "${sidebarGroupType}",`;
+      contentCode += `  ruleId: "${sidebarRuleId}",`;
+      contentCode += `  rulesetId: "${options.rulesetId}",`;
+      contentCode += `  highlight: "${options.highlight}",`;
+      // note the following properties are number and boolean values
+      contentCode += `  groupId: ${sidebarGroupId},`;
+      contentCode += `  position: ${sidebarElementPosition},`;
+      contentCode += `  highlightOnly: ${sidebarHighlightOnly}`;
+      contentCode += `};`;
+
       if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
-        browser.tabs.executeScript({ code: `var ainspectorSidebarRuleResult    = {};`                        });        
-        browser.tabs.executeScript({ code: `var infoAInspectorEvaluation       = {};`                        });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";`          });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";`     });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId    = "${sidebarRuleId}";`        });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId = "${options.rulesetId}";`    });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight = "${options.highlight}";`    });
-        // note the following properties are number and boolean values
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId   = ${sidebarGroupId};`         });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position  = ${sidebarElementPosition};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly  = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../ainspector-content-script.js' })
+        browser.tabs.executeScript({ code: contentCode })
+        .then(() => browser.tabs.executeScript({ file: '../ainspector-content-script.js' }))
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
         });
