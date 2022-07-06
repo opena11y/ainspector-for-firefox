@@ -156,7 +156,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('ControlInfo', true);
+  const debug$s = new DebugLogging('ControlInfo', true);
 
   /**
    * @class ControlElement
@@ -183,7 +183,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$r.domElement(ce.domElement, prefix);
+        debug$s.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -240,6 +240,9 @@
      */
 
     isControl (domElement) {
+      if (domElement.role === 'link') {
+        return false;
+      }
       const isGroupRole = domElement.role    === 'group';
       const isFormTag   = domElement.tagName === 'form';
       const isLabel     = domElement.tagName === 'label';
@@ -283,15 +286,15 @@
      */
 
     showControlInfo () {
-      if (debug$r.flag) {
-        debug$r.log('== Control Tree ==', 1);
+      if (debug$s.flag) {
+        debug$s.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$r.domElement(ce.domElement);
+          debug$s.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$r.log('== Forms ==', 1);
+        debug$s.log('== Forms ==', 1);
         this.allFormControlElements.forEach( ce => {
-          debug$r.domElement(ce.domElement);
+          debug$s.domElement(ce.domElement);
         });
       }
     }
@@ -300,7 +303,7 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('colorContrast', false);
+  const debug$r = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -320,9 +323,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$q.flag) {
-        debug$q.separator();
-        debug$q.tag(elementNode);
+      if (debug$r.flag) {
+        debug$r.separator();
+        debug$r.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -346,11 +349,11 @@
       const L2 = this.getLuminance(this.backgroundColorHex);
       this.colorContrastRatio = Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
 
-      if (debug$q.flag) {
-        debug$q.log(`[                    opacity]: ${this.opacity}`);
-        debug$q.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$q.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$q.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$r.flag) {
+        debug$r.log(`[                    opacity]: ${this.opacity}`);
+        debug$r.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$r.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$r.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -673,7 +676,7 @@
   /* hasEvents.js */
 
   /* Constants */
-  const debug$p = new DebugLogging('hasEvents', false);
+  const debug$q = new DebugLogging('hasEvents', false);
 
   /**
    * @class Events
@@ -686,7 +689,7 @@
   class HasEvents {
     constructor (elementNode) {
       this.onChange = elementNode.hasAttribute('onchange');
-      if (debug$p.flag) {
+      if (debug$q.flag) {
         console.log(`[hasEvents]: ${this.onChange}`);
       }
     }
@@ -695,7 +698,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('visibility', false);
+  const debug$p = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -743,17 +746,17 @@
           this.isVisibleToAT = false;
       }
 
-      if (debug$o.flag) {
-        debug$o.separator();
-        debug$o.tag(elementNode);
-        debug$o.log('[          isHidden]: ' + this.isHidden);
-        debug$o.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$o.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$o.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$o.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$o.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$o.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$o.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$p.flag) {
+        debug$p.separator();
+        debug$p.tag(elementNode);
+        debug$p.log('[          isHidden]: ' + this.isHidden);
+        debug$p.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$p.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$p.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$p.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$p.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$p.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$p.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -5875,7 +5878,7 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('AriaInfo', false);
+  const debug$o = new DebugLogging('AriaInfo', false);
 
   /* Debug helper functions */
 
@@ -6024,16 +6027,16 @@
           break;
       }
 
-      if (debug$n.flag) {
-        node.attributes.length && debug$n.log(`${node.outerHTML}`, 1);
-        debug$n.log(`[       isLandmark]: ${this.isLandmark}`);
-        debug$n.log(`[         isWidget]: ${this.isWidget}`);
-        debug$n.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$n.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$n.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$n.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$n.log(`[  missingReqAttrs]: ${debugAttrs(this.missingReqAttrs)}`);
-        debug$n.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$o.flag) {
+        node.attributes.length && debug$o.log(`${node.outerHTML}`, 1);
+        debug$o.log(`[       isLandmark]: ${this.isLandmark}`);
+        debug$o.log(`[         isWidget]: ${this.isWidget}`);
+        debug$o.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$o.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$o.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$o.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$o.log(`[  missingReqAttrs]: ${debugAttrs(this.missingReqAttrs)}`);
+        debug$o.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -7711,7 +7714,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('ariaInHtml', false);
+  const debug$n = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -7905,11 +7908,11 @@
       };
     }
 
-    if (debug$m.flag) {
+    if (debug$n.flag) {
       if (tagName === 'h2') {
-        debug$m.tag(node);
+        debug$n.tag(node);
       }
-      debug$m.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$n.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -9067,7 +9070,7 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$l = new DebugLogging('DOMElement', false);
+  const debug$m = new DebugLogging('DOMElement', false);
 
   const elementsWithContent = [
     'area',
@@ -9330,12 +9333,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$l.flag) {
+      if (debug$m.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$l.domText(domItem, prefix);
+            debug$m.domText(domItem, prefix);
           } else {
-            debug$l.domElement(domItem, prefix);
+            debug$m.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -9428,7 +9431,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$k = new DebugLogging('domText', false);
+  const debug$l = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -9447,8 +9450,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$k.flag) {
-        debug$k.log(`[text]: ${this.text}`);
+      if (debug$l.flag) {
+        debug$l.log(`[text]: ${this.text}`);
       }
     }
 
@@ -9492,6 +9495,74 @@
       const s = text.trim();
       if (s) {
         this.text += ' ' + s;
+      }
+    }
+  }
+
+  /* iframeInfo.js */
+
+  /* Constants */
+  const debug$k = new DebugLogging('iframeInfo', false);
+
+  /**
+   * @class IFrameElement
+   *
+   * @desc Idenifies a DOM element as being an iframe.
+   *
+   * @param  {Object}  domElement   - dome element information
+   */
+
+  class IFrameElement {
+    constructor (domElement, isCrossDomain) {
+      this.domElement = domElement;
+      this.src = domElement.node.src;
+      this.isCrossDomain = isCrossDomain;
+    }
+
+    showInfo () {
+      if (debug$k.flag) {
+        debug$k.log(`[          src]: ${this.src}`);
+        debug$k.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      }
+    }
+  }
+
+  /**
+   * @class IframeInfo
+   *
+   * @desc Collects information on the iframes in a web page
+   */
+
+  class IframeInfo {
+    constructor () {
+      this.allIFrameElements = [];
+    }
+
+    /**
+     * @method update
+     *
+     * @desc Checks to see if the domElement has a role of "link"
+     *
+     * @param  {Object}  domElement        - DOMElement object representing an element in the DOM
+     */
+
+    update (domElement, isCrossDomain) {
+      const ife = new IFrameElement(domElement, isCrossDomain);
+      this.allIFrameElements.push(ife);
+    }
+
+    /**
+     * @method showLinkInfo
+     *
+     * @desc showLinkInfo is used for debugging the LinkInfo object
+     */
+
+    showIFrameInfo () {
+      if (debug$k.flag) {
+        debug$k.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+        this.allIFrameElements.forEach( ife => {
+          ife.showInfo();
+        });
       }
     }
   }
@@ -10268,6 +10339,7 @@
       this.linkInfo      = new LinkInfo();
       this.listInfo      = new ListInfo();
       this.structureInfo = new StructureInfo();
+      this.iframeInfo    = new IframeInfo();
 
       this.startingDomElement = new DOMElement(parentInfo, startingElement, 1);
       parentInfo.domElement = this.startingDomElement;
@@ -10287,6 +10359,7 @@
         this.showDomElementTree();
 
         this.controlInfo.showControlInfo();
+        this.iframeInfo.showIFrameInfo();
         this.imageInfo.showImageInfo();
         this.linkInfo.showLinkInfo();
         this.listInfo.showListInfo();
@@ -10391,12 +10464,18 @@
                 } else {
                   // Check for iframe tag
                   if (this.isIFrameElement(tagName)) {
-                    if (node.contentDocument) {
-                      newParentInfo.document = node.contentWindow.document;
+                    let isCrossDomain = false;
+                    try {
+                      const doc = node.contentDocument || node.contentWindow.document;
+                      newParentInfo.document = doc;
                       this.documentIndex += 1;
                       newParentInfo.documentIndex = this.documentIndex;
-                      this.transverseDOM(newParentInfo, node.contentDocument);
-                    }
+                      this.transverseDOM(newParentInfo, doc);
+                    } catch (error) {
+                      debug$f.flag && debug$f.log('[transverseDOM][catch]' + error);
+                      isCrossDomain = true;
+                    }                    
+                    this.iframeInfo.update(domItem, isCrossDomain);
                   } else {
                     this.transverseDOM(newParentInfo, node);
                   }
@@ -11363,14 +11442,14 @@
           debug$d.log(`[CONTROL 1][${count++}][${de.tagName}][${de.node.type}][${de.role}]: ${de.accName.name ? `${de.accName.name}(${de.accName.source})` : 'none'}`);
           if (de.visibility.isVisibleToAT) {
             if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.accName.name]);
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
             }
           }
           else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
           }
         }
       });
@@ -15249,8 +15328,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-LABEL'
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/multipage/forms.html#the-label-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -15261,8 +15340,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/multipage/dom.html#the-title-attribute'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -21091,6 +21170,8 @@
 
   /* getRuleResultInfo.js */
 
+  /* Constants */
+
   /*
   *   getElementResultsInfo
   *   (1) Run evlauation library;
@@ -21124,6 +21205,9 @@
 
     // get JSON with element result details
     info.json = ruleResult.toJSON('', true);
+
+    // Save reference to rule results for highlighting elements
+    ainspectorSidebarRuleResult = ruleResult; // eslint-disable-line 
 
     return info;
   }
@@ -21587,7 +21671,10 @@
                 case 'frame':
                 case 'iframe':
                   try {
-                    elems = getHighlightedElements(node.contentWindow.document, elems);
+                    const doc = node.contentDocument || node.contentWindow.document;
+                    if (doc) {
+                      elems = getHighlightedElements(doc, elems);
+                    }
                   } catch (error) {
                     console.log('[removeFromDocument][catch]' + error);
                   }
@@ -21858,10 +21945,6 @@
 
   /* highlightElements.js */
 
-  /* Constants */
-
-  var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};
-
   /*
   *   highlightElements
   */
@@ -21869,8 +21952,9 @@
   function highlightElements(highlight, position) {
 
     function validElementResults () {
-      return ainspectorSidebarRuleResult &&
-        ainspectorSidebarRuleResult.getElementResultsArray;
+      // NOTE: ainspectorSidebarRuleResult is a global variable in the page
+      return ainspectorSidebarRuleResult && // eslint-disable-line
+        ainspectorSidebarRuleResult.getElementResultsArray; // eslint-disable-line
     }
 
   /*
@@ -21894,7 +21978,8 @@
     info.option = 'highlight';
 
     if (validElementResults()) {
-      const elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+      // NOTE: ainspectorSidebarRuleResult is a global variable in the page
+      const elementResults = ainspectorSidebarRuleResult.getElementResultsArray(); // eslint-disable-line
 
       if (elementResults) {
         highlightModule.initHighlight();
@@ -21940,14 +22025,11 @@
   *   content.js
   */
 
-  const browser = browser || {};
-  var infoAInspectorEvaluation = infoAInspectorEvaluation || {};
-
-
   /*
   **  Connect to panel.js script and set up listener/handler
   */
-  var panelPort = browser.runtime.connect({ name: 'content' });
+  // NOTE: browser is a global object 
+  var panelPort = browser.runtime.connect({ name: 'content' }); // eslint-disable-line 
 
   panelPort.onMessage.addListener(messageHandler);
 
@@ -21965,35 +22047,28 @@
 
   function getEvaluationInfo(panelPort) {
 
-    let view      = infoAInspectorEvaluation.view;
-    let groupType = infoAInspectorEvaluation.groupType;
-    let groupId   = infoAInspectorEvaluation.groupId;
-    let ruleId    = infoAInspectorEvaluation.ruleId;
-    let rulesetId = infoAInspectorEvaluation.rulesetId;
-    let highlight = infoAInspectorEvaluation.highlight;
-    let position  = infoAInspectorEvaluation.position;
-    let highlightOnly   = infoAInspectorEvaluation.highlightOnly;
-    let removeHighlight = infoAInspectorEvaluation.removeHighlight;
+    // NOTE: infoAInspectorEvaluation is a global variable in the page
+    const aiInfo = infoAInspectorEvaluation; // eslint-disable-line 
 
     {
-      console.log(`[getEvaluationInfo][           view]: ${view}`);
-      console.log(`[getEvaluationInfo][      groupType]: ${groupType}`);
-      console.log(`[getEvaluationInfo][        groupId]: ${groupId}`);
-      console.log(`[getEvaluationInfo][         ruleId]: ${ruleId}`);
-      console.log(`[getEvaluationInfo][      rulesetId]: ${rulesetId}`);
-      console.log(`[getEvaluationInfo][      highlight]: ${highlight}`);
-      console.log(`[getEvaluationInfo][       position]: ${position}`);
-      console.log(`[getEvaluationInfo][  highlightOnly]: ${highlightOnly}`);
-      console.log(`[getEvaluationInfo][removeHighlight]: ${removeHighlight}`);
+      console.log(`[getEvaluationInfo][           view]: ${aiInfo.view}`);
+      console.log(`[getEvaluationInfo][      groupType]: ${aiInfo.groupType}`);
+      console.log(`[getEvaluationInfo][        groupId]: ${aiInfo.groupId}`);
+      console.log(`[getEvaluationInfo][         ruleId]: ${aiInfo.ruleId}`);
+      console.log(`[getEvaluationInfo][      rulesetId]: ${aiInfo.rulesetId}`);
+      console.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
+      console.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
+      console.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
+      console.log(`[getEvaluationInfo][removeHighlight]: ${aiInfo.removeHighlight}`);
     }
 
     let info = {};
     info.id       = 'info';
     info.title    = document.title;
     info.location = document.location.href;
-    info.ruleset  = rulesetId;
+    info.ruleset  = aiInfo.rulesetId;
 
-    switch(view) {
+    switch(aiInfo.view) {
       case viewId.summary:
         highlightModule.removeHighlight(document);
         info.infoSummary = getSummaryInfo();
@@ -22001,16 +22076,16 @@
 
       case viewId.ruleResults:
         highlightModule.removeHighlight(document);
-        info.infoRuleResults = getRuleResultsInfo(groupType, groupId);
+        info.infoRuleResults = getRuleResultsInfo(aiInfo.groupType, aiInfo.groupId);
         break;
 
       case viewId.elementResults:
-        if (highlightOnly) {
-          info.infoHighlight = highlightElements(highlight, position);
+        if (aiInfo.highlightOnly) {
+          info.infoHighlight = highlightElements(aiInfo.highlight, aiInfo.position);
         } else {
           highlightModule.removeHighlight(document);
-          info.infoElementResults = getElementResultsInfo(ruleId);
-          highlightElements(highlight, position);
+          info.infoElementResults = getElementResultsInfo(aiInfo.ruleId, aiInfo.highlight, aiInfo.position);
+          highlightElements(aiInfo.highlight, aiInfo.position);
         }
         break;
     }
@@ -22022,7 +22097,8 @@
   *  This message handler is used to remove element highlighting
   *  when the sidebar is closed
   */
-  browser.runtime.onMessage.addListener(request => {
+  // NOTE: browser is a global object 
+  browser.runtime.onMessage.addListener(request => {  // eslint-disable-line
     // to be executed on receiving messages from the panel
     if ((request.option    === 'highlight') &&
         (request.highlight === 'none')) ;
