@@ -585,7 +585,7 @@ function runContentScripts (callerfn) {
     getActiveTabFor(myWindowId).then(tab => {
 
       let contentCode = '';
-      contentCode += `var ainspectorSidebarRuleResult = {};`;
+      contentCode += `var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};`;
       contentCode += `var infoAInspectorEvaluation = {`;
       contentCode += `  view: "${sidebarView}",`;
       contentCode += `  groupType: "${sidebarGroupType}",`;
