@@ -156,7 +156,8 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('ControlInfo', true);
+  const debug$t = new DebugLogging('ControlInfo', true);
+  const controlTagNames = ['button', 'input', 'keygen', 'meter', 'output', 'progess', 'select', 'textarea'];
 
   /**
    * @class ControlElement
@@ -169,8 +170,19 @@
   class ControlElement {
     constructor (domElement, parentControlElement) {
 
+      const node = domElement.node;
+
       this.parentControlElement = parentControlElement;
       this.domElement = domElement;
+      this.isGroup = domElement.role === 'group';
+      this.isInputTypeImage  = this.isInputType(node, 'image');
+      this.isInputTypeRadio  = this.isInputType(node, 'radio');
+      this.typeAttr = node.type ? node.type : '';
+      this.hasSVGContent = this.checkForSVGContent(node);
+      this.labelForAttr = this.getLabelForAttribute(node);
+      const refControlNode = this.getReferenceControl(this.labelForAttr);
+      this.isLabelForAttrValid = refControlNode ? this.isTagNameControl(refControlNode) : false;
+      this.labelforTargetUsesAriaLabeling = refControlNode ? this.usesARIALabeling(refControlNode) : false;
       this.childControlElements = [];
     }
 
@@ -178,12 +190,64 @@
       this.childControlElements.push(controlElement);
     }
 
+    checkForSVGContent (node) {
+      return node.querySelector('svg') ? true : false;
+    }
+
+    isInputType (node, type) {
+      if (node.tagName.toLowerCase() === 'input') {
+        return node.type === type;
+      }
+      return false;
+    }
+
+    getLabelForAttribute (node) {
+      const tagName = node.tagName.toLowerCase();
+      if ((tagName === 'label') && node.hasAttribute('for')) {
+        return node.getAttribute('for');
+      }
+      return '';
+    }
+
+    isTagNameControl (node) {
+      if (node) {
+        const tagName = node.tagName.toLowerCase();
+        return controlTagNames.includes(tagName);
+      }
+      return false;
+    }
+
+    usesARIALabeling (node) {
+      return node.hasAttribute('aria-label') || node.hasAttribute('aria-labelledby');
+    }
+
+    getReferenceControl(id) {
+      if (id) {
+        const node = document.getElementById(id);
+        if (node) {
+          return node;
+        }
+      }
+      return false;
+    }
+
+    getGroupControlElement () {
+      let ce = this.parentControlElement;
+      while (ce) {
+        if (ce.isGroup) {
+          return ce;
+        }
+        ce = ce.parentControlElement;
+      }
+      return null;
+    }
+
     showControlInfo (prefix) {
       if (typeof prefix !== 'string') {
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$s.domElement(ce.domElement, prefix);
+        debug$t.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -286,15 +350,15 @@
      */
 
     showControlInfo () {
-      if (debug$s.flag) {
-        debug$s.log('== Control Tree ==', 1);
+      if (debug$t.flag) {
+        debug$t.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$s.domElement(ce.domElement);
+          debug$t.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$s.log('== Forms ==', 1);
+        debug$t.log('== Forms ==', 1);
         this.allFormControlElements.forEach( ce => {
-          debug$s.domElement(ce.domElement);
+          debug$t.domElement(ce.domElement);
         });
       }
     }
@@ -303,7 +367,7 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('colorContrast', false);
+  const debug$s = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -323,9 +387,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$r.flag) {
-        debug$r.separator();
-        debug$r.tag(elementNode);
+      if (debug$s.flag) {
+        debug$s.separator();
+        debug$s.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -349,11 +413,11 @@
       const L2 = this.getLuminance(this.backgroundColorHex);
       this.colorContrastRatio = Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
 
-      if (debug$r.flag) {
-        debug$r.log(`[                    opacity]: ${this.opacity}`);
-        debug$r.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$r.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$r.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$s.flag) {
+        debug$s.log(`[                    opacity]: ${this.opacity}`);
+        debug$s.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$s.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$s.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -676,7 +740,7 @@
   /* hasEvents.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('hasEvents', false);
+  const debug$r = new DebugLogging('hasEvents', false);
 
   /**
    * @class Events
@@ -689,7 +753,7 @@
   class HasEvents {
     constructor (elementNode) {
       this.onChange = elementNode.hasAttribute('onchange');
-      if (debug$q.flag) {
+      if (debug$r.flag) {
         console.log(`[hasEvents]: ${this.onChange}`);
       }
     }
@@ -698,7 +762,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$p = new DebugLogging('visibility', false);
+  const debug$q = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -746,17 +810,17 @@
           this.isVisibleToAT = false;
       }
 
-      if (debug$p.flag) {
-        debug$p.separator();
-        debug$p.tag(elementNode);
-        debug$p.log('[          isHidden]: ' + this.isHidden);
-        debug$p.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$p.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$p.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$p.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$p.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$p.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$p.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$q.flag) {
+        debug$q.separator();
+        debug$q.tag(elementNode);
+        debug$q.log('[          isHidden]: ' + this.isHidden);
+        debug$q.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$q.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$q.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$q.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$q.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$q.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$q.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -5878,7 +5942,7 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('AriaInfo', false);
+  const debug$p = new DebugLogging('AriaInfo', false);
 
   /* Debug helper functions */
 
@@ -6027,16 +6091,16 @@
           break;
       }
 
-      if (debug$o.flag) {
-        node.attributes.length && debug$o.log(`${node.outerHTML}`, 1);
-        debug$o.log(`[       isLandmark]: ${this.isLandmark}`);
-        debug$o.log(`[         isWidget]: ${this.isWidget}`);
-        debug$o.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$o.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$o.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$o.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$o.log(`[  missingReqAttrs]: ${debugAttrs(this.missingReqAttrs)}`);
-        debug$o.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$p.flag) {
+        node.attributes.length && debug$p.log(`${node.outerHTML}`, 1);
+        debug$p.log(`[       isLandmark]: ${this.isLandmark}`);
+        debug$p.log(`[         isWidget]: ${this.isWidget}`);
+        debug$p.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$p.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$p.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$p.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$p.log(`[  missingReqAttrs]: ${debugAttrs(this.missingReqAttrs)}`);
+        debug$p.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -7714,7 +7778,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('ariaInHtml', false);
+  const debug$o = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -7799,11 +7863,9 @@
           node.hasAttribute('aria-labelledby')||
           node.hasAttribute('title')) {
           elemInfo = elementInfo['form'];
-          console.log('FORM[FORM]');
         } else {
           elemInfo = elementInfo['form'];
           elemInfo.defaultRole = 'generic';
-          console.log('FORM[GENERIC]');
         }
         break;
 
@@ -7908,11 +7970,11 @@
       };
     }
 
-    if (debug$n.flag) {
+    if (debug$o.flag) {
       if (tagName === 'h2') {
-        debug$n.tag(node);
+        debug$o.tag(node);
       }
-      debug$n.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$o.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -8497,19 +8559,22 @@
   function getElementContents (element, forElement) {
     let result = '';
 
-    if (element.hasChildNodes()) {
-      let children = element.childNodes,
-          arrayOfStrings = [];
+    if (isVisible(element)) {
+      if (element.hasChildNodes()) {
+        let children = element.childNodes,
+            arrayOfStrings = [];
 
-      for (let i = 0; i < children.length; i++) {
-        let contents = getNodeContents(children[i], forElement);
-        if (contents.length) arrayOfStrings.push(contents);
+        for (let i = 0; i < children.length; i++) {
+          let contents = getNodeContents(children[i], forElement);
+          if (contents.length) arrayOfStrings.push(contents);
+        }
+
+        result = (arrayOfStrings.length) ? arrayOfStrings.join(' ') : '';
       }
 
-      result = (arrayOfStrings.length) ? arrayOfStrings.join(' ') : '';
+      return addCssGeneratedContent(element, result);
     }
-
-    return addCssGeneratedContent(element, result);
+    return '';
   }
 
   // HIGHER-LEVEL FUNCTIONS THAT RETURN AN OBJECT WITH SOURCE PROPERTY
@@ -8609,7 +8674,7 @@
 
     // legend
     if (element) {
-      legend = doc.querySelector('legend');
+      legend = element.querySelector('legend');
       if (legend) {
         name = getElementContents(legend, element);
       if (name.length) return { name: name, source: 'legend' };
@@ -8651,49 +8716,86 @@
   // LOW-LEVEL HELPER FUNCTIONS (NOT EXPORTED)
 
   /*
-  *   isVisible: Checks to see if the node or any of it's ancestor
-  *   are visible for the purpose of accessible name calculation
+  *   isHidden: Checks to see if the node or any of it's ancestor
+  *   are hidden for the purpose of accessible name calculation
   */
 
-  /*
-  function isVisible (node, isVisible=false) {
+  function isHidden (node) {
 
-    if (node.nodeType !== Node.ELEMENT_NODE) {
-      return true;
-    }
-
-    if (node.hasAttribute('hidden')) {
+    if (!node) {
       return false;
     }
 
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      if ((node.nodeType === Node.TEXT_NODE) &&
+          (node.parentNode.nodeType !== Node.ELEMENT_NODE)) {
+        node = node.parentNode;
+      }
+      return false;
+    }
+
+    if (node.hasAttribute('hidden')) {
+      return true;
+    }
+
     if (node.hasAttribute('aria-hidden')) {
-      return node.getAttribute('aria-hidden').toLowerCase() !== 'true';
+      return node.getAttribute('aria-hidden').toLowerCase() === 'true';
     }
 
     const style = window.getComputedStyle(node, null);
 
-    const visibility = style.getPropertyValue("visibility");
-    if (!isVisible) {
-      if ((visibility === 'collapse') ||
-          (visibility === 'hidden')) {
-          return false;
-      }
-      if (visibility === 'visible') {
-        isVisible = true;
-      }
-    }
-
     const display = style.getPropertyValue("display");
     if (display === 'none') { 
-      return false;
+      return true;
     }
 
     if (node.parentNode) {
-      return isVisible(node.parentNode, isVisible);
+      return isHidden(node.parentNode);
     }
-    return true;
+
+    return false;
   }
+
+  /*
+  *   isVisible: Checks to see if the node or any of it's ancestor
+  *   are visible for the purpose of accessible name calculation
   */
+
+  function isVisible (node) {
+    return !isHidden(node);
+  }
+
+  /*
+  *   isHiddenCSSVisibilityProp: Checks to see if the node or any of it's ancestor
+  *   are visible based on CSS visibility property for the purpose of accessible name calculation
+  */
+
+  function isHiddenCSSVisibilityProp(node) {
+
+    if (!node) {
+      return false;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      if ((node.nodeType === Node.TEXT_NODE) &&
+          (node.parentNode.nodeType !== Node.ELEMENT_NODE)) {
+        node = node.parentNode;
+      }
+      return false;
+    }
+    const style = window.getComputedStyle(node, null);
+
+    const visibility = style.getPropertyValue("visibility");
+    if (visibility) {
+      return (visibility === 'hidden') || (visibility === 'collapse');
+    }
+
+    if (node.parentNode) {
+      return isHidden(node.parentNode);
+    }
+
+    return false;
+  }
 
   /*
   *   getNodeContents: Recursively process element and text nodes by aggregating
@@ -8708,7 +8810,10 @@
     let nc;
     let arr = [];
 
-    if (node === forElem) return '';
+    if (isHidden(node) || 
+        (node === forElem)) {
+      return '';
+    } 
 
     switch (node.nodeType) {
       case Node.ELEMENT_NODE:
@@ -8745,7 +8850,10 @@
         break;
 
       case Node.TEXT_NODE:
-        contents = normalize(node.textContent);
+        if (!isHiddenCSSVisibilityProp(node.parentNode)) {
+          contents = normalize(node.textContent);
+        }
+        break;
     }
 
     return contents;
@@ -9070,7 +9178,7 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('DOMElement', false);
+  const debug$n = new DebugLogging('DOMElement', false);
 
   const elementsWithContent = [
     'area',
@@ -9333,12 +9441,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$m.flag) {
+      if (debug$n.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$m.domText(domItem, prefix);
+            debug$n.domText(domItem, prefix);
           } else {
-            debug$m.domElement(domItem, prefix);
+            debug$n.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -9431,7 +9539,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$l = new DebugLogging('domText', false);
+  const debug$m = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -9450,8 +9558,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$l.flag) {
-        debug$l.log(`[text]: ${this.text}`);
+      if (debug$m.flag) {
+        debug$m.log(`[text]: ${this.text}`);
       }
     }
 
@@ -9502,7 +9610,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$k = new DebugLogging('iframeInfo', false);
+  const debug$l = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -9520,9 +9628,9 @@
     }
 
     showInfo () {
-      if (debug$k.flag) {
-        debug$k.log(`[          src]: ${this.src}`);
-        debug$k.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$l.flag) {
+        debug$l.log(`[          src]: ${this.src}`);
+        debug$l.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -9558,10 +9666,65 @@
      */
 
     showIFrameInfo () {
-      if (debug$k.flag) {
-        debug$k.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$l.flag) {
+        debug$l.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
+        });
+      }
+    }
+  }
+
+  /* linkInfo.js */
+
+  /* Constants */
+  const debug$k = new DebugLogging('idInfo', false);
+
+  /**
+   * @class idInfo
+   *
+   * @desc Collects information on the ids in a web page
+   */
+
+  class IdInfo {
+    constructor () {
+      this.idCountsByDoc = [];
+    }
+
+    /**
+     * @method update
+     *
+     * @desc Checks to see if the domElement has a role of "link"
+     *
+     * @param  {Object}  domElement        - DOMElement object representing an element in the DOM
+     */
+
+    update (documentIndex, domElement) {
+      const id = domElement.node.id;
+      if (id) {
+        if (!this.idCountsByDoc[documentIndex]) {
+          this.idCountsByDoc[documentIndex] = {};
+        }
+        if (this.idCountsByDoc[documentIndex][id]) {
+          this.idCountsByDoc[documentIndex][id] += 1;       
+        }
+        else {
+          this.idCountsByDoc[documentIndex][id] = 1;       
+        }
+      }
+    }
+
+    /**
+     * @method showIdInfo
+     *
+     * @desc showIdInfo is used for debugging the IdInfo object
+     */
+
+    showIdInfo () {
+      if (debug$k.flag) {
+        debug$k.log('== All Links ==', 1);
+        this.idCounts.for( id => {
+          debug$k.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -10260,7 +10423,7 @@
   /* domCache.js */
 
   /* Constants */
-  const debug$f = new DebugLogging('domCache', false);
+  const debug$f = new DebugLogging('domCache', true);
 
   const skipableElements = [
     'base',
@@ -10335,6 +10498,7 @@
       parentInfo.document = startingDoc;
 
       this.controlInfo   = new ControlInfo();
+      this.idInfo        = new IdInfo();
       this.imageInfo     = new ImageInfo();
       this.linkInfo      = new LinkInfo();
       this.listInfo      = new ListInfo();
@@ -10360,6 +10524,7 @@
 
         this.controlInfo.showControlInfo();
         this.iframeInfo.showIFrameInfo();
+        this.idInfo.showIdInfo();
         this.imageInfo.showImageInfo();
         this.linkInfo.showLinkInfo();
         this.listInfo.showListInfo();
@@ -10514,6 +10679,7 @@
 
       newParentInfo.controlElement  = this.controlInfo.update(controlElement, domElement);
       newParentInfo.mapElement      = this.imageInfo.update(mapElement, domElement);
+      this.idInfo.update(documentIndex, domElement);
       this.linkInfo.update(domElement);
       newParentInfo.listElement     = this.listInfo.update(listElement, domElement);
       newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
@@ -11434,22 +11600,22 @@
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
     validate            : function (dom_cache, rule_result) {
-      let count = 1;
       dom_cache.controlInfo.allControlElements.forEach(ce => {
         const de = ce.domElement;
         const ai = de.ariaInfo;
-        if (ai.isNameRequired || de.isLabelable) {
-          debug$d.log(`[CONTROL 1][${count++}][${de.tagName}][${de.node.type}][${de.role}]: ${de.accName.name ? `${de.accName.name}(${de.accName.source})` : 'none'}`);
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+        if (!ce.isInputTypeImage) {
+          if (ai.isNameRequired || de.isLabelable) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
           }
         }
       });
@@ -11463,7 +11629,7 @@
    */
 
   { rule_id             : 'CONTROL_2',
-    last_updated        : '2022-06-10',
+    last_updated        : '2022-07-07',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     ruleset             : RULESET.TRIAGE,
@@ -11472,54 +11638,27 @@
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="image"]'],
     validate            : function (dom_cache, rule_result) {
-
-      let info = {
-        dom_cache: dom_cache,
-        rule_result: rule_result
-      };
-
-      debug$d.flag && debug$d.log(`[CONTROL_2]: ${info}`);
-
-      /*
-      var TEST_RESULT = TEST_RESULT;
-
-      var control_elements   = dom_cache.controls_cache.control_elements;
-      var control_elements_len = control_elements.length;
-
-      // Check to see if valid cache reference
-      if (control_elements && control_elements_len) {
-
-        for (var i = 0; i < control_elements_len; i++) {
-          var ce = control_elements[i];
-          var de = ce.dom_element;
-
-          var type = control_elements[i].type;
-
-          if (type === 'image') {
-
-            if (de.computed_style.is_visible_to_at == VISIBILITY.VISIBLE) {
-
-              if (ce.computed_label) {
-                if (ce.computed_label.length) {
-                  rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_1', [ce.computed_label]);
-                }
-                else {
-                  rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_2', []);
-                }
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeImage) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.source !== 'none') {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
               }
               else {
-                rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_1', []);
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
               }
             }
             else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, ce, 'ELEMENT_HIDDEN_1', []);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
             }
           }
-        } // end loop
-      }
-
-      */
-
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
     } // end validation function
    },
 
@@ -11538,73 +11677,40 @@
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="radio"]'],
     validate            : function (dom_cache, rule_result) {
-
-      let info = {
-        dom_cache: dom_cache,
-        rule_result: rule_result
-      };
-
-      debug$d.flag && debug$d.log(`[CONTROL_3]: ${info}`);
-
-
-      /*
-      var TEST_RESULT = TEST_RESULT;
-      var VISIBILITY  = VISIBILITY;
-
-      var control_elements   = dom_cache.controls_cache.control_elements;
-      var control_elements_len = control_elements.length;
-
-      // Check to see if valid cache reference
-      if (control_elements && control_elements_len) {
-
-        for (var i = 0; i < control_elements_len; i++) {
-          var ce = control_elements[i];
-          var de = ce.dom_element;
-          var cs = de.computed_style;
-
-          var type = control_elements[i].control_type;
-
-          if (type == CONTROL_TYPE.RADIO) {
-
-            if (cs.is_visible_to_at == VISIBILITY.VISIBLE) {
-
-              if (ce.grouping_element) {
-                var ge = ce.grouping_element;
-                var dge = ge.dom_element;
-
-                if (ge.control_type === CONTROL_TYPE.FIELDSET) {
-                  if (ge.legend_element &&
-                      ge.legend_element.computed_label &&
-                      ge.legend_element.computed_label.length) {
-                    rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_1', [ge.legend_element.computed_label]);
-                  }
-                  else {
-                    rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_2', []);
-                  }
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeRadio) {
+          if (de.visibility.isVisibleToAT) {
+            const gce = ce.getGroupControlElement(); 
+            if (gce) {
+              const gde = gce.domElement;
+              if (gde.tagName === 'fieldset') {
+                debug$d.log(`[radio][${de.node.getAttribute('name')}]: ${de.accName.name} (${gde.accName.name})`);
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
                 }
                 else {
-                  if (ge.computed_label &&
-                      ge.computed_label.length) {
-                    rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_2', [dge.tag_name, ce.grouping_element.computed_label]);
-                  }
-                  else {
-                    rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_3', [dge.tag_name]);
-                  }
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
                 }
               }
               else {
-                rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_1', []);
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
+                }
               }
             }
             else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, ce, 'ELEMENT_HIDDEN_1', []);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
             }
           }
-        } // end loop
-      }
-
-      */
-
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
     } // end validate function
   },
 
@@ -11614,82 +11720,78 @@
    * @desc Button elements must have text content and input type button must have a value attribute with content
    */
   { rule_id             : 'CONTROL_4',
-    last_updated        : '2022-06-10',
+    last_updated        : '2022-07-10',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     ruleset             : RULESET.MORE,
-    rule_required       : true,
+    rule_required       : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['button'],
     validate            : function (dom_cache, rule_result) {
-
-      let info = {
-        dom_cache: dom_cache,
-        rule_result: rule_result
-      };
-
-      debug$d.flag && debug$d.log(`[CONTROL_4]: ${info}`);
-
-      /*
-      var TEST_RESULT  = TEST_RESULT;
-      var VISIBILITY   = VISIBILITY;
-      var CONTROL_TYPE = CONTROL_TYPE;
-
-      var control_elements     = dom_cache.controls_cache.control_elements;
-      var control_elements_len = control_elements.length;
-
-      // Check to see if valid cache reference
-      if (control_elements && control_elements_len) {
-
-        for (var i = 0; i < control_elements_len; i++) {
-          var ce = control_elements[i];
-          var de = ce.dom_element;
-          var cs = de.computed_style;
-
-
-          if (ce.control_type === CONTROL_TYPE.BUTTON_ELEMENT) {
-
-            if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
-
-              if (ce.computed_label_for_comparison.length > 0) {
-                rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_1', []);
-              }
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.role === 'button') {
+          if (de.visibility.isVisibleToAT) {
+            if (ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
+            }
               else {
-                rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_1', []);
-              }
-            }
-            else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, ce, 'ELEMENT_HIDDEN_1', []);
-            }
-
-          }
-          else {
-
-            if (ce.control_type === CONTROL_TYPE.BUTTON_INPUT) {
-
-              if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
-
-                if (ce.value && (ce.value.length > 0)) {
-                  rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_1', []);
+              if (de.tagName === 'input') {
+                if (de.accName.source === 'value') {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
                 }
                 else {
-                  rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_1', []);
-                }
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
+                }            
               }
               else {
-                rule_result.addResult(TEST_RESULT.HIDDEN, ce, 'ELEMENT_HIDDEN_1', []);
+                if (de.tagName === 'button') {
+                  if (de.accName.source === 'contents') {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                    }
+                  }            
+                }
+                else {
+                  if (de.accName.source === 'contents') {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
+                    }
+                  }                          
+                }
               }
             }
           }
-
-        } // end loop
-      }
-      */
-
+          else {
+            if (de.tagName === 'input' || ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
+            }
+            else {
+              if (de.tagName === 'button') {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
+              }
+            }
+          }
+        }
+      });
     } // end validate function
   },
-
 
   /**
    * @object CONTROL_5
@@ -11708,53 +11810,22 @@
     wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
     target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
     validate            : function (dom_cache, rule_result) {
-
-
-      let info = {
-        dom_cache: dom_cache,
-        rule_result: rule_result
-      };
-
-      debug$d.flag && debug$d.log(`[CONTROL_5]: ${info}`);
-
-      /*
-      var TEST_RESULT = TEST_RESULT;
-      var VISIBILITY  = VISIBILITY;
-      var ID          = ID;
-
-      var control_elements      = dom_cache.controls_cache.control_elements;
-      var control_elements_len  = control_elements.length;
-
-      // Check to see if valid cache reference
-      if (control_elements && control_elements_len) {
-
-        for (var i = 0; i < control_elements_len; i++) {
-          var ce = control_elements[i];
-          var de = ce.dom_element;
-          var cs = de.computed_style;
-
-          switch (de.id_unique) {
-          case ID.NOT_UNIQUE:
-            if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
-              rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_1', [de.tag_name, de.id]);
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.id) {
+          const docIndex = de.parentInfo.documentIndex;
+          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
             }
             else {
-              rule_result.addResult(TEST_RESULT.FAIL, ce, 'ELEMENT_FAIL_2', [de.tag_name, de.id]);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
             }
-            break;
-
-          case ID.UNIQUE:
-            rule_result.addResult(TEST_RESULT.PASS, ce, 'ELEMENT_PASS_1', [de.id]);
-            break;
-
-          default:
-            break;
-          } // end switch
-
-       } // end loop
-     }
-      */
-
+          } else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
+          }
+        }
+      });
     } // end validate function
   },
 
@@ -11773,49 +11844,26 @@
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['label'],
     validate            : function (dom_cache, rule_result) {
-
-
-      let info = {
-        dom_cache: dom_cache,
-        rule_result: rule_result
-      };
-
-      debug$d.flag && debug$d.log(`[CONTROL_6]: ${info}`);
-
-      /*
-     var TEST_RESULT   = TEST_RESULT;
-     var VISIBILITY = VISIBILITY;
-
-     var label_elements      = dom_cache.controls_cache.label_elements;
-     var label_elements_len  = label_elements.length;
-
-     // Check to see if valid cache reference
-     if (label_elements && label_elements_len) {
-
-       for (var i = 0; i < label_elements_len; i++) {
-         var le = label_elements[i];
-         var de = le.dom_element;
-
-         if (le.for_id && le.for_id.length) {
-
-           if (de.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
-             if (le.unused_label) {
-                rule_result.addResult(TEST_RESULT.FAIL, le, 'ELEMENT_FAIL_1', [le.for_id]);
-             }
-             else {
-                if (le.duplicate_label) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', [le.for_id]);
-                else rule_result.addResult(TEST_RESULT.PASS, le, 'ELEMENT_PASS_1', [le.for_id]);
-             }
-           }
-           else {
-             rule_result.addResult(TEST_RESULT.HIDDEN, le, 'ELEMENT_HIDDEN_1', []);
-           }
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.labelForAttr) {
+          if (de.visibility.isVisibleToAT) {
+            if (ce.isLabelForAttrValid) {
+              if (ce.labelforTargetUsesAriaLabeling) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
         }
-       } // end loop
-     }
-
-      */
-
+      });
     } // end validate function
   },
 
@@ -15431,10 +15479,10 @@
         },
         BASE_RESULT_MESSAGES: {
           ELEMENT_PASS_1: 'Radio button has grouping label "%1" from @fieldset/legend@ elements.',
-          ELEMENT_PASS_2: 'Radio button has grouping label "%2" from @%1[role=group]@ element.',
+          ELEMENT_PASS_2: 'Radio button has grouping label "%3x" from @%1[role=%2]@ element.',
           ELEMENT_FAIL_1: 'Add a @fieldset@ element with a @legend@ element to provide a grouping label for the radio buttons.',
           ELEMENT_FAIL_2: 'The @fieldset@ element has a missing or empty @legend@ element.',
-          ELEMENT_FAIL_3: 'The @%1[role=group]@ grouping element does not have an accessible name.',
+          ELEMENT_FAIL_3: 'The @%1[role=%2]@ grouping element does not have an accessible name.',
           ELEMENT_HIDDEN_1: 'Radio button was not evaluated because it is hidden from assistive technologies.'
         },
         PURPOSES: [
@@ -15449,8 +15497,12 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @fieldset@ and @legend@ elements',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-FIELDSET'
+            title: 'HTML Specification: The @fieldset@ element',
+            url:   'https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The @legend@ element',
+            url:   'https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @group@ role',
@@ -15471,35 +15523,53 @@
         ]
     },
     CONTROL_4: {
-        // TODO: Question: What if button only contains img elements with alt. text?
         ID:         'Control 4',
-        DEFINITION: '@button@ elements must have text content.',
-        SUMMARY:    '@button@s must have content',
+        DEFINITION: '@button@ elements should have visible text content.',
+        SUMMARY:    '@button@s should have text content',
         TARGET_RESOURCES_DESC: '@button@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add descriptive text content to the @button@ element.',
-          FAIL_P:   'Add descriptive text content to %N_F @button@ elements.',
+          FAIL_S:   'Use text content to define the visible label of the element with @role=button@.',
+          FAIL_P:   'Use text content to define the visible labels of the %N_F elements with @role=button@.',
+          MANUAL_CHECK_S: 'Verify the visual rendering of the SVG content of the element with @role=button@ adapts to operating system and browser color and size settings.',
+          MANUAL_CHECK_P: 'Verify the visual rendering of the SVG content of the %N_MC elements with @role=button@ adapt to operating system and browser color and size settings.',
           HIDDEN_S: 'The @button@ that is hidden was not evaluated.',
           HIDDEN_P: 'The %N_H @button@ elements that are hidden were not evaluated.',
           NOT_APPLICABLE:  'No @button@ elements on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1: '@button@ element has text content.',
-          ELEMENT_FAIL_1: 'Add text content to the @button@ element.',
-          ELEMENT_HIDDEN_1: '@button@ element was not evaluated because it is hidden from assistive technologies.'
+          ELEMENT_PASS_1: 'The @input[type=%1]@ uses the @value@ attribute to define the graphically rendered label.',
+          ELEMENT_FAIL_1: 'Use the @value@ attribute of the @input[type=%1]@ element to define the graphically rendered label.',
+          ELEMENT_HIDDEN_1: '@input[type=%1]@ element was not evaluated because it is hidden from the graphical rendering.',
+          ELEMENT_PASS_2: '@button@ element uses the text content for the graphically rendered label.',
+          ELEMENT_FAIL_2: 'Use text content to define the graphically rendered label for the @button@ element.',
+          ELEMENT_MC_2:   'Verify the SVG content of the @button@ element adapts to operating system and browser color preference settings.',
+          ELEMENT_HIDDEN_2: '@button@ element was not evaluated because it is hidden from graphical rendering.',
+          ELEMENT_PASS_3: 'The @%1[role=button]@ element uses text content for the graphically rendered label.',
+          ELEMENT_FAIL_3: 'Use text content to define the graphically rendered label for the @%1[role=button]@ element.',
+          ELEMENT_FAIL_4: 'Change the @input[type=image]@ to a button that can use text content for the visual label.',
+          ELEMENT_MC_3:   'Verify the SVG content of the @%1[role=button]@ element adapts to operating system and browser color preference settings.',
+          ELEMENT_HIDDEN_3: '@%1[role=button]@ element was not evaluated because it is hidden from graphical rendering.'
         },
         PURPOSES: [
-          'The text content of a @button@ element is used as its label, and ensures that the purpose of the button is spoken by screen readers when the button receives focus.'
+          'The use of rendered text supports people with visual impairments and learning disabilities to use operating system and browser settings to adjust size and color to make it esaier to perceive the purpose of the button.',
+          'The use of text content as the accessible name insures that the visible name and the accessible name are the same, reducing the chance the accessible name not describing the purpose of the button.'
         ],
         TECHNIQUES: [
-          'The accessible label of a @button@ element includes its text content along with the @alt@ attribute content of any image elements it contains.'
+          'The accessible label of a @button@ element or an element with @role=button@ by default is its text content.',
+          'The accessible label of a @input[type=button]@ element is the @value@ attribute content.',
+          'SVG graphics can be used to create content (e.g. icons) that can adapt to operating system and browser settings for color and size, but requires manual testing to insure content adapts to user preferences.',
+          'Do not use @input[type=image]@ elements, instead use other botton elements that support text content for the visual label.'
         ],
         MANUAL_CHECKS: [
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @button@ elements',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-BUTTON'
+            title: 'HTML Specification: The @button@ element',
+            url:   'https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The @input[type=button]@ element',
+            url:   'https://html.spec.whatwg.org/multipage/input.html#button-state-(type=button)'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -15515,15 +15585,12 @@
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Update elements with @id@ attributes so that each attribute value is unique.',
           FAIL_P:   'Update elements with @id@ attributes so that each attribute value is unique.',
-          HIDDEN_S: 'The element with an @id@ attribute that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H elements with @id@ attributes that are hidden were not evaluated.',
           NOT_APPLICABLE:  'No elements or only one element with an @id@ attribute on this page.'
         },
         BASE_RESULT_MESSAGES: {
           ELEMENT_PASS_1: '\'%1\' @id@ attribute value is unique.',
-          ELEMENT_FAIL_1: '@%1@ element shares the \'%2\' @id@ value with another element on the page.',
-          ELEMENT_FAIL_2: 'The hidden @%1@ element shares the \'%2\' @id@ value with another element on the page.',
-          ELEMENT_HIDDEN_1: '%1 element with @id@ attribute was not evaluated because it is hidden from assistive technologies.'
+          ELEMENT_FAIL_1: '@%1@ element shares the \'%2\' @id@ value with another element on the page, update the elements to make the @id@s unique.',
+          ELEMENT_FAIL_2: 'The hidden @%1@ element shares the \'%2\' @id@ value with another element on the page, update the elements to make the @id@s unique.',
         },
         PURPOSES: [
           '@id@ attribute values on form control elements can be used as references by @label@ elements. When @id@ attribute values on the page are not unique, form controls may be incorrectly labelled.',
@@ -15536,8 +15603,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: @id@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-id'
+            title: 'HTML Specification: @id@ attribute',
+            url:   'https://dom.spec.whatwg.org/#concept-id'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -19714,8 +19781,9 @@
 
     getResultIdentifier () {
       const de = this.domElement;
-      const identifier =  de.node.hasAttribute('type') ?
-                          `${de.tagName}[${de.getAttribute('type')}]` :
+      const typeAttr = de.node.getAttribute('type');
+      const identifier =  typeAttr ?
+                          `${de.tagName}[type=${typeAttr}]` :
                           de.tagName;
       return identifier;
     }
@@ -19729,7 +19797,19 @@
      */
 
     getTagName () {
-      return this.domElement.tagName;
+      return this.getResultIdentifier();
+    }
+
+    /**
+     * @method getHasRole
+     *
+     * @desc True if the element has a role attribute, otherwise false
+     *
+     * @return {Boolean} see description
+     */
+
+    getHasRole () {
+      return this.domElement.hasRole;
     }
 
     /**
@@ -20984,11 +21064,7 @@
       'sc'              : getInformationalInfoArray(wcag),
       'additionalLinks' : getInformationalInfoArray(rule.getInformationalLinks())
     };
-
-    console.log(`[additionalLinks]: ${detailsAction.additionalLinks.length}`);
-
     return detailsAction;
-
   }
 
   /* getRuleResultsItem.js */
@@ -21242,8 +21318,6 @@
 
     function addElementResult(elementResult) {
 
-      console.log(`[addElementResult][A]`);
-
       let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
       let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
       let visibilityInfo = JSON.stringify(elementResult.getVisibilityInfo());
@@ -21252,6 +21326,7 @@
 
       const item = {
         'tagName'          : elementResult.getTagName(),
+        'hasRole'          : elementResult.getHasRole(),
         'role'             : elementResult.getRole(),
         'position'         : elementResult.getOrdinalPosition(),
         'result'           : elementResult.getResultValueNLS(),
@@ -21269,8 +21344,6 @@
         'isWebsiteResult'  : elementResult.isWebsiteResult,
         'isActionMessage'  : elementResult.isActionMessage,
       };
-
-      console.log(`[addElementResult][item]: ${JSON.stringify(item)}`);
 
       // Adjust sort order of element results for AInspector Sidebar
       if (item.resultValue === RESULT_VALUE.HIDDEN) {
@@ -22048,7 +22121,8 @@
   function getEvaluationInfo(panelPort) {
 
     // NOTE: infoAInspectorEvaluation is a global variable in the page
-    const aiInfo = infoAInspectorEvaluation; // eslint-disable-line 
+    const aiInfo     = infoAInspectorEvaluation; // eslint-disable-line 
+    const ruleResult = ainspectorSidebarRuleResult; // eslint-disable-line
 
     {
       console.log(`[getEvaluationInfo][           view]: ${aiInfo.view}`);
@@ -22060,6 +22134,7 @@
       console.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
       console.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
       console.log(`[getEvaluationInfo][removeHighlight]: ${aiInfo.removeHighlight}`);
+      console.log(`[ainspectorSidebarRuleResult][ruleId]: ${(ruleResult && ruleResult.rule) ? ruleResult.rule.getId() : 'none'}`);
     }
 
     let info = {};

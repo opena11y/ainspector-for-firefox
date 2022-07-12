@@ -715,6 +715,11 @@
     "description": "Message heading in element, page or website results view."
   },
 
+  "elementResultRole": {
+    "message": "Role",
+    "description": "Role heading in element results view."
+  },
+
   "elementResultTagName": {
     "message": "Tag Name",
     "description": "Tag name heading in element results view."

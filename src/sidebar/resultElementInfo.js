@@ -15,6 +15,7 @@ const msg = {
   elementResultCCR             : getMessage('elementResultCCR'),
   elementResultErrorDesc       : getMessage('elementResultErrorDesc'),
   elementResultMessage         : getMessage('elementResultMessage'),
+  elementResultRole            : getMessage('elementResultRole'),
   elementResultTagName         : getMessage('elementResultTagName'),
   elementResultType            : getMessage('elementResultType'),
   elementResultValueHeader     : getMessage('elementResultValueHeader'),
@@ -45,6 +46,11 @@ template.innerHTML = `
         <div id="tagname-info">
           <h3  id="tagname-label">Tag Name</h3>
           <div id="tagname"></div>
+        </div>
+
+        <div id="role-info">
+          <h3  id="role-label">Role</h3>
+          <div id="role"></div>
         </div>
 
         <div id="accname-info">
@@ -131,6 +137,9 @@ export default class ResultElementInfo extends HTMLElement {
     this.tagNameInfoDiv  = this.shadowRoot.querySelector('#tagname-info');
     this.tagNameDiv      = this.shadowRoot.querySelector('#tagname');
 
+    this.roleInfoDiv  = this.shadowRoot.querySelector('#role-info');
+    this.roleDiv      = this.shadowRoot.querySelector('#role');
+
     this.accNameInfoLabelMoreSpan = this.shadowRoot.querySelector('#accname-info-label-more');
     this.accNameInfoDiv    = this.shadowRoot.querySelector('#accname-info');
     this.accNameSpan       = this.shadowRoot.querySelector('#accname');
@@ -176,6 +185,9 @@ export default class ResultElementInfo extends HTMLElement {
 
     const tagNameLabel = this.shadowRoot.querySelector('#tagname-label');
     tagNameLabel.textContent = msg.elementResultTagName;
+
+    const roleLabel = this.shadowRoot.querySelector('#role-label');
+    roleLabel.textContent = msg.elementResultRole;
 
     const accNameLabel = this.shadowRoot.querySelector('#accname-info-label');
     accNameLabel.textContent = msg.elementResultAccName;
@@ -333,10 +345,11 @@ export default class ResultElementInfo extends HTMLElement {
   updateTagName(elementInfo) {
     this.tagNameInfoDiv.classList.remove('hide');
     let tagName = elementInfo.tagName;
-    if (elementInfo.role) {
+    if (elementInfo.hasRole) {
       tagName += '[role=' + elementInfo.role + ']';
     }
     this.renderContent(this.tagNameDiv, tagName);
+    this.renderContent(this.roleDiv, elementInfo.role);
   }
 
   updateAccessibleNameInfo(elementInfo) {
