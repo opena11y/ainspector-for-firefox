@@ -41,6 +41,7 @@ const msg = {
   backButtonLabel        : getMessage('backButtonLabel'),
   ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
   ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
+  evaluationNotAllowed   : getMessage("evaluationNotAllowed"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
@@ -593,10 +594,13 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ file: '../content-script.js' })
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`)
+        },
+        (error) => {
+          updateSidebar(msg.evaluationNotAllowed);
         });
       }
       else {
-        updateSidebar (msg.protocolNotSupported);
+        updateSidebar(msg.protocolNotSupported);
       }
       sidebarHighlightOnly= false;
     })
