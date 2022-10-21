@@ -26,3 +26,7 @@
 ## Issues and Features
 * Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features
 
+## Version History
+
+### 2.0.1
+* Provides a message in the title and location information for pages that do not allow evaluation
