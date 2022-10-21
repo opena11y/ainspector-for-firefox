@@ -344,10 +344,7 @@ export default class ResultElementInfo extends HTMLElement {
 
   updateTagName(elementInfo) {
     this.tagNameInfoDiv.classList.remove('hide');
-    let tagName = elementInfo.tagName;
-    if (elementInfo.hasRole) {
-      tagName += '[role=' + elementInfo.role + ']';
-    }
+    let tagName = elementInfo.tagName + elementInfo.id + elementInfo.className;
     this.renderContent(this.tagNameDiv, tagName);
     this.renderContent(this.roleDiv, elementInfo.role);
   }

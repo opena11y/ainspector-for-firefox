@@ -198,7 +198,7 @@ export default class ViewElementResults {
         if (options.resultsIncludePassNa ||
             (['', 'V', 'W', 'MC'].indexOf(er.result) > 0)) {
 
-          rowId = this.getRowId(er.position);
+          rowId = this.getRowId(er.index);
 
           // convert JSON strings to objects
           if (er.accNameInfo) {
@@ -229,7 +229,7 @@ export default class ViewElementResults {
 
           elemName = er.element;
           if (er.tagName) {
-            elemName = er.tagName;
+            elemName = er.tagName + er.id + er.className;
           }
 
           rowAccName = elemName + ' ' + msg.elementLabel;

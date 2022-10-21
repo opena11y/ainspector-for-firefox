@@ -156,7 +156,7 @@
   /* constants.js */
 
   /* Constants */
-  const debug$u = new DebugLogging('constants', false);
+  const debug$v = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta1';
 
@@ -575,13 +575,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$u.flag && debug$u.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$v.flag && debug$v.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$u.flag && debug$u.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$v.flag && debug$v.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -866,7 +866,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$t = new DebugLogging('ControlInfo', true);
+  const debug$u = new DebugLogging('ControlInfo', true);
 
   /**
    * @class ControlElement
@@ -1006,7 +1006,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$t.domElement(ce.domElement, prefix);
+        debug$u.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1227,15 +1227,15 @@
      */
 
     showControlInfo () {
-      if (debug$t.flag) {
-        debug$t.log('== Control Tree ==', 1);
+      if (debug$u.flag) {
+        debug$u.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$t.domElement(ce.domElement);
+          debug$u.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$t.log('== Forms ==', 1);
+        debug$u.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$t.domElement(ce.domElement);
+          debug$u.domElement(ce.domElement);
         });
       }
     }
@@ -1244,7 +1244,7 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('colorContrast', false);
+  const debug$t = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -1264,9 +1264,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$s.flag) {
-        debug$s.separator();
-        debug$s.tag(elementNode);
+      if (debug$t.flag) {
+        debug$t.separator();
+        debug$t.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -1290,11 +1290,11 @@
       const L2 = this.getLuminance(this.backgroundColorHex);
       this.colorContrastRatio = Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
 
-      if (debug$s.flag) {
-        debug$s.log(`[                    opacity]: ${this.opacity}`);
-        debug$s.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$s.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$s.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$t.flag) {
+        debug$t.log(`[                    opacity]: ${this.opacity}`);
+        debug$t.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$t.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$t.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -1617,7 +1617,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('EventInfo', false);
+  const debug$s = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -1630,7 +1630,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$r.flag) {
+      if (debug$s.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -1640,7 +1640,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('visibility', false);
+  const debug$r = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -1688,17 +1688,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$q.flag) {
-        debug$q.separator();
-        debug$q.tag(elementNode);
-        debug$q.log('[          isHidden]: ' + this.isHidden);
-        debug$q.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$q.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$q.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$q.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$q.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$q.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$q.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$r.flag) {
+        debug$r.separator();
+        debug$r.tag(elementNode);
+        debug$r.log('[          isHidden]: ' + this.isHidden);
+        debug$r.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$r.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$r.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$r.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$r.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$r.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$r.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -4510,7 +4510,6 @@
       inheritedProps: [
         'aria-atomic',
         'aria-busy',
-        'aria-checked',
         'aria-controls',
         'aria-current',
         'aria-describedby',
@@ -4541,7 +4540,9 @@
       ],
       supportedProps: [],
       hasRange: false,
-      requiredProps: [],
+      requiredProps: [
+        'aria-checked'
+      ],
       nameRequired: true,
       nameFromContent: true,
       nameProhibited: false,
@@ -6592,7 +6593,7 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$p = new DebugLogging('AriaInfo', false);
+  const debug$q = new DebugLogging('AriaInfo', false);
 
   /* Debug helper functions */
 
@@ -6657,6 +6658,7 @@
 
       this.isAbstractRole = false;
 
+
       // if role is not valid use default role for element for validation
       if (!this.isValidRole) {
         designPattern = designPatterns[defaultRole];
@@ -6708,7 +6710,7 @@
       this.invalidRefs        = this.checkForInvalidReferences(doc, this.validAttrs);
       this.unsupportedAttrs   = this.checkForUnsupportedAttribute(this.validAttrs, designPattern);
       this.deprecatedAttrs    = this.checkForDeprecatedAttribute(this.validAttrs, designPattern);
-      this.missingReqAttrs    = this.checkForMissingRequiredAttributes(this.validAttrs, designPattern, node);
+      this.requiredAttrs      = this.checkForRequiredAttributes(this.validAttrs, designPattern, node);
 
       switch (tagName) {
         case 'h1':
@@ -6740,15 +6742,16 @@
           break;
       }
 
-      if (debug$p.flag) {
-        node.attributes.length && debug$p.log(`${node.outerHTML}`, 1);
-        debug$p.log(`[         isWidget]: ${this.isWidget}`);
-        debug$p.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$p.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$p.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$p.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$p.log(`[  missingReqAttrs]: ${debugAttrs(this.missingReqAttrs)}`);
-        debug$p.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+
+      if (debug$q.flag) {
+        node.attributes.length && debug$q.log(`${node.outerHTML}`, 1);
+        debug$q.log(`[         isWidget]: ${this.isWidget}`);
+        debug$q.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$q.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$q.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$q.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$q.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$q.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6836,8 +6839,13 @@
           const refInfo = new RefInfo (attr.name, attr.value);
 
           idRefs.forEach( id => {
-            if (doc && !doc.querySelector(`#${id}`)) {
+            try {
+              if (doc && !doc.querySelector(`#${id}`)) {
+                refInfo.invalidIds.push(id);
+              }
+            } catch (error) {
               refInfo.invalidIds.push(id);
+              debug$q.log(`[checkForInvalidReferences][error]: ${error}`);
             }
           });
           if (refInfo.invalidIds.length) {
@@ -6887,21 +6895,28 @@
     // checks for required aria attributes for a specific role
     // In some cased native HTML semanitics like "checked' property of
     // an input element can be used to satisfy the requirement
-    checkForMissingRequiredAttributes(attrs, designPattern, node) {
-      const missingReqAttrNames = [];
+    checkForRequiredAttributes(attrs, designPattern, node) {
+      let requiredAttrs = [];
       designPattern.requiredProps.forEach (reqAttr => {
+
         const defaultValue = propertyDataTypes[reqAttr].defaultValue;
-        let flag = (defaultValue !== '') && (defaultValue !== 'undefined');
+        const attrInfo = {
+          name: reqAttr,
+          hasDefaultValue: (defaultValue !== '') && (defaultValue !== 'undefined'),
+          defaultValue: defaultValue,
+          isDefined: (reqAttr === 'aria-checked') && hasCheckedState(node),
+          value: ''
+        };
+
         attrs.forEach( attr => {
-          const name  = attr.name.toLowerCase();
-          flag = flag || (name === reqAttr);
-          flag = flag || ((reqAttr === 'aria-checked') && hasCheckedState(node));
+          if (attr.name === reqAttr) {
+            attrInfo.isDefined = true;
+            attrInfo.value = attr.value;
+          }
         });
-        if (!flag) {
-          missingReqAttrNames.push(reqAttr);
-        }
+        requiredAttrs.push(attrInfo);
       });
-      return missingReqAttrNames;
+      return requiredAttrs;
     }
 
     getHeadingLevel (role, node) {
@@ -8431,7 +8446,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('ariaInHtml', false);
+  const debug$p = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8623,11 +8638,11 @@
       };
     }
 
-    if (debug$o.flag) {
+    if (debug$p.flag) {
       if (tagName === 'h2') {
-        debug$o.tag(node);
+        debug$p.tag(node);
       }
-      debug$o.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$p.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -9203,6 +9218,7 @@
   /*
   *   namefrom.js
   */
+  const debug$o = new DebugLogging('nameFrom', false);
 
   /*
   *   getElementContents: Construct the ARIA text alternative for element by
@@ -9300,10 +9316,14 @@
 
     // label [for=id]
     if (element.id) {
-      label = doc.querySelector('[for="' + element.id + '"]');
-      if (label) {
-        name = getElementContents(label, element);
-        if (name.length) return { name: name, source: 'label reference' };
+      try {
+        label = doc.querySelector('[for="' + element.id + '"]');
+        if (label) {
+          name = getElementContents(label, element);
+          if (name.length) return { name: name, source: 'label reference' };
+        }
+      } catch (error) {
+        debug$o.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -9923,6 +9943,7 @@
       this.resultsViolations   = [];
       this.resultsWarnings     = [];
       this.resultsManualChecks = [];
+
     }
 
 
@@ -11205,7 +11226,9 @@
 
     // Tests if a tag name can be skipped
     isSkipableElement(tagName, type) {
-      const elemSelector = (typeof type !== 'string') ? tagName : `${tagName}[type=${type}]`;
+      const elemSelector = (tagName === 'input') && (typeof type === 'string') ? 
+                           `${tagName}[type=${type}]` :
+                           tagName;
       return skipableElements.includes(elemSelector);
     }
 
@@ -11267,7 +11290,6 @@
           case Node.ELEMENT_NODE:
             tagName = node.tagName.toLowerCase();
 
-
             if (!this.isSkipableElement(tagName, node.getAttribute('type'))) {
               // check for slotted content
               if (this.isSlotElement(node)) {
@@ -11275,9 +11297,38 @@
                 const assignedNodes = node.assignedNodes().length ?
                                       node.assignedNodes() :
                                       node.assignedNodes({ flatten: true });
-                assignedNodes.forEach( assignedNode => {
-                  this.transverseDOM(parentInfo, assignedNode);
-                });
+                for (let i = 0; i < assignedNodes.length; i += 1) {
+                  const assignedNode = assignedNodes[i];
+                  switch (assignedNode.nodeType) {
+
+                    case Node.TEXT_NODE:
+                      domItem = new DOMText(parentDomElement, assignedNode);
+                      // Check to see if text node has any renderable content
+                      if (domItem.hasContent) {
+                        // Merge text nodes in to a single DomText node if sibling text nodes
+                        if (parentDomElement) {
+                          parentDomElement.hasContent = true;
+                          // if last child node of parent is a DomText node merge text content
+                          if (parentDomElement.isLastChildDomText) {
+                            parentDomElement.addTextToLastChild(domItem.text);
+                          } else {
+                            parentDomElement.addChild(domItem);
+                            this.allDomTexts.push(domItem);
+                          }
+                        }
+                      }
+                      break;
+
+                    case Node.ELEMENT_NODE:
+                      domItem = new DOMElement(parentInfo, node, this.ordinalPosition);
+                      this.ordinalPosition += 1;
+                      this.allDomElements.push(domItem);
+                      if (parentDomElement) {
+                        parentDomElement.addChild(domItem);
+                      }
+                      break;
+                  }
+                }
               } else {
                 domItem = new DOMElement(parentInfo, node, this.ordinalPosition);
                 this.ordinalPosition += 1;
@@ -11307,7 +11358,6 @@
                       newParentInfo.documentIndex = this.documentIndex;
                       this.transverseDOM(newParentInfo, doc);
                     } catch (error) {
-                      debug$f.flag && debug$f.log('[transverseDOM][catch]' + error);
                       isCrossDomain = true;
                     }                    
                     this.iframeInfo.update(domItem, isCrossDomain);
@@ -14254,58 +14304,6 @@
           }
         });
       });
-
-  /*
-       function makeProp(label, value) {
-
-         var p = {};
-
-         p.label = label;
-         p.value = value;
-         p.description = "";
-
-         return p;
-
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var elements_with_aria_attributes     = dom_cache.controls_cache.elements_with_aria_attributes;
-       var elements_with_aria_attributes_len = elements_with_aria_attributes.length;
-
-       if (elements_with_aria_attributes && elements_with_aria_attributes_len) {
-
-         for (var i = 0; i < elements_with_aria_attributes_len; i++) {
-           var de = elements_with_aria_attributes[i];
-           var style = de.computed_style;
-           var aria_attrs = de.aria_attributes;
-           var aria_attrs_len = aria_attrs.length;
-
-           for (var j = 0; j < aria_attrs_len; j++) {
-
-             var attr = aria_attrs[j];
-
-             var prop = makeProp(attr.name, attr.value);
-
-             if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-
-               if (attr.is_value_valid && attr.tokens) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value], [prop]);
-               else if (attr.is_value_valid) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [attr.name, attr.value, attr.type], [prop]);
-               else if (attr.type === 'nmtoken' || attr.type === 'boolean') rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, attr.value, attr.tokens], [prop]);
-               else if (attr.type === 'nmtokens') rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, attr.value, attr.tokens], [prop]);
-               else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [attr.name, attr.value, attr.type], [prop]);
-
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, attr.value], [prop]);
-             }
-
-           } // end loop
-         } // end loop
-       }
-       */
-
      } // end validation function
   },
 
@@ -14316,7 +14314,7 @@
    */
 
   { rule_id             : 'WIDGET_5',
-    last_updated        : '2021-07-07',
+    last_updated        : '2022-08-15',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     ruleset             : RULESET.MORE,
@@ -14357,54 +14355,25 @@
                            '[aria-valuetext]'],
     validate            : function (dom_cache, rule_result) {
 
-      debug$d.flag && debug$d.log(`[WIDGET 5] ${dom_cache} ${rule_result}`);
-
-  /*
-       function makeProp(label, value) {
-
-         var p = {};
-
-         p.label = label;
-         p.value = value;
-         p.description = "";
-
-         return p;
-
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var elements_with_aria_attributes     = dom_cache.controls_cache.elements_with_aria_attributes;
-       var elements_with_aria_attributes_len = elements_with_aria_attributes.length;
-
-       if (elements_with_aria_attributes && elements_with_aria_attributes_len) {
-
-         for (var i = 0; i < elements_with_aria_attributes_len; i++) {
-           var de = elements_with_aria_attributes[i];
-
-           var style = de.computed_style;
-           var aria_attrs = de.aria_attributes;
-           var aria_attrs_len = aria_attrs.length;
-
-           for (var j = 0; j < aria_attrs_len; j++) {
-
-             var attr = aria_attrs[j];
-             var prop = makeProp(attr.name, attr.value);
-
-             if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-               if (attr.is_valid_attribute) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name], [prop]);
-               else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name], [prop]);
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, attr.value], [prop]);
-             }
-
-           } // end loop
-         } // end loop
-       }
-       */
-     } // end validation function
+      dom_cache.allDomElements.forEach(de => {
+        de.ariaInfo.invalidAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+        de.ariaInfo.validAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+      });
+    } // end validation function
   },
 
   /**
@@ -14424,106 +14393,31 @@
     target_resources    : ['[checkbox]',
                            '[combobox]',
                            '[menuitemcheckbox]',
+                           '[menuitemradio]',
+                           '[meter]',
                            '[option]',
+                           '[separator]',
                            '[scrollbar]',
                            '[slider]',
                            '[switch]'],
     validate            : function (dom_cache, rule_result) {
 
-      debug$d.flag && debug$d.log(`[WIDGET 6] ${dom_cache} ${rule_result}`);
-
-  /*
-       function getRequiredPropertiesAndValues(dom_element, required_props) {
-
-         var rps = [];
-
-         var attrs     = dom_element.aria_attributes;
-         var attrs_len = attrs.length;
-
-         for (var i = 0; i < required_props.length; i++) {
-
-           var prop = required_props[i];
-
-           var flag = false;
-
-           for (var j = 0; j <attrs_len; j++) {
-             if (prop === attrs[j].name) {
-               flag = true;
-               break;
-             }
-           }
-
-           var rp = {};
-           rp.label = prop;
-           rp.description = "";
-           rp.defined = flag;
-
-           if (flag) {
-             rp.value  = attrs[j].value;
-           }
-           else {
-             rp.value  = "undefined";
-           }
-
-           rps.push(rp);
-
-         }
-
-         return rps;
-
-       }
-
-       function getPropsString(props) {
-
-         var str = "";
-         var prop_max = props.length - 1;
-
-         for (var i = 0; i < props.length; i++ ) {
-           str += props[i];
-           if (i !== prop_max) str += ", ";
-         }
-
-         return str;
-
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var widget_elements     = dom_cache.controls_cache.widget_elements;
-       var widget_elements_len = widget_elements.length;
-
-       if (widget_elements && widget_elements) {
-
-         for (var i = 0; i < widget_elements_len; i++) {
-           var we = widget_elements[i];
-           var de = we.dom_element;
-           var style = de.computed_style;
-
-           var required_properties = de.role_info.requiredProps;
-
-           if (required_properties && required_properties.length) {
-
-             if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-
-               var props_string   = getPropsString(required_properties);
-               var required_props = getRequiredPropertiesAndValues(de, required_properties);
-
-               var flag = true;
-
-               for (var j = 0; (j < required_props.length) && flag; j++) flag = flag && required_props[j].defined;
-
-               if (flag) rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, props_string], required_props);
-               else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, props_string], required_props);
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-             }
-           }
-         } // end loop
-       }
-       */
-
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        de.ariaInfo.requiredAttrs.forEach( reqAttrInfo => {
+          if (de.visibility.isVisibleToAT) {
+            if (reqAttrInfo.isDefined) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, reqAttrInfo.name, reqAttrInfo.value]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, reqAttrInfo.name]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, reqAttrInfo.name]);
+          }
+        });
+      });
      } // end validation function
   },
 
@@ -20100,7 +19994,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20114,8 +20008,8 @@
     },
     WIDGET_5: {
           ID:                    'Widget 5',
-          DEFINITION:            'Elements with the attributes that start with @aria-@ %s be a valid ARIA property or state.',
-          SUMMARY:               'Attributes that start with @aria-@ %s be defined.',
+          DEFINITION:            'Elements with the attributes that start with @aria-@must be a valid ARIA property or state.',
+          SUMMARY:               'Attributes that start with @aria-@ must be defined.',
           TARGET_RESOURCES_DESC: 'Elements with aria attributes',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Change ARIA attribute to a defined property or state.',
@@ -20126,8 +20020,8 @@
           },
           BASE_RESULT_MESSAGES: {
             ELEMENT_PASS_1:    'The @%1@ attribute is a defined ARIA property or state.',
-            ELEMENT_FAIL_1:  'The @%1@ attribute must be changed to a defined ARIA property or state.',
-            ELEMENT_HIDDEN_1:  'Valid ARIA attribute was not tested becasue the @%1@ attribute with the value "@%2@" is hidden from assistive technologies and/or not visible on screen.'
+            ELEMENT_FAIL_1:  'The @%1@ attribute must be changed to a defined ARIA property or state, otherwise remove.',
+            ELEMENT_HIDDEN_1:  'Valid ARIA attribute was not tested becasue the @%1@ attribute with the value "@%2@" is hidden from assistive technologies.'
           },
           PURPOSES: [
             'ARIA attributes must be defined properties or states to accurately describe web content to users of assistive technologies, especially screen reader users'
@@ -20167,8 +20061,8 @@
     },
     WIDGET_6: {
           ID:                    'Widget 6',
-          DEFINITION:            'Widgets %s define required properties and states.',
-          SUMMARY:               'Widgets %s have properties',
+          DEFINITION:            'Widgets must set required properties and states.',
+          SUMMARY:               'Widgets must set properties',
           TARGET_RESOURCES_DESC: 'Widgets with required properties and states',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add required properties and states to widget.',
@@ -20178,17 +20072,18 @@
             NOT_APPLICABLE:  'No widgets with required properties and states on this page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_PASS_1:   '@%1@ widget has the following required ARIA properties and states: %2.',
-            ELEMENT_FAIL_1: 'Add one or more of the required ARIA properties and states (i.e. "%2") to the @%1@ widget.',
+            ELEMENT_PASS_1: '@%1@ widget has the required @%2@ attribute with the value @%3@.',
+            ELEMENT_FAIL_1: 'Add the required @%2@ attribute to the @%1@ widget.',
             ELEMENT_HIDDEN_1: 'Required ARA properties and states was not tested because the %1 widget is hidden from assistive technologies and/or not visible on screen.'
           },
           PURPOSES: [
-            'ARIA roles, properties and states describes the features of interactive widgets to users of assistive technologies, especially screen reader users.'
+            'ARIA roles, properties and states describe the features and options of widgets to users of assistive technologies, especially screen reader users.'
           ],
           TECHNIQUES: [
-            'Use required ARIA properties to describe the features and options of a widget.'
+            'Required ARIA properties and states are needed accurately describe the features and options of a widget.'
           ],
           MANUAL_CHECKS: [
+            'Verify that the values of properties and states accurately describe a widget'
           ],
           INFORMATIONAL_LINKS: [
             { type: REFERENCES.SPECIFICATION,
@@ -20219,8 +20114,8 @@
       },
     WIDGET_7: {
           ID:                    'Widget 7',
-          DEFINITION:            'Container widgets %s have required owned elements.',
-          SUMMARY:               'Widgets %s have owned elements',
+          DEFINITION:            'Container widgets must have required owned elements.',
+          SUMMARY:               'Widgets must have owned elements',
           TARGET_RESOURCES_DESC: 'Widgets with required owned elements',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add required child element to the widget.',
@@ -20275,8 +20170,8 @@
       },
    WIDGET_8: {
           ID:                    'Widget 8',
-          DEFINITION:            'Role %s have a required parent role using the HTML DOM structure or the @aria-owns@ attribute.',
-          SUMMARY:               'Role %s have parent',
+          DEFINITION:            'Role must have a required parent role using the HTML DOM structure or the @aria-owns@ attribute.',
+          SUMMARY:               'Role must have parent',
           TARGET_RESOURCES_DESC: 'Role with required parent role',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add required parent role to the widget.',
@@ -20329,7 +20224,7 @@
       },
    WIDGET_9: {
           ID:                    'Widget 9',
-          DEFINITION:            'Elements %s be owned by only one widget.',
+          DEFINITION:            'Elements must be owned by only one widget.',
           SUMMARY:               'Only one owner',
           TARGET_RESOURCES_DESC: 'Widgets with required parent roles',
           RULE_RESULT_MESSAGES: {
@@ -22491,6 +22386,36 @@
     }
 
     /**
+     * @method getId
+     *
+     * @desc Gets a string identifying the elements id 
+     *
+     * @return {String} see description
+     */
+
+    getId () {
+      let id = this.domElement.node.id;
+      id = id ? '#' + id : '';
+      return id;
+    }
+
+    /**
+     * @method getClassName
+     *
+     * @desc Gets a string identifying the elements class names
+     *
+     * @return {String} see description
+     */
+
+    getClassName () {
+      let names = this.domElement.node.classList.value;
+      if (names) {
+        names = '.' + names.replaceAll(' ', '.');
+      }
+      return names;
+    }
+
+    /**
      * @method getHasRole
      *
      * @desc True if the element has a role attribute, otherwise false
@@ -24039,7 +23964,7 @@
 
   function getElementResultInfo(ruleResult) {
 
-    function addElementResult(elementResult) {
+    function addElementResult(index, elementResult) {
 
       let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
       let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
@@ -24048,7 +23973,10 @@
       let ariaAttrInfo   = JSON.stringify(elementResult.getAriaAttributes());
 
       const item = {
+        'index'            : (index + 1).toString(),
         'tagName'          : elementResult.getTagName(),
+        'id'               : elementResult.getId(),
+        'className'        : elementResult.getClassName(),
         'hasRole'          : elementResult.getHasRole(),
         'role'             : elementResult.getRole(),
         'position'         : elementResult.getOrdinalPosition(),
@@ -24087,7 +24015,7 @@
     for(let i = 0; i < allResults.length; i++) {
       const result = allResults[i];
       if (result.isElementResult) {
-        addElementResult(result);
+        addElementResult(i, result);
       }
     }
     return elementResults;
