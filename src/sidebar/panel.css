@@ -140,8 +140,8 @@ footer .footer-buttons {
 }
 
 footer button {
+  padding: 1px 4px 2px;
   text-align: center;
-  width: 8em;
 }
 
 button:hover {
@@ -152,6 +152,3 @@ button:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
-
-
-
