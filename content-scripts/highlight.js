@@ -336,7 +336,11 @@ var highlightModule = highlightModule || {
       for (let node = startingNode.firstChild; node !== null; node = node.nextSibling ) {
         if (node.nodeType === Node.ELEMENT_NODE) {
           if (node.tagName.indexOf('-') >= 0) {
-            elems = getHighlightedElements(node.shadowRoot, elems);
+            try {
+              elems = getHighlightedElements(node.shadowRoot, elems);
+            } catch (error) {
+              console.log('[getHighlightedElements][web-component][catch]' + error);
+            }
           } else {
             switch (node.tagName.toLowerCase()) {
 
@@ -355,7 +359,7 @@ var highlightModule = highlightModule || {
                 try {
                   elems = getHighlightedElements(node.contentWindow.document, elems);
                 } catch (error) {
-                  console.log('[removeFromDocument][catch]' + error);
+                  console.log('[getHighlightedElements][iframe][catch]' + error);
                 }
                 break;
 
