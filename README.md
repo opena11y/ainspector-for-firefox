@@ -28,5 +28,8 @@
 
 ## Version History
 
+### 2.0.2
+* Fixed bug in highlighting module that prevented some evaluations from being completed
+
 ### 2.0.1
 * Provides a message in the title and location information for pages that do not allow evaluation
