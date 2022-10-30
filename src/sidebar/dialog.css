@@ -130,7 +130,8 @@
 button#rerun-button,
 button#export-button {
   text-align:  center;
-  width: 10em;
+  white-space: nowrap;
+  padding: 1px 4px 2px;
 }
 
 button:focus,

@@ -285,12 +285,12 @@
   },
 
   "ruleCategoryLabel": {
-    "message": "Rule Category",
+    "message": "Category",
     "description": "Label for the rule category group"
   },
 
   "guidelinesLabel": {
-    "message": "Guidelines",
+    "message": "WCAG Guidelines",
     "description": "Label for the guidelines group"
   },
 
@@ -525,7 +525,7 @@
   },
 
   "exportButtonLabel": {
-    "message": "Export",
+    "message": "Export Data",
     "description": "Label for rerun export button in the footer of the main panel"
   },
 
