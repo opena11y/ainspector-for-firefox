@@ -41,6 +41,7 @@ const msg = {
   backButtonLabel        : getMessage('backButtonLabel'),
   ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
   ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
+  evaluationNotAllowed   : getMessage("evaluationNotAllowed"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
@@ -70,7 +71,7 @@ preferencesButton.addEventListener('click', onPreferencesClick);
 var contentPort;
 var myWindowId;
 var logInfo = true;
-var debug = true;
+var debug = false;
 
 // The viewId object is used to both identify a view and
 // the ID of the associated DIV element that contains the rendered
@@ -376,19 +377,23 @@ function onExportClick () {
 /*
 **  Handle tabs.onUpdated event when status is 'complete'
 */
-let timeoutID;
+let activeTabUrl;
 function handleTabUpdated (tabId, changeInfo, tab) {
   // Skip content update when new page is loaded in background tab
   if (!tab.active) return;
 
-  clearTimeout(timeoutID);
+  if (logInfo) {
+    if (tab.url !== activeTabUrl) {
+      activeTabUrl = tab.url;
+      console.log(`handleTabUpdated: ${tab.url}`);
+    }
+    console.log(`changeInfo.status: ${changeInfo.status}`);
+  }
   if (changeInfo.status === "complete") {
     runContentScripts('handleTabUpdated');
   }
   else {
-    timeoutID = setTimeout(function () {
-      updateSidebar(msg.tabIsLoading);
-    }, 250);
+    updateSidebar(msg.tabIsLoading);
   }
 }
 
@@ -396,7 +401,18 @@ function handleTabUpdated (tabId, changeInfo, tab) {
 **  Handle tabs.onActivated event
 */
 function handleTabActivated (activeInfo) {
-  if (logInfo) console.log(activeInfo);
+  if (logInfo) {
+    async function logTabUrl(info) {
+      try {
+        let tab = await browser.tabs.get(info.tabId);
+        console.log(`handleTabActivated: ${tab.url}`);
+      }
+      catch (error) {
+        console.error(error);
+      }
+    }
+    logTabUrl(activeInfo);
+  }
   runContentScripts('handleTabActivated');
 }
 
@@ -492,6 +508,8 @@ function updateSidebar (info) {
 
   // page-title and headings
   if (typeof info === 'object') {
+
+    if (logInfo) console.log(`updateSidebar: info object received for ${info.location}`);
 
     // Update the page information footer
     infoTitle.textContent    = info.title;
@@ -602,11 +620,14 @@ function runContentScripts (callerfn) {
         browser.tabs.executeScript({ code: contentCode })
         .then(() => browser.tabs.executeScript({ file: '../ainspector-content-script.js' }))
         .then(() => {
-          if (logInfo) console.log(`Content script invoked by ${callerfn}`)
+          if (logInfo) console.log(`Content script invoked by ${callerfn}`);
+        },
+        (error) => {
+          updateSidebar(msg.evaluationNotAllowed);
         });
       }
       else {
-        updateSidebar (msg.protocolNotSupported);
+        updateSidebar(msg.protocolNotSupported);
       }
       sidebarHighlightOnly= false;
     })

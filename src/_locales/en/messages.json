@@ -71,7 +71,12 @@
 
   "protocolNotSupported": {
     "message": "Protocol not supported; Unable to retrieve content information.",
-    "description": "Message explaining that content script cannot be executed."
+    "description": "Message explaining that page protocol does not support script injection."
+  },
+
+  "evaluationNotAllowed": {
+    "message": "Please try another page; Host permissions do not allow evaluation.",
+    "description": "Message explaining that host permissions do not allow script injection."
   },
 
   "landmarksLabel": {
@@ -280,12 +285,12 @@
   },
 
   "ruleCategoryLabel": {
-    "message": "Rule Category",
+    "message": "Category",
     "description": "Label for the rule category group"
   },
 
   "guidelinesLabel": {
-    "message": "Guidelines",
+    "message": "WCAG Guidelines",
     "description": "Label for the guidelines group"
   },
 
@@ -530,7 +535,7 @@
   },
 
   "exportButtonLabel": {
-    "message": "Export",
+    "message": "Export Data",
     "description": "Label for rerun export button in the footer of the main panel"
   },
 

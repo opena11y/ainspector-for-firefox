@@ -12,13 +12,11 @@
   margin: 0;
   padding: 0.25em;
   display: inline-block;
-  border-top: 1px solid #aaa;
-  border-left: 1px solid #aaa;
-  border-right: 1px solid #aaa;
+  border: 1px solid #aaa;
   border-radius: 5px 5px 0 0;
   position: relative;
-  top: 1px;
-  background-color: #ddd;
+  top: 0;
+  background-color: #eee;
 }
 
 [role="tablist"] [role="tab"] span {
@@ -28,14 +26,13 @@
 }
 
 [role="tablist"] [role="tab"][aria-selected="true"] {
-  border-bottom: 1px white solid;
+  border-bottom: 1px solid white;
   background-color: white;
-  z-index: 4;
 }
 
 [role="tabpanel"] {
   display:  none;
-  border-top: 1px solid #aaa;
+  box-shadow: 0px -1px #aaa;
 }
 
 [role="tabpanel"].show {
@@ -47,5 +44,3 @@
   padding: 2px;
   border: 2px solid currentColor;
 }
-
-

@@ -26,3 +26,12 @@
 ## Issues and Features
 * Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features
 
+## Version History
+
+### 2.1
+* Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
+* Updated position and labeling of "Export Data" button
+* Fixed bug in highlighting module that prevented some evaluations from being completed
+
+### 2.0.1
+* Provides a message in the title and location information for pages that do not allow evaluation

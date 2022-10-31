@@ -4,14 +4,14 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 2.0.0.beta.1 |   2/15/22  | Rewrote code to use web components, added element result details view and export evaluation results
+| 2.0.0        |   3/30/22  | Rewrote code to use web components, added element result details view and export evaluation results
 | 1.1.3        |   10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
 | 1.1.2        |   9/20/21  | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
 | 1.1.1        |   9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 
-## Version 2.0 — 2/21/22
+## Version 2.0 — 3/30/22
 
 * Renamed extension from "AInspector WCAG" to "AInspector", since most people just call it AInspector
 * Rewrote the entire code base to use web components for creating user interface controls
