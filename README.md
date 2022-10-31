@@ -29,8 +29,8 @@
 ## Version History
 
 ### 2.1
-* Updated tab panel labeling to improve consistency (Rule Categories/WCAG Guidelines)
-* Updated position and labeling of export data button
+* Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
+* Updated position and labeling of "Export Data" button
 * Fixed bug in highlighting module that prevented some evaluations from being completed
 
 ### 2.0.1
