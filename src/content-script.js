@@ -63129,7 +63129,7 @@ var highlightModule = highlightModule || {
         }
       }
       catch (error) {
-        console.log('[highlightElementResults][catch]: ' + error)
+        console.warn('[highlightElementResults][catch]: ' + error)
       }
     } //end for
 
@@ -63228,7 +63228,7 @@ var highlightModule = highlightModule || {
             try {
               elems = getHighlightedElements(node.shadowRoot, elems);
             } catch (error) {
-              console.log('[getHighlightedElements][web-component][catch]' + error);
+              console.warn('[getHighlightedElements][web-component][catch]' + error);
             }
           } else {
             switch (node.tagName.toLowerCase()) {
@@ -63248,7 +63248,7 @@ var highlightModule = highlightModule || {
                 try {
                   elems = getHighlightedElements(node.contentWindow.document, elems);
                 } catch (error) {
-                  console.log('[getHighlightedElements][iframe][catch]' + error);
+                  console.warn('[getHighlightedElements][iframe][catch]' + error);
                 }
                 break;
 
@@ -63300,7 +63300,7 @@ var highlightModule = highlightModule || {
           removeFromFrames(frame.frames);
         }
         catch (error) {
-          console.log('[removeFromFrames][catch]: ' + error);
+          console.warn('[removeFromFrames][catch]: ' + error);
         }
       }
     } // end of removeFromFrames
@@ -63446,7 +63446,7 @@ var highlightModule = highlightModule || {
       divElement.appendChild(iconImage);
     }
     catch (error) {
-      console.log('[insertDIV][catch]: ' + error);
+      console.warn('[insertDIV][catch]: ' + error);
     }
   },
 
