@@ -16,6 +16,7 @@
 * Fixed bug rerunning evaluations 
 * Added link to github issues in options page
 * Set a specific width for rerun button so it doesn't change width when showing the remaining delay time
+* Rerun evaluation is now initialized with delay option enabled
 
 ## Version 2.1 — 10/31/22
 * Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
