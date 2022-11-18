@@ -29,6 +29,8 @@
 ## Version History
 
 ### 2.1.1
+* Fixed bug rerunning evaluations 
+* Added link to github issues in options page
 
 ### 2.1
 * Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
