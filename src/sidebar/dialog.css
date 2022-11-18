@@ -134,6 +134,10 @@ button#export-button {
   padding: 1px 4px 2px;
 }
 
+button#rerun-button {
+  width: 9em;
+}
+
 button:focus,
 button#export-button:focus {
   outline: 2px solid currentColor;

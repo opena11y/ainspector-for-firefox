@@ -137,7 +137,7 @@ export default class RerunEvaluationButton extends HTMLElement {
       this.checkbox.checked = !options.rerunDelayEnabled;
       for (let i = 0; i < this.select.options.length; i += 1) {
         let option = this.select.options[i];
-        if (option.value === option.rerunDelayValue) {
+        if (option.value === options.rerunDelayValue) {
           option.selected = true;
         }
       }
@@ -192,12 +192,12 @@ export default class RerunEvaluationButton extends HTMLElement {
 
   onOkButtonClick () {
     getOptions().then( (options) => {
-      console.log(`[select][value]: ${this.select.value}`);
       options.rerunDelayValue = this.select.value;
       options.rerunDelayEnabled = !this.checkbox.checked;
-      saveOptions(options);
-      this.closeDialog();
-      this.delayedRerun();
+      saveOptions(options).then( () => {
+        this.closeDialog();
+        this.delayedRerun();        
+      });
     });
   }
 
