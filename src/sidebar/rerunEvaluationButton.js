@@ -1,6 +1,9 @@
 /* rerunEvaluationButton.js */
 
-import { getOptions } from '../storage.js';
+import { 
+  getOptions,
+  saveOptions
+} from '../storage.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -71,8 +74,6 @@ export default class RerunEvaluationButton extends HTMLElement {
     // Get references
 
     this.callback = null;
-    this.promptForDelay = true;
-    this.delayValue = 5;
     this.timerValue = 0;
 
     this.rerunButton  = this.shadowRoot.querySelector('#rerun-button');
@@ -132,16 +133,18 @@ export default class RerunEvaluationButton extends HTMLElement {
   }
 
   openDialog () {
-    this.checkbox.checked = !this.promptForDelay;
-    for (let i = 0; i < this.select.options.length; i += 1) {
-      let option = this.select.options[i];
-      if (parseInt(option.value) === this.delayValue) {
-        option.selected = true;
+    getOptions().then( (options) => {
+      this.checkbox.checked = !options.rerunDelayEnabled;
+      for (let i = 0; i < this.select.options.length; i += 1) {
+        let option = this.select.options[i];
+        if (option.value === option.rerunDelayValue) {
+          option.selected = true;
+        }
       }
-    }
-    this.dialogDiv.style.display = 'block';
-    this.rerunButton.setAttribute('aria-expanded', 'true');
-    this.dialogDiv.focus();
+      this.dialogDiv.style.display = 'block';
+      this.rerunButton.setAttribute('aria-expanded', 'true');
+      this.dialogDiv.focus();
+    });
   }
 
   closeDialog () {
@@ -165,19 +168,17 @@ export default class RerunEvaluationButton extends HTMLElement {
   }
 
   delayedRerun () {
-    this.timerValue = this.delayValue;
-    this.checkTimeout();
+    getOptions().then( (options) => {
+      this.timerValue = parseInt(options.rerunDelayValue);
+      this.checkTimeout();
+    });
   }
 
   onRerunButtonClick () {
     getOptions().then( (options) => {
       if (options.rerunDelayEnabled) {
         this.rerunButton.setAttribute('aria-live', 'polite');
-        if (this.promptForDelay) {
-          this.openDialog();
-        } else {
-          this.delayedRerun();
-        }
+        this.openDialog();
       } else {
         this.callback();
       }
@@ -190,10 +191,14 @@ export default class RerunEvaluationButton extends HTMLElement {
   }
 
   onOkButtonClick () {
-    this.delayValue = parseInt(this.select.value);
-    this.promptForDelay = !this.checkbox.checked;
-    this.closeDialog();
-    this.delayedRerun();
+    getOptions().then( (options) => {
+      console.log(`[select][value]: ${this.select.value}`);
+      options.rerunDelayValue = this.select.value;
+      options.rerunDelayEnabled = !this.checkbox.checked;
+      saveOptions(options);
+      this.closeDialog();
+      this.delayedRerun();
+    });
   }
 
   onSelectKeydown(event) {

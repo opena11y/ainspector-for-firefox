@@ -28,6 +28,8 @@
 
 ## Version History
 
+### 2.1.1
+
 ### 2.1
 * Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
 * Updated position and labeling of "Export Data" button

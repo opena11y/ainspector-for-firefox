@@ -4,12 +4,21 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
+| 2.1.1        |   11/xx/22  | Fixed bug rerunning evaluations
+| 2.1.0        |   10/31/22  | Fixed bug in evaluations not completing and updated labeling of some user interace components
 | 2.0.0        |   3/30/22  | Rewrote code to use web components, added element result details view and export evaluation results
 | 1.1.3        |   10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
 | 1.1.2        |   9/20/21  | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
 | 1.1.1        |   9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
+## Version 2.1.1 — 11/xx/22
+
+
+## Version 2.1 — 10/31/22
+* Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
+* Updated position and labeling of "Export Data" button
+* Fixed bug in highlighting module that prevented some evaluations from being completed
 
 ## Version 2.0 — 3/30/22
 
