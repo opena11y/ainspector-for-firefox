@@ -4,7 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 2.1.1        |   11/18/22  | Fixed bug rerunning evaluations and added link to github issues in options page]
+| 2.1.1        |   11/18/22  | Fixed bug rerunning evaluations 
 | 2.1.0        |   10/31/22  | Fixed bug in evaluations not completing and updated labeling of some user interace components
 | 2.0.0        |   3/30/22  | Rewrote code to use web components, added element result details view and export evaluation results
 | 1.1.3        |   10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
@@ -15,7 +15,6 @@
 ## Version 2.1.1 — 11/18/22
 * Fixed bug rerunning evaluations 
 * Added link to github issues in options page
-* Set a specific width for rerun button so it doesn't change width when showing the remaining delay time
 * Rerun evaluation is now initialized with delay option enabled
 
 ## Version 2.1 — 10/31/22
