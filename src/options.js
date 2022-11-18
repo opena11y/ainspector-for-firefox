@@ -325,6 +325,5 @@ shortcutsEnabledCheckbox.addEventListener('change', saveFormOptions);
 resetDefaults.addEventListener('click', saveDefaultOptions);
 
 browser.tabs.onActivated.addListener( (activeInfo) => {
-  console.log(`[onActoivaed]: ${activeInfo.tabId}`);
   getOptions().then(updateForm);
 });
