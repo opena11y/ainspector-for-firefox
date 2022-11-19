@@ -9,6 +9,8 @@
     "64": "icons/ainspector-icon.png"
   },
 
+  "homepage_url": "https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag/",
+
   "permissions": [
     "<all_urls>",
     "find",
