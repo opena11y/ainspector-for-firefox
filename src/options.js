@@ -8,6 +8,7 @@ const getMessage = browser.i18n.getMessage;
 const msg = {
   optionsEvaluationHeading     : getMessage('optionsEvaluationHeading'),
   optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
+  optionsExportButtonLegend    : getMessage('optionsExportButtonLegend'),
   optionsExportFormatLegend    : getMessage('optionsExportFormatLegend'),
   optionsExportHeading         : getMessage('optionsExportHeading'),
   optionsExportIncludeDate     : getMessage('optionsExportIncludeDate'),
@@ -81,6 +82,7 @@ function setFormLabels () {
 
   const optionsExportHeading         = document.querySelector('#options-export-heading');
   const optionsExportPromptLabel     = document.querySelector('#options-export-prompt-label');
+  const optionsExportButtonLegend    = document.querySelector('#options-export-button-legend');
   const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
   const optionsExportCSVLabel        = document.querySelector('#options-export-csv-label');
   const optionsExportJSONLabel       = document.querySelector('#options-export-json-label');
@@ -114,6 +116,7 @@ function setFormLabels () {
 
   optionsExportHeading.textContent        = msg.optionsExportHeading;
   optionsExportPromptLabel.textContent    = msg.optionsExportPrompt;
+  optionsExportButtonLegend.textContent   = msg.optionsExportButtonLegend;
   optionsExportFormatLegend.textContent   = msg.optionsExportFormatLegend;
   optionsExportCSVLabel.textContent       = msg.optionsExportCSVLabel;
   optionsExportJSONLabel.textContent      = msg.optionsExportJSONLabel;

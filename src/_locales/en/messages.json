@@ -530,7 +530,7 @@
   },
 
   "exportDialogTitle": {
-    "message": "Export Options",
+    "message": "Export Data Options",
     "description": "Title for export evalaution options dialog box"
   },
 
@@ -615,7 +615,7 @@
   },
 
   "optionsRuleResultsLegend": {
-    "message": "Rule Results",
+    "message": "'Rule Results' View",
     "description": "Legend for the rule results section on the options page"
   },
 
@@ -637,6 +637,11 @@
   "optionsExportPrompt": {
     "message": "Prompt for export options",
     "description": "Prompt for export options when the export button is pressed"
+  },
+
+  "optionsExportButtonLegend": {
+    "message": "'Export Data` Button",
+    "description": "Lagend for prompt for export options button"
   },
 
   "optionsExportFormatLegend": {
