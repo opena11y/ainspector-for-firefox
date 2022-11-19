@@ -9,7 +9,7 @@
     "64": "icons/ainspector-icon.png"
   },
 
-  "homepage_url": "https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag/",
+  "homepage_url": "https://github.com/opena11y/ainspector-for-firefox",
 
   "permissions": [
     "<all_urls>",
