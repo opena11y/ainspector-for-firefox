@@ -29,7 +29,9 @@
 ## Version History
 
 ### 2.1.1
-* Fixed bug rerunning evaluations
+* Fixed bug rerunning evaluations 
+* Rerun evaluation is now initialized with delay option enabled
+* Added home page link to manifest file
 
 ### 2.1
 * Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)
