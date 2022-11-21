@@ -540,7 +540,7 @@
   },
 
   "exportDialogTitle": {
-    "message": "Export Options",
+    "message": "Export Data Options",
     "description": "Title for export evalaution options dialog box"
   },
 
@@ -625,7 +625,7 @@
   },
 
   "optionsRuleResultsLegend": {
-    "message": "Rule Results",
+    "message": "'Rule Results' View",
     "description": "Legend for the rule results section on the options page"
   },
 
@@ -649,9 +649,14 @@
     "description": "Prompt for export options when the export button is pressed"
   },
 
+  "optionsExportButtonLegend": {
+    "message": "'Export Data' Button",
+    "description": "Legend for prompt for export options button"
+  },
+
   "optionsExportFormatLegend": {
     "message": "File Format",
-    "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
+    "description": "Legend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
   "optionsExportCSVLabel": {
@@ -666,7 +671,7 @@
 
   "optionsExportFilenameLegend": {
     "message": "Filename Options",
-    "description": "Lagend for the filenaming options in export section of the options page"
+    "description": "Legend for the filenaming options in export section of the options page"
   },
 
   "optionsExportPrefixLabel": {

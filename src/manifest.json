@@ -9,6 +9,8 @@
     "64": "icons/ainspector-icon.png"
   },
 
+  "homepage_url": "https://ainspector.disability.illinois.edu",
+
   "permissions": [
     "<all_urls>",
     "find",

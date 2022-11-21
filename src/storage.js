@@ -10,7 +10,8 @@ export const defaultOptions = {
   isSidebarOpen: false,
   rulesetId: 'ARIA_STRICT',
   viewsMenuIncludeGuidelines: true,
-  rerunDelayEnabled: false,
+  rerunDelayEnabled: true,
+  rerunDelayValue: '5',
   resultsIncludePassNa: true,
   highlight: 'selected',
   // Properties for exporting reports
