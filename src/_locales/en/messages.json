@@ -640,13 +640,13 @@
   },
 
   "optionsExportButtonLegend": {
-    "message": "'Export Data` Button",
-    "description": "Lagend for prompt for export options button"
+    "message": "'Export Data' Button",
+    "description": "Legend for prompt for export options button"
   },
 
   "optionsExportFormatLegend": {
     "message": "File Format",
-    "description": "Lagend for the group of radio buttons for choosing an output format in the export section of the options page"
+    "description": "Legend for the group of radio buttons for choosing an output format in the export section of the options page"
   },
 
   "optionsExportCSVLabel": {
@@ -661,7 +661,7 @@
 
   "optionsExportFilenameLegend": {
     "message": "Filename Options",
-    "description": "Lagend for the filenaming options in export section of the options page"
+    "description": "Legend for the filenaming options in export section of the options page"
   },
 
   "optionsExportPrefixLabel": {
