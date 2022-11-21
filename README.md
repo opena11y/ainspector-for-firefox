@@ -29,7 +29,7 @@
 ## Version History
 
 ### 2.1.1
-* Fixed bug rerunning evaluations 
+* Fixed bug rerunning evaluations
 
 ### 2.1
 * Updated Summary tabpanel labeling to improve consistency (Rule Categories/WCAG Guidelines)

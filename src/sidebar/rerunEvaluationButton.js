@@ -1,6 +1,6 @@
 /* rerunEvaluationButton.js */
 
-import { 
+import {
   getOptions,
   saveOptions
 } from '../storage.js';
