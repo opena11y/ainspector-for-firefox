@@ -208,8 +208,8 @@ export default class ResultElementInfo extends HTMLElement {
     let text = document.createTextNode(value);
 
     switch (prop) {
-      case 'color':
-      case 'background_color':
+      case 'color_hex':
+      case 'background_color_hex':
         span.textContent   = '■';
         span.style.display = 'inline-block';
         span.style.color   = value;
@@ -219,14 +219,12 @@ export default class ResultElementInfo extends HTMLElement {
         span.style.paddingRight = '2px';
         span.style.marginRight = '4px';
         span.setAttribute('aria-hidden', true);
-        td.title = info[prop + '_hex'];
         td.appendChild(span);
         td.appendChild(text);
         break;
 
-      case 'color_hex':
-      case 'background_color_hex':
-        td.textContent = value;
+      case 'color':
+      case 'background_color':
         td = false;
         break;
 

@@ -560,7 +560,7 @@ OpenAjax.a11y.RuleManager.addRulesNLSFromJSON('en-us', {
             TECHNIQUES: [
               'Add the text "invalid" to the label of the form control, the text can be placed off screen using CSS.',
               'Add the image to the label.  The image should be visible indicating an invalid value with the alt text \'invalid\'.',
-              'Use @aira-invalid@ attribute to indicate the form control is invalid.'
+              'Use @aria-invalid@ attribute to indicate the form control is invalid.'
             ],
             MANUAL_CHECKS: [
               'Enter invalid values into form controls that are validated and activate the validation event (i.e. form submission, change of focus...).',
