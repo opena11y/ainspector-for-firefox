@@ -7750,7 +7750,7 @@ OpenAjax.a11y.util.urlExists = function (url) {
 };
 
 /**
- * @function RGBToHex
+ * @function rgbToHex
  * @memberOf OpenAjax.a11y.util
  *
  * @desc Converts an RGB color to Hex values
@@ -7762,7 +7762,7 @@ OpenAjax.a11y.util.urlExists = function (url) {
  * @return  String
  */
 
-OpenAjax.a11y.util.RGBToHEX = function( colorRGB, backgroundHex, opacity=1.0 ) {
+OpenAjax.a11y.util.rgbToHex = function( colorRGB, backgroundHex, opacity=1.0 ) {
 
   function hexToString(d) {
     let hex = Number(d).toString(16);
@@ -27380,10 +27380,10 @@ OpenAjax.a11y.cache.DOMElementComputedStyle = function (dom_element, parent_elem
   }
   else {
     if (parent_element && parent_element.computed_style) {
-      this.background_color_hex = OpenAjax.a11y.util.RGBToHEX(this.background_color, parent_element.computed_style.background_color_hex);
+      this.background_color_hex = OpenAjax.a11y.util.rgbToHex(this.background_color, parent_element.computed_style.background_color_hex);
     }
     else {
-      this.background_color_hex = OpenAjax.a11y.util.RGBToHEX(this.background_color, 'FFFFFF');
+      this.background_color_hex = OpenAjax.a11y.util.rgbToHex(this.background_color, 'FFFFFF');
     }
   }
 //  console.log(`[background_color]: ${this.background_color} ${this.background_color_hex}`);
@@ -27409,7 +27409,7 @@ OpenAjax.a11y.cache.DOMElementComputedStyle = function (dom_element, parent_elem
       this.color_hex = parent_style.color_hex;
     }
     else {
-      this.color_hex = OpenAjax.a11y.util.RGBToHEX(this.color, this.background_color_hex, this.opacity);
+      this.color_hex = OpenAjax.a11y.util.rgbToHex(this.color, this.background_color_hex, this.opacity);
     }
 
     if (this.font_family === 'inherit') {
