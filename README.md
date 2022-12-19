@@ -29,7 +29,7 @@
 ## Version History
 
 ### 2.1.2
-* Updated evaluartion library
+* Updated evaluation library
 * Updated CCR details to include computed hex colors for foreground and background
 
 ### 2.1.1
