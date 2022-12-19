@@ -14,7 +14,7 @@
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 ### 2.1.2
-* Updated evaluation library
+* Updated evaluation library to fix the ccr calculation bug for rgba values
 * Updated CCR details to include computed hex colors for foreground and background
 
 ## Version 2.1.1 — 11/21/22
