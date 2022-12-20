@@ -7781,7 +7781,7 @@ OpenAjax.a11y.util.rgbToHex = function( colorRGB, backgroundHex, opacity=1.0 ) {
   const o1 = parts.length === 4 ? parseFloat(parts[3]) : 1.0;
 
   if (typeof backgroundHex !== 'string' || backgroundHex.length !== 6) {
-    background = 'FFFFFF';
+    backgroundHex = 'FFFFFF';
   }
 
   const r2 = parseInt(backgroundHex.substring(0,2), 16);
