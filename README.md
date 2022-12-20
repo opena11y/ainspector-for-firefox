@@ -28,6 +28,10 @@
 
 ## Version History
 
+### 2.1.2
+* Updated evaluation library to fix the ccr calculation bug for rgba values
+* Updated CCR details to include computed hex colors for foreground and background
+
 ### 2.1.1
 * Fixed bug rerunning evaluations
 * Rerun evaluation is now initialized with delay option enabled
