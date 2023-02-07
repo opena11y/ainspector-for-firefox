@@ -1,0 +1,147 @@
+/* summary.css */
+
+button#summary-info-button {
+  margin: 0;
+  margin-left: 1em;
+  margin-top: 1em;
+  padding: 2px;
+  border: 0px;
+  background: transparent;
+  display: inline-block;
+}
+
+
+/* rerunEvaluationButton.css */
+
+.dialog-container {
+  position: absolute;
+  left: 0;
+  top: 5.5em;
+  margin: 5%;
+  width: 90%;
+  z-index: 200;
+}
+
+[role="dialog"] {
+  margin: 0;
+  padding: 0;
+  display: none;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 8px;
+  color: black;
+  z-index: 15;
+}
+
+[role="dialog"] #title {
+  margin-bottom: 0.5em;
+  padding: 4px;
+  border-bottom: 1px solid black;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight:  bold;
+  background-color: #eee;
+}
+
+[role="dialog"] .content {
+  margin:  0.25em;
+  margin-bottom: 1em;
+}
+
+[role="dialog"] button {
+  margin: 6px;
+}
+
+[role="dialog"] .buttons {
+  display: flex;
+  align-items: right;
+  justify-content: right;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+[role="dialog"] .buttons button {
+  width: 5em;
+}
+
+#more-button {
+  width: 16em;
+}
+
+#summary-info-button, {
+  text-align:  center;
+  white-space: nowrap;
+  padding: 1px 4px 2px;
+}
+
+
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+
+table.info {
+  margin-top: 1em;
+  margin-bottom: 4em;
+  margin-right: auto;
+  margin-left: auto;
+  width: 90%;
+  border-collapse: collapse;
+}
+
+table.info tr:nth-child(even) {
+  background-color: #EEE;
+}
+
+table.info thead tr {
+  border-bottom: 1px solid black;
+}
+
+table.info th.symbol,
+table.info td.symbol,
+table.info th.label,
+table.info td.label {
+  padding: 0.25em;
+  width: 40px;
+  text-align: center;
+  vertical-align: top;
+}
+
+table.info td.symbol code {
+  display: inline-block;
+  width: 3em;
+}
+
+table.info td.desc {
+  padding: 0.25em;
+  width: auto;
+  text-align: left;
+  vertical-align: top;
+}
+
+
+
+table .violations code {
+  background-color: hsl(0, 100%, 84%);
+}
+
+table .warnings code {
+  background-color: hsl(49, 100%, 79%);
+}
+
+table .manual-checks code {
+  background-color: hsl(198, 52%, 81%);
+}
+
+table .passed code {
+  background-color: hsl(90, 67%, 69%);
+}
+
+table .hidden code {
+  background-color: hsl(0, 0%, 87%);
+}

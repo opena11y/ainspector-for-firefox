@@ -28,6 +28,9 @@
 
 ## Version History
 
+### 2.1.4
+* Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
+
 ### 2.1.2
 * Updated evaluation library to fix the ccr calculation bug for rgba values
 * Updated CCR details to include computed hex colors for foreground and background

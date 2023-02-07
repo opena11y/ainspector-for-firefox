@@ -224,6 +224,16 @@
     "description": "Label for violation results"
   },
 
+  "violationsDescRule": {
+    "message": "One or more target elements fail the requirements of a required rule.",
+    "description": "Description of violations of a rule result"
+  },
+
+  "violationsDescElem": {
+    "message": "Element fails the requirements for a required rule.",
+    "description": "Description of violations for a element result"
+  },
+
   "warningsAbbrev": {
     "message": "W",
     "description": "Abbreviation for warnings"
@@ -237,6 +247,16 @@
   "warningsLabel": {
     "message": "Warnings",
     "description": "Label for warning results"
+  },
+
+  "warningsDescRule": {
+    "message": "One or more target elements fail the requirements of a recommended rule.",
+    "description": "Description of warnings for a rule result"
+  },
+
+  "warningsDescElem": {
+    "message": "Element fails the requirements of a recommended rule.",
+    "description": "Description of warnings for a element result"
   },
 
   "manualChecksAbbrev": {
@@ -254,6 +274,16 @@
     "description": "Label for manual check results"
   },
 
+  "manualChecksDescRule": {
+    "message": "Unable to programmatically determine a result – evaluation requires human inspection.",
+    "description": "Description of manual checks for a rule result"
+  },
+
+  "manualChecksDescElem": {
+    "message": "Unable to programmatically determine a result – evaluation requires human inspection.",
+    "description": "Description of manual checks for a element result"
+  },
+
   "passedAbbrev": {
     "message": "P",
     "description": "Abbreviation for passed"
@@ -262,6 +292,16 @@
   "passedLabel": {
     "message": "Passed",
     "description": "Label for pass results"
+  },
+
+  "passedDescRule": {
+    "message": "All rule requirements were satisfied.",
+    "description": "Description of passed for a rule result"
+  },
+
+  "passedDescElem": {
+    "message": "Element satisfies the rule requirements.",
+    "description": "Description of passed for a element result"
   },
 
   "hiddenAbbrev": {
@@ -274,10 +314,26 @@
     "description": "Label for hidden results"
   },
 
+  "hiddenDescElem": {
+    "message": "Element is hidden visually and/or to assistive technologies.",
+    "description": "Description of hidden for a element result"
+  },
+
+  "notApplicableAbbrev": {
+    "message": "N/A",
+    "description": "Abbreviation for not applicable results"
+  },
+
   "notApplicablelabel": {
     "message": "Not Applicable",
     "description": "Label for not applicable results"
   },
+
+  "notApplicableDescRule": {
+    "message": "Rule was not applied because there were no relevant target elements.",
+    "description": "Description of not applicable for a rule result"
+  },
+
 
   "ruleCategoriesLabel": {
     "message": "Rule Categories",
@@ -531,37 +587,47 @@
 
   "exportDialogTitle": {
     "message": "Export Data Options",
-    "description": "Title for export evalaution options dialog box"
+    "description": "Title for export evaluation options dialog box"
   },
 
   "rerunEvalButtonLabel": {
     "message": "Rerun Evaluation",
-    "description": "Label for rerun evalaution button in the footer of the main panel"
+    "description": "Label for rerun evaluation button in the footer of the main panel"
   },
 
   "rerunEvalDialogTitle": {
     "message": "Rerun Evaluation: Specify Delay",
-    "description": "Title for rerun evalaution dialog box"
+    "description": "Title for rerun evaluation dialog box"
   },
 
   "rerunEvalSelectLabel": {
     "message": "Rerun evaluation in ",
-    "description": "Label for select input in rerun evalaution dialog box"
+    "description": "Label for select input in rerun evaluation dialog box"
   },
 
   "rerunEvalPromptForDelayLabel": {
     "message": "After this evaluation, stop prompting for delay setting.",
-    "description": "Label for checkbox input in rerun evalaution dialog box"
+    "description": "Label for checkbox input in rerun evaluation dialog box"
   },
 
   "cancelButtonLabel": {
     "message": "Cancel",
-    "description": "Label for cancel button in rerun evalaution dialog box"
+    "description": "Label for cancel button in a dialog box"
   },
 
   "okButtonLabel": {
     "message": "OK",
-    "description": "Label for OK button in rerun evalaution dialog box"
+    "description": "Label for OK button in a dialog box"
+  },
+
+  "closeButtonLabel": {
+    "message": "Close",
+    "description": "Label for Close button in a dialog box"
+  },
+
+  "moreButtonLabel": {
+    "message": "More Terms and Concepts",
+    "description": "Label for More Terms and Concepts button in a dialog box"
   },
 
   "optionsTitle": {
@@ -1027,6 +1093,20 @@
   "shortcutAllreadyUsed": {
     "message": "The $key is already being used.",
     "description": "Feedback to use if the shortcut is already defined."
-  }
+  },
 
+  "elementInfoTitle": {
+    "message": "Element Result Descriptions",
+    "description": "Dialog title for element result descriptions"
+  },
+
+  "ruleInfoTitle": {
+    "message": "Rule Result Descriptions",
+    "description": "Dialog title for rule result descriptions"
+  },
+
+  "moreButtonDisabled": {
+    "message": "Tab already opened in browser window",
+    "description": "Provides help on why more information button is disabled"
+  }
 }
