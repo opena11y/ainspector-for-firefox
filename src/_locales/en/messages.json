@@ -1100,6 +1100,11 @@
     "description": "Dialog title for element result descriptions"
   },
 
+  "summaryInfoButtonLabel": {
+    "message": "Result Information",
+    "description": "Results information button label"
+  },
+
   "ruleInfoTitle": {
     "message": "Rule Result Descriptions",
     "description": "Dialog title for rule result descriptions"

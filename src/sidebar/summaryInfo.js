@@ -37,6 +37,8 @@ const msg = {
   elementInfoTitle   : getMessage('elementInfoTitle'),
   ruleInfoTitle      : getMessage('ruleInfoTitle'),
 
+  summaryInfoButtonLabel: getMessage('summaryInfoButtonLabel'),
+
   closeButtonLabel   : getMessage('closeButtonLabel'),
   moreButtonLabel    : getMessage('moreButtonLabel'),
 
@@ -66,7 +68,7 @@ template.innerHTML = `
         aria-labelledby="title">
         <div id="title"></div>
         <div class="content">
-          <table id="rule-info" class="info">
+          <table class="info">
             <thead>
               <tr>
                 <th class="symbol">Symbol</th>
@@ -95,51 +97,13 @@ template.innerHTML = `
                 <td class="label"></td>
                 <td class="desc"></td>
               </tr>
-              <tr class="not-applicable">
+              <tr class="last">
                 <td class="symbol"><code class="abbrev"></code></td>
                 <td class="label"></td>
                 <td class="desc"></td>
               </tr>
             </tbody>
           </table>
-
-          <table id="elem-info" class="info">
-            <thead>
-              <tr>
-                <th class="symbol">Symbol</th>
-                <th class="label">Result</th>
-                <th class="desc">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="violations">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
-              </tr>
-              <tr class="warnings">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
-              </tr>
-              <tr class="manual-checks">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
-              </tr>
-              <tr class="passed">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
-              </tr>
-              <tr class="hidden">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
-              </tr>
-            </tbody>
-          </table>
-
         </div>
         <div class="buttons">
           <button id="more-button"></button>
@@ -157,13 +121,10 @@ export default class summaryInfo extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
 
-    function setTableCellLabel (node, tableId, rowClass, cellClass, label) {
-      const table = node.querySelector(`#${tableId}`);
-      if (table) {
-        const cell = table.querySelector (`.${rowClass} .${cellClass}`);
-        if (cell) {
-          cell.textContent = label;
-        }
+    function setTableCellLabel (infoTable, rowClass, cellClass, label) {
+      const cell = infoTable.querySelector (`.${rowClass} .${cellClass}`);
+      if (cell) {
+        cell.textContent = label;
       }
     }
 
@@ -182,17 +143,10 @@ export default class summaryInfo extends HTMLElement {
                             this.getAttribute('data-info') === 'element' :
                             false;
 
-    if (showElementInfo) {
-      this.shadowRoot.querySelector('#rule-info').setAttribute('hidden', '');
-    }
-    else {
-      this.shadowRoot.querySelector('#elem-info').setAttribute('hidden', '');
-    }
-
     // Get references
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
-//    this.summaryInfo.textContent = msg.summaryInfoButtonLabel;
+    this.summaryInfoButton.title  = msg.summaryInfoButtonLabel;
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
 
     label = this.shadowRoot.querySelector('#title');
@@ -203,46 +157,41 @@ export default class summaryInfo extends HTMLElement {
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'violations', 'abbrev', msg.violationsAbbrev);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'violations', 'label',  msg.violationsLabel);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'violations', 'desc',   msg.violationsDescRule);
+    const infoTable = this.shadowRoot.querySelector('table.info');
 
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'violations', 'abbrev', msg.violationsAbbrev);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'violations', 'label',  msg.violationsLabel);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'violations', 'desc',   msg.violationsDescElem);
+    setTableCellLabel(infoTable, 'violations', 'abbrev', msg.violationsAbbrev);
+    setTableCellLabel(infoTable, 'violations', 'label',  msg.violationsLabel);
 
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'warnings', 'abbrev', msg.warningsAbbrev);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'warnings', 'label',  msg.warningsLabel);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'warnings', 'desc',   msg.warningsDescRule);
+    setTableCellLabel(infoTable, 'warnings', 'abbrev', msg.warningsAbbrev);
+    setTableCellLabel(infoTable, 'warnings', 'label',  msg.warningsLabel);
 
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'warnings', 'abbrev', msg.warningsAbbrev);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'warnings', 'label',  msg.warningsLabel);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'warnings', 'desc',   msg.warningsDescElem);
+    setTableCellLabel(infoTable, 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
+    setTableCellLabel(infoTable, 'manual-checks', 'label',  msg.manualChecksLabel);
 
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'manual-checks', 'label',  msg.manualChecksLabel);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'manual-checks', 'desc',   msg.manualChecksDescRule);
+    setTableCellLabel(infoTable, 'passed', 'abbrev', msg.passedAbbrev);
+    setTableCellLabel(infoTable, 'passed', 'label',  msg.passedLabel);
 
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'manual-checks', 'label',  msg.manualChecksLabel);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'manual-checks', 'desc',   msg.manualChecksDescElem);
+    if (showElementInfo) {
 
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'passed', 'abbrev', msg.passedAbbrev);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'passed', 'label',  msg.passedLabel);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'passed', 'desc',   msg.passedDescRule);
+      setTableCellLabel(infoTable, 'violations',    'desc', msg.violationsDescElem);
+      setTableCellLabel(infoTable, 'warnings',      'desc', msg.warningsDescElem);
+      setTableCellLabel(infoTable, 'manual-checks', 'desc', msg.manualChecksDescElem);
+      setTableCellLabel(infoTable, 'passed',        'desc', msg.passedDescElem);
 
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'passed', 'abbrev', msg.passedAbbrev);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'passed', 'label',  msg.passedLabel);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'passed', 'desc',   msg.passedDescElem);
+      setTableCellLabel(infoTable, 'last', 'abbrev', msg.hiddenAbbrev);
+      setTableCellLabel(infoTable, 'last', 'label',  msg.hiddenLabel);
+      setTableCellLabel(infoTable, 'last', 'desc',   msg.hiddenDescElem);
+    }
+    else {
+      setTableCellLabel(this.shadowRoot, 'violations',    'desc', msg.violationsDescRule);
+      setTableCellLabel(this.shadowRoot, 'warnings',      'desc', msg.warningsDescRule);
+      setTableCellLabel(this.shadowRoot, 'manual-checks', 'desc', msg.manualChecksDescRule);
+      setTableCellLabel(this.shadowRoot, 'passed',        'desc', msg.passedDescRule);
 
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'not-applicable', 'abbrev', msg.notApplicableAbbrev);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'not-applicable', 'label',  msg.notApplicableLabel);
-    setTableCellLabel(this.shadowRoot, 'rule-info', 'not-applicable', 'desc',   msg.notApplicableDescRule);
-
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'hidden', 'abbrev', msg.hiddenAbbrev);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'hidden', 'label',  msg.hiddenLabel);
-    setTableCellLabel(this.shadowRoot, 'elem-info', 'hidden', 'desc',   msg.hiddenDescElem);
-
+      setTableCellLabel(this.shadowRoot, 'last', 'abbrev', msg.notApplicableAbbrev);
+      setTableCellLabel(this.shadowRoot, 'last', 'label',  msg.notApplicableLabel);
+      setTableCellLabel(this.shadowRoot, 'last', 'desc',   msg.notApplicableDescRule);
+    }
 
     this.moreButton = this.shadowRoot.querySelector('#more-button');
     this.moreButton.textContent  = msg.moreButtonLabel;
