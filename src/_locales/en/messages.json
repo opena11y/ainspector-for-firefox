@@ -25,7 +25,7 @@
   },
 
   "viewTitleSummaryLabel": {
-    "message": "Summary",
+    "message": "Summary: All Rules",
     "description": "Label for summary view"
   },
 
@@ -334,7 +334,6 @@
     "description": "Description of not applicable for a rule result"
   },
 
-
   "ruleCategoriesLabel": {
     "message": "Rule Categories",
     "description": "Label for the rule category group"
@@ -415,6 +414,11 @@
     "description": "Value for required column in rule group grid"
   },
 
+  "ruleResultLabel": {
+    "message": "Rule Result",
+    "description": "Label for rule result grid"
+  },
+
   "ruleResultGridLabel": {
     "message": "Rule Group Results",
     "description": "Label for rule results grid"
@@ -422,6 +426,16 @@
 
   "ruleResultsGridLabel": {
     "message": "Rule Results",
+    "description": "Label for rule results grid"
+  },
+
+  "ruleCategoryGridLabel": {
+    "message": "Category Results",
+    "description": "Label for rule results grid"
+  },
+
+  "guidelineGridLabel": {
+    "message": "Guideline Results",
     "description": "Label for rule results grid"
   },
 
@@ -525,6 +539,11 @@
     "description": "Element column label in grid for rule results view"
   },
 
+  "pageElementLabel": {
+    "message": "Page/Element",
+    "description": "Page/Element column label in grid for rule results view"
+  },
+
   "positionAbbrev": {
     "message": "Pos",
     "description": "Position column abbreviation in grid for rule results view"
@@ -626,8 +645,8 @@
   },
 
   "moreButtonLabel": {
-    "message": "More Terms and Concepts",
-    "description": "Label for More Terms and Concepts button in a dialog box"
+    "message": "Concepts and Terms",
+    "description": "Label for Concepts and Terms button in a dialog box"
   },
 
   "optionsTitle": {
@@ -1095,23 +1114,66 @@
     "description": "Feedback to use if the shortcut is already defined."
   },
 
-  "elementInfoTitle": {
-    "message": "Element Result Descriptions",
-    "description": "Dialog title for element result descriptions"
-  },
-
   "summaryInfoButtonLabel": {
-    "message": "Result Information",
+    "message": "Element Result Descriptions",
     "description": "Results information button label"
   },
 
+  "allInfoTitle": {
+    "message": "Summary Results Legend",
+    "description": "Dialog title for all rule results description"
+  },
+
+  "groupInfoTitle": {
+    "message": "Rule Category or Guideline Results Legend",
+    "description": "Dialog title for rule grroup results description"
+  },
+
   "ruleInfoTitle": {
-    "message": "Rule Result Descriptions",
-    "description": "Dialog title for rule result descriptions"
+    "message": "Rule Result Legend",
+    "description": "Dialog title for rule result description"
+  },
+
+  "numericalResultsLabel": {
+    "message": "Numerical Results",
+    "description": "Label for Numerical Results headingin result information dialog"
+
+  },
+
+  "resultTypesLabel": {
+    "message": "Result Types",
+    "description": "Label for Result Types heading in result information dialog"
+
   },
 
   "moreButtonDisabled": {
     "message": "Tab already opened in browser window",
     "description": "Provides help on why more information button is disabled"
+  },
+
+  "groupNumber0Desc": {
+    "message": "No rule results with this result type in the evaluation",
+    "description": "Provides information on the meaning of zero in summary and group result views"
+  },
+
+  "groupNumber1Desc": {
+    "message": "One or more rule results with this result type in the evaluation",
+    "description": "Provides information on the meaning of numbers greater than zero in summary and group result views"
+  },
+
+  "ruleNumber0Desc": {
+    "message": "No element and/or page results with this result type in the rule result",
+    "description": "Provides information on the meaning of zero in rule result view"
+  },
+
+  "ruleNumber1Desc": {
+    "message": "One or more element and/or page results with this result type in the rule result",
+    "description": "Provides information on the meaning of numbers greater than zero in rule result view"
+  },
+
+  "refResultTypes": {
+    "message": "(result types in table above)",
+    "description": "Information on where to find more information on results types in the dialog."
   }
+
 }

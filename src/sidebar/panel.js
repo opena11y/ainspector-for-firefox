@@ -46,11 +46,14 @@ const msg = {
   ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
   ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
   evaluationNotAllowed   : getMessage("evaluationNotAllowed"),
+  guidelineLabel         : getMessage("guidelineLabel"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
   protocolNotSupported   : getMessage("protocolNotSupported"),
+  ruleCategoryLabel      : getMessage("ruleCategoryLabel"),
+  ruleLabel              : getMessage("ruleLabel"),
   tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
@@ -533,14 +536,19 @@ function updateSidebar (info) {
     }
     else {
       if (typeof info.infoRuleResults === 'object') {
-        viewTitle.textContent = info.infoRuleResults.groupLabel;
+        if (info.infoRuleResults.groupType === 'rc') {
+          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleResults.groupLabel;
+        }
+        else {
+          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleResults.groupLabel;
+        }
         viewTitle.title = '';
         vRuleResults.update(info.infoRuleResults, sidebarGroupId);
         enableButtons();
       }
       else {
         if (info.infoElementResults) {
-          viewTitle.textContent = info.infoElementResults.title;
+          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoElementResults.title;
           viewTitle.title = info.infoElementResults.title;
           vElementResults.update(info.infoElementResults);
           enableButtons();

@@ -33,7 +33,7 @@ button#summary-info-button {
   z-index: 15;
 }
 
-[role="dialog"] #title {
+[role="dialog"] .header {
   margin-bottom: 0.5em;
   padding: 4px;
   border-bottom: 1px solid black;
@@ -41,6 +41,18 @@ button#summary-info-button {
   border-top-right-radius: 8px;
   font-weight:  bold;
   background-color: #eee;
+  position: relative;
+  font-size: 1.1em;
+}
+
+[role="dialog"] .header button {
+  position: absolute;
+  top: -0.25em;
+  right: 0;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  color: black;
 }
 
 [role="dialog"] .content {
@@ -56,7 +68,8 @@ button#summary-info-button {
   display: flex;
   align-items: right;
   justify-content: right;
-  margin-right: 0.5em;
+  padding-top: 1em;
+  margin-right: 1em;
   margin-bottom: 0.5em;
 }
 
@@ -84,13 +97,19 @@ button:hover {
   cursor: pointer;
 }
 
+h2 {
+ margin: 0;
+ padding: 0;
+ margin-top: 1em;
+ margin-left: 1em;
+ font-size: 1.1em;
+}
 
 table.info {
-  margin-top: 1em;
-  margin-bottom: 4em;
-  margin-right: auto;
-  margin-left: auto;
-  width: 90%;
+  margin-top: 0.25em;
+  margin-bottom: 2em;
+  margin-left: 1em;
+  width: 93%;
   border-collapse: collapse;
 }
 
@@ -98,33 +117,61 @@ table.info tr:nth-child(even) {
   background-color: #EEE;
 }
 
-table.info thead tr {
-  border-bottom: 1px solid black;
+table.info tbody {
+  border-top: 1px solid black;
 }
 
-table.info th.symbol,
-table.info td.symbol,
-table.info th.label,
-table.info td.label {
+table.info th.symbol {
   padding: 0.25em;
-  width: 40px;
+  width: 5em;
   text-align: center;
   vertical-align: top;
 }
 
-table.info td.symbol code {
+table.info th.symbol code {
   display: inline-block;
   width: 3em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
 }
 
-table.info td.desc {
+table.info th.result-type {
+  text-align: left;
+}
+
+table.info td.symbol-desc {
   padding: 0.25em;
+  padding-top: 0.5em;
   width: auto;
   text-align: left;
   vertical-align: top;
 }
 
+table.info td.symbol-desc .label {
+  font-weight: bold;
+}
 
+table.info td.symbol-desc .desc {
+  margin-left: 1em;
+  font-size: 1em;
+}
+
+table.info th.number {
+  padding: 0.25em;
+  width: 3em;
+  text-align: center;
+  vertical-align: top;
+  font-weight: bold;
+}
+
+table.info td.number-desc  {
+  margin: 0;
+  padding: 0.25em;
+}
+
+table.info td.number-desc  .desc {
+  margin: 0;
+}
 
 table .violations code {
   background-color: hsl(0, 100%, 84%);
@@ -145,3 +192,9 @@ table .passed code {
 table .hidden code {
   background-color: hsl(0, 0%, 87%);
 }
+
+.ref {
+  font-size: 0.9em;
+  font-style: italic;
+}
+

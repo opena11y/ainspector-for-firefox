@@ -44,7 +44,7 @@ template.innerHTML = `
       </table>
     </div>
     <div class="right">
-      <summary-info data-info="element"></summary-info>
+      <summary-info data-info="rule"></summary-info>
     </div>
   <div>
 `;

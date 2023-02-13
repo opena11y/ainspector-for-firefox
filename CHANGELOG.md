@@ -4,7 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 2.1.3        |   2/7/23   | Added information button
+| 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
 | 2.1.1        |   11/21/22  | Fixed bug rerunning evaluations
 | 2.1.0        |   10/31/22  | Fixed bug in evaluations not completing and updated labeling of some user interface  components in the options panel
@@ -15,8 +15,10 @@
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 
-### 2.1.3
+### 2.2.0
 * Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
+* Updating labeling of views to improve indemnification of information in each view
+
 
 ### 2.1.2
 * Updated evaluation library to fix the ccr calculation bug for rgba values

@@ -170,6 +170,15 @@ export default class ResultGrid extends HTMLElement {
     return th;
   }
 
+  // This grid only supports one row of headers
+  updateHeaderCell (txt, className, title) {
+    const th = this.theadTr.querySelector(`.${className}`);
+    th.textContent = txt;
+    if (title) {
+      th.title = title;
+    }
+  }
+
   getNumberOfColumns () {
     return this.theadTr.querySelectorAll('th').length;
   }

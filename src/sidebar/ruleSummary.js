@@ -37,7 +37,7 @@ template.innerHTML = `
       </table>
     </div>
     <div class="right">
-      <summary-info></summary-info>
+      <summary-info data-info="all"></summary-info>
     </div>
   </div>
 `;
@@ -77,6 +77,8 @@ export default class RuleSummary extends HTMLElement {
     this.passedTh.setAttribute('aria-label', msg.passedLabel);
     this.passedTh.setAttribute('title', msg.passedLabel);
 
+    this.summaryInfo = this.shadowRoot.querySelector('summary-info');
+
     // Initialize references
     this.violationsTd   = this.shadowRoot.querySelector('#violations-value');
     this.warningsTd     = this.shadowRoot.querySelector('#warnings-value');
@@ -100,6 +102,10 @@ export default class RuleSummary extends HTMLElement {
     this.passedTd.textContent = value;
   }
 
+  set dataInfo (value) {
+    this.summaryInfo.setAttribute('data-info', value);
+  }
+
   get violations () {
     return this.violationsTd.textContent;
   }
@@ -114,6 +120,10 @@ export default class RuleSummary extends HTMLElement {
 
   get passed () {
     return this.passedTd.textContent;
+  }
+
+  get dataInfo () {
+    this.summaryInfo.getAttribute('data-info');
   }
 
   clear () {

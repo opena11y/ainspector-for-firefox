@@ -34,15 +34,28 @@ const msg = {
   hiddenLabel    : getMessage('hiddenLabel'),
   hiddenDescElem : getMessage('hiddenDescElem'),
 
-  elementInfoTitle   : getMessage('elementInfoTitle'),
-  ruleInfoTitle      : getMessage('ruleInfoTitle'),
+  groupInfoTitle : getMessage('groupInfoTitle'),
+  ruleInfoTitle  : getMessage('ruleInfoTitle'),
+  allInfoTitle   : getMessage('allInfoTitle'),
 
-  summaryInfoButtonLabel: getMessage('summaryInfoButtonLabel'),
+  ruleNumberDesc : getMessage('ruleNumberDesc'),
+  elemNumberDesc : getMessage('elemNumberDesc'),
+
+  resultTypesLabel        : getMessage('resultTypesLabel'),
+  summaryInfoButtonLabel  : getMessage('summaryInfoButtonLabel'),
+  numericalResultsLabel   : getMessage('numericalResultsLabel'),
+
+  ruleNumber0Desc : getMessage('ruleNumber0Desc'),
+  ruleNumber1Desc : getMessage('ruleNumber1Desc'),
+
+  groupNumber0Desc : getMessage('groupNumber0Desc'),
+  groupNumber1Desc : getMessage('groupNumber1Desc'),
 
   closeButtonLabel   : getMessage('closeButtonLabel'),
   moreButtonLabel    : getMessage('moreButtonLabel'),
+  moreButtonDisabled : getMessage('moreButtonDisabled'),
 
-  moreButtonDisabled : getMessage('moreButtonDisabled')
+  refResultTypes : getMessage('refResultTypes')
 
 };
 
@@ -66,48 +79,80 @@ template.innerHTML = `
         tabindex="-1"
         id="dialog"
         aria-labelledby="title">
-        <div id="title"></div>
+        <div class="header">
+          <div id="title"></div>
+          <button id="close-button-1" aria-label="close" tabindex="-1">X</button>
+        </div>
         <div class="content">
-          <table class="info">
-            <thead>
-              <tr>
-                <th class="symbol">Symbol</th>
-                <th class="label">Result</th>
-                <th class="desc">Description</th>
-              </tr>
-            </thead>
+
+          <h2 id="h2-result-types">Result Types</h2>
+          <table class="info result-types" aria-labelledby="h2-result-types">
             <tbody>
               <tr class="violations">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
+                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <td class="symbol-desc">
+                  <details>
+                    <summary class="label"></summary>
+                    <div class="desc">XXX</div>
+                  </details>
+                </td>
               </tr>
               <tr class="warnings">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
+                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <td class="symbol-desc">
+                  <details>
+                    <summary class="label"></summary>
+                    <div class="desc">XXX</div>
+                  </details>
+                </td>
               </tr>
               <tr class="manual-checks">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
+                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <td class="symbol-desc">
+                  <details>
+                    <summary class="label"></summary>
+                    <div class="desc">XXX</div>
+                  </details>
+                </td>
               </tr>
               <tr class="passed">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
+                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <td class="symbol-desc">
+                  <details>
+                    <summary class="label"></summary>
+                    <div class="desc"></div>
+                  </details>
+                </td>
               </tr>
-              <tr class="last">
-                <td class="symbol"><code class="abbrev"></code></td>
-                <td class="label"></td>
-                <td class="desc"></td>
+              <tr class="not-applicable hidden">
+                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <td class="symbol-desc">
+                  <details>
+                    <summary class="label"></summary>
+                    <div class="desc"></div>
+                  </details>
+                </td>
+              </tr>
+            </body>
+          </table>
+
+          <h2 id="h2-numerical-results">Numerical Results</h2>
+          <table class="info numerical-results" aria-labelledby="h2-numerical-results">
+            <tbody>
+              <tr class="number-0">
+                <th scope="row"  class="number">0</th>
+                <td class="number-desc"><span class="desc"></span> <span class="ref"></span>.</td>
+              </th>
+              <tr class="number-1">
+                <th scope="row" class="number">≥1</th>
+                <td class="number-desc"><span class="desc"></span> <span class="ref"></span>.</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="buttons">
           <button id="more-button"></button>
-          <button id="close-button"></button>
+          <button id="close-button-2"></button>
         </div>
       </div>
     </div>
@@ -121,8 +166,8 @@ export default class summaryInfo extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
 
-    function setTableCellLabel (infoTable, rowClass, cellClass, label) {
-      const cell = infoTable.querySelector (`.${rowClass} .${cellClass}`);
+    function setTableCellLabel (resultTypesTable, rowClass, cellClass, label) {
+      const cell = resultTypesTable.querySelector (`.${rowClass} .${cellClass}`);
       if (cell) {
         cell.textContent = label;
       }
@@ -139,48 +184,71 @@ export default class summaryInfo extends HTMLElement {
 
     // Check for data-info attribute
 
-    const showElementInfo = this.hasAttribute('data-info') ?
-                            this.getAttribute('data-info') === 'element' :
-                            false;
+    const dataInfoAttr = this.getAttribute('data-info');
+    console.log(`[dataInfoAttr]: ${dataInfoAttr}`);
 
     // Get references
+
+    this.summaryInfoDiv  = this.shadowRoot.querySelector('.summary-info');
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
     this.summaryInfoButton.title  = msg.summaryInfoButtonLabel;
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
 
-    label = this.shadowRoot.querySelector('#title');
-    label.textContent = showElementInfo ?
-                        msg.elementInfoTitle :
-                        msg.ruleInfoTitle;
+    const titleDiv = this.shadowRoot.querySelector('#title');
+
+    switch (dataInfoAttr) {
+      case 'rule':
+        titleDiv.textContent = msg.ruleInfoTitle;
+        break;
+
+      case 'group':
+        titleDiv.textContent = msg.groupInfoTitle;
+        break;
+
+      default:
+        titleDiv.textContent = msg.allInfoTitle;
+        break;
+    }
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
-    const infoTable = this.shadowRoot.querySelector('table.info');
+    this.shadowRoot.querySelector('#h2-result-types').textContent = msg.resultTypesLabel;
+    this.shadowRoot.querySelector('#h2-numerical-results').textContent = msg.numericalResultsLabel;
 
-    setTableCellLabel(infoTable, 'violations', 'abbrev', msg.violationsAbbrev);
-    setTableCellLabel(infoTable, 'violations', 'label',  msg.violationsLabel);
+    const resultTypesTable = this.shadowRoot.querySelector('table.result-types');
+    const numericalResultsTable = this.shadowRoot.querySelector('table.numerical-results');
 
-    setTableCellLabel(infoTable, 'warnings', 'abbrev', msg.warningsAbbrev);
-    setTableCellLabel(infoTable, 'warnings', 'label',  msg.warningsLabel);
 
-    setTableCellLabel(infoTable, 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
-    setTableCellLabel(infoTable, 'manual-checks', 'label',  msg.manualChecksLabel);
+    setTableCellLabel(resultTypesTable, 'violations', 'abbrev', msg.violationsAbbrev);
+    setTableCellLabel(resultTypesTable, 'violations', 'label',  msg.violationsLabel);
 
-    setTableCellLabel(infoTable, 'passed', 'abbrev', msg.passedAbbrev);
-    setTableCellLabel(infoTable, 'passed', 'label',  msg.passedLabel);
+    setTableCellLabel(resultTypesTable, 'warnings', 'abbrev', msg.warningsAbbrev);
+    setTableCellLabel(resultTypesTable, 'warnings', 'label',  msg.warningsLabel);
 
-    if (showElementInfo) {
+    setTableCellLabel(resultTypesTable, 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
+    setTableCellLabel(resultTypesTable, 'manual-checks', 'label',  msg.manualChecksLabel);
 
-      setTableCellLabel(infoTable, 'violations',    'desc', msg.violationsDescElem);
-      setTableCellLabel(infoTable, 'warnings',      'desc', msg.warningsDescElem);
-      setTableCellLabel(infoTable, 'manual-checks', 'desc', msg.manualChecksDescElem);
-      setTableCellLabel(infoTable, 'passed',        'desc', msg.passedDescElem);
+    setTableCellLabel(resultTypesTable, 'passed', 'abbrev', msg.passedAbbrev);
+    setTableCellLabel(resultTypesTable, 'passed', 'label',  msg.passedLabel);
 
-      setTableCellLabel(infoTable, 'last', 'abbrev', msg.hiddenAbbrev);
-      setTableCellLabel(infoTable, 'last', 'label',  msg.hiddenLabel);
-      setTableCellLabel(infoTable, 'last', 'desc',   msg.hiddenDescElem);
+    setTableCellLabel(numericalResultsTable, 'number-0', 'ref',  msg.refResultTypes);
+    setTableCellLabel(numericalResultsTable, 'number-1', 'ref',  msg.refResultTypes);
+
+    if (dataInfoAttr === 'rule') {
+
+      setTableCellLabel(resultTypesTable, 'violations',    'desc', msg.violationsDescElem);
+      setTableCellLabel(resultTypesTable, 'warnings',      'desc', msg.warningsDescElem);
+      setTableCellLabel(resultTypesTable, 'manual-checks', 'desc', msg.manualChecksDescElem);
+      setTableCellLabel(resultTypesTable, 'passed',        'desc', msg.passedDescElem);
+
+      setTableCellLabel(resultTypesTable, 'hidden', 'abbrev', msg.hiddenAbbrev);
+      setTableCellLabel(resultTypesTable, 'hidden', 'label',  msg.hiddenLabel);
+      setTableCellLabel(resultTypesTable, 'hidden', 'desc',   msg.hiddenDescElem);
+
+      setTableCellLabel(numericalResultsTable, 'number-0', 'desc',  msg.ruleNumber0Desc);
+      setTableCellLabel(numericalResultsTable, 'number-1', 'desc',  msg.ruleNumber1Desc);
     }
     else {
       setTableCellLabel(this.shadowRoot, 'violations',    'desc', msg.violationsDescRule);
@@ -188,26 +256,35 @@ export default class summaryInfo extends HTMLElement {
       setTableCellLabel(this.shadowRoot, 'manual-checks', 'desc', msg.manualChecksDescRule);
       setTableCellLabel(this.shadowRoot, 'passed',        'desc', msg.passedDescRule);
 
-      setTableCellLabel(this.shadowRoot, 'last', 'abbrev', msg.notApplicableAbbrev);
-      setTableCellLabel(this.shadowRoot, 'last', 'label',  msg.notApplicableLabel);
-      setTableCellLabel(this.shadowRoot, 'last', 'desc',   msg.notApplicableDescRule);
+      setTableCellLabel(this.shadowRoot, 'not-applicable', 'abbrev', msg.notApplicableAbbrev);
+      setTableCellLabel(this.shadowRoot, 'not-applicable', 'label',  msg.notApplicableLabel);
+      setTableCellLabel(this.shadowRoot, 'not-applicable', 'desc',   msg.notApplicableDescRule);
+
+      setTableCellLabel(numericalResultsTable, 'number-0', 'desc',   msg.groupNumber0Desc);
+      setTableCellLabel(numericalResultsTable, 'number-1', 'desc',   msg.groupNumber1Desc);
     }
 
     this.moreButton = this.shadowRoot.querySelector('#more-button');
     this.moreButton.textContent  = msg.moreButtonLabel;
     this.moreButton.addEventListener('click', this.onMoreButtonClick.bind(this));
-    this.moreButton.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
-    this.closeButton = this.shadowRoot.querySelector('#close-button');
-    this.closeButton.textContent  = msg.closeButtonLabel;
-    this.closeButton.addEventListener('click', this.onCloseButtonClick.bind(this));
-    this.closeButton.addEventListener('keydown', this.onButtonKeydown.bind(this));
+    this.closeButton1 = this.shadowRoot.querySelector('#close-button-1');
+    this.closeButton1.addEventListener('click', this.onCloseButtonClick.bind(this));
+    this.closeButton1.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
-    this.isMouseDownInDialog = false;
+    this.closeButton2 = this.shadowRoot.querySelector('#close-button-2');
+    this.closeButton2.textContent  = msg.closeButtonLabel;
+    this.closeButton2.addEventListener('click', this.onCloseButtonClick.bind(this));
+    this.closeButton2.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
-    this.dialogDiv.addEventListener(
+    this.firstSummary  = this.shadowRoot.querySelector('summary');
+    this.firstSummary.addEventListener('keydown', this.onButtonKeydown.bind(this));
+
+    this.isMouseDownInSummaryInfo = false;
+
+    this.summaryInfoDiv.addEventListener(
       'mousedown',
-      this.onDialogMousedown.bind(this),
+      this.onSummaryInfoMousedown.bind(this),
       true
     );
 
@@ -240,7 +317,12 @@ export default class summaryInfo extends HTMLElement {
   }
 
   onSummaryInfoButtonClick () {
-    this.openDialog();
+    if (this.isOpen()) {
+      this.closeDialog();
+    }
+    else {
+      this.openDialog();
+    }
   }
 
   onMoreButtonClick () {
@@ -276,14 +358,18 @@ export default class summaryInfo extends HTMLElement {
     }
 
     if (event.key === 'Tab') {
-      if (event.currentTarget === this.closeButton) {
-        this.moreButton.focus();
+      if (!event.shiftKey && (event.currentTarget === this.closeButton2)) {
+        this.firstSummary.focus();
+        event.stopPropagation();
+        event.preventDefault();
       }
       else {
-        this.closeButton.focus();
+        if (event.shiftKey && (event.currentTarget === this.firstSummary)) {
+          this.closeButton2.focus();
+          event.stopPropagation();
+          event.preventDefault();
+        }
       }
-      event.stopPropagation();
-      event.preventDefault();
     }
   }
 
@@ -294,7 +380,7 @@ export default class summaryInfo extends HTMLElement {
 
     if ((event.currentTarget === event.target) &&
         (event.key === 'Tab')) {
-      this.moreButton.focus();
+      this.firstSummary.focus();
       event.stopPropagation();
       event.preventDefault();
     }
@@ -304,19 +390,19 @@ export default class summaryInfo extends HTMLElement {
     }
   }
 
-  onDialogMousedown(event) {
-    if (this.dialogDiv.contains(event.target)) {
-      this.isMouseDownInDialog = true;
+  onSummaryInfoMousedown(event) {
+    if (this.summaryInfoDiv.contains(event.target)) {
+      this.isMouseDownInSummaryInfo = true;
     }
   }
 
   onBackgroundMousedown(event) {
     if (this.isOpen()) {
-      if (!this.isMouseDownInDialog) {
+      if (!this.isMouseDownInSummaryInfo) {
         this.closeDialog();
       }
     }
-    this.isMouseDownInDialog = false;
+    this.isMouseDownInSummaryInfo = false;
   }
 
 }
