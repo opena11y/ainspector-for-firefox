@@ -14,10 +14,6 @@ button#summary-info-button {
   width: 12em;
 }
 
-[role=dialog] .content {
-   font-size: 1.1em;
-}
-
 [role=dialog] h2 {
    margin: 0;
    padding: 0;
