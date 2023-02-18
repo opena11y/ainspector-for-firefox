@@ -20,7 +20,7 @@ const msg = {
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
   resultLabel          : getMessage('resultLabel'),
-  ruleResultLabel      : getMessage('ruleResultLabel'),
+  ruleResultsLabel     : getMessage('ruleResultsLabel'),
   violationLabel       : getMessage('violationLabel'),
   warningLabel         : getMessage('warningLabel')
 };
@@ -40,7 +40,7 @@ export default class ViewElementResults {
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = msg.ruleResultLabel;
+    h2.textContent = msg.ruleResultsLabel;
     this.containerDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');

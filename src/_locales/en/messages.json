@@ -414,8 +414,8 @@
     "description": "Value for required column in rule group grid"
   },
 
-  "ruleResultLabel": {
-    "message": "Rule Result",
+  "ruleResultsLabel": {
+    "message": "Rule Results",
     "description": "Label for rule result grid"
   },
 
@@ -1119,19 +1119,9 @@
     "description": "Results information button label"
   },
 
-  "allInfoTitle": {
-    "message": "Summary Results Legend",
-    "description": "Dialog title for all rule results description"
-  },
-
-  "groupInfoTitle": {
-    "message": "Rule Category or Guideline Results Legend",
-    "description": "Dialog title for rule grroup results description"
-  },
-
-  "ruleInfoTitle": {
-    "message": "Rule Result Legend",
-    "description": "Dialog title for rule result description"
+  "infoDialogLegend": {
+    "message": "Evaluation Results Legend",
+    "description": "Dialog title for rule group and all rule results description"
   },
 
   "numericalResultsLabel": {
@@ -1140,8 +1130,14 @@
 
   },
 
-  "resultTypesLabel": {
-    "message": "Result Types",
+  "ruleResultTypesLabel": {
+    "message": "Rule Result Types",
+    "description": "Label for Result Types heading in result information dialog"
+
+  },
+
+  "elementResultTypesLabel": {
+    "message": "Element Result Types",
     "description": "Label for Result Types heading in result information dialog"
 
   },
@@ -1151,24 +1147,14 @@
     "description": "Provides help on why more information button is disabled"
   },
 
-  "groupNumber0Desc": {
-    "message": "No rule results with this result type in the evaluation",
-    "description": "Provides information on the meaning of zero in summary and group result views"
+  "ruleNumberDesc": {
+    "message": "Number of rules with corresponding rule result type",
+    "description": "Provides information on the meaning of numbers in rule group all all rules view"
   },
 
-  "groupNumber1Desc": {
-    "message": "One or more rule results with this result type in the evaluation",
-    "description": "Provides information on the meaning of numbers greater than zero in summary and group result views"
-  },
-
-  "ruleNumber0Desc": {
-    "message": "No element and/or page results with this result type in the rule result",
-    "description": "Provides information on the meaning of zero in rule result view"
-  },
-
-  "ruleNumber1Desc": {
-    "message": "One or more element and/or page results with this result type in the rule result",
-    "description": "Provides information on the meaning of numbers greater than zero in rule result view"
+  "elementNumberDesc": {
+    "message": "Number of target elements with corresponding element result type",
+    "description": "Provides information on the meaning of numbers in rule view"
   },
 
   "refResultTypes": {

@@ -1,4 +1,4 @@
-/* summary.css */
+/* summaryInfo.css */
 
 button#summary-info-button {
   margin: 0;
@@ -10,191 +10,69 @@ button#summary-info-button {
   display: inline-block;
 }
 
-
-/* rerunEvaluationButton.css */
-
-.dialog-container {
-  position: absolute;
-  left: 0;
-  top: 5.5em;
-  margin: 5%;
-  width: 90%;
-  z-index: 200;
+[role=dialog] #more-button {
+  width: 12em;
 }
 
-[role="dialog"] {
+[role=dialog] .content {
+   font-size: 1.1em;
+}
+
+[role=dialog] h2 {
+   margin: 0;
+   padding: 0;
+   margin-top: 1em;
+   font-size: 1em;
+}
+
+[role=dialog] table.info {
   margin: 0;
-  padding: 0;
-  display: none;
-  background-color: white;
-  border: 2px solid black;
-  border-radius: 8px;
-  color: black;
-  z-index: 15;
-}
-
-[role="dialog"] .header {
-  margin-bottom: 0.5em;
-  padding: 4px;
-  border-bottom: 1px solid black;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  font-weight:  bold;
-  background-color: #eee;
-  position: relative;
-  font-size: 1.1em;
-}
-
-[role="dialog"] .header button {
-  position: absolute;
-  top: -0.25em;
-  right: 0;
-  border: none;
-  background: transparent;
-  font-weight: bold;
-  color: black;
-}
-
-[role="dialog"] .content {
-  margin:  0.25em;
-  margin-bottom: 1em;
-}
-
-[role="dialog"] button {
-  margin: 6px;
-}
-
-[role="dialog"] .buttons {
-  display: flex;
-  align-items: right;
-  justify-content: right;
-  padding-top: 1em;
-  margin-right: 1em;
-  margin-bottom: 0.5em;
-}
-
-[role="dialog"] .buttons button {
-  width: 5em;
-}
-
-#more-button {
-  width: 16em;
-}
-
-#summary-info-button, {
-  text-align:  center;
-  white-space: nowrap;
-  padding: 1px 4px 2px;
-}
-
-
-button:focus {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
-button:hover {
-  cursor: pointer;
-}
-
-h2 {
- margin: 0;
- padding: 0;
- margin-top: 1em;
- margin-left: 1em;
- font-size: 1.1em;
-}
-
-table.info {
   margin-top: 0.25em;
   margin-bottom: 2em;
-  margin-left: 1em;
-  width: 93%;
+  width: 80%;
   border-collapse: collapse;
+  font-size: 1em;
 }
 
-table.info tr:nth-child(even) {
-  background-color: #EEE;
-}
-
-table.info tbody {
-  border-top: 1px solid black;
-}
-
-table.info th.symbol {
+[role=dialog] table.info th.symbol {
   padding: 0.25em;
   width: 5em;
   text-align: center;
   vertical-align: top;
+  font-weight: normal;
 }
 
-table.info th.symbol code {
+[role=dialog] table.info th.symbol code {
   display: inline-block;
   width: 3em;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
 }
 
-table.info th.result-type {
-  text-align: left;
-}
-
-table.info td.symbol-desc {
-  padding: 0.25em;
-  padding-top: 0.5em;
-  width: auto;
-  text-align: left;
-  vertical-align: top;
-}
-
-table.info td.symbol-desc .label {
-  font-weight: bold;
-}
-
-table.info td.symbol-desc .desc {
-  margin-left: 1em;
-  font-size: 1em;
-}
-
-table.info th.number {
-  padding: 0.25em;
-  width: 3em;
-  text-align: center;
-  vertical-align: top;
-  font-weight: bold;
-}
-
-table.info td.number-desc  {
+[role=dialog] #numerical-desc  {
   margin: 0;
-  padding: 0.25em;
+  padding: 0;
+  margin-bottom: 2em;
 }
 
-table.info td.number-desc  .desc {
-  margin: 0;
-}
-
-table .violations code {
+[role=dialog] table .violation code {
   background-color: hsl(0, 100%, 84%);
 }
 
-table .warnings code {
+[role=dialog] table .warning code {
   background-color: hsl(49, 100%, 79%);
 }
 
-table .manual-checks code {
+[role=dialog] table .manual-check code {
   background-color: hsl(198, 52%, 81%);
 }
 
-table .passed code {
+[role=dialog] table .passed code {
   background-color: hsl(90, 67%, 69%);
 }
 
-table .hidden code {
+[role=dialog] table .hidden code {
   background-color: hsl(0, 0%, 87%);
 }
 
-.ref {
-  font-size: 0.9em;
-  font-style: italic;
-}
 

@@ -6,50 +6,36 @@ import { getOptions }  from '../storage.js';
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
-  manualChecksAbbrev   : getMessage('manualChecksAbbrev'),
-  manualChecksLabel    : getMessage('manualChecksLabel'),
-  manualChecksDescRule : getMessage('manualChecksDescRule'),
-  manualChecksDescElem : getMessage('manualChecksDescElem'),
+  manualCheckAbbrev   : getMessage('manualChecksAbbrev'),
+  manualCheckLabel    : getMessage('manualChecksLabel'),
 
   passedAbbrev   : getMessage('passedAbbrev'),
   passedLabel    : getMessage('passedLabel'),
-  passedDescRule : getMessage('passedDescRule'),
-  passedDescElem : getMessage('passedDescElem'),
 
-  violationsAbbrev   : getMessage('violationsAbbrev'),
-  violationsLabel    : getMessage('violationsLabel'),
-  violationsDescRule : getMessage('violationsDescRule'),
-  violationsDescElem : getMessage('violationsDescElem'),
+  violationAbbrev   : getMessage('violationsAbbrev'),
+  violationLabel    : getMessage('violationLabel'),
 
-  warningsAbbrev   : getMessage('warningsAbbrev'),
-  warningsLabel    : getMessage('warningsLabel'),
-  warningsDescRule : getMessage('warningsDescRule'),
-  warningsDescElem : getMessage('warningsDescElem'),
+  warningAbbrev   : getMessage('warningsAbbrev'),
+  warningLabel    : getMessage('warningLabel'),
 
   notApplicableAbbrev   : getMessage('notApplicableAbbrev'),
   notApplicableLabel    : getMessage('notApplicableLabel'),
-  notApplicableDescRule : getMessage('notApplicableDescRule'),
 
   hiddenAbbrev   : getMessage('hiddenAbbrev'),
   hiddenLabel    : getMessage('hiddenLabel'),
-  hiddenDescElem : getMessage('hiddenDescElem'),
 
-  groupInfoTitle : getMessage('groupInfoTitle'),
-  ruleInfoTitle  : getMessage('ruleInfoTitle'),
-  allInfoTitle   : getMessage('allInfoTitle'),
+  infoDialogLegend: getMessage('infoDialogLegend'),
 
-  ruleNumberDesc : getMessage('ruleNumberDesc'),
-  elemNumberDesc : getMessage('elemNumberDesc'),
+  ruleResultTypesLabel    : getMessage('ruleResultTypesLabel'),
+  elementResultTypesLabel : getMessage('elementResultTypesLabel'),
+  numericalResultsLabel   : getMessage('numericalResultsLabel'),
+
+  ruleNumberDesc    : getMessage('ruleNumberDesc'),
+  elementNumberDesc : getMessage('elementNumberDesc'),
 
   resultTypesLabel        : getMessage('resultTypesLabel'),
   summaryInfoButtonLabel  : getMessage('summaryInfoButtonLabel'),
   numericalResultsLabel   : getMessage('numericalResultsLabel'),
-
-  ruleNumber0Desc : getMessage('ruleNumber0Desc'),
-  ruleNumber1Desc : getMessage('ruleNumber1Desc'),
-
-  groupNumber0Desc : getMessage('groupNumber0Desc'),
-  groupNumber1Desc : getMessage('groupNumber1Desc'),
 
   closeButtonLabel   : getMessage('closeButtonLabel'),
   moreButtonLabel    : getMessage('moreButtonLabel'),
@@ -76,79 +62,44 @@ template.innerHTML = `
     </button>
     <div class="dialog-container">
       <div role="dialog"
+        class="info"
         tabindex="-1"
         id="dialog"
         aria-labelledby="title">
         <div class="header">
           <div id="title"></div>
-          <button id="close-button-1" aria-label="close" tabindex="-1">X</button>
+          <button id="close-button-1" aria-label="close" tabindex="-1">✕</button>
         </div>
         <div class="content">
 
-          <h2 id="h2-result-types">Result Types</h2>
+          <h2 id="h2-result-types"></h2>
           <table class="info result-types" aria-labelledby="h2-result-types">
             <tbody>
-              <tr class="violations">
+              <tr class="violation">
                 <th scope="row" class="symbol"><code class="abbrev"></code></th>
-                <td class="symbol-desc">
-                  <details>
-                    <summary class="label"></summary>
-                    <div class="desc">XXX</div>
-                  </details>
-                </td>
+                <td class="label"></td>
               </tr>
-              <tr class="warnings">
+              <tr class="warning">
                 <th scope="row" class="symbol"><code class="abbrev"></code></th>
-                <td class="symbol-desc">
-                  <details>
-                    <summary class="label"></summary>
-                    <div class="desc">XXX</div>
-                  </details>
-                </td>
+                <td class="label"></td>
               </tr>
-              <tr class="manual-checks">
+              <tr class="manual-check">
                 <th scope="row" class="symbol"><code class="abbrev"></code></th>
-                <td class="symbol-desc">
-                  <details>
-                    <summary class="label"></summary>
-                    <div class="desc">XXX</div>
-                  </details>
-                </td>
+                <td class="label"></td>
               </tr>
               <tr class="passed">
                 <th scope="row" class="symbol"><code class="abbrev"></code></th>
-                <td class="symbol-desc">
-                  <details>
-                    <summary class="label"></summary>
-                    <div class="desc"></div>
-                  </details>
-                </td>
+                <td class="label"></td>
               </tr>
               <tr class="not-applicable hidden">
                 <th scope="row" class="symbol"><code class="abbrev"></code></th>
-                <td class="symbol-desc">
-                  <details>
-                    <summary class="label"></summary>
-                    <div class="desc"></div>
-                  </details>
-                </td>
+                <td class="label"></td>
               </tr>
             </body>
           </table>
 
-          <h2 id="h2-numerical-results">Numerical Results</h2>
-          <table class="info numerical-results" aria-labelledby="h2-numerical-results">
-            <tbody>
-              <tr class="number-0">
-                <th scope="row"  class="number">0</th>
-                <td class="number-desc"><span class="desc"></span> <span class="ref"></span>.</td>
-              </th>
-              <tr class="number-1">
-                <th scope="row" class="number">≥1</th>
-                <td class="number-desc"><span class="desc"></span> <span class="ref"></span>.</td>
-              </tr>
-            </tbody>
-          </table>
+          <h2 id="h2-numerical-results"></h2>
+          <div id="numerical-desc"></div>
         </div>
         <div class="buttons">
           <button id="more-button"></button>
@@ -174,7 +125,12 @@ export default class summaryInfo extends HTMLElement {
     }
 
     // Use external CSS stylesheet
-    const link = document.createElement('link');
+    let link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', 'dialog.css');
+    this.shadowRoot.appendChild(link);
+
+    link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('href', 'summaryInfo.css');
     this.shadowRoot.appendChild(link);
@@ -185,90 +141,67 @@ export default class summaryInfo extends HTMLElement {
     // Check for data-info attribute
 
     const dataInfoAttr = this.getAttribute('data-info');
-    console.log(`[dataInfoAttr]: ${dataInfoAttr}`);
 
     // Get references
 
     this.summaryInfoDiv  = this.shadowRoot.querySelector('.summary-info');
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
-    this.summaryInfoButton.title  = msg.summaryInfoButtonLabel;
+    this.summaryInfoButton.title  = msg.infoDialogLegend;
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
-
-    const titleDiv = this.shadowRoot.querySelector('#title');
-
-    switch (dataInfoAttr) {
-      case 'rule':
-        titleDiv.textContent = msg.ruleInfoTitle;
-        break;
-
-      case 'group':
-        titleDiv.textContent = msg.groupInfoTitle;
-        break;
-
-      default:
-        titleDiv.textContent = msg.allInfoTitle;
-        break;
-    }
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
-    this.shadowRoot.querySelector('#h2-result-types').textContent = msg.resultTypesLabel;
+    const titleDiv = this.shadowRoot.querySelector('#title');
+    titleDiv.textContent = msg.infoDialogLegend;
+
+    switch (dataInfoAttr) {
+      case 'rule':
+        this.shadowRoot.querySelector('#h2-result-types').textContent = msg.elementResultTypesLabel;
+        break;
+
+      default:
+        this.shadowRoot.querySelector('#h2-result-types').textContent = msg.ruleResultTypesLabel;
+        break;
+    }
     this.shadowRoot.querySelector('#h2-numerical-results').textContent = msg.numericalResultsLabel;
 
-    const resultTypesTable = this.shadowRoot.querySelector('table.result-types');
-    const numericalResultsTable = this.shadowRoot.querySelector('table.numerical-results');
 
+    const resultTypesTable      = this.shadowRoot.querySelector('table.result-types');
 
-    setTableCellLabel(resultTypesTable, 'violations', 'abbrev', msg.violationsAbbrev);
-    setTableCellLabel(resultTypesTable, 'violations', 'label',  msg.violationsLabel);
+    setTableCellLabel(resultTypesTable, 'violation', 'abbrev', msg.violationAbbrev);
+    setTableCellLabel(resultTypesTable, 'violation', 'label',  msg.violationLabel);
 
-    setTableCellLabel(resultTypesTable, 'warnings', 'abbrev', msg.warningsAbbrev);
-    setTableCellLabel(resultTypesTable, 'warnings', 'label',  msg.warningsLabel);
+    setTableCellLabel(resultTypesTable, 'warning', 'abbrev', msg.warningAbbrev);
+    setTableCellLabel(resultTypesTable, 'warning', 'label',  msg.warningLabel);
 
-    setTableCellLabel(resultTypesTable, 'manual-checks', 'abbrev', msg.manualChecksAbbrev);
-    setTableCellLabel(resultTypesTable, 'manual-checks', 'label',  msg.manualChecksLabel);
+    setTableCellLabel(resultTypesTable, 'manual-check', 'abbrev', msg.manualCheckAbbrev);
+    setTableCellLabel(resultTypesTable, 'manual-check', 'label',  msg.manualCheckLabel);
 
     setTableCellLabel(resultTypesTable, 'passed', 'abbrev', msg.passedAbbrev);
     setTableCellLabel(resultTypesTable, 'passed', 'label',  msg.passedLabel);
 
-    setTableCellLabel(numericalResultsTable, 'number-0', 'ref',  msg.refResultTypes);
-    setTableCellLabel(numericalResultsTable, 'number-1', 'ref',  msg.refResultTypes);
-
     if (dataInfoAttr === 'rule') {
-
-      setTableCellLabel(resultTypesTable, 'violations',    'desc', msg.violationsDescElem);
-      setTableCellLabel(resultTypesTable, 'warnings',      'desc', msg.warningsDescElem);
-      setTableCellLabel(resultTypesTable, 'manual-checks', 'desc', msg.manualChecksDescElem);
-      setTableCellLabel(resultTypesTable, 'passed',        'desc', msg.passedDescElem);
-
       setTableCellLabel(resultTypesTable, 'hidden', 'abbrev', msg.hiddenAbbrev);
       setTableCellLabel(resultTypesTable, 'hidden', 'label',  msg.hiddenLabel);
-      setTableCellLabel(resultTypesTable, 'hidden', 'desc',   msg.hiddenDescElem);
 
-      setTableCellLabel(numericalResultsTable, 'number-0', 'desc',  msg.ruleNumber0Desc);
-      setTableCellLabel(numericalResultsTable, 'number-1', 'desc',  msg.ruleNumber1Desc);
+      this.shadowRoot.querySelector('#numerical-desc').textContent = msg.elementNumberDesc;
     }
     else {
-      setTableCellLabel(this.shadowRoot, 'violations',    'desc', msg.violationsDescRule);
-      setTableCellLabel(this.shadowRoot, 'warnings',      'desc', msg.warningsDescRule);
-      setTableCellLabel(this.shadowRoot, 'manual-checks', 'desc', msg.manualChecksDescRule);
-      setTableCellLabel(this.shadowRoot, 'passed',        'desc', msg.passedDescRule);
-
       setTableCellLabel(this.shadowRoot, 'not-applicable', 'abbrev', msg.notApplicableAbbrev);
       setTableCellLabel(this.shadowRoot, 'not-applicable', 'label',  msg.notApplicableLabel);
-      setTableCellLabel(this.shadowRoot, 'not-applicable', 'desc',   msg.notApplicableDescRule);
 
-      setTableCellLabel(numericalResultsTable, 'number-0', 'desc',   msg.groupNumber0Desc);
-      setTableCellLabel(numericalResultsTable, 'number-1', 'desc',   msg.groupNumber1Desc);
+      this.shadowRoot.querySelector('#numerical-desc').textContent = msg.ruleNumberDesc;
     }
 
     this.moreButton = this.shadowRoot.querySelector('#more-button');
     this.moreButton.textContent  = msg.moreButtonLabel;
     this.moreButton.addEventListener('click', this.onMoreButtonClick.bind(this));
+    this.moreButton.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
     this.closeButton1 = this.shadowRoot.querySelector('#close-button-1');
+    this.closeButton1.setAttribute('aria-label', msg.closeButtonLabel);
     this.closeButton1.addEventListener('click', this.onCloseButtonClick.bind(this));
     this.closeButton1.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
@@ -276,9 +209,6 @@ export default class summaryInfo extends HTMLElement {
     this.closeButton2.textContent  = msg.closeButtonLabel;
     this.closeButton2.addEventListener('click', this.onCloseButtonClick.bind(this));
     this.closeButton2.addEventListener('keydown', this.onButtonKeydown.bind(this));
-
-    this.firstSummary  = this.shadowRoot.querySelector('summary');
-    this.firstSummary.addEventListener('keydown', this.onButtonKeydown.bind(this));
 
     this.isMouseDownInSummaryInfo = false;
 
@@ -359,12 +289,12 @@ export default class summaryInfo extends HTMLElement {
 
     if (event.key === 'Tab') {
       if (!event.shiftKey && (event.currentTarget === this.closeButton2)) {
-        this.firstSummary.focus();
+        this.moreButton.focus();
         event.stopPropagation();
         event.preventDefault();
       }
       else {
-        if (event.shiftKey && (event.currentTarget === this.firstSummary)) {
+        if (event.shiftKey && (event.currentTarget === this.moreButton)) {
           this.closeButton2.focus();
           event.stopPropagation();
           event.preventDefault();
@@ -380,7 +310,7 @@ export default class summaryInfo extends HTMLElement {
 
     if ((event.currentTarget === event.target) &&
         (event.key === 'Tab')) {
-      this.firstSummary.focus();
+      this.moreButton.focus();
       event.stopPropagation();
       event.preventDefault();
     }
