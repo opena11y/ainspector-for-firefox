@@ -7,7 +7,7 @@ import { getOptions }  from '../storage.js';
 const getMessage = browser.i18n.getMessage;
 const msg = {
   manualCheckAbbrev   : getMessage('manualChecksAbbrev'),
-  manualCheckLabel    : getMessage('manualChecksLabel'),
+  manualCheckLabel    : getMessage('manualCheckLabel'),
 
   passedAbbrev   : getMessage('passedAbbrev'),
   passedLabel    : getMessage('passedLabel'),
