@@ -1,10 +1,5 @@
 /* summaryInfo.css */
 
-[role=dialog].info {
-  width: 80%;
-  left: 10%;
-}
-
 button#summary-info-button {
   margin: 0;
   margin-left: 1em;
@@ -52,7 +47,6 @@ button#summary-info-button {
   width: 3em;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
-  font-weight: bold;
 }
 
 [role=dialog] #numerical-desc  {
