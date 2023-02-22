@@ -1148,12 +1148,12 @@
   },
 
   "ruleNumberDesc": {
-    "message": "Number of rules with corresponding rule result type.",
+    "message": "Number of rules with corresponding result type",
     "description": "Provides information on the meaning of numbers in rule group all all rules view"
   },
 
   "elementNumberDesc": {
-    "message": "Number of target elements with corresponding element result type.",
+    "message": "Number of target elements with corresponding result type",
     "description": "Provides information on the meaning of numbers in rule view"
   },
 

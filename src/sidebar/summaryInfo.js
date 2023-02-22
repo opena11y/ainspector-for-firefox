@@ -76,23 +76,23 @@ template.innerHTML = `
           <table class="info result-types" aria-labelledby="h2-result-types">
             <tbody>
               <tr class="violation">
-                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <th scope="row" class="symbol"><span class="abbrev"></span></th>
                 <td class="label"></td>
               </tr>
               <tr class="warning">
-                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <th scope="row" class="symbol"><span class="abbrev"></span></th>
                 <td class="label"></td>
               </tr>
               <tr class="manual-check">
-                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <th scope="row" class="symbol"><span class="abbrev"></span></th>
                 <td class="label"></td>
               </tr>
               <tr class="passed">
-                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <th scope="row" class="symbol"><span class="abbrev"></span></th>
                 <td class="label"></td>
               </tr>
               <tr class="not-applicable hidden">
-                <th scope="row" class="symbol"><code class="abbrev"></code></th>
+                <th scope="row" class="symbol"><span class="abbrev"></span></th>
                 <td class="label"></td>
               </tr>
             </body>

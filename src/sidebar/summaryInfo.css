@@ -1,5 +1,10 @@
 /* summaryInfo.css */
 
+[role=dialog].info {
+  width: 80%;
+  left: 10%;
+}
+
 button#summary-info-button {
   margin: 0;
   margin-left: 1em;
@@ -42,11 +47,12 @@ button#summary-info-button {
   font-weight: normal;
 }
 
-[role=dialog] table.info th.symbol code {
+[role=dialog] table.info th.symbol span {
   display: inline-block;
   width: 3em;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
+  font-weight: bold;
 }
 
 [role=dialog] #numerical-desc  {
@@ -55,23 +61,23 @@ button#summary-info-button {
   margin-bottom: 2em;
 }
 
-[role=dialog] table .violation code {
+[role=dialog] table .violation span {
   background-color: hsl(0, 100%, 84%);
 }
 
-[role=dialog] table .warning code {
+[role=dialog] table .warning span {
   background-color: hsl(49, 100%, 79%);
 }
 
-[role=dialog] table .manual-check code {
+[role=dialog] table .manual-check span {
   background-color: hsl(198, 52%, 81%);
 }
 
-[role=dialog] table .passed code {
+[role=dialog] table .passed span {
   background-color: hsl(90, 67%, 69%);
 }
 
-[role=dialog] table .hidden code {
+[role=dialog] table .hidden span {
   background-color: hsl(0, 0%, 87%);
 }
 
