@@ -16,10 +16,12 @@ const msg = {
   noResultsMsg         : getMessage('noResultsMsg'),
   noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg'),
   notApplicableLabel   : getMessage('notApplicableLabel'),
+  pageElementLabel     : getMessage('pageElementLabel'),
   passedLabel          : getMessage('passedLabel'),
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
   resultLabel          : getMessage('resultLabel'),
+  ruleResultsLabel     : getMessage('ruleResultsLabel'),
   violationLabel       : getMessage('violationLabel'),
   warningLabel         : getMessage('warningLabel')
 };
@@ -39,7 +41,7 @@ export default class ViewElementResults {
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = msg.elementGridLabel;
+    h2.textContent = msg.ruleResultsLabel;
     this.containerDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
@@ -151,6 +153,13 @@ export default class ViewElementResults {
     this.json = infoElementResults.json;
 
     this.detailsAction = infoElementResults.detailsAction;
+
+    if (infoElementResults.ruleResult.scope === 'Element') {
+      this.elementResultGrid.updateHeaderCell(msg.elementLabel, 'element-info');
+    }
+    else {
+      this.elementResultGrid.updateHeaderCell(msg.pageElementLabel, 'element-info');
+    }
 
     this.elementResultGrid.deleteDataRows();
 

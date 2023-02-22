@@ -1,10 +1,18 @@
-/* resultSummary.css */
+/* summary.css */
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary .left,
+.summary .right {
+  width: 3em;
+}
 
 table {
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-right: auto;
-  margin-left: auto;
+  margin: 0;
 }
 
 th, td {

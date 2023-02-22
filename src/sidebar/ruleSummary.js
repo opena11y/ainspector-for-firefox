@@ -15,24 +15,31 @@ const msg = {
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <table aria-label="Summary of rule results">
-      <thead>
-        <tr>
-          <th id="violations-label" aria-label="Violations">V</th>
-          <th id="warnings-label" aria-label="Warnings">W</th>
-          <th id="manual-checks-label" aria-label="Manual Checks">MC</th>
-          <th id="passed-label" aria-label="Passed">P</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td id="violations-value">-</td>
-          <td id="warnings-value">-</td>
-          <td id="manual-checks-value">-</td>
-          <td id="passed-value">-</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="summary">
+    <div class="left">
+    </div>
+    <div class="center">
+      <table aria-label="Summary of rule results">
+        <tbody>
+          <tr>
+            <th id="violations-label" aria-label="Violations">V</th>
+            <th id="warnings-label" aria-label="Warnings">W</th>
+            <th id="manual-checks-label" aria-label="Manual Checks">MC</th>
+            <th id="passed-label" aria-label="Passed">P</th>
+          </tr>
+          <tr>
+            <td id="violations-value">-</td>
+            <td id="warnings-value">-</td>
+            <td id="manual-checks-value">-</td>
+            <td id="passed-value">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="right">
+      <summary-info data-info="all"></summary-info>
+    </div>
+  </div>
 `;
 
 export default class RuleSummary extends HTMLElement {
@@ -53,18 +60,24 @@ export default class RuleSummary extends HTMLElement {
     this.violationsTh = this.shadowRoot.querySelector('#violations-label');
     this.violationsTh.textContent = msg.violationsAbbrev;
     this.violationsTh.setAttribute('aria-label', msg.violationsLabel);
+    this.violationsTh.setAttribute('title', msg.violationsLabel);
 
     this.warningsTh = this.shadowRoot.querySelector('#warnings-label');
     this.warningsTh.textContent = msg.warningsAbbrev;
     this.warningsTh.setAttribute('aria-label', msg.warningsLabel);
+    this.warningsTh.setAttribute('title', msg.warningsLabel);
 
     this.manualChecksTh = this.shadowRoot.querySelector('#manual-checks-label');
     this.manualChecksTh.textContent = msg.manualChecksAbbrev;
     this.manualChecksTh.setAttribute('aria-label', msg.manualChecksLabel);
+    this.manualChecksTh.setAttribute('title', msg.manualChecksLabel);
 
     this.passedTh = this.shadowRoot.querySelector('#passed-label');
     this.passedTh.textContent = msg.passedAbbrev;
     this.passedTh.setAttribute('aria-label', msg.passedLabel);
+    this.passedTh.setAttribute('title', msg.passedLabel);
+
+    this.summaryInfo = this.shadowRoot.querySelector('summary-info');
 
     // Initialize references
     this.violationsTd   = this.shadowRoot.querySelector('#violations-value');
@@ -89,6 +102,10 @@ export default class RuleSummary extends HTMLElement {
     this.passedTd.textContent = value;
   }
 
+  set dataInfo (value) {
+    this.summaryInfo.setAttribute('data-info', value);
+  }
+
   get violations () {
     return this.violationsTd.textContent;
   }
@@ -103,6 +120,10 @@ export default class RuleSummary extends HTMLElement {
 
   get passed () {
     return this.passedTd.textContent;
+  }
+
+  get dataInfo () {
+    this.summaryInfo.getAttribute('data-info');
   }
 
   clear () {

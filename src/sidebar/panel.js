@@ -9,31 +9,35 @@ import ViewRuleResults       from './viewRuleResults.js';
 import ViewElementResults    from './viewElementResults.js';
 
 // Custom elements for views
-import RuleSummary           from './ruleSummary.js';
-import ResultTablist         from './resultTablist.js';
-import ResultGrid            from './resultGrid.js';
 import ElementSummary        from './elementSummary.js';
+import RuleSummary           from './ruleSummary.js';
 import ResultElementInfo     from './resultElementInfo.js';
+import ResultGrid            from './resultGrid.js';
 import ResultRuleInfo        from './resultRuleInfo.js';
+import ResultTablist         from './resultTablist.js';
+import SummaryInfo           from './summaryInfo.js';
+
 
 // Custom elements for controls
-import HighlightSelect       from './highlightSelect.js';
-import ViewsMenuButton       from './viewsMenuButton.js';
-import RerunEvaluationButton from './rerunEvaluationButton.js';
-import ExportButton          from './exportButton.js';
 import CopyButton            from './copyButton.js';
+import ExportButton          from './exportButton.js';
+import HighlightSelect       from './highlightSelect.js';
+import RerunEvaluationButton from './rerunEvaluationButton.js';
+import ViewsMenuButton       from './viewsMenuButton.js';
 
-customElements.define('rule-summary',        RuleSummary);
-customElements.define('result-tablist',      ResultTablist);
-customElements.define('result-grid',         ResultGrid);
 customElements.define('element-summary',     ElementSummary);
+customElements.define('rule-summary',        RuleSummary);
 customElements.define('result-element-info', ResultElementInfo);
+customElements.define('result-grid',         ResultGrid);
 customElements.define('result-rule-info',    ResultRuleInfo);
-customElements.define('highlight-select',    HighlightSelect);
-customElements.define('views-menu-button',   ViewsMenuButton);
-customElements.define('rerun-evaluation-button', RerunEvaluationButton);
-customElements.define('export-button',       ExportButton);
+customElements.define('result-tablist',      ResultTablist);
+customElements.define('summary-info',        SummaryInfo);
+
 customElements.define('copy-button',         CopyButton);
+customElements.define('export-button',       ExportButton);
+customElements.define('highlight-select',    HighlightSelect);
+customElements.define('rerun-evaluation-button', RerunEvaluationButton);
+customElements.define('views-menu-button',   ViewsMenuButton);
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -42,11 +46,14 @@ const msg = {
   ariaStrictRulesetLabel : getMessage("optionsRulesetStrictLabel"),
   ariaTransRulesetLabel  : getMessage("optionsRulesetTransLabel"),
   evaluationNotAllowed   : getMessage("evaluationNotAllowed"),
+  guidelineLabel         : getMessage("guidelineLabel"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
   protocolNotSupported   : getMessage("protocolNotSupported"),
+  ruleCategoryLabel      : getMessage("ruleCategoryLabel"),
+  ruleLabel              : getMessage("ruleLabel"),
   tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
@@ -429,6 +436,7 @@ function handleWindowFocusChanged (windowId) {
   function onGotStatus (result) {
     if (result) {
       myWindowId = windowId;
+
       runContentScripts('onGotFocus');
       if (logInfo) console.log(`Focus changed to window: ${myWindowId}`);
     }
@@ -528,14 +536,19 @@ function updateSidebar (info) {
     }
     else {
       if (typeof info.infoRuleResults === 'object') {
-        viewTitle.textContent = info.infoRuleResults.groupLabel;
+        if (info.infoRuleResults.groupType === 'rc') {
+          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleResults.groupLabel;
+        }
+        else {
+          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleResults.groupLabel;
+        }
         viewTitle.title = '';
         vRuleResults.update(info.infoRuleResults, sidebarGroupId);
         enableButtons();
       }
       else {
         if (info.infoElementResults) {
-          viewTitle.textContent = info.infoElementResults.title;
+          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoElementResults.title;
           viewTitle.title = info.infoElementResults.title;
           vElementResults.update(info.infoElementResults);
           enableButtons();
@@ -639,6 +652,7 @@ function runContentScripts (callerfn) {
 *   getActiveTabFor: expected argument is ID of window with focus. The module
 *   variable myWindowId is updated by handleWindowFocusChanged event handler.
 */
+
 function getActiveTabFor (windowId) {
   return new Promise (function (resolve, reject) {
     let promise = browser.tabs.query({ windowId: windowId, active: true });
@@ -669,7 +683,9 @@ window.addEventListener('unload', function (e) {
 */
 
 function onStartedDownload(id) {
-//  console.log(`Started downloading: ${id}`);
+  if (logInfo) {
+    console.log(`Started downloading: ${id}`);
+  }
 }
 
 function onFailed(error) {

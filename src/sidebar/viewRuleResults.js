@@ -16,6 +16,7 @@ const msg = {
   copyRuleInfoDesc      : getMessage('copyRuleInfoDesc'),
   detailsLabel          : getMessage('detailsLabel'),
   doubleALabel          : getMessage('doubleALabel'),
+  guidelineGridLabel    : getMessage('guidelineGridLabel'),
   levelLabel            : getMessage('levelLabel'),
   manualCheckLabel      : getMessage('manualCheckLabel'),
   noResultsMsg          : getMessage('noResultsMsg'),
@@ -26,6 +27,7 @@ const msg = {
   requiredAbbrev        : getMessage('requiredAbbrev'),
   requiredLabel         : getMessage('requiredLabel'),
   requiredValue         : getMessage('requiredValue'),
+  ruleCategoryGridLabel : getMessage('ruleCategoryGridLabel'),
   ruleResultsGridLabel  : getMessage('ruleResultsGridLabel'),
   ruleSelectedLabel     : getMessage('ruleSelectedLabel'),
   ruleLabel             : getMessage('ruleLabel'),
@@ -45,15 +47,15 @@ export default class ViewRuleResults {
 
     this.containerDiv = document.getElementById(id);
     this.ruleSummary = document.createElement('rule-summary');
+    this.ruleSummary.dataInfo = 'group';
     this.containerDiv.appendChild(this.ruleSummary);
 
     // Add heading for the rule result details
-    let h2 = document.createElement('h2');
-    h2.className = 'grid';
-    h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = msg.ruleResultsGridLabel;
-    this.containerDiv.appendChild(h2);
-
+    this.gridLabelH2 = document.createElement('h2');
+    this.gridLabelH2.className = 'grid';
+    this.gridLabelH2.id = "grid-label"; // referenced by element result-grid custom element
+    this.gridLabelH2.textContent = msg.ruleResultsGridLabel;
+    this.containerDiv.appendChild(this.gridLabelH2);
 
     this.ruleResultGrid = document.createElement('result-grid');
     this.ruleResultGrid.setRowActivationEventHandler(handleRowActivation);
@@ -83,7 +85,7 @@ export default class ViewRuleResults {
     ruleInfoHeaderDiv.className = 'info-header';
     middleSectionDiv.appendChild(ruleInfoHeaderDiv);
 
-    h2 = document.createElement('h2');
+    const h2 = document.createElement('h2');
     h2.className = 'selected';
     h2.id = 'rule-info-label';
     h2.textContent = msg.ruleSelectedLabel;
@@ -175,6 +177,13 @@ export default class ViewRuleResults {
 
     this.groupType = infoRuleResults.groupType;
     this.groupId = groupId;
+
+    if (this.groupType === 'rc') {
+      this.gridLabelH2.textContent = msg.ruleCategoryGridLabel;
+    }
+    else {
+      this.gridLabelH2.textContent = msg.guidelineGridLabel;
+    }
 
     getOptions().then( (options) => {
       for (i = 0; i < infoRuleResults.ruleResults.length; i += 1) {

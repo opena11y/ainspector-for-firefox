@@ -8,6 +8,7 @@ import { isCharacterAllowed, validatePrefix } from '../validate.js';
 const getMessage = browser.i18n.getMessage;
 const msg = {
   cancelButtonLabel         : getMessage('cancelButtonLabel'),
+  closeButtonLabel          : getMessage('closeButtonLabel'),
   exportButtonLabel         : getMessage('exportButtonLabel'),
   exportDialogTitle         : getMessage('exportDialogTitle'),
   okButtonLabel             : getMessage('okButtonLabel'),
@@ -33,10 +34,15 @@ template.innerHTML = `
         Export
       </button>
       <div role="dialog"
+        class="export"
         tabindex="-1"
         id="dialog"
         aria-labelledby="title">
-        <div id="title">Export Evalution Options</div>
+        <div class="header">
+          <div id="title"></div>
+          <button id="close-button" aria-label="close" tabindex="-1">✕</button>
+        </div>
+        <div class="content">
           <fieldset>
             <legend id="options-export-format-legend">Export Format</legend>
             <label class="radio">
@@ -143,6 +149,10 @@ export default class ExportButton extends HTMLElement {
     this.exportPrompt   = this.shadowRoot.querySelector('#options-export-prompt');
     this.exportPrompt.addEventListener('focus', this.onFocus.bind(this));
     this.exportPrompt.addEventListener('blur', this.onBlur.bind(this));
+
+    this.closeButton = this.shadowRoot.querySelector('#close-button');
+    this.closeButton.setAttribute('aria-label', msg.closeButtonLabel);
+    this.closeButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
     this.cancelButton.textContent  = msg.cancelButtonLabel;

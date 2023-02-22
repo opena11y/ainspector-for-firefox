@@ -1,4 +1,4 @@
-# AInspector
+# AInspector 2.2
 
 [AInspector](https://ainspector.disability.illinois.edu) uses the web extension APIs for the Firefox browser to create a sidebar for evaluating web accessibility and the user interface is based on [AInspector Sidebar](https://ainspector.github.io/) using XUL.  Firefox support for the sidebar API is ideal for allowing evaluation information to always be visible and updated as links are followed and new tabs and windows are opened.  AInspector is available from the Firefox add-ons page:
 
@@ -27,6 +27,14 @@
 * Please use the [Github issues list](https://github.com/ainspector/webextensions-firefox/issues) to report problems or suggest new features
 
 ## Version History
+
+### 2.2.0
+* Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
+* Updating labeling of views to improve indemnification of information in each view
+
+### 2.1.2
+* Updated evaluation library to fix the ccr calculation bug for rgba values
+* Updated CCR details to include computed hex colors for foreground and background
 
 ### 2.1.1
 * Fixed bug rerunning evaluations

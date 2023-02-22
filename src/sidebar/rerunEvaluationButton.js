@@ -9,6 +9,7 @@ import {
 const getMessage = browser.i18n.getMessage;
 const msg = {
   cancelButtonLabel    : getMessage('cancelButtonLabel'),
+  closeButtonLabel     : getMessage('closeButtonLabel'),
   okButtonLabel        : getMessage('okButtonLabel'),
   rerunEvalButtonLabel : getMessage('rerunEvalButtonLabel'),
   rerunEvalDialogTitle : getMessage('rerunEvalDialogTitle'),
@@ -26,13 +27,17 @@ template.innerHTML = `
         Rerun Evaluation
       </button>
       <div role="dialog"
+        class="rerun"
         tabindex="-1"
         id="dialog"
         aria-labelledby="title">
-        <div id="title">Rerun Evlaution: Specify Delay</div>
+        <div class="header">
+          <div id="title"></div>
+          <button id="close-button" aria-label="close" tabindex="-1">✕</button>
+        </div>
         <div class="content">
           <div class="select">
-            <label for="select">Rerun evaluation in </label>
+            <label for="select"></label>
             <select id="select">
               <option value="5" selected>5 sec.</option>
               <option value="10">10 sec.</option>
@@ -43,9 +48,7 @@ template.innerHTML = `
           </div>
           <label class="checkbox">
             <input id="prompt-for-delay" type="checkbox">
-            <span id="prompt-for-delay-label">
-              After this evaluation, stop prompting for delay setting.
-            </span>
+            <span id="prompt-for-delay-label"></span>
           </label>
         </div>
         <div class="buttons">
@@ -98,6 +101,10 @@ export default class RerunEvaluationButton extends HTMLElement {
 
     label = this.shadowRoot.querySelector('#prompt-for-delay-label')
     label.textContent = msg.rerunEvalPromptForDelayLabel;
+
+    this.closeButton = this.shadowRoot.querySelector('#close-button');
+    this.closeButton.setAttribute('aria-label', msg.closeButtonLabel);
+    this.closeButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     this.cancelButton = this.shadowRoot.querySelector('#cancel-button');
     this.cancelButton.textContent  = msg.cancelButtonLabel;

@@ -110,7 +110,6 @@ export default class ViewSummary {
     this.json = '{}';
 
     this.initGrids();
-
   }
 
   toCSV (options, title, location) {
