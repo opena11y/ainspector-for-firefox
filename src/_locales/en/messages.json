@@ -224,16 +224,6 @@
     "description": "Label for violation results"
   },
 
-  "violationsDescRule": {
-    "message": "One or more target elements fail the requirements of a required rule.",
-    "description": "Description of violations of a rule result"
-  },
-
-  "violationsDescElem": {
-    "message": "Element fails the requirements for a required rule.",
-    "description": "Description of violations for a element result"
-  },
-
   "warningsAbbrev": {
     "message": "W",
     "description": "Abbreviation for warnings"
@@ -247,16 +237,6 @@
   "warningsLabel": {
     "message": "Warnings",
     "description": "Label for warning results"
-  },
-
-  "warningsDescRule": {
-    "message": "One or more target elements fail the requirements of a recommended rule.",
-    "description": "Description of warnings for a rule result"
-  },
-
-  "warningsDescElem": {
-    "message": "Element fails the requirements of a recommended rule.",
-    "description": "Description of warnings for a element result"
   },
 
   "manualChecksAbbrev": {
@@ -274,16 +254,6 @@
     "description": "Label for manual check results"
   },
 
-  "manualChecksDescRule": {
-    "message": "Unable to programmatically determine a result – evaluation requires human inspection.",
-    "description": "Description of manual checks for a rule result"
-  },
-
-  "manualChecksDescElem": {
-    "message": "Unable to programmatically determine a result – evaluation requires human inspection.",
-    "description": "Description of manual checks for a element result"
-  },
-
   "passedAbbrev": {
     "message": "P",
     "description": "Abbreviation for passed"
@@ -292,16 +262,6 @@
   "passedLabel": {
     "message": "Passed",
     "description": "Label for pass results"
-  },
-
-  "passedDescRule": {
-    "message": "All rule requirements were satisfied.",
-    "description": "Description of passed for a rule result"
-  },
-
-  "passedDescElem": {
-    "message": "Element satisfies the rule requirements.",
-    "description": "Description of passed for a element result"
   },
 
   "hiddenAbbrev": {
@@ -314,17 +274,7 @@
     "description": "Label for hidden results"
   },
 
-  "hiddenDescElem": {
-    "message": "Element is hidden visually and/or to assistive technologies.",
-    "description": "Description of hidden for a element result"
-  },
-
-  "notApplicableAbbrev": {
-    "message": "N/A",
-    "description": "Abbreviation for not applicable results"
-  },
-
-  "notApplicablelabel": {
+  "notApplicableLabel": {
     "message": "Not Applicable",
     "description": "Label for not applicable results"
   },
