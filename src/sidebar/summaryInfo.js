@@ -33,16 +33,12 @@ const msg = {
   ruleNumberDesc    : getMessage('ruleNumberDesc'),
   elementNumberDesc : getMessage('elementNumberDesc'),
 
-  resultTypesLabel        : getMessage('resultTypesLabel'),
   summaryInfoButtonLabel  : getMessage('summaryInfoButtonLabel'),
   numericalResultsLabel   : getMessage('numericalResultsLabel'),
 
   closeButtonLabel   : getMessage('closeButtonLabel'),
   moreButtonLabel    : getMessage('moreButtonLabel'),
   moreButtonDisabled : getMessage('moreButtonDisabled'),
-
-  refResultTypes : getMessage('refResultTypes')
-
 };
 
 const template = document.createElement('template');

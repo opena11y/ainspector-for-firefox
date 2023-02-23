@@ -1105,11 +1105,6 @@
   "elementNumberDesc": {
     "message": "Number of target elements with corresponding result type",
     "description": "Provides information on the meaning of numbers in rule view"
-  },
-
-  "refResultTypes": {
-    "message": "(result types in table above)",
-    "description": "Information on where to find more information on results types in the dialog."
   }
 
 }
