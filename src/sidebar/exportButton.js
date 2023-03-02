@@ -58,7 +58,7 @@ template.innerHTML = `
           <fieldset>
             <legend id="options-filename-legend">Filename Options X</legend>
 
-            <label class="text"
+            <label class="input"
               id="options-export-prefix-label"
               for="options-export-prefix">
               Export File Prefix (up to 16 characters)
@@ -80,7 +80,6 @@ template.innerHTML = `
             </label>
           </fieldset>
 
-          <div class="no-fieldset">
            <label class="checkbox">
             <input type="checkbox" id="options-export-prompt">
             <span id="options-export-prompt-for-options-label">Do not prompt me for export options.</span>

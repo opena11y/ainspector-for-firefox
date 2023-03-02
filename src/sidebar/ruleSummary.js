@@ -37,7 +37,7 @@ template.innerHTML = `
       </table>
     </div>
     <div class="right">
-      <summary-info data-info="all"></summary-info>
+      <summary-info data-info="rule-info"></summary-info>
     </div>
   </div>
 `;
@@ -102,10 +102,6 @@ export default class RuleSummary extends HTMLElement {
     this.passedTd.textContent = value;
   }
 
-  set dataInfo (value) {
-    this.summaryInfo.setAttribute('data-info', value);
-  }
-
   get violations () {
     return this.violationsTd.textContent;
   }
@@ -120,10 +116,6 @@ export default class RuleSummary extends HTMLElement {
 
   get passed () {
     return this.passedTd.textContent;
-  }
-
-  get dataInfo () {
-    this.summaryInfo.getAttribute('data-info');
   }
 
   clear () {

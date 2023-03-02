@@ -17,7 +17,7 @@
 
 ### 2.2.0
 * Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
-* Updating labeling of views to improve indemnification of information in each view
+* Updating labeling of views to improve orientation to information in each view
 
 
 ### 2.1.2

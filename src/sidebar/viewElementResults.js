@@ -16,7 +16,6 @@ const msg = {
   noResultsMsg         : getMessage('noResultsMsg'),
   noViolationsWarningsMCResultsMsg : getMessage('noViolationsWarningsMCResultsMsg'),
   notApplicableLabel   : getMessage('notApplicableLabel'),
-  pageElementLabel     : getMessage('pageElementLabel'),
   passedLabel          : getMessage('passedLabel'),
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
@@ -27,7 +26,7 @@ const msg = {
 };
 
 export default class ViewElementResults {
-  // The id is a reference to a DIV element used as the contaner
+  // The id is a reference to a DIV element used as the container
   // for the element results view content
   constructor(id, handleRowSelection) {
 
@@ -154,12 +153,7 @@ export default class ViewElementResults {
 
     this.detailsAction = infoElementResults.detailsAction;
 
-    if (infoElementResults.ruleResult.scope === 'Element') {
-      this.elementResultGrid.updateHeaderCell(msg.elementLabel, 'element-info');
-    }
-    else {
-      this.elementResultGrid.updateHeaderCell(msg.pageElementLabel, 'element-info');
-    }
+    this.elementResultGrid.updateHeaderCell(msg.elementLabel, 'element-info');
 
     this.elementResultGrid.deleteDataRows();
 

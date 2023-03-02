@@ -89,16 +89,37 @@
   margin: 6px;
 }
 
-[role="dialog"] input[type="text"] {
+[role="dialog"] input[type="checkbox"] {
+  margin: 4px;
+}
+
+[role="dialog"] fieldset label.input {
+  display: block;
+  margin: 0;
+  padding: 0;
+  margin-top: 0.5em;
+  margin-left: 0.75em;
+}
+
+[role="dialog"] fieldset input[type="text"] {
   margin: 4px;
   margin-left: 0.75em;
 }
 
-[role="dialog"] label.text {
+[role="dialog"] fieldset input[type="checkbox"] {
   margin-left: 0.75em;
 }
 
-[role="dialog"] .no-fieldset {
+
+[role="dialog"] fieldset div.note {
+  margin:  0;
+  padding: 0;
+  margin-left:  0.75em;
+  font-style: italic;
+}
+
+
+[role="dialog"]  {
   margin-left: 0;
   margin-bottom: 1em;
 }
@@ -159,14 +180,6 @@ button#export-button:focus {
 
 button:hover {
   cursor: pointer;
-}
-
-[role="dialog"] .note {
-  margin:  0;
-  padding: 0;
-  margin-left:  0.75em;
-  margin-bottom: 1em;
-  font-style: italic;
 }
 
 [role="dialog"] .note code {
