@@ -24,7 +24,7 @@ const msg = {
   hiddenAbbrev   : getMessage('hiddenAbbrev'),
   hiddenLabel    : getMessage('hiddenLabel'),
 
-  infoDialogLegend: getMessage('infoDialogLegend'),
+  infoDialogTitle: getMessage('infoDialogTitle'),
 
   ruleResultTypesLabel    : getMessage('ruleResultTypesLabel'),
   elementResultTypesLabel : getMessage('elementResultTypesLabel'),
@@ -143,14 +143,13 @@ export default class summaryInfo extends HTMLElement {
     this.summaryInfoDiv  = this.shadowRoot.querySelector('.summary-info');
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
-    this.summaryInfoButton.title  = msg.infoDialogLegend;
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
     this.dialogDiv.addEventListener('keydown', this.onDialogKeydown.bind(this));
 
     const titleDiv = this.shadowRoot.querySelector('#title');
-    titleDiv.textContent = msg.infoDialogLegend;
+    titleDiv.textContent = msg.infoDialogTitle;
 
     const resultTypesTable      = this.shadowRoot.querySelector('table.result-types');
 
