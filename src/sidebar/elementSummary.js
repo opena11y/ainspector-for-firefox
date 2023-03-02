@@ -25,7 +25,7 @@ template.innerHTML = `
       <table aria-label="Summary of rule results">
         <thead>
           <tr>
-            <th id="violations-label" aria-label="Violaions">V</th>
+            <th id="violations-label" aria-label="Violations">V</th>
             <th id="warnings-label" aria-label="Warnings">W</th>
             <th id="manual-checks-label" aria-label="Manual Checks">MC</th>
             <th id="passed-label" aria-label="Passed">P</th>
@@ -44,7 +44,7 @@ template.innerHTML = `
       </table>
     </div>
     <div class="right">
-      <summary-info data-info="rule"></summary-info>
+      <summary-info data-info="element-info"></summary-info>
     </div>
   <div>
 `;
@@ -70,22 +70,27 @@ export default class ElementSummary extends HTMLElement {
     this.violationsTh = this.shadowRoot.querySelector('#violations-label');
     this.violationsTh.textContent = msg.violationsAbbrev;
     this.violationsTh.setAttribute('aria-label', msg.violationsLabel);
+    this.violationsTh.setAttribute('title', msg.violationsLabel);
 
     this.warningsTh = this.shadowRoot.querySelector('#warnings-label');
     this.warningsTh.textContent = msg.warningsAbbrev;
     this.warningsTh.setAttribute('aria-label', msg.warningsLabel);
+    this.warningsTh.setAttribute('title', msg.warningsLabel);
 
     this.manualChecksTh = this.shadowRoot.querySelector('#manual-checks-label');
     this.manualChecksTh.textContent = msg.manualChecksAbbrev;
     this.manualChecksTh.setAttribute('aria-label', msg.manualChecksLabel);
+    this.manualChecksTh.setAttribute('title', msg.manualChecksLabel);
 
     this.passedTh = this.shadowRoot.querySelector('#passed-label');
     this.passedTh.textContent = msg.passedAbbrev;
     this.passedTh.setAttribute('aria-label', msg.passedLabel);
+    this.passedTh.setAttribute('title', msg.passedLabel);
 
     this.hiddenTh = this.shadowRoot.querySelector('#hidden-label');
     this.hiddenTh.textContent = msg.hiddenAbbrev;
     this.hiddenTh.setAttribute('aria-label', msg.hiddenLabel);
+    this.hiddenTh.setAttribute('title', msg.hiddenLabel);
 
     // Initialize references
     this.violationsTd   = this.shadowRoot.querySelector('#violations-value');

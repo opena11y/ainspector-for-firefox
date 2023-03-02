@@ -40,7 +40,6 @@ export default class ViewRuleResults {
 
     this.containerDiv = document.getElementById(id);
     this.ruleSummary = document.createElement('rule-summary');
-    this.ruleSummary.dataInfo = 'group';
     this.containerDiv.appendChild(this.ruleSummary);
 
     // Add heading for the rule result details

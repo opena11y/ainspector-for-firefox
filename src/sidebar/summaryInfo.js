@@ -152,18 +152,6 @@ export default class summaryInfo extends HTMLElement {
     const titleDiv = this.shadowRoot.querySelector('#title');
     titleDiv.textContent = msg.infoDialogLegend;
 
-    switch (dataInfoAttr) {
-      case 'rule':
-        this.shadowRoot.querySelector('#h2-result-types').textContent = msg.elementResultTypesLabel;
-        break;
-
-      default:
-        this.shadowRoot.querySelector('#h2-result-types').textContent = msg.ruleResultTypesLabel;
-        break;
-    }
-    this.shadowRoot.querySelector('#h2-numerical-results').textContent = msg.numericalResultsLabel;
-
-
     const resultTypesTable      = this.shadowRoot.querySelector('table.result-types');
 
     setTableCellLabel(resultTypesTable, 'violation', 'abbrev', msg.violationAbbrev);
@@ -178,16 +166,22 @@ export default class summaryInfo extends HTMLElement {
     setTableCellLabel(resultTypesTable, 'passed', 'abbrev', msg.passedAbbrev);
     setTableCellLabel(resultTypesTable, 'passed', 'label',  msg.passedLabel);
 
-    if (dataInfoAttr === 'rule') {
+    if (dataInfoAttr === 'element-info') {
+      this.shadowRoot.querySelector('#h2-result-types').textContent = msg.elementResultTypesLabel;
+
       setTableCellLabel(resultTypesTable, 'hidden', 'abbrev', msg.hiddenAbbrev);
       setTableCellLabel(resultTypesTable, 'hidden', 'label',  msg.hiddenLabel);
 
+      this.shadowRoot.querySelector('#h2-numerical-results').textContent = msg.numericalResultsLabel;
       this.shadowRoot.querySelector('#numerical-desc').textContent = msg.elementNumberDesc;
     }
     else {
+      this.shadowRoot.querySelector('#h2-result-types').textContent = msg.ruleResultTypesLabel;
+
       setTableCellLabel(this.shadowRoot, 'not-applicable', 'abbrev', msg.notApplicableAbbrev);
       setTableCellLabel(this.shadowRoot, 'not-applicable', 'label',  msg.notApplicableLabel);
 
+      this.shadowRoot.querySelector('#h2-numerical-results').textContent = msg.numericalResultsLabel;
       this.shadowRoot.querySelector('#numerical-desc').textContent = msg.ruleNumberDesc;
     }
 

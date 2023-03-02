@@ -274,14 +274,14 @@
     "description": "Label for hidden results"
   },
 
+  "notApplicableAbbrev": {
+    "message": "N/A",
+    "description": "Abbreviation for not applicable"
+  },
+
   "notApplicableLabel": {
     "message": "Not Applicable",
     "description": "Label for not applicable results"
-  },
-
-  "notApplicableDescRule": {
-    "message": "Rule was not applied because there were no relevant target elements.",
-    "description": "Description of not applicable for a rule result"
   },
 
   "ruleCategoriesLabel": {
@@ -487,11 +487,6 @@
   "elementLabel": {
     "message": "Element",
     "description": "Element column label in grid for rule results view"
-  },
-
-  "pageElementLabel": {
-    "message": "Page/Element",
-    "description": "Page/Element column label in grid for rule results view"
   },
 
   "positionAbbrev": {
