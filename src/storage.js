@@ -30,7 +30,8 @@ export const defaultOptions = {
   shortcutExport:getMessage('shortcutDefaultExport'),
   shortcutRerun: getMessage('shortcutDefaultRerun'),
   shortcutCopy:  getMessage('shortcutDefaultCopy'),
-  shortcutsEnabled: false
+  shortcutsEnabled: false,
+  documentationURL: 'https://ainspector.disability.illinois.edu/concepts-and-terms/'
 };
 
 /*

@@ -19,12 +19,13 @@ const msg = {
   positionAbbrev       : getMessage('positionAbbrev'),
   positionLabel        : getMessage('positionLabel'),
   resultLabel          : getMessage('resultLabel'),
+  ruleResultsLabel     : getMessage('ruleResultsLabel'),
   violationLabel       : getMessage('violationLabel'),
   warningLabel         : getMessage('warningLabel')
 };
 
 export default class ViewElementResults {
-  // The id is a reference to a DIV element used as the contaner
+  // The id is a reference to a DIV element used as the container
   // for the element results view content
   constructor(id, handleRowSelection) {
 
@@ -38,7 +39,7 @@ export default class ViewElementResults {
     let h2 = document.createElement('h2');
     h2.className = 'grid';
     h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = msg.elementGridLabel;
+    h2.textContent = msg.ruleResultsLabel;
     this.containerDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
@@ -175,6 +176,8 @@ export default class ViewElementResults {
     this.json = infoElementResults.json;
 
     this.detailsAction = infoElementResults.detailsAction;
+
+    this.elementResultGrid.updateHeaderCell(msg.elementLabel, 'element-info');
 
     this.elementResultGrid.deleteDataRows();
 

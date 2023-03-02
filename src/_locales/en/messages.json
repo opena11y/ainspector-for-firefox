@@ -25,7 +25,7 @@
   },
 
   "viewTitleSummaryLabel": {
-    "message": "Summary",
+    "message": "Summary: All Rules",
     "description": "Label for summary view"
   },
 
@@ -274,7 +274,12 @@
     "description": "Label for hidden results"
   },
 
-  "notApplicablelabel": {
+  "notApplicableAbbrev": {
+    "message": "N/A",
+    "description": "Abbreviation for not applicable"
+  },
+
+  "notApplicableLabel": {
     "message": "Not Applicable",
     "description": "Label for not applicable results"
   },
@@ -359,6 +364,11 @@
     "description": "Value for required column in rule group grid"
   },
 
+  "ruleResultsLabel": {
+    "message": "Rule Results",
+    "description": "Label for rule result grid"
+  },
+
   "ruleResultGridLabel": {
     "message": "Rule Group Results",
     "description": "Label for rule results grid"
@@ -366,6 +376,16 @@
 
   "ruleResultsGridLabel": {
     "message": "Rule Results",
+    "description": "Label for rule results grid"
+  },
+
+  "ruleCategoryGridLabel": {
+    "message": "Category Results",
+    "description": "Label for rule results grid"
+  },
+
+  "guidelineGridLabel": {
+    "message": "Guideline Results",
     "description": "Label for rule results grid"
   },
 
@@ -531,37 +551,47 @@
 
   "exportDialogTitle": {
     "message": "Export Data Options",
-    "description": "Title for export evalaution options dialog box"
+    "description": "Title for export evaluation options dialog box"
   },
 
   "rerunEvalButtonLabel": {
     "message": "Rerun Evaluation",
-    "description": "Label for rerun evalaution button in the footer of the main panel"
+    "description": "Label for rerun evaluation button in the footer of the main panel"
   },
 
   "rerunEvalDialogTitle": {
     "message": "Rerun Evaluation: Specify Delay",
-    "description": "Title for rerun evalaution dialog box"
+    "description": "Title for rerun evaluation dialog box"
   },
 
   "rerunEvalSelectLabel": {
     "message": "Rerun evaluation in ",
-    "description": "Label for select input in rerun evalaution dialog box"
+    "description": "Label for select input in rerun evaluation dialog box"
   },
 
   "rerunEvalPromptForDelayLabel": {
     "message": "After this evaluation, stop prompting for delay setting.",
-    "description": "Label for checkbox input in rerun evalaution dialog box"
+    "description": "Label for checkbox input in rerun evaluation dialog box"
   },
 
   "cancelButtonLabel": {
     "message": "Cancel",
-    "description": "Label for cancel button in rerun evalaution dialog box"
+    "description": "Label for cancel button in a dialog box"
   },
 
   "okButtonLabel": {
     "message": "OK",
-    "description": "Label for OK button in rerun evalaution dialog box"
+    "description": "Label for OK button in a dialog box"
+  },
+
+  "closeButtonLabel": {
+    "message": "Close",
+    "description": "Label for Close button in a dialog box"
+  },
+
+  "moreButtonLabel": {
+    "message": "Concepts and Terms",
+    "description": "Label for Concepts and Terms button in a dialog box"
   },
 
   "optionsTitle": {
@@ -1027,6 +1057,49 @@
   "shortcutAllreadyUsed": {
     "message": "The $key is already being used.",
     "description": "Feedback to use if the shortcut is already defined."
+  },
+
+  "summaryInfoButtonLabel": {
+    "message": "Element Result Descriptions",
+    "description": "Results information button label"
+  },
+
+  "infoDialogLegend": {
+    "message": "Evaluation Results Legend",
+    "description": "Dialog title for rule group and all rule results description"
+  },
+
+  "numericalResultsLabel": {
+    "message": "Numerical Results",
+    "description": "Label for Numerical Results headingin result information dialog"
+
+  },
+
+  "ruleResultTypesLabel": {
+    "message": "Rule Result Types",
+    "description": "Label for Result Types heading in result information dialog"
+
+  },
+
+  "elementResultTypesLabel": {
+    "message": "Element Result Types",
+    "description": "Label for Result Types heading in result information dialog"
+
+  },
+
+  "moreButtonDisabled": {
+    "message": "Tab already opened in browser window",
+    "description": "Provides help on why more information button is disabled"
+  },
+
+  "ruleNumberDesc": {
+    "message": "Number of rules with corresponding result type",
+    "description": "Provides information on the meaning of numbers in rule group all all rules view"
+  },
+
+  "elementNumberDesc": {
+    "message": "Number of target elements with corresponding result type",
+    "description": "Provides information on the meaning of numbers in rule view"
   }
 
 }

@@ -52,6 +52,8 @@ table.summary tbody tr:last-child {
 
 table thead th {
   border-bottom: 1px solid #ddd;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 table thead th span.icon {

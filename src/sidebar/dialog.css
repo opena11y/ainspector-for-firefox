@@ -1,38 +1,56 @@
 /* rerunEvaluationButton.css */
 
-
 [role="dialog"] {
   margin: 0;
   padding: 0;
   display: none;
   position: absolute;
   background-color: white;
-  border: 2px solid black;
-  border-radius: 8px;
+  border: 2px solid #aaa;
+  border-radius: 5px;
   color: black;
-  width: 380px;
-  bottom: 30px;
-  left: 10px;
+  width: 90%;
+  left: 5%;
   z-index: 15;
 }
 
-[role="dialog"] #title {
+[role="dialog"].info {
+  top: 95px;
+}
+
+[role="dialog"].rerun,
+[role="dialog"].export {
+  bottom: 30px;
+}
+
+[role="dialog"] .header {
   margin-bottom: 0.5em;
   padding: 4px;
-  border-bottom: 1px solid black;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  padding-left: 1em;
+  border-bottom: 1px solid #aaa;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   font-weight:  bold;
   background-color: #eee;
+  position: relative;
+  font-size: 1em;
+}
+
+[role="dialog"] .header button {
+  position: absolute;
+  top: -0.25em;
+  right: 0;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  color: black;
 }
 
 [role="dialog"] .content {
-  margin:  0.25em;
-  margin-bottom: 1em;
+  margin: 1em;
 }
 
 [role="dialog"] .select {
-  margin-left: 0.5em;
   width: 15em;
 }
 
@@ -40,7 +58,6 @@
 [role="dialog"] .desc {
   padding: 4px;
   font-size: 90%;
-  margin-left: 0.5em;
 }
 
 [role="dialog"] .desc {
@@ -51,11 +68,10 @@
 }
 
 [role="dialog"] fieldset {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1em;
   border: none;
-}
-
-[role="dialog"] fieldset input {
-  margin-left: 0.5em;
 }
 
 [role="dialog"] legend {
@@ -73,17 +89,39 @@
   margin: 6px;
 }
 
-[role="dialog"] input[type="text"] {
+[role="dialog"] input[type="checkbox"] {
+  margin: 4px;
+}
+
+[role="dialog"] fieldset label.input {
+  display: block;
+  margin: 0;
+  padding: 0;
+  margin-top: 0.5em;
+  margin-left: 0.75em;
+}
+
+[role="dialog"] fieldset input[type="text"] {
   margin: 4px;
   margin-left: 0.75em;
 }
 
-[role="dialog"] label.text {
+[role="dialog"] fieldset input[type="checkbox"] {
   margin-left: 0.75em;
 }
 
-[role="dialog"] .no-fieldset {
-  margin-left: 0.5em;
+
+[role="dialog"] fieldset div.note {
+  margin:  0;
+  padding: 0;
+  margin-left:  0.75em;
+  font-style: italic;
+}
+
+
+[role="dialog"]  {
+  margin-left: 0;
+  margin-bottom: 1em;
 }
 
 [role="dialog"] .buttons {
@@ -144,14 +182,6 @@ button:hover {
   cursor: pointer;
 }
 
-[role="dialog"] .note {
-  margin:  0;
-  padding: 0;
-  margin-left:  0.75em;
-  margin-bottom: 1em;
-  font-style: italic;
-}
-
 [role="dialog"] .note code {
   font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
   font-style: normal !important;
@@ -163,7 +193,7 @@ button:hover {
   border: 2px solid red;
   background:  white;
   padding: 2px;
-  border-radius:  4px;
+  border-radius:  5px;
 }
 
 [role="dialog"] .feedback img {
