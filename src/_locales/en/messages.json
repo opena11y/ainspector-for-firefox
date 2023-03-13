@@ -1064,9 +1064,9 @@
     "description": "Results information button label"
   },
 
-  "infoDialogLegend": {
-    "message": "Evaluation Results Legend",
-    "description": "Dialog title for rule group and all rule results description"
+  "infoDialogTitle": {
+    "message": "Results Legend",
+    "description": "Info dialog title for all views"
   },
 
   "numericalResultsLabel": {

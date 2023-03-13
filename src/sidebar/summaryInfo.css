@@ -4,10 +4,20 @@ button#summary-info-button {
   margin: 0;
   margin-left: 1em;
   margin-top: 1em;
-  padding: 2px;
+  padding: 4px 4px 2px;
   border: 0px;
   background: transparent;
   display: inline-block;
+  transition: transform 0.1s easeOutQuart;
+}
+
+button#summary-info-button:hover {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+
+button#summary-info-button:active {
+  transform: translateY(2px);
 }
 
 [role=dialog] #more-button,
@@ -74,5 +84,3 @@ button#summary-info-button {
 [role=dialog] table .hidden span {
   background-color: hsl(0, 0%, 87%);
 }
-
-
