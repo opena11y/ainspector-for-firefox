@@ -4,6 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
+| 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
 | 2.1.1        |   11/21/22  | Fixed bug rerunning evaluations

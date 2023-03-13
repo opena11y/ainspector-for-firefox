@@ -28,6 +28,10 @@
 
 ## Version History
 
+### 2.2.1
+* Updated info icon and dialog labeling
+* Added information icon activation animation
+
 ### 2.2.0
 * Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
 * Updating labeling of views to improve orientation to information in each view
