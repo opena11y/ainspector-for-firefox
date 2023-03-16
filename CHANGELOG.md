@@ -4,6 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
+| 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
 | 2.1.1        |   11/21/22  | Fixed bug rerunning evaluations
@@ -14,11 +15,13 @@
 | 1.1.1        |   9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
+### 2.2.1
+* Updated info icon and dialog labeling
+* Added information icon activation animation
 
 ### 2.2.0
 * Added information button to rule summary and element summary grids to provide documentation on the meaning of the symbols
 * Updating labeling of views to improve orientation to information in each view
-
 
 ### 2.1.2
 * Updated evaluation library to fix the ccr calculation bug for rgba values
