@@ -1,17 +1,6 @@
 (function () {
   'use strict';
 
-  /* panel-constants.js*/
-
-    // viewId is a copy of viewId constant in
-    // panel.js
-
-  const viewId = {
-    summary : 'summary',
-    ruleResults: 'rule-results',
-    elementResults: 'element-results'
-  };
-
   /*
   *   debug.js
   *
@@ -124,11 +113,14 @@
         const count   = domElement.children.length;
         const pos     = domElement.ordinalPosition;
 
-        if (accName.name.length) {
-          this.log(`${prefix}[${domElement.tagName}][${domElement.role}]: ${accName.name} (src: ${accName.source}) children: ${count} position: ${pos})`);
-        } else {
-          this.log(`${prefix}[${domElement.tagName}][${domElement.role}]: children: ${count} position: ${pos}`);
-        }
+        const childPos = `children: ${count} position: ${pos}`;
+        const name  = accName.name.length ? `[${domElement.role}]: ${accName.name} (src: ${accName.source})` : ``;
+        let ownsInfo = domElement.ariaInfo.hasAriaOwns ? domElement.ariaInfo.ariaOwnsIds : '';
+        ownsInfo += domElement.ariaInfo.ownedByDomElements.length ?
+                    'ownedby: ' + domElement.ariaInfo.ownedByDomElements.join('; ') :
+                    '';
+
+        this.log(`${prefix}[${domElement.tagName}][${domElement.role}]: ${name} ${childPos} ${ownsInfo}`);
 
   //      this.log(`${prefix}[${domElement.tagName}][            tabIndex]: ${domElement.tabIndex}`);
   //      this.log(`${prefix}[${domElement.tagName}][           isTabStop]: ${domElement.isTabStop}`);
@@ -156,7 +148,7 @@
   /* constants.js */
 
   /* Constants */
-  const debug$w = new DebugLogging('constants', false);
+  const debug$G = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta1';
 
@@ -495,6 +487,34 @@
   };
 
   /**
+   * @constant TABLE_TYPE
+   * @type Number
+   * @desc Constants for TABLE_TYPE table cache elements
+   * @example
+   * TABLE_TYPE.UNKNOWN
+   * TABLE_TYPE.LAYOUT
+   * TABLE_TYPE.DATA
+   * TABLE_TYPE.COMPLEX
+  */
+
+  const TABLE_TYPE =  {
+    UNKNOWN        : 1,
+    LAYOUT         : 2,
+    DATA           : 3,
+    COMPLEX        : 4,
+    ARIA_TABLE     : 5,
+    ARIA_GRID      : 6,
+    ARIA_TREEGRID  : 7,
+  };
+
+  const HEADER_SOURCE = {
+    NONE         : 1,
+    HEADERS_ATTR : 2,
+    ROW_COLUMN   : 3
+  };
+
+
+  /**
    * @constant REFERENCES
    * @type Integer
    * @desc Types of reference for supplemential materials to help people understand an accessibility requirement and
@@ -575,13 +595,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$w.flag && debug$w.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$G.flag && debug$G.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$w.flag && debug$w.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$G.flag && debug$G.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -877,7 +897,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$v = new DebugLogging('ControlInfo', true);
+  const debug$F = new DebugLogging('ControlInfo', false);
 
   /**
    * @class ControlElement
@@ -1017,7 +1037,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$v.domElement(ce.domElement, prefix);
+        debug$F.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1238,15 +1258,15 @@
      */
 
     showControlInfo () {
-      if (debug$v.flag) {
-        debug$v.log('== Control Tree ==', 1);
+      if (debug$F.flag) {
+        debug$F.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$v.domElement(ce.domElement);
+          debug$F.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$v.log('== Forms ==', 1);
+        debug$F.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$v.domElement(ce.domElement);
+          debug$F.domElement(ce.domElement);
         });
       }
     }
@@ -5997,7 +6017,7 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$u = new DebugLogging('AriaInfo', false);
+  const debug$E = new DebugLogging('AriaInfo', false);
 
   /* Debug helper functions */
 
@@ -6072,18 +6092,82 @@
 
       this.isNameRequired     = designPattern.nameRequired;
       this.isNameProhibited   = designPattern.nameProhibited;
-      this.requiredParents  = designPattern.requiredParents;
 
-      this.isWidget   = (designPattern.roleType.indexOf('range') >= 0) || 
-                        (designPattern.roleType.indexOf('widget') >= 0)  ||
+      this.requiredParents  = designPattern.requiredParents;
+      this.hasRequiredParents  = designPattern.requiredParents.length > 0;
+
+      this.requiredChildren  = designPattern.requiredChildren;
+      this.hasRequiredChildren = designPattern.requiredChildren.length > 0;
+      this.isBusy = node.hasAttribute('aria-busy') ?
+                    node.getAttribute('aria-busy').toLowerCase() === 'true':
+                    false;
+
+      this.hasAriaOwns = node.hasAttribute('aria-owns');
+      this.ariaOwnsIds = this.hasAriaOwns ?
+                         node.getAttribute('aria-owns').split(' ') :
+                         [];
+      this.ownedDomElements   = [];
+      this.ownedByDomElements = [];
+
+      const isFocusableSeparator =  (role === 'separator') && (node.tabIndex >= 0);
+
+      this.isRange    = (designPattern.roleType.indexOf('range') >= 0) || isFocusableSeparator;
+      this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
                         (designPattern.roleType.indexOf('window') >= 0);
 
       this.isLandark  = designPattern.roleType.indexOf('landmark') >= 0;     
-      this.isLive     = designPattern.roleType.indexOf('live') >= 0;     
+
       this.isSection  = designPattern.roleType.indexOf('section') >= 0;     
       this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;     
 
-      this.hasRequiredParents = designPattern.requiredParents.length > 0;
+      // for range widgets
+      if (this.isRange || isFocusableSeparator) {
+        this.isValueNowRequired =  isFocusableSeparator || designPattern.requiredProps.includes('aria-valuenow');
+
+        this.hasValueNow = node.hasAttribute('aria-valuenow');
+        if (this.hasValueNow) {
+          this.valueNow = node.getAttribute('aria-valuenow');
+          this.valueNow = isNaN(parseFloat(this.valueNow)) ? this.valueNow : parseFloat(this.valueNow);
+          this.validValueNow = !isNaN(this.valueNow);
+        }
+        else {
+          this.valueNow = 'undefined';
+          this.validValueNow = false;
+        }
+
+        this.hasValueMin = node.hasAttribute('aria-valuemin');
+        if (this.hasValueMin) {
+          this.valueMin = node.getAttribute('aria-valuemin');
+          this.valueMin = isNaN(parseFloat(this.valueMin)) ? this.valueMin : parseFloat(this.valueMin);
+          this.validValueMin = !isNaN(this.valueMin);
+        }
+        else {
+          this.valueMin = 0;
+          this.validValueMin = true;
+        }
+
+        this.hasValueMax = node.hasAttribute('aria-valuemax');
+        if (this.hasValueMax) {
+          this.valueMax = node.getAttribute('aria-valuemax');
+          this.valueMax = isNaN(parseFloat(this.valueMax)) ? this.valueMax : parseFloat(this.valueMax);
+          this.validValueMax = !isNaN(this.valueMax);
+        }
+        else {
+          this.valueMax = 100;
+          this.validValueMax = true;
+        }
+
+        this.valueText = node.hasAttribute('aria-valuetext') ? node.getAttribute('aria-valuetext') : '';
+
+      }
+
+      // for live regions
+
+      this.ariaLive = node.hasAttribute('aria-live') ? node.getAttribute('aria-live').toLowerCase() : '';
+      this.isLive     = designPattern.roleType.indexOf('live') >= 0 ||
+                        this.ariaLive === 'polite' ||
+                        this.ariaLive === 'assertive';
+
 
       // Used for heading
       this.headingLevel = this.getHeadingLevel(role, node);
@@ -6147,15 +6231,15 @@
       }
 
 
-      if (debug$u.flag) {
-        node.attributes.length && debug$u.log(`${node.outerHTML}`, 1);
-        debug$u.log(`[         isWidget]: ${this.isWidget}`);
-        debug$u.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$u.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$u.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$u.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$u.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
-        debug$u.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$E.flag) {
+        node.attributes.length && debug$E.log(`${node.outerHTML}`, 1);
+        debug$E.log(`[         isWidget]: ${this.isWidget}`);
+        debug$E.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$E.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$E.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$E.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$E.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$E.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6249,7 +6333,7 @@
               }
             } catch (error) {
               refInfo.invalidIds.push(id);
-              debug$u.log(`[checkForInvalidReferences][error]: ${error}`);
+              debug$E.log(`[checkForInvalidReferences][error]: ${error}`);
             }
           });
           if (refInfo.invalidIds.length) {
@@ -6354,14 +6438,50 @@
       }
       return 0;
     }
+
   }
 
   /* colorContrast.js */
 
   /* Constants */
-  const debug$t = new DebugLogging('colorContrast', false);
+  const debug$D = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
+
+    /**
+     * @function getLuminance
+     *
+     * @desc Get the luminance value of a hex encoded color
+     *
+     * @param {String}  color    - Hex representation of a color value
+     *
+     * @return {Number}  Returns a number representing the limnance value
+     */
+
+    function getLuminance (color) {
+
+      // Get decimal values
+      const R8bit = parseInt(color.substring(0,2),16);
+      const G8bit = parseInt(color.substring(2,4),16);
+      const B8bit = parseInt(color.substring(4,6),16);
+
+      // Get sRGB values
+      const RsRGB = R8bit/255;
+      const GsRGB = G8bit/255;
+      const BsRGB = B8bit/255;
+      // Calculate luminance
+      const R = (RsRGB <= 0.03928) ? RsRGB/12.92 : Math.pow(((RsRGB + 0.055)/1.055), 2.4);
+      const G = (GsRGB <= 0.03928) ? GsRGB/12.92 : Math.pow(((GsRGB + 0.055)/1.055), 2.4);
+      const B = (BsRGB <= 0.03928) ? BsRGB/12.92 : Math.pow(((BsRGB + 0.055)/1.055), 2.4);
+
+      return (0.2126 * R + 0.7152 * G + 0.0722 * B);
+    }
+
+  function computeCCR (hex1, hex2) {
+      const L1 = getLuminance(hex1);
+      const L2 = getLuminance(hex2);
+      return Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
+  }
 
   /**
    * @class ColorContrast
@@ -6379,9 +6499,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$t.flag) {
-        debug$t.separator();
-        debug$t.tag(elementNode);
+      if (debug$D.flag) {
+        debug$D.separator();
+        debug$D.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -6401,15 +6521,13 @@
       this.fontWeight = this.normalizeFontWeight(style, parentColorContrast);
       this.isLargeFont = this.getLargeFont(this.fontSize, this.fontWeight);
 
-      const L1 = this.getLuminance(this.colorHex);
-      const L2 = this.getLuminance(this.backgroundColorHex);
-      this.colorContrastRatio = Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
+      this.colorContrastRatio = computeCCR(this.colorHex, this.backgroundColorHex);
 
-      if (debug$t.flag) {
-        debug$t.log(`[                    opacity]: ${this.opacity}`);
-        debug$t.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$t.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$t.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$D.flag) {
+        debug$D.log(`[                    opacity]: ${this.opacity}`);
+        debug$D.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$D.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$D.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -6496,11 +6614,14 @@
           (backgroundColor == 'transparent') ||
           (backgroundColor == 'inherit')) {
 
+        debug$D.flag && debug$D.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
+
         if (parentColorContrast) {
+          debug$D.flag && debug$D.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
           backgroundColor   = parentColorContrast.backgroundColor;
         }
         else {
-          // This is an edge case test typcially for body elements and frames
+          // This is an edge case test typically for body elements and frames
           backgroundColor = 'rgb(255,255,255)';
         }
       }
@@ -6618,36 +6739,6 @@
     }
 
     /**
-     * @method getLuminance
-     *
-     * @desc Get the luminance value of a hex encoded color
-     *
-     * @param {String}  color    - Hex representation of a color value
-     *
-     * @return {Number}  Returns a number representing the limnance value
-     */
-
-    getLuminance (color) {
-
-      // Get decimal values
-      const R8bit = parseInt(color.substring(0,2),16);
-      const G8bit = parseInt(color.substring(2,4),16);
-      const B8bit = parseInt(color.substring(4,6),16);
-
-      // Get sRGB values
-      const RsRGB = R8bit/255;
-      const GsRGB = G8bit/255;
-      const BsRGB = B8bit/255;
-      // Calculate luminance
-      const R = (RsRGB <= 0.03928) ? RsRGB/12.92 : Math.pow(((RsRGB + 0.055)/1.055), 2.4);
-      const G = (GsRGB <= 0.03928) ? GsRGB/12.92 : Math.pow(((GsRGB + 0.055)/1.055), 2.4);
-      const B = (BsRGB <= 0.03928) ? BsRGB/12.92 : Math.pow(((BsRGB + 0.055)/1.055), 2.4);
-
-      return (0.2126 * R + 0.7152 * G + 0.0722 * B);
-
-    }
-
-    /**
     * @function rgbToHex
     *
     * @desc Converts an RGB color to Hex values
@@ -6739,7 +6830,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('EventInfo', false);
+  const debug$C = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -6752,7 +6843,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$s.flag) {
+      if (debug$C.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -8331,7 +8422,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('ariaInHtml', false);
+  const debug$B = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8523,11 +8614,11 @@
       };
     }
 
-    if (debug$r.flag) {
+    if (debug$B.flag) {
       if (tagName === 'h2') {
-        debug$r.tag(node);
+        debug$B.tag(node);
       }
-      debug$r.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$B.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -8624,7 +8715,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('visibility', false);
+  const debug$A = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -8672,17 +8763,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$q.flag) {
-        debug$q.separator();
-        debug$q.tag(elementNode);
-        debug$q.log('[          isHidden]: ' + this.isHidden);
-        debug$q.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$q.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$q.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$q.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$q.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$q.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$q.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$A.flag) {
+        debug$A.separator();
+        debug$A.tag(elementNode);
+        debug$A.log('[          isHidden]: ' + this.isHidden);
+        debug$A.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$A.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$A.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$A.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$A.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$A.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$A.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -8995,8 +9086,8 @@
   /*
   *   namefrom.js
   */
-  const debug$p = new DebugLogging('nameFrom', false);
-  debug$p.flag = true;
+  const debug$z = new DebugLogging('nameFrom', false);
+  debug$z.flag = true;
 
   /*
   *   @function getElementContents
@@ -9142,7 +9233,7 @@
           if (name.length) return { name: normalize(name), source: 'label reference' };
         }
       } catch (error) {
-        debug$p.log(`[nameFromLabelElement][error]: ${error}`);
+        debug$z.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -9254,7 +9345,7 @@
       }
 
       // aria-hidden attribute with the value "true" is an same as
-      // setting the hidden attribute for name calcuation
+      // setting the hidden attribute for name calculation
       if (node.hasAttribute('aria-hidden')) {
         if (node.getAttribute('aria-hidden').toLowerCase()  === 'true') {
           return true;
@@ -9473,10 +9564,11 @@
         prefix = getComputedStyle(element, ':before').content,
         suffix = getComputedStyle(element, ':after').content;
 
-   if (prefix[0] === '"') {
+    if ((prefix[0] === '"') && !prefix.toLowerCase().includes('moz-')) {
       result = prefix.substring(1, (prefix.length-1)) + result;
     }
-   if (suffix[0] === '"') {
+
+    if ((suffix[0] === '"') && !suffix.toLowerCase().includes('moz-')) {
       result = result + suffix.substring(1, (suffix.length-1)) ;
     }
 
@@ -9555,8 +9647,8 @@
   'h6',
   'summary'
   ];
-  const debug$o = new DebugLogging('getAccName', false);
-  debug$o.flag = true;
+  const debug$y = new DebugLogging('getAccName', false);
+  debug$y.flag = true;
 
   /*
   *   @function getAccessibleName
@@ -9687,16 +9779,8 @@
         break;
 
       // FORM ELEMENTS: OTHER
-      case 'button':
-        accName = nameFromContents(element);
-        break;
-
       case 'fieldset':
         accName = nameFromLegendElement(doc, element);
-        break;
-
-      case 'label':
-        accName = nameFromContents(element);
         break;
 
       case 'keygen':
@@ -9743,10 +9827,6 @@
         break;
 
       // OTHER ELEMENTS
-      case 'a':
-        accName = nameFromContents(element);
-        break;
-
       case 'details':
         accName = nameFromDetailsOrSummary(element);
         break;
@@ -9758,6 +9838,26 @@
       case 'table':
         accName = nameFromDescendant(element, 'caption');
         break;
+
+      // Elements that allow name from contents
+      case 'a':
+        if (element.hasAttribute('href')) {
+          accName = nameFromContents(element);
+        }
+        break;
+
+      case 'button':
+      case 'caption':
+      case 'dd':
+      case 'dt':
+      case 'figcaption':
+      case 'label':
+      case 'li':
+      case 'td':
+      case 'th':
+        accName = nameFromContents(element);
+        break;
+
 
       // ELEMENTS NOT SPECIFIED ABOVE
       default:
@@ -9855,8 +9955,8 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('DOMElement', false);
-  debug$n.flag = true;
+  const debug$x = new DebugLogging('DOMElement', false);
+  debug$x.flag = false;
 
   const elementsWithContent = [
     'area',
@@ -9891,7 +9991,9 @@
   class DOMElement {
     constructor (parentInfo, elementNode, ordinalPosition) {
       const parentDomElement = parentInfo.domElement;
-      const doc              = parentInfo.document;
+      const accNameDoc       = parentInfo.useParentDocForName ?
+                               parentInfo.parentDocument :
+                               parentInfo.document;
 
       this.ordinalPosition  = ordinalPosition;
       this.parentInfo       = parentInfo;
@@ -9907,19 +10009,18 @@
                      elementNode.getAttribute('role') :
                      defaultRole;
 
-
       // used for button and form control related rules
       this.typeAttr = elementNode.getAttribute('type');
 
       this.hasNativeCheckedState  = hasCheckedState(elementNode);
       this.hasNativeInvalidState  = hasInvalidState(elementNode);
 
-      this.ariaInfo  = new AriaInfo(doc, this.role, defaultRole, elementNode);
+      this.ariaInfo  = new AriaInfo(accNameDoc, this.role, defaultRole, elementNode);
       this.eventInfo = new EventInfo(elementNode);
 
-      this.accName        = getAccessibleName(doc, elementNode);
-      this.accDescription = getAccessibleDesc(doc, elementNode, (this.accName.source !== 'title'));
-      this.errMessage     = getErrMessage(doc, elementNode);
+      this.accName        = getAccessibleName(accNameDoc, elementNode);
+      this.accDescription = getAccessibleDesc(accNameDoc, elementNode, (this.accName.source !== 'title'));
+      this.errMessage     = getErrMessage(accNameDoc, elementNode);
 
       this.colorContrast = new ColorContrast(parentDomElement, elementNode);
       this.visibility    = new Visibility(parentDomElement, elementNode);
@@ -9948,6 +10049,16 @@
       this.resultsViolations   = [];
       this.resultsWarnings     = [];
       this.resultsManualChecks = [];
+
+      // A name that can be used in rule results to identify the element
+      this.elemName = this.tagName;
+      this.elemName += this.id ? `#${this.id}` : '';
+      this.elemName += this.hasRole ? `[role=${this.role}]` : '';
+
+      // Potential references to other cache objects
+
+      this.tableCell = null;
+      this.tableElement = null;
 
     }
 
@@ -10155,7 +10266,7 @@
         id = `[id=${this.node.id}]`;
       }
 
-      return `${this.tagName}${type}${id}[${this.role}]`;
+      return `(${this.ordinalPosition}): ${this.tagName}${type}${id}[${this.role}]`;
     }
 
     /**
@@ -10167,12 +10278,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$n.flag) {
+      if (debug$x.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$n.domText(domItem, prefix);
+            debug$x.domText(domItem, prefix);
           } else {
-            debug$n.domElement(domItem, prefix);
+            debug$x.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -10265,7 +10376,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('domText', false);
+  const debug$w = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -10284,8 +10395,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$m.flag) {
-        debug$m.log(`[text]: ${this.text}`);
+      if (debug$w.flag) {
+        debug$w.log(`[text]: ${this.text}`);
       }
     }
 
@@ -10348,7 +10459,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$l = new DebugLogging('iframeInfo', false);
+  const debug$v = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -10366,9 +10477,9 @@
     }
 
     showInfo () {
-      if (debug$l.flag) {
-        debug$l.log(`[          src]: ${this.src}`);
-        debug$l.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$v.flag) {
+        debug$v.log(`[          src]: ${this.src}`);
+        debug$v.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -10404,8 +10515,8 @@
      */
 
     showIFrameInfo () {
-      if (debug$l.flag) {
-        debug$l.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$v.flag) {
+        debug$v.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
         });
@@ -10416,7 +10527,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$k = new DebugLogging('idInfo', false);
+  const debug$u = new DebugLogging('idInfo', false);
 
   /**
    * @class idInfo
@@ -10459,10 +10570,10 @@
      */
 
     showIdInfo () {
-      if (debug$k.flag) {
-        debug$k.log('== All Links ==', 1);
+      if (debug$u.flag) {
+        debug$u.log('== All Links ==', 1);
         this.idCounts.for( id => {
-          debug$k.log(`[${id}]: ${this.idCounts[id]}`);
+          debug$u.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -10471,7 +10582,7 @@
   /* imageInfo.js */
 
   /* Constants */
-  const debug$j = new DebugLogging('imageInfo', false);
+  const debug$t = new DebugLogging('imageInfo', false);
 
   /**
    * @class ImageElement
@@ -10664,22 +10775,22 @@
      */
 
     showImageInfo () {
-      if (debug$j.flag) {
-        debug$j.log('== All Image elements ==', 1);
+      if (debug$t.flag) {
+        debug$t.log('== All Image elements ==', 1);
         this.allImageElements.forEach( ie => {
-          debug$j.log(`[fileName]: ${ie.fileName}`, true);
-          debug$j.log(`[    role]: ${ie.domElement.role}`);
-          debug$j.log(`[    name]: ${ie.domElement.accName.name}`);
-          debug$j.log(`[  source]: ${ie.domElement.accName.source}`);
-          debug$j.log(`[  length]: ${ie.domElement.accName.name.length}`);
+          debug$t.log(`[fileName]: ${ie.fileName}`, true);
+          debug$t.log(`[    role]: ${ie.domElement.role}`);
+          debug$t.log(`[    name]: ${ie.domElement.accName.name}`);
+          debug$t.log(`[  source]: ${ie.domElement.accName.source}`);
+          debug$t.log(`[  length]: ${ie.domElement.accName.name.length}`);
         });
-        debug$j.log('== All SVG domElements  ==', 1);
+        debug$t.log('== All SVG domElements  ==', 1);
         this.allSVGDomElements.forEach( de => {
-          debug$j.domElement(de);
+          debug$t.domElement(de);
         });
-        debug$j.log('== All MapElements ==', 1);
+        debug$t.log('== All MapElements ==', 1);
         this.allMapElements.forEach( me => {
-          debug$j.domElement(me.domElement);
+          debug$t.domElement(me.domElement);
         });
       }
     }
@@ -10688,7 +10799,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$i = new DebugLogging('linkInfo', false);
+  const debug$s = new DebugLogging('linkInfo', false);
 
   /**
    * @class LinkInfo
@@ -10734,10 +10845,10 @@
      */
 
     showLinkInfo () {
-      if (debug$i.flag) {
-        debug$i.log('== All Links ==', 1);
+      if (debug$s.flag) {
+        debug$s.log('== All Links ==', 1);
         this.allLinkDomElements.forEach( de => {
-          debug$i.domElement(de);
+          debug$s.domElement(de);
         });
       }
     }
@@ -10746,7 +10857,7 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$h = new DebugLogging('ListInfo', false);
+  const debug$r = new DebugLogging('ListInfo', false);
   const allListitemRoles = ['list', 'listitem', 'menu', 'menuitem', 'menuitemcheckbox', 'menuitemradio'];
   const listRoles = ['list', 'menu'];
 
@@ -10767,8 +10878,8 @@
       this.isListRole = this.isList(domElement);
       this.linkCount = 0;  // Used in determining if a list is for navigation
 
-      if (debug$h.flag) {
-        debug$h.log('');
+      if (debug$r.flag) {
+        debug$r.log('');
       }
     }
 
@@ -10793,9 +10904,9 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      debug$h.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
+      debug$r.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
       this.childListElements.forEach( le => {
-        debug$h.domElement(le.domElement, prefix);
+        debug$r.domElement(le.domElement, prefix);
         le.showListInfo(prefix + '  ');
       });
     }
@@ -10903,16 +11014,16 @@
      */
 
     showListInfo () {
-      if (debug$h.flag) {
-        debug$h.log('== All ListElements ==', 1);
-        debug$h.log(`[linkCount]: ${this.linkCount}`);
+      if (debug$r.flag) {
+        debug$r.log('== All ListElements ==', 1);
+        debug$r.log(`[linkCount]: ${this.linkCount}`);
         this.allListElements.forEach( le => {
-          debug$h.domElement(le.domElement);
+          debug$r.domElement(le.domElement);
         });
-        debug$h.log('== List Tree ==', 1);
-        debug$h.log(`[linkCount]: ${this.linkCount}`);
+        debug$r.log('== List Tree ==', 1);
+        debug$r.log(`[linkCount]: ${this.linkCount}`);
         this.childListElements.forEach( le => {
-          debug$h.domElement(le.domElement);
+          debug$r.domElement(le.domElement);
           le.showListInfo('  ');
         });
       }
@@ -10922,12 +11033,12 @@
   /* structureInfo.js */
 
   /* Constants */
-  const debug$g = new DebugLogging('structureInfo', false);
+  const debug$q = new DebugLogging('structureInfo', false);
 
   /**
    * @class LandmarkElement
    *
-   * @desc Idenifies a DOM element as being a landmark and relationships to other landmarks and headings.
+   * @desc Identifies a DOM element as being a landmark and relationships to other landmarks and headings.
    *
    * @param  {Object}  domElement   - Structural Information
    */
@@ -10961,11 +11072,11 @@
         prefix = '';
       }
       this.childLandmarkElements.forEach( le => {
-        debug$g.domElement(le.domElement, prefix);
+        debug$q.domElement(le.domElement, prefix);
         le.showLandmarkInfo(prefix + '  ');
       });
       this.childHeadingDomElements.forEach( h => {
-        debug$g.domElement(h, prefix);
+        debug$q.domElement(h, prefix);
       });
     }
 
@@ -11089,4207 +11200,32 @@
      */
 
     showStructureInfo () {
-      if (debug$g.flag) {
-        debug$g.log('== All Headings ==', 1);
+      if (debug$q.flag) {
+        debug$q.log('== All Headings ==', 1);
         this.allHeadingDomElements.forEach( h => {
-          debug$g.domElement(h);
+          debug$q.domElement(h);
         });
-        debug$g.log('== All Landmarks ==', 1);
+        debug$q.log('== All Landmarks ==', 1);
         this.allLandmarkElements.forEach( le => {
-          debug$g.domElement(le.domElement);
+          debug$q.domElement(le.domElement);
         });
-        debug$g.log('== Landmarks By Doc ==', 1);
+        debug$q.log('== Landmarks By Doc ==', 1);
         this.landmarkElementsByDoc.forEach( (les, index) => {
-          debug$g.log(`Document Index: ${index} (${Array.isArray(les)})`);
+          debug$q.log(`Document Index: ${index} (${Array.isArray(les)})`);
           if (Array.isArray(les)) {
             les.forEach(le => {
-              debug$g.domElement(le.domElement);
+              debug$q.domElement(le.domElement);
             });
           }
         });
-        debug$g.log('== Structure Tree ==', 1);
+        debug$q.log('== Structure Tree ==', 1);
         this.childLandmarkElements.forEach( le => {
-          debug$g.domElement(le.domElement);
+          debug$q.domElement(le.domElement);
           le.showLandmarkInfo('  ');
         });
       }
     }
   }
-
-  /* domCache.js */
-
-  /* Constants */
-  const debug$f = new DebugLogging('domCache', false);
-
-  const skipableElements = [
-    'base',
-    'content',
-    'input[type=hidden]',
-    'link',
-    'meta',
-    'noscript',
-    'script',
-    'style',
-    'template',
-    'shadow',
-    'title'
-  ];
-
-  /**
-   * @class ParentInfo
-   *
-   * @desc Contains reference to ancestor objects in the DOMCache
-   *
-   * @param  {Object}  info - Parent ParentInfo object
-   */
-
-  class ParentInfo {
-    constructor (info) {
-      this.controlElement  = null;
-      this.document        = null;
-      this.documentIndex   = 0;
-      this.domElement      = null;
-      this.landmarkElement = null;
-      this.listElement     = null;
-      this.mapElement      = null;
-
-      if (info) {
-        this.controlElement  = info.controlElement;
-        this.document        = info.document;
-        this.documentIndex   = info.documentIndex;
-        this.domElement      = info.domElement;
-        this.landmarkElement = info.landmarkElement;
-        this.listElement     = info.listElement;
-        this.mapElement      = info.mapElement;
-      }
-    }
-  }
-
-  /**
-   * @class DOMCache
-   *
-   * @desc Builds a cache of the dom from the startingNode and computes
-   *       information useful for accessibility rules
-   *       The dom cache is passed into rules for computing evaluation
-   *       results
-   *
-   * @param  {Object}  startingDoc     - Browser document object model (DOM) to build cache
-   * @param  {Object}  startingElement - DOM node to start evalution, if not defined use
-   *                                     document.body
-   */
-
-  class DOMCache {
-    constructor (startingDoc, startingElement) {
-      if (typeof startingElement !== 'object') {
-        startingElement = startingDoc.body;
-      }
-
-      this.ordinalPosition = 2;
-      this.documentIndex = 0;
-
-      this.allDomElements = [];
-      this.allDomTexts    = [];
-
-      const parentInfo = new ParentInfo();
-      parentInfo.document = startingDoc;
-
-      this.controlInfo   = new ControlInfo();
-      this.idInfo        = new IdInfo();
-      this.imageInfo     = new ImageInfo();
-      this.linkInfo      = new LinkInfo();
-      this.listInfo      = new ListInfo();
-      this.structureInfo = new StructureInfo();
-      this.iframeInfo    = new IframeInfo();
-
-      this.startingDomElement = new DOMElement(parentInfo, startingElement, 1);
-      parentInfo.domElement = this.startingDomElement;
-      this.allDomElements.push(this.startingDomElement);
-
-      // Information on rule results associated with page
-      this.resultsHidden       = [];
-      this.resultsPassed       = [];
-      this.resultsViolations   = [];
-      this.resultsWarnings     = [];
-      this.resultsManualChecks = [];
-
-      this.transverseDOM(parentInfo, startingElement);
-
-      // Debug features
-      if (debug$f.flag) {
-        this.showDomElementTree();
-
-        this.controlInfo.showControlInfo();
-        this.iframeInfo.showIFrameInfo();
-        this.idInfo.showIdInfo();
-        this.imageInfo.showImageInfo();
-        this.linkInfo.showLinkInfo();
-        this.listInfo.showListInfo();
-        this.structureInfo.showStructureInfo();
-      }
-
-    }
-
-    // Tests if a tag name can be skipped
-    isSkipableElement(tagName, type) {
-      const elemSelector = (tagName === 'input') && (typeof type === 'string') ? 
-                           `${tagName}[type=${type}]` :
-                           tagName;
-      return skipableElements.includes(elemSelector);
-    }
-
-    // Tests if a tag name is a custom element
-    isCustomElement(tagName) {
-      return tagName.indexOf('-') >= 0;
-    }
-
-    // Tests if a node is a iframe element
-    isIFrameElement(tagName) {
-      return tagName === 'iframe';
-    }
-
-    // Tests if a node is a slot element
-    isSlotElement(node) {
-      return (node instanceof HTMLSlotElement);
-    }
-
-    /**
-     * @method transverseDOM
-     *
-     * @desc Used to collect accessibility information for all the element nd text
-     *       nodes on a web page for use the the rules.  It pre-computes values
-     *       that are used by the accessibility rules to test accessibility 
-     *       requirements 
-     *
-     * @param {Object}  parentinfo      - Parent DomElement associated with the
-     *                                    parent element node of the starting node
-     * @param {Object}  startingNode    - The dom element to start transversing the
-     *                                    dom
-     */
-
-    transverseDOM(parentInfo, startingNode) {
-      let tagName;
-      let domItem = null;
-      let parentDomElement = parentInfo.domElement;
-      for (let node = startingNode.firstChild; node !== null; node = node.nextSibling ) {
-
-        switch (node.nodeType) {
-
-          case Node.TEXT_NODE:
-            domItem = new DOMText(parentDomElement, node);
-            // Check to see if text node has any renderable content
-            if (domItem.hasContent) {
-              // Merge text nodes in to a single DomText node if sibling text nodes
-              if (parentDomElement) {
-                parentDomElement.hasContent = true;
-                // if last child node of parent is a DomText node merge text content
-                if (parentDomElement.isLastChildDomText) {
-                  parentDomElement.addTextToLastChild(domItem.text);
-                } else {
-                  parentDomElement.addChild(domItem);
-                  this.allDomTexts.push(domItem);
-                }
-              }
-            }
-            break;
-
-          case Node.ELEMENT_NODE:
-            tagName = node.tagName.toLowerCase();
-
-            if (!this.isSkipableElement(tagName, node.getAttribute('type'))) {
-              // check for slotted content
-              if (this.isSlotElement(node)) {
-                  // if no slotted elements, check for default slotted content
-                const assignedNodes = node.assignedNodes().length ?
-                                      node.assignedNodes() :
-                                      node.assignedNodes({ flatten: true });
-                // 2022-08-30 review this code for improvements and qaulity                      
-                for (let i = 0; i < assignedNodes.length; i += 1) {
-                  const assignedNode = assignedNodes[i];
-                  switch (assignedNode.nodeType) {
-
-                    case Node.TEXT_NODE:
-                      domItem = new DOMText(parentDomElement, assignedNode);
-                      // Check to see if text node has any renderable content
-                      if (domItem.hasContent) {
-                        // Merge text nodes in to a single DomText node if sibling text nodes
-                        if (parentDomElement) {
-                          parentDomElement.hasContent = true;
-                          // if last child node of parent is a DomText node merge text content
-                          if (parentDomElement.isLastChildDomText) {
-                            parentDomElement.addTextToLastChild(domItem.text);
-                          } else {
-                            parentDomElement.addChild(domItem);
-                            this.allDomTexts.push(domItem);
-                          }
-                        }
-                      }
-                      break;
-
-                    case Node.ELEMENT_NODE:
-                      domItem = new DOMElement(parentInfo, node, this.ordinalPosition);
-                      this.ordinalPosition += 1;
-                      this.allDomElements.push(domItem);
-                      if (parentDomElement) {
-                        parentDomElement.addChild(domItem);
-                      }
-                      break;
-                  }
-                }
-              } else {
-                domItem = new DOMElement(parentInfo, node, this.ordinalPosition);
-                this.ordinalPosition += 1;
-                this.allDomElements.push(domItem);
-
-                if (parentDomElement) {
-                  parentDomElement.addChild(domItem);
-                }
-                const newParentInfo = this.updateDOMElementInformation(parentInfo, domItem);
-
-                // check for custom elements
-                if (this.isCustomElement(tagName)) {
-                  if (node.shadowRoot) {
-                    newParentInfo.document = node.shadowRoot;
-                    this.documentIndex += 1;
-                    newParentInfo.documentIndex = this.documentIndex;
-                    this.transverseDOM(newParentInfo, node.shadowRoot);
-                  }
-                } else {
-                  // Check for iframe tag
-                  if (this.isIFrameElement(tagName)) {
-                    let isCrossDomain = false;
-                    try {
-                      const doc = node.contentDocument || node.contentWindow.document;
-                      newParentInfo.document = doc;
-                      this.documentIndex += 1;
-                      newParentInfo.documentIndex = this.documentIndex;
-                      this.transverseDOM(newParentInfo, doc);
-                    } catch (error) {
-                      isCrossDomain = true;
-                    }                    
-                    this.iframeInfo.update(domItem, isCrossDomain);
-                  } else {
-                    this.transverseDOM(newParentInfo, node);
-                  }
-                }
-              }
-            }   
-            break;
-
-        } /* end switch */
-      } /* end for */
-    }
-
-
-    /**
-     * @method updateDOMElementInformation
-     *
-     * @desc  Updates page level collections of elements for landmarks, headings and controls
-     *
-     * @param {Object}  parentinfo  - Parent DomElement associated DOMElement
-     * @param {Object}  domElement  - The dom element to start transversing the
-     *                                      dom
-     *
-     * @returns {Object} ParentInfo  - updated ParentInfo object for use in the transversal
-     */
-
-    updateDOMElementInformation (parentInfo, domElement) {
-      const documentIndex   = parentInfo.documentIndex;
-
-      const controlElement   = parentInfo.controlElement;
-      const landmarkElement = parentInfo.landmarkElement;
-      const listElement     = parentInfo.listElement;
-      const mapElement     = parentInfo.mapElement;
-
-      let newParentInfo = new ParentInfo(parentInfo);
-      newParentInfo.domElement = domElement;
-
-      newParentInfo.controlElement  = this.controlInfo.update(controlElement, domElement);
-      newParentInfo.mapElement      = this.imageInfo.update(mapElement, domElement);
-      this.idInfo.update(documentIndex, domElement);
-      this.linkInfo.update(domElement);
-      newParentInfo.listElement     = this.listInfo.update(listElement, domElement);
-      newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
-
-      return newParentInfo;
-    }
-
-    /**
-     * @method showDomElementTree
-     *
-     * @desc  Used for debugging the DOMElement tree
-     */
-
-    showDomElementTree () {
-      debug$f.log(' === AllDomElements ===', true);
-      this.allDomElements.forEach( de => {
-        debug$f.domElement(de);
-      });
-
-      debug$f.log(' === AllDomTexts ===', true);
-      this.allDomTexts.forEach( dt => {
-        debug$f.domText(dt);
-      });
-
-      debug$f.log(' === DOMCache Tree ===', true);
-      debug$f.domElement(this.startingDomElement);
-      this.startingDomElement.showDomElementTree(' ');
-    }
-  }
-
-  /* colorRules.js */
-  // import DebugLogging  from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Color Rules', false);
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule group: Color Rules
-   */
-
-  const colorRules$1 = [
-    /**
-     * @object COLOR_1
-     *
-     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3.1 for large text
-     */
-
-    { rule_id             : 'COLOR_1',
-      last_updated        : '2022-04-21',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
-      ruleset             : RULESET.TRIAGE,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.3',
-      wcag_related_ids    : ['1.4.1','1.4.6'],
-      target_resources    : ['text content'],
-      validate            : function (dom_cache, rule_result) {
-
-        const MIN_CCR_NORMAL_FONT = 4.5;
-        const MIN_CCR_LARGE_FONT  = 3.1;
-
-        dom_cache.allDomTexts.forEach( domText => {
-          const de  = domText.parentDomElement;
-          const cc  = de.colorContrast;
-          const ccr = cc.colorContrastRatio;
-
-          if (de.visibility.isVisibleOnScreen) {
-            if (cc.isLargeFont) {
-              if (ccr >= MIN_CCR_LARGE_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
-                }
-              }
-            }
-            else {
-              if (ccr >= MIN_CCR_NORMAL_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
-                }
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object COLOR_1
-     *
-     * @desc  Use of color
-     */
-
-    { rule_id             : 'COLOR_2',
-      last_updated        : '2022-04-21',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
-      ruleset             : RULESET.TRIAGE,
-      wcag_primary_id     : '1.4.1',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate            : function (dom_cache, rule_result) {
-
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-
-      } // end validate function
-    }
-
-  ];
-
-  /* focusRules.js */
-  // import DebugLogging  from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Focus Rules', true);
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule group: Focus Rules
-   */
-
-  const focusRules$1 = [
-
-  /**
-   * @object FOCUS_1
-   *
-   * @desc Focus order
-   */
-
-  { rule_id             : 'FOCUS_1',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.3',
-    wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
-    target_resources    : ['Page', 'a', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
-    validate            : function (dom_cache, rule_result) {
-
-      let controlCount = 0;
-      let removedCount = 0;
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (de.isInteractiveElement ||
-            (de.ariaInfo.isWidget && !de.ariaInfo.hasRequiredParents)) {
-          if (de.visibility.isVisibleOnScreen) {
-            controlCount += 1;
-            if (de.isInteractiveElement && (de.tabIndex < 0)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName, de.role, de.tabIndex]);
-              removedCount += 1;
-            }
-            else {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-              }
-            }
-          }
-          else {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-
-      if (controlCount > 1) {
-        if (removedCount == 0) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, removedCount]);
-        }
-      }
-    } // end validation function
-  },
-
-  /**
-   * @object FOCUS_2
-   *
-   * @desc Focus style
-   */
-
-  { rule_id             : 'FOCUS_2',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.7',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
-    target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
-    validate            : function (dom_cache, rule_result) {
-
-      let controlCount = 0;
-      let hiddenCount = 0;
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (de.isInteractiveElement ||
-            de.ariaInfo.isWidget) {
-          if (de.visibility.isVisibleOnScreen) {
-            controlCount += 1;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-            }
-          }
-          else {
-            hiddenCount += 1;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-
-      if (controlCount > 1) {
-        if (hiddenCount == 0) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
-        }
-      }
-    } // end validation function
-
-  },
-
-  /**
-   * @object FOCUS_3
-   *
-   * @desc Target of a link does not go to a page with popup windows
-   */
-
-  { rule_id             : 'FOCUS_3',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.LINKS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.2.1',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-    target_resources    : ['a', 'area', 'select'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.linkInfo.allLinkDomElements.forEach( de => {
-        if (de.visibility.isVisibleOnScreen) {
-          rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object FOCUS_4
-   *
-   * @desc Select elements with onchange events
-   */
-
-  { rule_id             : 'FOCUS_4',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.2.2',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-    target_resources    : ['select'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (de.tagName === 'select') {
-          if (de.visibility.isVisibleOnScreen) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object FOCUS_5
-   *
-   * @desc Form include a submit button
-   *
-   */
-
-  { rule_id             : 'FOCUS_5',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.2.2',
-    wcag_related_ids    : [],
-    target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      function getChildButtonDomElements (ce) {
-        let buttonDomElements = [];
-
-        ce.childControlElements.forEach( cce => {
-          const de = cce.domElement;
-          if (de.role === 'button') {
-            buttonDomElements.push(de);
-          }
-          buttonDomElements = buttonDomElements.concat(getChildButtonDomElements(cce));
-        });
-
-        return buttonDomElements;
-      }
-
-      dom_cache.controlInfo.allFormElements.forEach( fce => {
-        const de = fce.domElement;
-        if (de.visibility.isVisibleOnScreen) {
-          const buttonDomElements = getChildButtonDomElements(fce);
-          let submitButtons = 0;
-          let otherButtons  = 0;
-
-          buttonDomElements.forEach( b => {
-            if (b.tagName === 'input') {
-              const type = b.node.getAttribute('type');
-              if (type === 'submit') {
-                if (b.visibility.isVisibleOnScreen) {
-                  submitButtons += 1;
-                  rule_result.addElementResult(TEST_RESULT.PASS, b, 'ELEMENT_PASS_2', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_2', []);
-                }
-              }
-              else {
-                if ((type === 'button') || (type === "image")) {
-                 if (b.visibility.isVisibleOnScreen) {
-                    otherButtons += 1;
-                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_3', [type]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_3', [type]);
-                  }
-                }
-              }
-            }
-            else {
-              if (b.tagName === 'button') {
-               if (b.visibility.isVisibleOnScreen) {
-                  otherButtons += 1;
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_4', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_4', []);
-                }
-              } else {
-                if (b.role === 'button') {
-                 if (b.visibility.isVisibleOnScreen) {
-                    otherButtons += 1;
-                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_5', [b.tagName]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_5', [b.tagName]);
-                  }
-                }
-              }
-            }
-          });
-
-          if (submitButtons > 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-          }
-          else {
-            if (otherButtons > 0) {
-              if (otherButtons === 1) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [otherButtons]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-        }
-      });
-    } // end validation function
-  }
-
-  ];
-
-  /* controlRules.js */
-
-  /* Constants */
-  const debug$e = new DebugLogging('Control Rules', false);
-  debug$e.flag = false;
-
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule group: Form Control Rules
-   */
-
-  const controlRules$1 = [
-
-  /**
-   * @object CONTROL_1
-   *
-   * @desc textarea, select and input elements of type text,
-   *       password, checkbox, radio and file must have an
-   *       accessible name using label elements
-   *
-   */
-
-  { rule_id             : 'CONTROL_1',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (!ce.isInputTypeImage) {
-          if (de.isLabelable) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_2
-   *
-   * @desc Every input type image must have an accessible name attribute with content
-   */
-
-  { rule_id             : 'CONTROL_2',
-    last_updated        : '2022-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="image"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeImage) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.source !== 'none') {
-              if (de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object CONTROL_3
-   *
-   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
-   */
-  { rule_id             : 'CONTROL_3',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="radio"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeRadio) {
-          if (de.visibility.isVisibleToAT) {
-            const gce = ce.getGroupControlElement(); 
-            if (gce) {
-              const gde = gce.domElement;
-              if (gde.tagName === 'fieldset') {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
-                }
-              }
-              else {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_4
-   *
-   * @desc Button elements must have text content and input type button must have a value attribute with content
-   */
-  { rule_id             : 'CONTROL_4',
-    last_updated        : '2022-07-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : false,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['button'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.role === 'button') {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
-            }
-              else {
-              if (de.tagName === 'input') {
-                if (de.accName.source === 'value') {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
-                }            
-              }
-              else {
-                if (de.tagName === 'button') {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                    }
-                  }            
-                }
-                else {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
-                    }
-                  }                          
-                }
-              }
-            }
-          }
-          else {
-            if (de.tagName === 'input' || ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
-            }
-            else {
-              if (de.tagName === 'button') {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
-              }
-            }
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_5
-   *
-   * @desc Ids on form controls must be unique
-   *
-   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
-   */
-  { rule_id             : 'CONTROL_5',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.1',
-    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.id) {
-          const docIndex = de.parentInfo.documentIndex;
-          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_6
-   *
-   * @desc Label element with a for attribute reference does not reference a form control
-   */
-  { rule_id             : 'CONTROL_6',
-    last_updated        : '2022-07-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel && ce.labelForAttr) {
-          if (de.visibility.isVisibleToAT) {
-            if (ce.isLabelForAttrValid) {
-              if (ce.labelforTargetUsesAriaLabeling) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_7
-   *
-   * @desc Label or legend element must contain text content
-   */
-
-  { rule_id             : 'CONTROL_7',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label', 'legend'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel || ce.isLegend) {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.hasTextContent) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              if (ce.hasSVGContent) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL 8
-   *
-   * @desc Fieldset must contain exactly one legend element
-   */
-
-  { rule_id             : 'CONTROL_8',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
-    target_resources    : ['fieldset'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        let le;
-        if (ce.isFieldset) {
-          if (de.visibility.isVisibleToAT) {
-
-            const legendCount = ce.legendElements.length;
-
-            switch (legendCount) {
-              case 0:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                break;
-
-              case 1:
-                le = ce.legendElements[0];
-                if (le.domElement.visibility.isVisibleToAT) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                }
-                break;
-              
-              default:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
-                break;  
-            }
-
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_9
-   *
-   * @desc Check form controls labeled using the TITLE attribute for accessible name
-   */
-
-  { rule_id             : 'CONTROL_9',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['4.1.1'],
-    target_resources    : ['input', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.accName.source === 'title') {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-          }
-          else {      
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_10
-   *
-   * @desc Accessible labels must be unique for every textarea,
-   *       select and input element of type text, password, radio,
-   *       and checkbox on a page
-   */
-
-  { rule_id             : 'CONTROL_10',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
-        const de1 = ce1.domElement;
-        let count;
-        if (de1.ariaInfo.isNameRequired) {
-          if (de1.visibility.isVisibleToAT) {
-            count = 0;
-            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
-              const de2 = ce2.domElement;
-              if ((ce1 !== ce2) && 
-                  ((de1.ariaInfo.requiredParents.length === 0) || 
-                   (ce1.parentControlElement === ce2.parentControlElement)) &&
-                  de2.ariaInfo.isNameRequired && 
-                  de2.visibility.isVisibleToAT) {
-                if ((de1.role === de2.role) && 
-                    (ce1.nameForComparision === ce2.nameForComparision)) {
-                  count += 1;
-                }
-              }
-            });
-            if (count === 0){
-              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
-            } 
-            else {
-              // Since their ar often duplicate button on pages, when two or more buttons share the same
-              // name it should be a manual check
-              if (de1.role === 'button') {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
-                }
-              }
-              else {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
-                }
-              }
-            }
-          }
-          else {
-            if (de1.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
-            }
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_11
-   *
-   * @desc If there is more than one form on page, input element of type
-   *       submit and reset must have unique labels in each form using the value attribute
-   *
-   */
-
-  { rule_id             : 'CONTROL_11',
-    last_updated        : '2022-08-08',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      let de1, de2, count;
-
-      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
-        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
-          const sb1 = fe1.getButtonControl('submit');
-          if (sb1) {
-            de1 = sb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const sb2 = fe2.getButtonControl('submit');
-                  if (sb1 && sb2) {
-                    de2 = sb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (sb1.nameForComparision === sb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-
-          const rb1 = fe1.getButtonControl('reset');
-          if (rb1) {
-            de1 = rb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const rb2 = fe2.getButtonControl('reset');
-                  if (rb1 && rb2) {
-                    de2 = rb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (rb1.nameForComparision === rb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-        });
-      }
-    } // end validate function
-  }
-
-  ];
-
-  /* headingRules.js */
-  // import DebugLogging      from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Heading Rules', false);
-
-  /*
-   * OpenA11y Rules
-   * Rule group: Heading Rules
-   */
-
-  const headingRules$1 = [
-
-    /**
-     * @object HEADING_1
-     *
-     * @desc Page contains at least one H1 element and each H1 element has content
-     */
-     { rule_id            : 'HEADING_1',
-      last_updated        : '2022-05-19',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.HEADINGS,
-      ruleset             : RULESET.TRIAGE,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
-      target_resources    : ['h1'],
-      validate            : function (dom_cache, rule_result) {
-        let h1Count = 0;
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.ariaInfo.ariaLevel === 1) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName && de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                h1Count++;
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-        if (h1Count === 0) {
-          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object HEADING_2
-     *
-     * @desc If there are main and/or banner landmarks and H1 elements,
-     *       H1 elements should be children of main or banner landmarks
-     *
-     */
-    { rule_id             : 'HEADING_2',
-      last_updated        : '2022-05-19',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.HEADINGS,
-      ruleset             : RULESET.MORE,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.6',
-      wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
-      target_resources    : ['h1'],
-      validate            : function (dom_cache, rule_result) {
-
-        function checkForAnscetorLandmarkRole(de, role) {
-          let ple = de.parentInfo.landmarkElement;
-          while (ple) {
-             if (ple.domElement.role === role) return true;
-             ple = ple.parentLandmarkElement;
-          }
-          return false;
-        }
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.ariaInfo.ariaLevel === 1) {
-            if (de.visibility.isVisibleToAT) {
-              if (checkForAnscetorLandmarkRole(de, 'main')) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-              }
-              else {
-                if (checkForAnscetorLandmarkRole(de, 'banner')) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-  /**
-   * @object HEADING_3
-   *
-   * @desc Sibling headings of the same level that share the same parent heading should be unique
-   *       This rule applies only when there are no main landmarks on the page and at least one
-   *       sibling heading
-   *
-   */
-  { rule_id             : 'HEADING_3',
-    last_updated        : '2014-11-25',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.MORE,
-    required            : false,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-
-      const visibleHeadings = [];
-      const lastHeadingNamesAtLevel = ['', '', '', '', '', '', ''];
-      const headingNameForComparison = [];
-
-      function updateLastHeadingNamesAtLevel (level, name) {
-        if ((level > 0) && (level < 7)) {
-          lastHeadingNamesAtLevel[level] = name;
-          for (let i = level + 1; i < 7; i += 1) {
-            // clear lower level names, since a new heading context
-            lastHeadingNamesAtLevel[i] = '';
-          }
-        }
-      }
-
-      function getParentHeadingName (level) {
-        let name = '';
-        while (level > 0) {
-          name = lastHeadingNamesAtLevel[level];
-          if (name.length) {
-            break;
-          }
-          level -= 1;
-        }
-        return name;
-      }
-
-      dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-        if (de.visibility.isVisibleToAT) {
-          visibleHeadings.push(de);
-        } else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-
-
-      visibleHeadings.forEach( (de, index) => {
-
-        const name = de.accName.name.toLowerCase();
-
-        // save the name of the last heading of each level
-        switch (de.ariaInfo.ariaLevel) {
-          case 1:
-            updateLastHeadingNamesAtLevel(1, name);
-            headingNameForComparison[index] = name;
-            break;
-
-          case 2:
-            updateLastHeadingNamesAtLevel(2, name);
-            headingNameForComparison[index] = getParentHeadingName(1) + name;
-            break;
-
-          case 3:
-            updateLastHeadingNamesAtLevel(3, name);
-            headingNameForComparison[index] = getParentHeadingName(2) + name;
-            break;
-
-          case 4:
-            updateLastHeadingNamesAtLevel(4, name);
-            headingNameForComparison[index] = getParentHeadingName(3) + name;
-            break;
-
-          case 5:
-            updateLastHeadingNamesAtLevel(5, name);
-            headingNameForComparison[index] = getParentHeadingName(4) + name;
-            break;
-
-          case 6:
-            updateLastHeadingNamesAtLevel(6, name);
-            headingNameForComparison[index] = getParentHeadingName(5) + name;
-            break;
-        }
-      });
-
-      visibleHeadings.forEach( (de1, index1) => {
-        let duplicate = false;
-        visibleHeadings.forEach( (de2, index2) => {
-          if ((index1 !== index2) &&
-            (headingNameForComparison[index1] ===  headingNameForComparison[index2])) {
-            duplicate = true;
-          }
-        });
-        if (duplicate) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName]);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName]);
-        }
-      });
-
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_5
-   *
-   * @desc Headings must be properly nested
-   *
-   */
-  { rule_id             : 'HEADING_5',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.MORE,
-    required            : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-      let nestingErrors = 0;
-      let manualChecks = 0;
-
-      if (dom_cache.structureInfo.hasMainLandmark) {
-        dom_cache.structureInfo.allLandmarkElements.forEach ( le => {
-          nestingErrors += checkHeadingNesting(dom_cache, rule_result, le.childHeadingDomElements, le.domElement.role);
-        });
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach ( de => {
-          if (!de.parentInfo.landmarkElement) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name.length === 0) {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-                manualChecks += 1;
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } else {
-        nestingErrors = checkHeadingNesting(dom_cache, rule_result, dom_cache.structureInfo.allHeadingDomElements);
-      }
-
-      if (nestingErrors > 0) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [nestingErrors]);
-      }
-      else {
-        if (manualChecks > 0) {
-          if (manualChecks === 1) {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-          }
-          else {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
-          }
-        } else {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-        }
-      }
-
-
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_6
-   *
-   * @desc Headings should not consist only of image content
-   *
-   */
-  { rule_id             : 'HEADING_6',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.ALL,
-    required            : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.structureInfo.allHeadingDomElements.forEach( (de) => {
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length) {
-            if (de.hasTextContent()) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_7
-   *
-   * @desc First heading in contentinfo, complementary, form, navigation and search landmark must be an h2, except main landmark h1
-   */
-  { rule_id             : 'HEADING_7',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.ALL,
-    required            : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-    target_resources    : ['h2', '[role="contentinfo"]', '[role="complementary"]', '[role="form"]', '[role="navigation"]', '[role="search"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      const testRoles = ['contentinfo', 'complementary', 'form', 'navigation', 'search'];
-
-      dom_cache.structureInfo.allLandmarkElements.forEach( le => {
-        const role = le.domElement.role;
-
-        if (testRoles.indexOf(role) >= 0) {
-
-          const de = le.getFirstVisibleHeadingDomElement();
-          if (de) {
-            const ariaLevel = de.ariaInfo.ariaLevel;
-            if (ariaLevel === 2) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role, ariaLevel]);
-            }
-          }
-        }
-      });
-    } // end validate function
-  }
-
-  ];
-
-  /*
-   * Heading Rule Helper Functions
-   */
-
-  function checkHeadingNesting(dom_cache, rule_result, headingDomElements) {
-    const visibleHeadings = [];
-
-    headingDomElements.forEach( de => {
-      if (de.visibility.isVisibleToAT) {
-        if (de.accName.name.length) {
-          visibleHeadings.push(de);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-        }
-      }
-      else {
-        rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-      }
-    });
-
-    let nestingErrors = 0;
-    let lastLevel = visibleHeadings.length ? visibleHeadings[0].ariaInfo.ariaLevel : 1;
-    visibleHeadings.forEach( de => {
-      const level = de.ariaInfo.ariaLevel;
-      if ( level <= (lastLevel + 1)) {
-        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-        // Only update lastLevel when you get a pass
-        lastLevel = level;
-      }
-      else {
-        nestingErrors += 1;
-        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-      }
-    });
-
-    return nestingErrors;
-  }
-
-  /* imageRules.js */
-  // import DebugLogging  from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Image Rules', true);
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule group: Color Rules
-   */
-
-  const imageRules$1 = [
-
-  /**
-   * @object IMAGE_1
-   *
-   * @desc Images must have a source for an accessible name or be identified as decorative
-   */
-
-  { rule_id             : 'IMAGE_1',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach(ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.accName.source]);
-          }
-          else {
-            if ((de.role === 'none') ||
-                (de.role === 'presentation')) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
-            }
-            else {
-              if ((de.tagName === 'img') || (de.tagName === 'area')) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-              }
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_2
-   *
-   * @desc Text alternatives accurately describe images
-   */
-  { rule_id             : 'IMAGE_2',
-    last_updated        : '2015-09-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-            }
-          } else {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_3
-   *
-   * @desc The file name of the image should not be part of the accessible name content (it must have an image file extension)
-   */
-  { rule_id             : 'IMAGE_3',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          const name = de.accName.name.toLowerCase();
-          if (name.indexOf(ie.fileName) < 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);          
-          }
-        } else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object IMAGE_4_EN (English)
-   *
-   * @desc If the accessible name contains content, it should be less than 100 characters long, longer descriptions should use long description techniques (English only)
-   */
-  { rule_id             : 'IMAGE_4_EN',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            const length = de.accName.name.length;
-            if (length <= 100) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [length]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [length]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_5
-   *
-   * @desc Verify the image is decorative
-   */
-  { rule_id             : 'IMAGE_5',
-    last_updated        : '2015-09-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length === 0) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
-            }
-          }
-        } else {
-          if (de.tagName === 'img') {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_6
-   *
-   * @desc For complex images, charts or graphs provide long description
-   */
-  { rule_id             : 'IMAGE_6',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de   = ie.domElement;
-        const accName = de.accName;
-        const accDesc = de.accDescription;
-        if (accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (accDesc.name.length) {
-             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
-            }
-            else {
-              if (de.node.hasAttribute('longdesc')) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);                                
-              } else {
-               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);                                
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_7
-   *
-   * @desc MathML for mathematical expressions
-   */
-  { rule_id             : 'IMAGE_7',
-    last_updated        : '2015-09-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de   = ie.domElement;
-        const accName = de.accName;
-        if (accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);                    
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);                    
-            }
-          } 
-          else {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);                    
-            }
-          }
-        }
-      });
-    } // end validation function
-  }
-  ];
-
-  /* linkRules.js */
-  // import DebugLogging      from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Link Rules', false);
-
-  /*
-   * OpenA11y Rules
-   * Rule group: Link Rules
-   */
-
-  const linkRules$1 = [
-
-    /**
-     * @object LINK_1
-     *
-     * @desc Link should describe the target of a link
-     */
-
-    { rule_id             : 'LINK_1',
-      last_updated        : '2022-05-23',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.4',
-      wcag_related_ids    : ['2.4.9'],
-      target_resources    : ['a', 'area', '[role=link]'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
-          if (de.visibility.isVisibleToAT) {
-            const name = de.accName.name;
-            const desc = de.accDescription.name;
-            if (name.length) {
-              if (desc.length) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName, name, desc]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, name]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        });
-      } // end valifdation function
-    },
-
-    /**
-     * @object LINK_2
-     *
-     * @desc Links with the different HREFs should have the unique accessible names
-     */
-
-    { rule_id             : 'LINK_2',
-      last_updated        : '2022-05-23',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.4',
-      wcag_related_ids    : ['2.4.9'],
-      target_resources    : ['a', 'area', '[role=link]'],
-      validate            : function (dom_cache, rule_result) {
-
-        // array of visible DOM elements identified as links
-        const visibleLinks = [];
-
-        dom_cache.linkInfo.allLinkDomElements.forEach ( de => {
-          if (de.visibility.isVisibleToAT) {
-            visibleLinks.push(de);
-          }
-        });
-
-        visibleLinks.forEach( (de1, index1) => {
-          let differentHrefSameDescription      = 0;
-          let differentHrefDifferentDescription = 0;
-          let sameHref = 0;
-          visibleLinks.forEach( (de2, index2) => {
-            if (index1 !== index2) {
-              if (accNamesTheSame(de1.accName, de2.accName)) {
-                if (de1.node.href === de2.node.href) {
-                  sameHref += 1;
-                }
-                else {
-                  if (accNamesTheSame(de1.accDescription, de2.accDescription)) {
-                    differentHrefSameDescription += 1;
-                  }
-                  else {
-                    differentHrefDifferentDescription += 1;
-                  }
-                }
-              }
-            }
-          });
-
-          if (differentHrefSameDescription) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de1,  'ELEMENT_FAIL_1', [(differentHrefSameDescription + 1)]);
-          } else {
-            if (differentHrefDifferentDescription) {
-              if (differentHrefDifferentDescription === 1) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_3', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_4', [differentHrefDifferentDescription]);
-              }
-            } else {
-              if (sameHref) {
-                if (sameHref === 1) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_2', [sameHref]);
-                }
-              }
-            }
-          }
-        });
-
-      } // end validate function
-    }
-  ];
-
-  /* landmarkRules.js */
-  // import DebugLogging      from '../debug.js';
-
-  /* Constants */
-  // const debug = new DebugLogging('Landmark Rules', true);
-
-  /*
-   * OpenA11y Rules
-   * Rule group: Landmark Rules
-   */
-
-  const landmarkRules$1 = [
-
-    /**
-     * @object LANDMARK_1
-     *
-     * @desc Each page should have at least one main landmark
-     */
-
-    { rule_id             : 'LANDMARK_1',
-      last_updated        : '2022-05-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['main', '[role="main"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'main', true);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_2
-     *
-     * @desc All rendered content should be contained in a landmark
-     */
-    { rule_id             : 'LANDMARK_2',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['Page', 'all'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.allDomElements.forEach ( de => {
-          const parentLandmark = de.parentInfo.landmarkElement;
-          const isLandmark = de.isLandmark;
-          if ((de.hasContent || de.mayHaveContent)) {
-            if (de.visibility.isVisibleToAT) {
-              if ( isLandmark || parentLandmark ) {
-                const role = isLandmark ? de.role : parentLandmark.domElement.role;
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, role]);
-              }
-              else {
-                if (de.mayHaveContent) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_3
-     *
-     * @desc Each page within a website should have at least one navigation landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_3',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['nav', '[role="navigation"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        const MINIMUM_LINKS = 4;
-        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-        let navigationCount = 0;
-
-        allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (de.role === 'navigation') {
-            if (de.visibility.isVisibleToAT) {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-              }
-              navigationCount += 1;
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-
-        if (navigationCount === 0) {
-          // See if there are any lists of links greater than the MINIMUM_LINKS
-          const allListElements = dom_cache.listInfo.allListElements;
-          let listWithLinksCount = 0;
-          allListElements.forEach ( le => {
-            const de = le.domElement;
-            if (le.linkCount > MINIMUM_LINKS) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, le.linkCount]);
-              listWithLinksCount += 1;
-            }
-          });
-
-          if (listWithLinksCount > 0) {
-            rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
-          }
-        } else {
-          if (navigationCount === 1) {
-            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_1', []);
-          } else {
-            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_2', [navigationCount]);
-          }
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_4
-     *
-     * @desc Each page may have at least one banner landmark
-     *
-     */
-
-    { rule_id             : 'LANDMARK_4',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'banner', false);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_5
-     *
-     * @desc Each page should not have more than one banner landmark
-     *
-     */
-
-    { rule_id             : 'LANDMARK_5',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateNoMoreThanOne(dom_cache, rule_result, 'banner');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_6
-     *
-     * @desc Each page may have one contentinfo landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_6',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'contentinfo', false);
-     } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_7
-     *
-     * @desc Each page may have only one contentinfo landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_7',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateNoMoreThanOne(dom_cache, rule_result, 'contentinfo');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_8
-     *
-     * @desc banner landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_8',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      required            : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'banner');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_9
-     *
-     * @desc Banner landmark should only contain only region, navigation and search landmarks
-     */
-    { rule_id             : 'LANDMARK_9',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-       validateLandmarkDescendants(dom_cache, rule_result, 'banner', ['navigation', 'region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_10
-     *
-     * @desc Navigation landmark should only contain only region and search landmarks
-     */
-    { rule_id             : 'LANDMARK_10',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['nav', '[role="naviation"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'navigation', ['region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_11
-     *
-     * @desc Main landmark must be a top level lanmark
-     */
-    { rule_id             : 'LANDMARK_11',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', '[role="main"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'main');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_12
-     *
-     * @desc Contentinfo landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_12',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'contentinfo');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_13
-     *
-     * @desc Contentinfo landmark should only contain only search, region and navigation landmarks
-     */
-    { rule_id             : 'LANDMARK_13',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'contentinfo', ['navigation', 'region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_14
-     *
-     * @desc Search landmark should only contain only region landmarks
-     */
-    { rule_id             : 'LANDMARK_14',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'search', ['region']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_15
-     *
-     * @desc Form landmark should only contain only region landmarks
-     */
-    { rule_id             : 'LANDMARK_15',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="form"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'form', ['region']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_16
-     *
-     * @desc Elements with the role=region must have accessible name to be considered a landmark
-     */
-    { rule_id             : 'LANDMARK_16',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="region"]'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.allDomElements.forEach( de => {
-          if (de.hasRole && de.role === 'region') {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_17
-     *
-     * @desc Landmark must have unique labels
-     */
-
-    { rule_id             : 'LANDMARK_17',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        const landmarkRoles = ['banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region', 'search'];
-        landmarkRoles.forEach( role => {
-          validateUniqueAccessibleNames(dom_cache, rule_result, role);
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_18
-     *
-     * @desc Landmark must identify content regions
-     */
-
-    { rule_id             : 'LANDMARK_18',
-      last_updated        : '2015-08-07',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.NORE,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-        allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role, de.accName.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_19
-     *
-     * @desc Complementary landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_19',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
-      rule_required       : false,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['aside', '[role="complementary"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'complementary');
-      } // end validate function
-    }
-  ];
-
-  /* Helper Functions for Landmarks */
-
-
-  /**
-   * @function validateTopLevelLandmark
-   *
-   * @desc Evaluate if a landmark role is top level (e.g. not contained in other landmarks)
-   *
-   * @param  {DOMCache}    dom_cache   - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result - RuleResult object
-   * @param  {String}      role        - Landmark role to check
-   */
-
-  function validateTopLevelLandmark(dom_cache, rule_result, role) {
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-
-          if (de.parentInfo.landmarkElement === null) {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', []);
-            }
-          }
-          else {
-            // Check to see if the two elements with the role share the same DOM (e.g. iframe check)
-            // If in a different DOM, allow it to be the top level in that DOM
-            const de1 = de.parentInfo.landmarkElement.domElement;
-
-            if (de1 && (de.parentInfo.document !== de1.parentInfo.document)) {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', []);
-              }
-            }
-            else {
-              // Fails if they are in the same DOM
-              const landmarkRole = de.parentInfo.landmarkElement.domElement.role;
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, landmarkRole]);
-              } else  {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [landmarkRole]);
-              }
-            }
-          }
-        }
-        else {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * @function validateAtLeastOne
-   *
-   * @desc Evaluate if the the landmark region role exists in the page.
-   *       The required parameter determines if the landamrk is missing whether
-   *       a failure or manual check is required
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark role
-   * @oaram  {Boolean}     roleRequired - Is the landamrk region role required
-   */
-
-  function validateAtLeastOne(dom_cache, rule_result, role, roleRequired) {
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let roleCount = 0;
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-          }
-          roleCount += 1;
-        }
-        else {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-          }
-        }
-      }
-    });
-
-    if (roleCount === 0) {
-      if (roleRequired) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-      }
-      else {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      }
-    } else {
-      if (roleCount === 1) {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-      } else {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', [roleCount]);
-      }
-    }
-  }
-
-
-  /**
-   * @function validateNoMoreThanOne
-   *
-   * @desc Evaluate if the the landmark region role exists more than once on the page.
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark region role
-   */
-
-  function validateNoMoreThanOne(dom_cache, rule_result, role) {
-
-    const landmarkElementsByDoc = dom_cache.structureInfo.landmarkElementsByDoc;
-    let totalRoleCount = 0;
-    let anyMoreThanOne = false;
-
-    landmarkElementsByDoc.forEach( les => {
-      let visibleDomElements = [];
-      if (Array.isArray(les)) {
-        les.forEach( le => {
-          const de = le.domElement;
-          if (de.role === role) {
-            if (de.visibility.isVisibleToAT) {
-              visibleDomElements.push(de);
-              totalRoleCount += 1;
-            }
-            else {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-              }
-            }
-          }
-        });
-
-        visibleDomElements.forEach( de => {
-          if (visibleDomElements.length === 1) {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-            }
-          } else {
-            anyMoreThanOne = true;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-            }
-          }
-        });
-      }
-    });
-
-    if (totalRoleCount > 0) {
-      if (anyMoreThanOne) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [totalRoleCount]);
-      }
-      else {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-      }
-    }
-  }
-
-  /**
-   * @function validateLandmarkDescendants
-   *
-   * @desc Evaluate if the descendant landmark roles are a certain type
-   *
-   * @param  {DOMCache}    dom_cache             - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result           - RuleResult object
-   * @param  {String}      role                  - Landmark region role
-   * @param  {Array}       allowedLandmarkRoles  - An array of allowed descendant roles
-   */
-
-  function validateLandmarkDescendants(dom_cache, rule_result, role, allowedLandmarkRoles) {
-
-    function checkForDescendantLandmarks(landmarkElement) {
-      const result = {
-        failedCount: 0,
-        failedRoles : [],
-        passedCount: 0,
-        passedRoles : []
-      };
-
-      landmarkElement.descendantLandmarkElements.forEach( le => {
-        const de   = le.domElement;
-        const role = de.role;
-
-        if (de.visibility.isVisibleToAT) {
-          if (allowedLandmarkRoles.includes(role)) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
-            result.passedCount += 1;
-            result.passedRoles.push(role);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role]);
-            result.failedCount += 1;
-            result.failedRoles.push(role);
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, role]);
-        }
-      });
-
-      return result;
-    }
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let visibleLandmarkElements = [];
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          visibleLandmarkElements.push(le);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      }
-    });
-
-    visibleLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      const result = checkForDescendantLandmarks(le);
-      const failedRoles = result.failedRoles.join(', ');
-      const passedRoles = result.passedRoles.join(', ');
-
-      if (result.failedCount === 1) {
-        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [failedRoles]);
-      } else {
-        if (result.failedCount > 1) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [result.failedCount, failedRoles]);
-        }
-        else {
-          if (result.passedCount === 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-          }
-          else {
-            if (result.passedCount === 1) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [passedRoles]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [result.passedCount, passedRoles]);
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * @function validateUniqueAccessibleNames
-   *
-   * @desc Evaluate if the accessible names for the landmark role are unique.
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark region role
-   */
-
-  function validateUniqueAccessibleNames(dom_cache, rule_result, role) {
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let visibleDomElements = [];
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          visibleDomElements.push(de);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-        }
-      }
-    });
-
-    if (visibleDomElements.length > 1) {
-      visibleDomElements.forEach( (de1, index1) => {
-        let duplicate = false;
-        visibleDomElements.forEach( (de2, index2) => {
-          if ((index1 !== index2) &&
-              (accNamesTheSame(de1.accName, de2.accName))) {
-            duplicate = true;
-          }
-        });
-        if (duplicate) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.accName.name, role]);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [role]);
-        }
-      });
-    }
-  }
-
-  /* widgetRules.js */
-
-  /* Constants */
-  const debug$d = new DebugLogging('ARIA Rules', false);
-
-
-  /*
-   * OpenA11y Rules
-   * Rule group: Widget Rules
-   */
-
-  const widgetRules$1 = [
-  /**
-   * @object WIDGET_1
-   *
-   * @desc ARIA Widgets must have accessible names
-   */
-
-  { rule_id             : 'WIDGET_1',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['ARIA Widget roles'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        const ai = de.ariaInfo;
-        // There are other rules that check for accessible name for labelable controls, landmarks, headings and links
-        if (ai.isWidget && !de.isLabelable && !de.isLink) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role, de.accName.name]);
-            }
-            else {
-              if (ai.isNameRequired) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);              
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }
-        }
-      });
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_2
-   *
-   * @desc Elements with onClick event handlers event handlers need role
-   */
-
-  { rule_id             : 'WIDGET_2',
-    last_updated        : '2022-08-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['Elements with onclick events'],
-    validate            : function (dom_cache, rule_result) {
-
-      function hasDecendantWidgetRole (domElement) {
-        for (let i = 0; i < domElement.children.length; i += 1) {
-          const cde = domElement.children[i];
-          if (cde.isDomElement) {
-            if (cde.ariaInfo.isWidget) {
-              return true;
-            }
-            if (hasDecendantWidgetRole(cde)) {
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-
-      dom_cache.allDomElements.forEach(de => {
-        if (de.eventInfo.hasClick) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.ariaInfo.isWidget) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
-            }
-            else {
-              if (hasDecendantWidgetRole(de)) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-              }
-              else {
-                if (de.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-                }
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_3
-   *
-   * @desc Elements with role values must have valid widget or landmark roles
-   */
-
-  { rule_id             : 'WIDGET_3',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[role]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        if (de.hasRole) {
-          if (de.visibility.isVisibleToAT) {
-            if (!de.ariaInfo.isValidRole) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
-            }
-            else {
-              if (de.ariaInfo.isAbstractRole) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.role]);
-              } else {
-                if (de.ariaInfo.isWidget) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role]);
-                }
-                else {
-                  if (de.ariaInfo.isLandmark) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.role]);
-                  }
-                  else {
-                    if (de.ariaInfo.isLive) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.role]);
-                    }
-                    else {
-                      if (de.ariaInfo.isSection) {
-                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.role]);
-                      }
-                      else {
-                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.role]);
-                      }
-                    }
-                  }
-                }            
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }        
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_4
-   *
-   * @desc Elements with ARIA attributes have valid values
-   */
-
-  { rule_id             : 'WIDGET_4',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-atomic]',
-                           '[aria-autocomplete]',
-                           '[aria-busy]',
-                           '[aria-checked]',
-                           '[aria-colcount]',
-                           '[aria-colindex]',
-                           '[aria-colspan]',
-                           '[aria-current]',
-                           '[aria-disabled]',
-                           '[aria-dropeffect]',
-                           '[aria-expanded]',
-                           '[aria-grabbed]',
-                           '[aria-haspopup]',
-                           '[aria-hidden]',
-                           '[aria-invalid]',
-                           '[aria-label]',
-                           '[aria-labelledby]',
-                           '[aria-live]',
-                           '[aria-modal]',
-                           '[aria-multiline]',
-                           '[aria-multiselectable]',
-                           '[aria-orientation]',
-                           '[aria-pressed]',
-                           '[aria-readonly]',
-                           '[aria-relevant]',
-                           '[aria-required]',
-                           '[aria-rowcount]',
-                           '[aria-rowindex]',
-                           '[aria-rowspan]',
-                           '[aria-selected]',
-                           '[aria-sort]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        de.ariaInfo.validAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            const allowedValues = attr.values ? attr.values.join(' | ') : '';
-            if (de.ariaInfo.invalidAttrValues.includes(attr)) {
-              if (attr.type === 'nmtoken' || attr.type === 'boolean' || attr.type === 'tristate') {
-                if (attr.value === '') {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, allowedValues]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, attr.value, allowedValues]);
-                }
-              }
-              else {
-                if (attr.type === 'nmtokens') {
-                  if (attr.value === '') {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [attr.name, allowedValues]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [attr.name, attr.value, allowedValues]);
-                  }
-                }
-                else {
-                  if (attr.type === 'integer') {
-                    if (attr.value === '') {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_5', [attr.name]);
-                    }
-                    else {
-                      if (attr.allowUndeterminedValue) {
-                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_6', [attr.name, attr.value]);
-                      }
-                      else {
-                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_7', [attr.name, attr.value]);
-                      }
-                    }
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_8', [attr.name, attr.value, attr.type]);
-                  }  
-                }
-              }
-            }
-            else {
-              if (attr.type === 'boolean' || 
-                  attr.type === 'nmtoken' || 
-                  attr.type === 'nmtokens' || 
-                  attr.type === 'tristate') {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [attr.name, attr.value, attr.type]);
-              }
-            }
-          }
-          else {
-            if (attr.value === '') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [attr.name, attr.value]);
-            }
-          }
-        });
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_5
-   *
-   * @desc ARIA attributes must be defined
-   */
-
-  { rule_id             : 'WIDGET_5',
-    last_updated        : '2022-08-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-atomic]',
-                           '[aria-autocomplete]',
-                           '[aria-busy]',
-                           '[aria-checked]',
-                           '[aria-controls]',
-                           '[aria-describedby]',
-                           '[aria-disabled]',
-                           '[aria-dropeffect]',
-                           '[aria-expanded]',
-                           '[aria-flowto]',
-                           '[aria-grabbed]',
-                           '[aria-haspopup]',
-                           '[aria-hidden]',
-                           '[aria-invalid]',
-                           '[aria-label]',
-                           '[aria-labelledby]',
-                           '[aria-level]',
-                           '[aria-live]',
-                           '[aria-multiline]',
-                           '[aria-multiselectable]',
-                           '[aria-orientation]',
-                           '[aria-owns]',
-                           '[aria-pressed]',
-                           '[aria-readonly]',
-                           '[aria-relevant]',
-                           '[aria-required]',
-                           '[aria-selected]',
-                           '[aria-sort]',
-                           '[aria-valuemax]',
-                           '[aria-valuemin]',
-                           '[aria-valuenow]',
-                           '[aria-valuetext]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        de.ariaInfo.invalidAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-          }
-        });
-        de.ariaInfo.validAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-          }
-        });
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_6
-   *
-   * @desc Widgets must have required properties
-   */
-
-  { rule_id             : 'WIDGET_6',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[checkbox]',
-                           '[combobox]',
-                           '[menuitemcheckbox]',
-                           '[menuitemradio]',
-                           '[meter]',
-                           '[option]',
-                           '[separator]',
-                           '[scrollbar]',
-                           '[slider]',
-                           '[switch]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        de.ariaInfo.requiredAttrs.forEach( reqAttrInfo => {
-          if (de.visibility.isVisibleToAT) {
-            if (reqAttrInfo.isDefined) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, reqAttrInfo.name, reqAttrInfo.value]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, reqAttrInfo.name]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, reqAttrInfo.name]);
-          }
-        });
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_7
-   *
-   * @desc Widgets must have required owned elements
-   */
-
-  { rule_id             : 'WIDGET_7',
-    last_updated        : '2021-07-02',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[feed]',
-                           '[grid]',
-                           '[list]',
-                           '[listbox]',
-                           '[menu]',
-                           '[menubar]',
-                           '[radiogroup]',
-                           '[row]',
-                           '[rowgroup]',
-                           '[table]',
-                           '[tablist]',
-                           '[tree]',
-                           '[treegrid]'],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 7] ${dom_cache} ${rule_result}`);
-
-  /*
-
-       function getRequiredChildRolesString(required_children) {
-
-         var str = "";
-         var required_children_max = required_children.length - 1;
-
-         for (var i = 0; i < required_children.length; i++ ) {
-           str += required_children[i];
-           if (i !== required_children_max) str += ", ";
-         }
-
-         return str;
-
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var widget_elements     = dom_cache.controls_cache.widget_elements;
-       var widget_elements_len = widget_elements.length;
-
-       if (widget_elements && widget_elements) {
-
-         for (var i = 0; i < widget_elements_len; i++) {
-           var we = widget_elements[i];
-           var de = we.dom_element;
-           var style = de.computed_style;
-
-           var required_child_roles = de.role_info.requiredChildren;
-
-           if (required_child_roles && required_child_roles.length) {
-
-             if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-
-               if (we.aria_busy) {
-                 rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.role]);
-               } else {
-                 var flag = false;
-
-                 for (var j = 0; (j < required_child_roles.length) && !flag; j++) {
-                   flag = we.hasRequiredChildRole(required_child_roles[j]);
-                 }
-
-                 var required_child_roles_string = getRequiredChildRolesString(required_child_roles);
-
-                 if (flag) {
-                  rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, required_child_roles_string]);
-                 } else {
-                  rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, required_child_roles_string]);
-                }
-               }
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-             }
-           }
-         } // end loop
-       }
-       */
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_8
-   *
-   * @desc Widgets must have required parent roles
-   */
-
-  { rule_id             : 'WIDGET_8',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : [ "caption",
-                            "cell",
-                            "columnheader",
-                            "gridcell",
-                            "listitem",
-                            "menuitem",
-                            "menuitemcheckbox",
-                            "menuitemradio",
-                            "option",
-                            "row",
-                            "rowgroup",
-                            "rowheader",
-                            "tab",
-                            "treeitem"
-                        ],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 8] ${dom_cache} ${rule_result}`);
-
-  /*
-       function getRequiredRolesString(required_roles) {
-
-         var str = "";
-         var required_roles_max = required_roles.length - 1;
-
-         for (var i = 0; i < required_roles.length; i++ ) {
-           if (i > 0) {
-            if ( i === required_roles_max) {
-              str += "@ or @" + required_roles[i];
-            } else {
-              str += "@, @" + required_roles[i];
-  ;
-            }
-           } else {
-             str += required_roles[i];
-           }
-         }
-
-         return str;
-
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var widget_elements     = dom_cache.controls_cache.widget_elements;
-       var widget_elements_len = widget_elements.length;
-
-       if (widget_elements && widget_elements) {
-
-         for (var i = 0; i < widget_elements_len; i++) {
-           var we = widget_elements[i];
-           var de = we.dom_element;
-           var style = de.computed_style;
-
-           var required_parent_roles = de.role_info.requiredParents;
-
-           if (required_parent_roles && required_parent_roles.length) {
-
-             if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-
-               var flag = false;
-
-               for (var j = 0; (j < required_parent_roles.length) && !flag; j++) {
-                  var role = required_parent_roles[j];
-                  flag = we.isOwnedByRole(role);
-               }
-
-               var required_roles_string = getRequiredRolesString(required_parent_roles);
-
-               if (flag) {
-                 rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, role]);
-               } else {
-                 rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [required_roles_string, de.role]);
-               }
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-             }
-           }
-         } // end loop
-       }
-       */
-
-     } // end validation function
-  },
-  /**
-   * @object WIDGET_9
-   *
-   * @desc Widgets cannot be owned by more than one widget
-   */
-
-  { rule_id             : 'WIDGET_9',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-owns]'],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 9] ${dom_cache} ${rule_result}`);
-
-  /*
-       var TEST_RESULT = TEST_RESULT;
-
-       var dom_elements     = dom_cache.element_cache.dom_elements;
-       var dom_elements_len = dom_elements.length;
-       var we;
-
-       for (var i = 0; i < dom_elements_len; i++) {
-          var de = dom_elements[i];
-
-          if (de.owned_by.length === 1) {
-            we = de.owned_by[0];
-            rule_result.addResult(TEST_RESULT.PASS, we, 'ELEMENT_PASS_1', [we, de]);
-          } else {
-            if (de.owned_by.length > 1) {
-              for (var j = 0; j < de.owned_by.length; j += 1) {
-                we = de.owned_by[j];
-                rule_result.addResult(TEST_RESULT.FAIL, we, 'ELEMENT_FAIL_1', [we, de]);
-              } // end loop
-            }
-          }
-       } // end loop
-  */
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_10
-   *
-   * @desc Range widgets with ariavaluenow mut be in range of aria-valuemin and aria-valuemax
-   */
-
-  { rule_id             : 'WIDGET_10',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[role="meter"]',
-                           '[role="progress"]',
-                           '[role="scrollbar"]',
-                           '[role="slider"]',
-                           '[role="spinbutton"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 10] ${dom_cache} ${rule_result}`);
-
-  /*
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var dom_elements     = dom_cache.element_cache.dom_elements;
-       var dom_elements_len = dom_elements.length;
-
-       if (dom_elements && dom_elements) {
-
-         for (var i = 0; i < dom_elements_len; i++) {
-           var de = dom_elements[i];
-           var style = de.computed_style;
-
-           if (de.is_range) {
-
-              if (style.is_visible_to_at === VISIBILITY.VISIBLE) {
-
-                var is_value_required = !('progressbar spinbutton'.indexOf(de.role) >= 0);
-
-                var valuetext          = de.getAttributeValue('aria-valuetext');
-                var is_valuetext_valid = de.isAttributeValueValid('aria-valuetext', valuetext);
-
-                var min          = de.getAttributeValue('aria-valuemin');
-                var is_min_valid = de.isAttributeValueValid('aria-valuemin', min);
-
-                var max          = de.getAttributeValue('aria-valuemax');
-                var is_max_valid = de.isAttributeValueValid('aria-valuemax', max);
-
-                var value          = de.getAttributeValue('aria-valuenow');
-                var is_value_valid = de.isAttributeValueValid('aria-valuenow', value);
-
-                if (is_valuetext_valid) {
-                  rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de, valuetext]);
-                } else {
-                  if (is_value_valid) {
-                    if (is_max_valid && is_min_valid) {
-                      if (min < max) {
-                        if ((min <= value) && (value <= max)) {
-                          rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de, value, min, max]);
-                        } else {
-                          rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [value, min, max]);
-                        }
-                      } else {
-                        rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [min, max]);
-                      }
-                    } else {
-                      rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de, min, max]);
-                    }
-                  } else {
-                    if (is_value_required) {
-                      rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [de]);
-                    } else {
-                      rule_result.addResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de]);
-                    }
-                  }
-                }
-              } else {
-                rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de]);
-              }
-           }
-         } // end loop
-       }
-       */
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_11
-   *
-   * @desc Elements with mouse down, mouse move and mouse up events must have roles
-   */
-
-  { rule_id             : 'WIDGET_11',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[onmousedown]', '[onmouseup]', '[onmousemove]', '[onkeydown]', '[onkeyup]', '[onkeypress]', '[onclick]', '[ondbclick]', '[ondrag]', '[ondragstart]', '[ondragend]', '[ondragover]', '[onenter]', '[ondragleave]', '[ondrop]'],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 11] ${dom_cache} ${rule_result}`);
-
-  /*
-       function getUIEvents(dom_element) {
-
-          var events = dom_element.getMouseEvents();
-          events += dom_element.getClickEvents();
-          events += dom_element.getDragEvents();
-          events += dom_element.getKeyboardEvents();
-
-          return events;
-       }
-
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var dom_elements_with_events     = dom_cache.controls_cache.elements_with_events;
-       var dom_elements_with_events_len = dom_elements_with_events.length;
-
-       if (dom_elements_with_events_len) {
-
-         for (var i = 0; i < dom_elements_with_events_len; i++) {
-           var de = dom_elements_with_events[i];
-
-           var style = de.computed_style;
-           var events = getUIEvents(de);
-
-           if (events.length &&
-               (de.tag_name !== 'embed') &&
-               (de.tag_name !== 'applet') &&
-               (de.tag_name !== 'object') &&
-               (de.tag_name !== 'video') &&
-               (de.tag_name !== 'audio')) {
-
-             if (style.is_visible_to_at === VISIBILITY.VISIBLE) {
-
-               if (de.is_widget) {
-                 rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MANUAL_CHECK_1', [de.role, events]);
-               }
-               else {
-                 if (de.is_interactive) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MANUAL_CHECK_2', [de.tag_name, events]);
-                 else if (de.containsInteractiveElements()) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MANUAL_CHECK_3', [de.tag_name, events]);
-                 else rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, events]);
-               }
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tag_name]);
-             }
-           }
-         } // end loop
-       }
-       */
-
-     } // end validation function
-  },
-  /**
-   * @object WIDGET_12
-   *
-   * @desc Element with widget role label should describe the purpose of the widget
-   *
-   */
-
-  { rule_id             : 'WIDGET_12',
-    last_updated        : '2015-08-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[Widget roles'],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 12] ${dom_cache} ${rule_result}`);
-
-  /*
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var widgets     = dom_cache.controls_cache.widget_elements;
-       var widgets_len = widgets.length;
-
-       // Check to see if valid cache reference
-       if (widgets && widgets_len) {
-
-         for (var i = 0; i < widgets_len; i++) {
-           var we = widgets[i];
-           var de = we.dom_element;
-
-           if (de.is_widget) {
-
-             if (de.computed_style.is_visible_to_at == VISIBILITY.VISIBLE) {
-
-               if (we.computed_label && we.computed_label.length) {
-                 rule_result.addResult(TEST_RESULT.MANUAL_CHECK, we, 'ELEMENT_MC_1', [we.computed_label, de.tag_name, de.role]);
-               }
-               else {
-                 if (!de.role_info.nameRequired) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, we, 'ELEMENT_MC_2', [de.tag_name, de.role]);
-                 else rule_result.addResult(TEST_RESULT.FAIL, we, 'ELEMENT_FAIL_1', [de.tag_name, de.role]);
-               }
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.HIDDEN, we, 'ELEMENT_HIDDEN_1', [de.tag_name, de.role]);
-             }
-           }
-         } // end loop
-       }
-       */
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_13
-   *
-   * @desc Roles that prohibit accessible names
-   */
-
-  { rule_id             : 'WIDGET_13',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : [ "caption",
-                            "code",
-                            "deletion",
-                            "emphasis",
-                            "generic",
-                            "insertion",
-                            "none",
-                            "paragraph",
-                            "presentation",
-                            "strong",
-                            "subscript",
-                            "superscript"],
-    validate            : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 13] ${dom_cache} ${rule_result}`);
-
-  /*
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var dom_elements     = dom_cache.element_cache.dom_elements;
-       var dom_elements_len = dom_elements.length;
-
-       for (var i = 0; i < dom_elements_len; i++) {
-          var de = dom_elements[i];
-          var style = de.computed_style;
-          var implicit_role = '';
-
-          if (de.element_aria_info) {
-            implicit_role = de.element_aria_info.defaultRole;
-          }
-
-          if (de.has_aria_label || de.has_aria_labelledby) {
-
-            if (de.role &&
-                aria.designPatterns[de.role] &&
-                aria.designPatterns[de.role].nameProhibited) {
-              if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-                rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, de.role]);
-              } else {
-                rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tag_name, de.role]);
-              }
-            } else {
-              if (!de.role &&
-                  implicit_role &&
-                  aria.designPatterns[implicit_role] &&
-                  aria.designPatterns[implicit_role].nameProhibited) {
-                if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-                  if (de.tag_name === 'a') {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', []);
-                  } else {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tag_name]);
-                  }
-                } else {
-                  rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tag_name]);
-                }
-              }
-            }
-          } // end loop
-        }
-
-        */
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_14
-   *
-   * @desc     Verify live regions are being used properly
-   */
-  { rule_id             : 'WIDGET_14',
-    last_updated        : '2017-02-08',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : [],
-    target_resources    : ['[role="alert"]','[role="log"]','[role="status"]','[aria-live]'],
-    validate          : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 14] ${dom_cache} ${rule_result}`);
-
-  /*
-      var TEST_RESULT = TEST_RESULT;
-      var VISIBILITY  = VISIBILITY;
-
-      var dom_elements     = dom_cache.element_cache.dom_elements;
-      var dom_elements_len = dom_elements.length;
-
-
-      for (var i = 0; i < dom_elements_len; i++ ) {
-
-        var de =dom_elements[i];
-
-        if (de.type != Node.ELEMENT_NODE || !de.is_live || (de.aria_live === 'off')) continue;
-
-        var has_failure = false;
-
-        var has_live_role =  de.role && de.role.length && (" alert log status".indexOf(de.role) > 0);
-
-
-        if (de.has_aria_live) {
-          if (de.computed_style.is_visible_to_at === VISIBILITY.HIDDEN) {
-            rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tag_name, de.aria_live]);
-          }
-          else {
-            if (has_live_role) {
-
-              switch (de.role) {
-
-                case 'alert':
-                  if (de.aria_live === 'polite') {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', ['polite', 'assertive',  de.role]);
-                    has_failure = true;
-                  }
-                  break;
-
-                case 'log':
-                case 'status':
-                  if (de.aria_live === 'assertive') {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', ['assertive', 'polite', de.role]);
-                    has_failure = true;
-                  }
-                  break;
-
-                default:
-                  break;
-
-              }
-            }
-            else {
-              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tag_name, de.aria_live]);
-            }
-          }
-        }
-
-        if (de.has_aria_atomic && has_live_role && (de.role === 'alert' || de.role === 'status')) {
-
-          if (de.aria_atomic === 'false') {
-            rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.role]);
-            has_failure = true;
-          }
-
-        }
-
-        if(has_live_role && !has_failure) {
-
-          switch (de.role) {
-
-            case 'alert':
-              if (de.computed_style.is_visible_to_at === VISIBILITY.HIDDEN) {
-                rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tag_name, de.role]);
-              }
-              else {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tag_name]);
-              }
-              break;
-
-            case 'log':
-              if (de.computed_style.is_visible_to_at === VISIBILITY.HIDDEN) {
-                rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tag_name, de.role]);
-              }
-              else {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tag_name]);
-              }
-              break;
-
-            case 'status':
-              if (de.computed_style.is_visible_to_at === VISIBILITY.HIDDEN) {
-                rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tag_name, de.role]);
-              }
-              else {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.tag_name]);
-              }
-              break;
-
-            default:
-              break;
-          }
-        }
-      }
-      */
-
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_15
-   *
-   * @desc     Roles with deprecated ARIA attributes
-   */
-  { rule_id             : 'WIDGET_15',
-    last_updated        : '2021-08-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.1',
-    wcag_related_ids    : ['4.1.2'],
-    target_resources    : [
-          "alert",
-          "alertdialog",
-          "article",
-          "banner",
-          "blockquote",
-          "button",
-          "caption",
-          "cell",
-          "checkbox",
-          "code",
-          "command",
-          "complementary",
-          "composite",
-          "contentinfo",
-          "definition",
-          "deletion",
-          "dialog",
-          "directory",
-          "document",
-          "emphasis",
-          "feed",
-          "figure",
-          "form",
-          "generic",
-          "grid",
-          "group",
-          "heading",
-          "img",
-          "input",
-          "insertion",
-          "landmark",
-          "link",
-          "list",
-          "listbox",
-          "listitem",
-          "log",
-          "main",
-          "marquee",
-          "math",
-          "meter",
-          "menu",
-          "menubar",
-          "menuitem",
-          "menuitemcheckbox",
-          "menuitemradio",
-          "navigation",
-          "note",
-          "option",
-          "paragraph",
-          "presentation",
-          "progressbar",
-          "radio",
-          "radiogroup",
-          "range",
-          "region",
-          "row",
-          "rowgroup",
-          "scrollbar",
-          "search",
-          "section",
-          "sectionhead",
-          "select",
-          "separator",
-          "spinbutton",
-          "status",
-          "strong",
-          "structure",
-          "subscript",
-          "superscript",
-          "switch",
-          "tab",
-          "table",
-          "tablist",
-          "tabpanel",
-          "term",
-          "time",
-          "timer",
-          "toolbar",
-          "tooltip",
-          "tree",
-          "treegrid",
-          "treeitem",
-          "widget",
-          "window"
-      ],
-    validate          : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 15] ${dom_cache} ${rule_result}`);
-
-  /*
-       var VISIBILITY  = VISIBILITY;
-       var TEST_RESULT = TEST_RESULT;
-
-       var dom_elements     = dom_cache.element_cache.dom_elements;
-       var dom_elements_len = dom_elements.length;
-
-       for (var i = 0; i < dom_elements_len; i++) {
-          var de = dom_elements[i];
-          var style = de.computed_style;
-          var role = de.role;
-          var implicit_role = '';
-          var deprecatedProps = [];
-
-          if (!de.has_role && de.element_aria_info) {
-            implicit_role = de.element_aria_info.defaultRole;
-          }
-
-          if (de.has_role && aria.designPatterns[role]) {
-            deprecatedProps = aria.designPatterns[role].deprecatedProps;
-          } else {
-            if (implicit_role && aria.designPatterns[implicit_role]) {
-              deprecatedProps = aria.designPatterns[implicit_role].deprecatedProps;
-            }
-          }
-
-          if (deprecatedProps.length) {
-            for (var j = 0; j < deprecatedProps.length; j += 1) {
-              var prop = deprecatedProps[j];
-
-              if (de.node.hasAttribute(prop)) {
-
-                if (role) {
-                  if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [prop, de.tag_name, role]);
-                  } else {
-                    rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [prop, de.tag_name, role]);
-                  }
-                } else {
-                  if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-                    rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [prop, de.tag_name, implicit_role]);
-                  } else {
-                    rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [prop, de.tag_name, implicit_role]);
-                  }
-                }
-              }
-            }
-          }
-        }
-        */
-
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_16
-   *
-   * @desc     Web compnents require manual check
-   */
-  { rule_id             : 'WIDGET_16',
-    last_updated        : '2021-09-12',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.1.1',
-    wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
-    target_resources    : ["Custom elements using web component APIs"],
-    validate          : function (dom_cache, rule_result) {
-
-      debug$d.flag && debug$d.log(`[WIDGET 16] ${dom_cache} ${rule_result}`);
-
-  /*
-      var VISIBILITY  = VISIBILITY;
-      var TEST_RESULT = TEST_RESULT;
-
-      var dom_elements     = dom_cache.element_cache.dom_elements;
-      var dom_elements_len = dom_elements.length;
-
-      for (var i = 0; i < dom_elements_len; i++) {
-        var de = dom_elements[i];
-        var style = de.computed_style;
-
-        if (de.tag_name.indexOf('-') >= 0) {
-          if (!de.node.shadowRoot) {
-            if (style.is_visible_to_at == VISIBILITY.VISIBLE || style.is_visible_onscreen == VISIBILITY.VISIBLE ) {
-              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tag_name]);
-            } else {
-            rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tag_name]);
-            }
-          }
-        }
-      }
-      */
-
-    } // end validation function
-  }
-
-  ];
 
   /* common.js */
 
@@ -15316,7 +11252,9 @@
       'NOT_APPLICABLE': 'Not applicable'
     },
     required: 'Required',
-    recommended: 'Recommended'
+    recommended: 'Recommended',
+    tableType: ['undefined', 'Unknown', 'Layout', 'Data', 'Complex', 'ARIA Table', 'Grid', 'Tree Grid'],
+    headerSource: ['undefined', 'none', 'headers attribute', 'row and column']
   };
 
   /* ruleCategories.js */
@@ -16444,7 +12382,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const colorRules = {
+  const colorRules$1 = {
     COLOR_1: {
         ID:                    'Color 1',
         DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 3.1 for large and/or bolded text and 4.5 for any other size or style of text.',
@@ -16546,7 +12484,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const focusRules = {
+  const focusRules$1 = {
     FOCUS_1: {
         ID:                    'Focus 1',
         DEFINITION:            'The sequential focus order of links, form controls, embedded apps and widgets must be meaningful.',
@@ -16779,7 +12717,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const controlRules = {
+  const controlRules$1 = {
     CONTROL_1: {
         ID:         'Control 1',
         DEFINITION: 'Each @input@, @select@, @textarea@, @progress@, @meter@ and @output@ element must have an accessible name using @label@ elements.',
@@ -17416,7 +13354,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const headingRules = {
+  const headingRules$1 = {
 
     HEADING_1: {
       ID:                    'Heading 1',
@@ -17756,7 +13694,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const imageRules = {
+  const imageRules$1 = {
     IMAGE_1: {
       ID:         'Image 1',
       DEFINITION: 'Each @img@ element must specify an @alt@ attribute or equivalent markup that either defines a text alternative or identifies the image as being used for decoration, spacing or some other stylistic purpose.',
@@ -18226,7 +14164,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const linkRules = {
+  const linkRules$1 = {
 
     LINK_1: {
       ID:                    'Link 1',
@@ -18367,7 +14305,7 @@
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const landmarkRules = {
+  const landmarkRules$1 = {
 
     // ----------------------------------------------------------------
     // LANDMARK_1: main landmark: at least one
@@ -18416,11 +14354,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18494,11 +14432,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18571,11 +14509,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18644,11 +14582,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18726,11 +14664,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18804,11 +14742,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18884,11 +14822,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -18956,11 +14894,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19031,11 +14969,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19094,7 +15032,7 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19102,7 +15040,7 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           }
         ]
     },
@@ -19153,11 +15091,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19216,11 +15154,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19287,11 +15225,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19345,11 +15283,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19417,11 +15355,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19486,11 +15424,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19562,11 +15500,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19640,11 +15578,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19714,11 +15652,11 @@
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
-            url:   'https://w3c.github.io/aria-practices/#aria_landmark'
+            url:   'https://www.w3.org/WAI/ARIA/apg/#aria_landmark'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmark Example',
-            url:   'https://w3c.github.io/aria-practices/examples/landmarks/'
+            url:   'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C Web Accessibility Tutorials: Page Structure',
@@ -19740,13 +15678,513 @@
     }
   };
 
+  /* tableRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English              */
+  /* --------------------------------------------------------------------------- */
+
+  const tableRules$1 = {
+    TABLE_1: {
+        ID:                    'Table 1',
+        DEFINITION:            'Data cells in data tables must have row and/or column header cells or use the @headers@ attribute.',
+        SUMMARY:               'Data cells must have row/column headers',
+        TARGET_RESOURCES_DESC: '@td@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute.',
+          FAIL_P:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute.',
+          MANUAL_CHECK_S: 'The @td@ element does not have any text content. Verify that this cell is being used for formatting and does not need row or column headers.',
+          MANUAL_CHECK_P: '%N_F @td@ elements do not have any text content. Verify that these cells are being used for formatting and do not need row or column headers.',
+          HIDDEN_S:       'One @td@ element that is hidden was not evaluated.',
+          HIDDEN_P:       '%N_H @td@ elements that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'No data tables and/or @td@ cells on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The @%1@ element has one header defined using row and/or column headers cells, header content: "%2".',
+          ELEMENT_PASS_2:   'The @%1@ element has %2 headers defined using row and/or column headers cells, header content: "%3".',
+          ELEMENT_PASS_3:   'The @%1@ element has one header defined using the @header@ attribute, header content: "%2".',
+          ELEMENT_PASS_4:   'The @%1@ element has %2 headers defined using the @header@ attribute, header content: "%3".',
+          ELEMENT_FAIL_1:   'Add table cells to be used as header cells for the @%1@ element using either row/column headers or the @headers@ attribute.',
+          ELEMENT_MC_1:     'The @%1@ element does not have any text content and it does not have any header cells. Verify that this cell is being used for formatting and does not need headers.',
+          ELEMENT_MC_2:     'The @%1@ element does not have any text content.  Verify it is not being used for identifying the context of a data cell.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'For screen reader users to understand the the context or meaning of the content in a data cell, the headings for the cell must be identified',
+          'When header cells are properly identified, screen reader users can distinguish between header and data table cells.'
+        ],
+        TECHNIQUES: [
+          'Use a @th@ element as the first cell in each row and/or column to define row and column headers in simple data tables.',
+          'While not recommended, it is also valid to use @td@ element with a @scope@ attribute as a header cell.',
+          'Avoid using empty rows and columns for formatting data tables. Use CSS instead.',
+          'When row and/or column headers are not sufficient to describe a data cell, use the @header@ attribute to identify the appropriate header cells.  For example, when a data cell spans more than one column or row the column and row headers.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify that empty @td@ and @th@ elements do not need table headers.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The table element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-table-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: headers attribute',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#attr-tdth-headers'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: scope attribute',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#attr-th-scope'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H51: Using table markup to present tabular information',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H51'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H63: Using the scope attribute to associate header cells and data cells in data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H63'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'MDN: The Table element',
+            url:   'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'IBM Accessibility Requirements: 502.3.3 Row, Column and Headers',
+            url:   'https://www.ibm.com/able/requirements/requirements/#502_3_3'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          }
+        ]
+    },
+    TABLE_2: {
+        ID:                    'Table 2',
+        DEFINITION:            'Data tables must have an accessible name to identify the purpose of the table.',
+        SUMMARY:               'Data tables must have name',
+        TARGET_RESOURCES_DESC: '@table@',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:           'Add an accessible name for the data table using either the @caption@ element; or one of the following @table@ element attributes: @summary@, @title@, @aria-label@ or @aria-labelledby@.',
+          FAIL_P:           'Add an accessible name to each of the %N_F out of %N_T data tables using either the @caption@ element; or one of the following @table@ element attributes: @summary@, @title@, @aria-label@ or @aria-labelledby@.',
+          HIDDEN_S:         'One data table that is hidden was not evaluated.',
+          HIDDEN_P:         '%N_H data tables that are hidden were not evaluated.',
+          NOT_APPLICABLE:   'No data tables found on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The @%1@ element\'s accessible name defined using: @%2@.',
+          ELEMENT_FAIL_1:   'Add accessible name using either the @caption@ element; or one of the following @table@ element attributes: @aria-label@ or @aria-labelledby@.',
+          ELEMENT_HIDDEN_1: 'The @table@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'An accessible name for a data table enables people using assistive technologies to identify the purpose of the table and to differentiate among multiple data tables on the same page.',
+          'Screen readers include table navigation commands and the accessible name will provides context to the table.'
+        ],
+        TECHNIQUES: [
+          'Use @caption@ element to provide an accessible name for a data table.',
+          'Use @title@ attribute to provide an accessible name for a data table.',
+          'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
+          'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.'
+        ],
+        MANUAL_CHECKS: [
+          'Make sure the the accessible name accurately and succinctly identifies the purpose of the data table.',
+          'If the table markup is actually being used for laying out content in rows or columns, use @role="presentation"@ on the @table@ element.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The table element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-table-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The caption element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-caption-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-label'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-labelledby@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: The @title@ attribute',
+            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H39: Using caption elements to associate data table captions with data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H39'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H73: Using the summary attribute of the table element to give an overview of data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H73'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'F46: Failure of Success Criterion 1.3.1 due to using th elements, caption elements, or non-empty summary attributes in layout tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F46'
+          }
+        ]
+    },
+    TABLE_3: {
+        ID:                    'Table 3',
+        DEFINITION:            'Some data tables may have an accessible description (e.g. summary) of contents of the table.',
+        SUMMARY:               'Data tables may have description',
+        TARGET_RESOURCES_DESC: '@table[summary]@,  @table[title]@ or @aria-describedby@ attribute',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'For the data table without a summary, consider adding an @summary@, @title@ or @aria-describedby@ attribute to point to a summary of the information in the simple table.',
+          MANUAL_CHECK_P: 'For the %N_F data tables without summary, consider adding an @summary@, @title@ or @aria-describedby@ attribute to point to a summary of the information in each simple table.',
+          HIDDEN_S:       'One data @table@ element that is hidden was not evaluated.',
+          HIDDEN_P:       'The %N_H data @table@ elements elements that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'No data tables on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The @%1@ element has an accessible description through the @aria-describedby@ reference.',
+          ELEMENT_PASS_2:   'The @%1@ element has an accessible description through the @title@ attribute.',
+          ELEMENT_MC_1:     'The @%1@ element is a simple table, consider adding a @summary@ or @aria-describedby@ attribute to reference a accessible description (e.g. a summary) of the content of the table.',
+          ELEMENT_MC_2:     'The @%1@ element a complex table, it is highly recommended to add a @aria-describedby@ attribute to reference a accessible description (e.g. a summary) of the content of the table.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'Complex data tables are defined as tables with row and/or column spans, or more than one header cell (e.g. @th@ element) in any row or column of the table.',
+          'An accessible description providing a summary of the organization of the table or numerical values reduces the time for users of assistive technology to explore and understand the content of a table.',
+          'An accessible description that includes a synopsis of the authors intended conclusions of viewing the content of a table make it easier for people using assistive technologies to understand importance of why the author provided the data table.'
+          ],
+        TECHNIQUES: [
+          'Use the  @aria-describedby@ attribute to provide a reference to an accessible description of the information in a data table.',
+          'Use the  @title@ attribute to provide a accessible description of the information in a data table.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify the content of the accessible description accurately summarizes the organization, numerical information in the table or authors intended conclusions from viewing the table.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The table element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-table-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-describedby@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: The @title@ attribute',
+            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          }
+        ]
+    },
+    TABLE_4: {
+        ID:                    'Table 4',
+        DEFINITION:            'Data tables should have unique accessible names to help users identify and differentiate the data tables on a page.',
+        SUMMARY:               'Data tables should have unique names',
+        TARGET_RESOURCES_DESC: '@table@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:         'Change the accessible name of the @table@ to be unique.',
+          FAIL_P:         'Change the accessible name of the %N_F out of %N_T data tables that do not have unique names to be unique.',
+          HIDDEN_S:       'One @table@ element that is hidden was not evaluated.',
+          HIDDEN_P:       '%N_H @table@ elements that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'Multiple data tables were not found on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The table\'s accessible name "%1" for @%2@ element is unique on the page.',
+          ELEMENT_FAIL_1:   'The table\'s accessible name "%1" is not unique on the page for the @%2@ element, update the accessible table names to be unique and descriptive of the table content.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'Data tables that share the same accessible name make it difficult to users of assistive technologies to differentiate the differences in content of the data tables on the same page.',
+          'In rare cases when multiple data tables have duplicate data, use "Copy 1", "Copy 2" and "Copy X" as part of the accessible name of each table to make it clear that there is more than one copy of the same information on the page.'
+        ],
+        TECHNIQUES: [
+          'Use @caption@ element to provide an accessible name for a data table.',
+          'Use @summary@ attribute to provide an accessible name for a data table.',
+          'Use @title@ attribute to provide an accessible name for a data table.',
+          'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
+          'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify the accessible names for tables are unique and identify the content in the data tables.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The table element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-table-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: 4.9.1 The caption element',
+            url:   'https://html.spec.whatwg.org/multipage/tables.html#the-caption-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-label'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-labelledby@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: The @title@ attribute',
+            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H39: Using caption elements to associate data table captions with data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H39'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H73: Using the summary attribute of the table element to give an overview of data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H73'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'F46: Failure of Success Criterion 1.3.1 due to using th elements, caption elements, or non-empty summary attributes in layout tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F46'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'IBM Web checklist Checkpoint 1.3e: Tables',
+            url:   'https://www-03.ibm.com/able/guidelines/web/webtableheaders.html'
+          }
+        ]
+    },
+    TABLE_5: {
+        ID:                    'Table 5',
+        DEFINITION:            'Table markup must identify a table as either a data table or a layout table.',
+        SUMMARY:               'Identify table markup as data or layout',
+        TARGET_RESOURCES_DESC: '@table@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:   'The table without headers or @role="none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
+          FAIL_P:   'For the %N_F tables without headers or @role=none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
+          MANUAL_CHECK_S: 'Verify the @table@ element that only has one row or column is used only only for layout.',
+          MANUAL_CHECK_P: 'Verify the %N_H @table@ elements that only have one row or column are used only only for layout.',
+          HIDDEN_S: 'One @table@ element that is hidden was not evaluated.',
+          HIDDEN_P: '%N_H @table@ elements elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No table markup found on this page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The @%1@ element is a layout table, since it has @role="%2"@.',
+          ELEMENT_PASS_2:   'The @%1@ element is a simple data table, since it has header cells and/or an accessible name.',
+          ELEMENT_PASS_3:   'The @%1@ element is a complex data table, since it has columns/row spans or multiple headers in a row or column.',
+          ELEMENT_PASS_4:   'The @%1@ element is table, since it is using @role=table@.',
+          ELEMENT_PASS_5:   'The @%1@ element is grid, since it is using @role=grid@.',
+          ELEMENT_PASS_6:   'The @%1@ element is treegrid, since it is using @role=treegrid@.',
+          ELEMENT_MC_1:     'Verify the @%1@ element with only one row is only used for layout purposes, if so add the @role@ attribute with a value of @none@.',
+          ELEMENT_MC_2:     'Verify the @%1@ element with only one column is only used for layout purposes, if so add the @role@ attribute with a value of @none@.',
+          ELEMENT_FAIL_1:   'Define the purpose of the @%1@ element by adding header cells if the table is being used for tabular data or use @role="none"@ on the table element if the table is being used to layout content.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'The @table@ element is designed for representing tabular data in a web page, but table markup has also been used by web developers as a means to layout content in rows and columns.',
+          'Users of assistive technology are confused when the purpose of table markup is not clearly identified (i.e. layout or for tabular data).',
+          'Use @role="presentation"@ on the @table@ element to clearly identify a table markup for layout.',
+          'Adding an accessible name and/or description to a @table@ element identifies table markup as a data table (e.g. layout tables must not have an accessible name or description).',
+          'The use header cells (e.g. @th@ or @td[scope]@ elements) identifies a @table@ element as a data table.'
+        ],
+        TECHNIQUES: [
+          'Use @th@ elements in the first row and/or first column to identify a table as a data table.',
+          'Use @caption@ element; @summary@, @title@, @aria-label@, @aria-labelledby@ or @aria-describedby@ attribute to add an accessible name or description to a @table@ element.',
+          'Use @role="presentation"@ on the @table@ element to identify a table and its child table elements (e.g. @tr@ and @td@ elements) are being used for layout.',
+          'Layout tables must only use the @tr@ and @td@ table elements for layout content and must NOT have an accessible name or description.'
+        ],
+        MANUAL_CHECKS: [
+          'If a table is used for layout verify the order of content still makes sense when the table markup is disabled.',
+          'If a table is used for data tables, verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: presentation role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#presentation'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: 11.2.2 Table Captions: The CAPTION element',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#h-11.2.2'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: summary attribute',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#adef-summary'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H51: Using table markup to present tabular information',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H51'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H63: Using the scope attribute to associate header cells and data cells in data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H63'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'IBM Web checklist Checkpoint 1.3e: Tables',
+            url:   'https://www-03.ibm.com/able/guidelines/web/webtableheaders.html'
+          }
+        ]
+    },
+    TABLE_6: {
+        ID:                    'Table 6',
+        DEFINITION:            'Each data table header cell should use @th@ elements rather than @td@ element with a @scope@ attribute.',
+        SUMMARY:               'Header cells should be @th@ elements',
+        TARGET_RESOURCES_DESC: '@th@ and @td[scope]@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:   'Change the @td[scope]@ element to a @th@ element',
+          FAIL_P:   'Change the @td[scope]@ element to a @th@ element for each of the %N_F header cells using @td[scope]@',
+          HIDDEN_S: 'One @table@ element that is hidden was not evaluated.',
+          HIDDEN_P: '%N_H @table@ elements elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No td[scope]@ elements on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The @th@ element is used for header cell',
+          ELEMENT_FAIL_1:   'Change the @td[scope]@ element to a @th[scope]@ element',
+          ELEMENT_HIDDEN_1: 'The cells of the table were not evaluated because the table is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_2: 'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          '@th@ element is the web standards way to identify header cells in a table, and makes the data table source code easier to read and debug for accessibility problems.'
+        ],
+        TECHNIQUES: [
+          'Use @th@ elements in the first row or column to identify row and column headers in a simple data tables.',
+          'Use @headers@ attribute on each @td@ element to identify header information in complex data tables.',
+          'Use @th@ element for cells used as header cells in the table.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H51: Using table markup to present tabular information',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H51'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H63: Using the scope attribute to associate header cells and data cells in data tables',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H63'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'IBM Web checklist Checkpoint 1.3e: Tables',
+            url:   'https://www-03.ibm.com/able/guidelines/web/webtableheaders.html'
+          }
+        ]
+    },
+    TABLE_7: {
+        ID:                    'Table 7',
+        DEFINITION:            'Data cells in complex data tables must use @headers@ attribute to identify header cells.',
+        SUMMARY:               'Data cells must use @headers@ attribute',
+        TARGET_RESOURCES_DESC: '@td@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:         'Add a @headers@ attribute to the data cell to identify the header cells for the data cell.',
+          FAIL_P:         'Add %N_F data cells use the @headers@ attribute to identify the header cells for the data cell.',
+          MANUAL_CHECK_S: 'The @td@ element does not have any text content and it does not have any header cells, verify that this cell is being used for formatting and does not need headers.',
+          MANUAL_CHECK_P: 'There are %N_MC @td@ elements that do not have any text content and do not have any header cells, verify that thess cells are being used for formatting and do not need headers.',
+          HIDDEN_S:       'One @td@ element that is hidden was not evaluated.',
+          HIDDEN_P:       '%N_H @td@ elements that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'No complex data tables on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The header comes from the @headers@ attribute with the following ids: \'%1\'.',
+          ELEMENT_FAIL_1:   'Add header cells using the @headers@ attribute, since this table is a complex data table.',
+          ELEMENT_FAIL_2:   'Add text content to the header cells with the following ids: \'%1\'.',
+          ELEMENT_FAIL_3:   'Change the idrefs \'%1\' in the @headers@ attribute to valid ids.',
+          ELEMENT_MC_1:     'The @td@ element does not have any text content and it does not have any header cells, verify that this cell is being used for formatting and does not need headers.',
+          ELEMENT_HIDDEN_1: 'Data cell was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'The data cells in complex data tables need to use the @headers@ attribute to identify the appropriate header cells, since simple row/column relationships cannot be relied upon to provide header information.',
+          'Complex data tables are defined as tables with row and/or column spans, or more than one header cell (e.g. @th@ element) in any row or column of the table.'
+        ],
+        TECHNIQUES: [
+          'Use @headers@ attribute on each @td@ element used as a data cell to identify header information in complex data tables.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.',
+          'Verify that empty @td@ and @th@ elements and does not need table headers.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'IBM Web checklist Checkpoint 1.3e: Tables',
+            url:   'https://www-03.ibm.com/able/guidelines/web/webtableheaders.html'
+          }
+        ]
+    },
+    TABLE_8: {
+        ID:                    'Table 8',
+        DEFINITION:            'The accessible name of a data table must be different from its accessible description.',
+        SUMMARY:               'Name must be different than description',
+        TARGET_RESOURCES_DESC: 'Data tables with both an accessible name and accessible description',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:         'Change the accessible name and/or accessible description of the data table with accessible name that is the same as the accessible description, make sure the accessible name identifies the content of the data table and the description provides a summary of the content.',
+          FAIL_P:         'Change the accessible name and/or accessible description of the %N_F data tables with accessible name that is the same as the accessible description, make sure the accessible name identifies the content of each data table and the description provides a summary of the content.',
+          MANUAL_CHECK_S: 'Verify the data table with an accessible name that is longer than the accessible description is actually providing a useful summary of the contents of the data table.',
+          MANUAL_CHECK_P: 'Verify the %N_MC data tables with an accessible name that is longer than the accessible description is actually providing a useful summary of the contents of the data table.',
+          HIDDEN_S:       'One @table@ element that is hidden was not evaluated.',
+          HIDDEN_P:       '%N_H @table@ elements that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'No data tables with both an accessible name and description on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'Accessible name and description are different.',
+          ELEMENT_FAIL_1:   'Change the accessible name and/or accessible description, make sure the accessible name identifies the content of the table and the description provides a summary of the content.',
+          ELEMENT_MC_1:     'Verify the data table with an accessible name that is longer than the accessible description is actually providing a useful summary of the contents of the data table.',
+          ELEMENT_HIDDEN_1: 'The table was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'Accessible name and description are designed to provide two different types of information to users of assistive technologies and therefore should not duplicate each other.',
+          'Accessible name is designed to provide a short title to identify the data table, so when users of assistive technology are using table navigation commands they can identify the table.',
+          'Accessible description is designed to provide a longer summary of the table, this could include author intended conclusions of the data.'
+        ],
+        TECHNIQUES: [
+          'Accessible name is typically defined using the @caption@ element, but the @summary@, @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
+          'Accessible description is typically defined using the @summary@ attribute, but the @title@ and @aria-describedby@ attribute can also be used.',
+          'The accessible name is defined before the accessible description, so if using the @summary@ and/or @title@ attribute for the accessible name will require a different technique to add an accessible description.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify the accessible name clearly identifies the table.',
+          'Verify the summary accurately summarizes the table.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
+            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+          },
+          { type:  REFERENCES.EXAMPLE,
+            title: 'W3C Web Accessibility Tutorials: Tables',
+            url:   'https://www.w3.org/WAI/tutorials/tables/'
+          }
+        ]
+    }
+  };
+
   /* widgetRules.js */
 
   /* --------------------------------------------------------------------------- */
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const widgetRules = {
+  const widgetRules$1 = {
       WIDGET_1: {
           ID:                    'Widget 1',
           DEFINITION:            'Widget roles must have an accessible name.',
@@ -19938,7 +16376,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20053,7 +16491,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20106,7 +16544,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20126,15 +16564,17 @@
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add required child element to the widget.',
             FAIL_P:   'Add required child elements for the %N_F out of %N_T widgets missing required child elements.',
+            MANUAL_CHECK_S: 'Verify the widget with @aria-busy=true@ children are being populated with required child elements.',
+            MANUAL_CHECK_P: 'Verify the %N_MC widgets with @aria-busy=true@ children are being populated with required child elements.',
             HIDDEN_S: 'The widget with requires child elements that is is hidden and was not evaluated.',
             HIDDEN_P: '%N_H hidden widgets that require child elements were not evaluated.',
             NOT_APPLICABLE:  'No widgets with required child elements on this page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_PASS_1:    '@%1@ widget contains at least one required owned element: @%2@.',
-            ELEMENT_PASS_2:    'When @aria-busy@ is set to @true@, the @%1@ widget is not required to contain required owned elements.',
-            ELEMENT_FAIL_1:  '@%1@ widget does not contain one or more of following required owned elements: @%2@.',
-            ELEMENT_HIDDEN_1:  'Required owned elements was not tested because the @%1@ widget is hidden from assistive technologies and not visible on screen.'
+            ELEMENT_PASS_1:   '@%1@ widget contains at least one required owned element with the role of: @%2@.',
+            ELEMENT_MC_1:     'When @aria-busy@ is set to @true@, verify for the child nodes are being populated.',
+            ELEMENT_FAIL_1:   '@%1@ widget does not contain one or more of following required owned elements with a role of: @%2@.',
+            ELEMENT_HIDDEN_1: 'Required owned elements was not tested because the @%1@ widget is hidden from assistive technologies and not visible on screen.'
           },
           PURPOSES: [
             'ARIA roles, properties and states describes the features of interactive widgets to users of assistive technologies, especially screen reader users.',
@@ -20162,7 +16602,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20180,15 +16620,15 @@
           SUMMARY:               'Role must have parent',
           TARGET_RESOURCES_DESC: 'Role with required parent role',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Add required parent role to the widget.',
-            FAIL_P:   'Add required parent role to the %N_F of the %N_T widgets that require a parent role.',
+            FAIL_S:   'Update the parent/child structure of the page so the element descends from a required parent role.',
+            FAIL_P:   'Update the parent/child structure of the page so the %N_F elements descend from a required parent role.',
             HIDDEN_S: 'The role that requires a parent role that is hidden and was not evaluated.',
             HIDDEN_P: '%N_H widgets that require a parent roles that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No widgets with required parent role on this page'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_PASS_1:   '@%1@ role is a child of the a @%2@ role.',
-            ELEMENT_FAIL_1:   'The @%2@ role requires a parent @%1@ role, check your HTML DOM structure to ensure an ancestor element or an @aria-owns@ attributes identifies a required parent role.',
+            ELEMENT_PASS_1:   '@%1@ role is a descendant of the a @%2@ role.',
+            ELEMENT_FAIL_1:   'The @%1@ role requires a ancestor role of "@%2@", check your HTML DOM structure to ensure an ancestor element or an @aria-owns@ attributes identifies a required parent role.',
             ELEMENT_HIDDEN_1: 'Required parent role was not tested because the @%1@ widget is hidden from assistive technologies and/or not visible on screen.'
           },
           PURPOSES: [
@@ -20216,7 +16656,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20230,17 +16670,17 @@
       },
    WIDGET_9: {
           ID:                    'Widget 9',
-          DEFINITION:            'Elements must be owned by only one widget.',
+          DEFINITION:            'Elements must be owned by only one parent role.',
           SUMMARY:               'Only one owner',
-          TARGET_RESOURCES_DESC: 'Widgets with required parent roles',
+          TARGET_RESOURCES_DESC: 'Roles with required parent roles',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Update widgets with aria-owns to make sure a element is only referenced once.',
-            FAIL_P:   'Update %N_F out of %N_T widgets with aria-owns to make sure they reference a element only once.',
+            FAIL_S:   'Update elements with aria-owns to make sure elements are only referenced once.',
+            FAIL_P:   'Update %N_F out of %N_T elements with aria-owns to make sure they reference an element only once.',
             NOT_APPLICABLE:  'No elements are referenced using aria-owns on this page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_PASS_1:   '@%2@ element is referenced only by @%1@ container element using aria-owns.',
-            ELEMENT_FAIL_1: 'Check the @%1@ @aria-owns@ reference to @%2@ element so it is only referenced by one container element.',
+            ELEMENT_PASS_1: '@%1@ element is referenced only by one container element using aria-owns.',
+            ELEMENT_FAIL_1: '@%1@ element is referenced only by %2 container elements using aria-owns.',
           },
           PURPOSES: [
             'ARIA container elements  have require child elements.',
@@ -20266,7 +16706,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             },
             { type: REFERENCES.EXAMPLE,
               title: 'MDN Web Docs: ARIA ',
@@ -20280,7 +16720,7 @@
       },
    WIDGET_10: {
           ID:                    'Widget 10',
-          DEFINITION:            'Range widget %s have value between minimum and maximum values, or have an indeterminate state.',
+          DEFINITION:            'Range widget must have value between minimum and maximum values, or have an indeterminate state.',
           SUMMARY:               'Value in range',
           TARGET_RESOURCES_DESC: 'Range widgets',
           RULE_RESULT_MESSAGES: {
@@ -20291,24 +16731,25 @@
             NOT_APPLICABLE:  'No @range@ widgets on the page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_PASS_1:  '@%1@ widget is using @aria-valuetext@ attribute which overrides the @aria-valuenow@ attribute for describing the value of the range.',
-            ELEMENT_PASS_2:  '@%1@ widget value of %2 is in the range %3 and %4.',
-            ELEMENT_PASS_3:  '@%1@ widget has no @aria-valuenow@ attribute and the value is considered indeterminate.',
-            ELEMENT_FAIL_1:  'Update the numeric values of @aria-valuenow@ (%1), @aria-valuemin@ (%2) and @aria-valuemax@ (%3) so the @aria-valuenow@ value is in range.',
-            ELEMENT_FAIL_2:  'Update the numeric values of @aria-valuemin@ (%1) and @aria-valuemax@ (%2) so the @aria-valuemin@ value is less than the @aria-valuemax@ value.',
-            ELEMENT_FAIL_3:  'Update the @%1@ widget values for @aria-valuemin@ ("%2") and/or @aria-valuemax@ ("%3") attributes to be valid numbers.',
-            ELEMENT_FAIL_4:  '@%1@ widget is missing or has an invalid value for @aria-valuenow@.',
+            ELEMENT_PASS_1:  '@%1@ is using @aria-valuetext@ attribute with a value of @%2@ which should provide a better description of the value than the @aria-valuenow@ of @%3@.',
+            ELEMENT_PASS_2:  '@%1@ has a value of %2 is in the range %3 and %4.',
+            ELEMENT_PASS_3:  '@%1@ has no @aria-valuenow@ value and is considered an indeterminate.',
+            ELEMENT_FAIL_1:  'Update the numeric values of @aria-valuenow@ ("%1"), @aria-valuemin@ ("%2") and @aria-valuemax@ ("%3") so the @aria-valuenow@ value is between the minimum and maximum values.',
+            ELEMENT_FAIL_2:  'Update the values of @aria-valuemin@ ("%1") and @aria-valuemax@ ("%2") to be numeric values, make sure the @aria-valuemin@ value is less than the @aria-valuemax@ value.',
+            ELEMENT_FAIL_3:  'Update the value of @aria-valuenow@ ("%1") to be a valid numeric value.',
+            ELEMENT_FAIL_4:  '@%1@ is missing the @aria-valuenow@ attribute.',
             ELEMENT_HIDDEN_1:  'Widget range values were not tested because the @%1@ range widget is hidden from assistive technologies.'
           },
           PURPOSES: [
             'Range roles identify a value between a minimum or maximum value and whether the value can be changed by the user (e.g. @scrollbar@, @slider@ or @spinbutton@).',
-            'Screen readers typcially render the value of a range widget as a percentage of the total range defined by the minimum and maximum values.',
+            'Screen readers typically render the value of a range widget as a percentage of the total range defined by the minimum and maximum values.',
+            'Elements with the role @separator@ that are focusable (e.r. @tabindex=0@) are considered a range role with the same requirements as a @scrollbar@.',
             '@aria-valuetext@ can be used to render an alternative to the percentage when a numerical values and/or a units of measure are more descriptive.',
             'Some range roles (e.g. @progress@ and @spinbutton@) allow an unknown current value indicating indeterminate or no current value.'
           ],
           TECHNIQUES: [
-            'Use the @aria-valuenow@ attributes numerical value must be in the range defined by @aria-valuemin@ and @aria-valuemax@.',
-            'Screen reader typically render the slider value as a percentage, requiring a valid @aria-valuenow@ attribute.',
+            'Use the numerical value of the @aria-valuenow@ attribute must be in the range defined by @aria-valuemin@ and @aria-valuemax@.',
+            'Screen readers typically render the range value as a percentage, requiring a valid @aria-valuenow@ attribute.',
             'Use the @aria-valuetext@ to provide an alternative to the percentage typically spoken by assistive technologies (e.g. "32 dollars", "78 degrees")',
             'For most range roles, if @aria-valuemin@ is not defined it\'s default value is 0.',
             'For most range roles, if @aria-valuemax@ is not defined it\'s default value is 100.'
@@ -20318,7 +16759,7 @@
           INFORMATIONAL_LINKS: [
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices: Communicating Value and Limits for Range Widgets',
-              url:   'https://w3c.github.io/aria-practices/#range_related_properties'
+              url:   'https://www.w3.org/WAI/ARIA/apg/#range_related_properties'
             },
             { type: REFERENCES.SPECIFICATION,
               title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Meter',
@@ -20331,6 +16772,10 @@
             { type: REFERENCES.SPECIFICATION,
               title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Scollbar',
               url:   'https://www.w3.org/TR/wai-aria-1.2/#scollbar'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Separator',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#separator'
             },
             { type: REFERENCES.SPECIFICATION,
               title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Slider',
@@ -20352,97 +16797,81 @@
       },
    WIDGET_11: {
           ID:                    'Widget 11',
-          DEFINITION:            'Elements with UI event handlers %s have widget roles that accurately describe the options and actions available to the user upon interacting with the element.',
-          SUMMARY:               'Elements with event handlers %s have roles',
-          TARGET_RESOURCES_DESC: 'Elements with event handlers',
+          DEFINITION:            'Verify that @aria-valuetext@ describes the value of a range control.',
+          SUMMARY:               'Verify @aria-valuetext@ value.',
+          TARGET_RESOURCES_DESC: 'Range widgets using @aria-valuetext@',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:          'Add an ARIA widget role to the interactive element, or to its descendants, to describe the user interactions associated with the event handler or handlers on the element.',
-            FAIL_P:          'Add ARIA widget roles to the %N_F interactive elements, or to their descendants, to describe the user interactions associated with the event handlers on those elements.',
-            MANUAL_CHECK_S:  'Verify the user interactions associated with the interactive element with one or more event handlers are accurately described by the element\'s widget role and/or those of its descendants.',
-            MANUAL_CHECK_P:  'Verify the user interactions associated with the %N_MC interactive elements with one or more event handlers are accurately described by each element\'s widget role and/or their descendants.',
-            HIDDEN_S:        'The hidden interactive element with event handlers was not evaluated.',
-            HIDDEN_P:        'The %N_H interactive elements with event handlers were not evaluated.',
-            NOT_APPLICABLE:  'No interactive elements with event handlers found on this page.'
+            FAIL_S:          'Add @aria-valuenow@ to the range widgets using @aria-valuetext@.',
+            FAIL_P:          'Add @aria-valuenow@ to the %N_F range widgets using @aria-valuetext@.',
+            MANUAL_CHECK_S:  'Verify range widget using @aria-valuetext@ describes the value of the widget.',
+            MANUAL_CHECK_P:  'Verify %N_MC range widgets using @aria-valuetext@ describe the value of the widget.',
+            HIDDEN_S:        'The hidden range widgets using @aria-valuetext@ was not evaluated.',
+            HIDDEN_P:        'The %N_H hidden range widgets using @aria-valuetext@ were not evaluated.',
+            NOT_APPLICABLE:  'No range widgets using @aria-valuetext@ were found on this page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_MANUAL_CHECK_1:  'Verify the user options and actions available through the "@%2@" event handler(s) are accurately described by the @%1@ widget role.',
-            ELEMENT_MANUAL_CHECK_2:  'Verify the user options and actions available through the "@%2@" event handler(s) are accurately described by native role semantics of the @%1@ element.',
-            ELEMENT_MANUAL_CHECK_3:  'Verify the user options and actions available through the "@%2@" event handler(s) are accurately described by the descendant elements with widget roles or the native role semantics of the interactive elements.',
-            ELEMENT_FAIL_1:   'Add widget role(s) to the element and/or its descendants that accurately describe the user options and actions of the @%1@ element with the following event handlers: %2.',
-            ELEMENT_HIDDEN_1: 'Roles for interactive elements was not tested because the %1 element is hidden from assistive technologies with following event handlers: %2'
+            ELEMENT_MC_1:     'Verify the @aria-valuetext@ value ("%1") is a better description of the value of the range control than just the @aria-valuenow@ value ("%2").',
+            ELEMENT_FAIL_1:   'The @aria-valuetext@ attribute must be used in conjunction with the @aria-valuenow@ attribute.',
+            ELEMENT_HIDDEN_1: 'The range widget with @aria-valuetext@ attribute was not tested because the %1 element is hidden from assistive technologies.'
           },
           PURPOSES: [
-            'ARIA widget roles describe the user options and actions, or more generally, the expected behavior, of interactive elements to users of assistive technologies.',
-            'Standard HTML form controls and links have default widget roles that describe their behavior.',
-            'When UI event handlers are used to create user options and actions that change the expected behavior of an interactive element, ensure that the appropriate widget role is assigned to the element.',
-            'Conversely, ensure that the event handlers are adding appropriate behaviors that align with the ARIA widget role.'
+            'Range roles identify a value between a minimum or maximum value and whether the value can be changed by the user (e.g. @scrollbar@, @slider@ or @spinbutton@).',
+            'When @aria-valuetext@ is used in conjunction with @aria-valuenow@, screen readers render the value of @aria-valuetext@.',
+            'The advantage of using @aria-valuetext@ is providing a better description of the value, for example a media player control could define the time position in a video (e.g. 2 minutes and 20 seconds).'
           ],
           TECHNIQUES: [
-            'Use the @role@ attribute with an ARIA widget role value to describe the user options, actions and expected behavior of custom interactive elements.',
-            'Use ARIA property and state attributes to describe the features of each widget role. Note that some widget roles have required properties and states.',
-            'Ensure that all options and actions of interactive elements are available through keyboard-only interaction.'
+            'The @aria-valuetext@ attribute must be used in conjunction with the @aria-valuenow@ attribute.',
+            'Use the @aria-valuetext@ to provide an alternative to the percentage typically spoken by assistive technologies (e.g. "32 dollars", "78 degrees")'
           ],
           MANUAL_CHECKS: [
           ],
           INFORMATIONAL_LINKS: [
-            { type: REFERENCES.SPECIFICATION,
-              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Widget Roles',
-              url:   'https://www.w3.org/TR/wai-aria-1.2/#widget_roles'
+            { type: REFERENCES.EXAMPLE,
+              title: 'ARIA Authoring Practices: Communicating Value and Limits for Range Widgets',
+              url:   'https://www.w3.org/WAI/ARIA/apg/#range_related_properties'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'HTML5: INPUT element widget role semantics',
-              url:   'https://www.w3.org/TR/html51/sec-forms.html#state-of-the-type-attribute'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Meter',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#meter'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'HTML5: SELECT element widget role semantics',
-              url:   'https://www.w3.org/TR/html51/sec-forms.html#the-select-element'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Progress',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#progress'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'HTML5: TEXTAREA element widget role semantics',
-              url:   'https://www.w3.org/TR/html51/sec-forms.html#the-textarea-element'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Scollbar',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#scollbar'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'HTML5: BUTTON element widget role semantics',
-              url:   'https://www.w3.org/TR/html51/sec-forms.html#the-button-element'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Separator',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#separator'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'HTML5: A element widget role semantics',
-              url:   'https://www.w3.org/TR/html51/textlevel-semantics.html#the-a-element'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Slider',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#slider'
             },
             { type: REFERENCES.SPECIFICATION,
-              title: 'UI Events Specification',
-              url:   'https://www.w3.org/TR/DOM-Level-3-Events/'
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Spinbutton',
+              url:   'https://www.w3.org/TR/wai-aria-1.2/#spinbutton'
             },
             { type: REFERENCES.WCAG_TECHNIQUE,
-              title: 'G108: Using markup features to expose the name and role, allow user-settable properties to be directly set, and provide notification of changes.',
+              title: 'G108: Using markup features to expose the name and role, allow user-settable properties to be directly set, and provide notification of changes',
               url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G108'
             },
             { type: REFERENCES.WCAG_TECHNIQUE,
-              title: 'G108: Using markup features to expose the name and role, allow user-settable properties to be directly set, and provide notification of changes.',
-              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G108'
-            },
-            { type: REFERENCES.EXAMPLE,
-              title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
-            },
-            { type: REFERENCES.EXAMPLE,
-              title: 'MDN Web Docs: ARIA ',
-              url:   'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA'
-            },
-            { type: REFERENCES.EXAMPLE,
-              title: 'Web Fundamentals: Introduction to ARIA',
-              url:   'https://developers.google.com/web/fundamentals/accessibility/semantics-aria'
+              title: 'ARIA5: Using WAI-ARIA state and property attributes to expose the state of a user interface component',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA5.html'
             }
           ]
       },
       WIDGET_12: {
           ID:         'Widget 12',
-          DEFINITION: 'The label for elements with a widget roles on a page %s sufficiently describe its purpose.',
-          SUMMARY:    'Widget labels %s be descriptive',
-          TARGET_RESOURCES_DESC: 'Elements with widget roles on a page',
+          DEFINITION: 'The accessible name for elements with a widget roles on a page must sufficiently describe its purpose.',
+          SUMMARY:    'Widget accessible names must be descriptive',
+          TARGET_RESOURCES_DESC: 'Elements with widget roles',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'To the element with widget role missing a label, add a label that describes its purpose.',
-            FAIL_P:   'To each of the %N_F element with widget roles missing labels, add a label that uniquely describes its purpose.',
+            FAIL_S:   'To the element with widget role missing a accessible name, add an accessible name that describes its purpose.',
+            FAIL_P:   'To each of the %N_F element with widget roles missing accessible name, add an accessible name that uniquely describes its purpose.',
             MANUAL_CHECK_S: 'Verify that the label uniquely describes the purpose of the element with widget role.',
             MANUAL_CHECK_P: 'Verify that the label for each of the %N_MC element with widget roles uniquely describes its purpose.',
             HIDDEN_S: 'The control element that is hidden was not evaluated.',
@@ -20450,9 +16879,9 @@
             NOT_APPLICABLE: 'No element with widget roles on this page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_MC_1:     'Verify the label "%1" for the @%2@ element with @%3@ widget role describes its purpose.',
+            ELEMENT_MC_1:     'Verify the accessible name "%1" for the @%2@ element describes its purpose.',
             ELEMENT_MC_2:     'Verify the @%1@ element with @%2@ widget role does not need a label, a label is only needed  if it clarifies the purpose of the widget on the page.',
-            ELEMENT_FAIL_1:   'Add a label to the @%1@ element with @%2@ widget role.',
+            ELEMENT_FAIL_1:   'Add an accessible name to the @%1@ element with @%2@ widget role.',
             ELEMENT_HIDDEN_1: '@%1@ element with the %2@ widget role was not evaluated because it is hidden from assistive technologies.'
           },
           PURPOSES: [
@@ -20515,7 +16944,7 @@
       },
       WIDGET_13: {
           ID:                    'Widget 13',
-          DEFINITION:            'ARIA roles that prohibit accessible names %s not have an accessible name defined using @aria-label@ or @aria-labelledby@ attributes.',
+          DEFINITION:            'ARIA roles that prohibit accessible names should not have an accessible name defined using @aria-label@ or @aria-labelledby@ attributes.',
           SUMMARY:               'Role does not support accessible name.',
           TARGET_RESOURCES_DESC: 'ARIA roles which prohibit an accessible name',
           RULE_RESULT_MESSAGES: {
@@ -20526,10 +16955,8 @@
             NOT_APPLICABLE:  'No elements with @aria-label@ or @aria-labelledby@ that are on elements and/or have roles that prohibit the use of naming techniques where found.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_FAIL_1:    'Remove @aria-label@ or @aria-labelledby@ attribute from @%1@ element with role @%2@.',
-            ELEMENT_FAIL_2:    'Remove @aria-label@ or @aria-labelledby@ attribute from @%1@ element.',
-            ELEMENT_HIDDEN_1:  'Element @%1[role="%2"]@ was not tested because it is hidden from assistive technologies.',
-            ELEMENT_HIDDEN_2:  'Element @%1@ was not tested because it is hidden from assistive technologies.'
+            ELEMENT_FAIL_1:    'Remove @aria-label@ or @aria-labelledby@ attribute from @%1@ element.',
+            ELEMENT_HIDDEN_1:  'Element @%%2@ was not tested because it is hidden from assistive technologies.',
           },
           PURPOSES: [
             'Providing an accessible name for elements or roles provides a way for users to identify the purpose of each landmark, widget, link, table and form control on a web page.',
@@ -20552,7 +16979,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             }
           ]
       },
@@ -20562,8 +16989,6 @@
           SUMMARY:               'Verify appropriate use of live region',
           TARGET_RESOURCES_DESC: 'Elements with @alert@, @log@ or @status@ roles or the @aria-live@ attribute',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:          'One element identified as a live region has a conflict between the implied attribute values of the role and the defined attribute values.',
-            FAIL_P:          'The %N_F elements identified as live regions have conflicts between the implied attribute values of their roles and the defined attribute values.',
             HIDDEN_S:        'One element identified as a live region is hidden and was not evaluated.',
             MANUAL_CHECK_S:  'Verify the element identified as a live region has the appropriate ARIA markup for the type of informational change that can occur.',
             MANUAL_CHECK_P:  'Verify the %N_MC elements identified as live regions have the appropriate ARIA markup for the type of informational changes that can occur in those regions.',
@@ -20571,12 +16996,10 @@
             NOT_APPLICABLE:  'No elements were identified as live regions on the page.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_FAIL_1:     'The @aria-live@ attribute value of @%1@ conflicts with the default value of @%2@ for the @aria-live@ property of the @%3@ role.',
-            ELEMENT_FAIL_2:     'The @aria-atomic@ attribute value of @false@ conflicts with the default value of @true@ for the @aria-atomic@ property of the @%1@ role.',
             ELEMENT_MC_1:       'Verify the @aria-live@ attribute value of @%1@ is appropriate for the type of informational change that can occur in the region.',
             ELEMENT_MC_2:       'Verify the @alert@ role identifies a live region with critical time-sensitive information.',
             ELEMENT_MC_3:       'Verify the @log@ role identifies a live region where new information added and deleted in a meaningful order.',
-            ELEMENT_MC_4:       'Verify the @alert@ role identifies a live region with advisory information.',
+            ELEMENT_MC_4:       'Verify the @status@ role identifies a live region with advisory information.',
             ELEMENT_HIDDEN_1:   '@%1[arial-live="%2"]@ was not evaluated because it is hidden from assistive technologies.',
             ELEMENT_HIDDEN_2:   '@%1[role="%2"]@ was not evaluated because it is hidden from assistive technologies.'
           },
@@ -20630,7 +17053,7 @@
       },
       WIDGET_15: {
           ID:                    'Widget 15',
-          DEFINITION:            'ARIA attributes that have been deprecated for a role %s be removed.',
+          DEFINITION:            'ARIA attributes that have been deprecated for a role should be removed.',
           SUMMARY:               'Remove deprecated ARIA attributes.',
           TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are deprecated.',
           RULE_RESULT_MESSAGES: {
@@ -20641,10 +17064,8 @@
             NOT_APPLICABLE:  'No elements with deprecated ARIA attributes found.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_FAIL_1:    'Remove @%1@ attribute from @%2@ element with role @%3@.',
-            ELEMENT_FAIL_2:    'Remove @%1@ attribute from @%2@ element which has an implicit role of "@%3@".',
-            ELEMENT_HIDDEN_1:  'The @%1@ attribute on the @%2[role="%3"]@ element was not tested because it is hidden from assistive technologies.',
-            ELEMENT_HIDDEN_2:  'The @%1@ attribute on the @%2@ element which has the implicit role of "@%3@"" was not tested because it is hidden from assistive technologies.'
+            ELEMENT_FAIL_1:    'Remove @%1@ attribute from @%2@ element.',
+            ELEMENT_HIDDEN_1:  'The @%1@ attribute on the @%2@ element was not tested because it is hidden from assistive technologies.'
           },
           PURPOSES: [
             'Not all ARIA properties and states are useful on every ARIA role and starting with ARIA 1.2 certain states and properties that were once considered global have been deprecated on specific roles.',
@@ -20671,7 +17092,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             }
           ]
       },
@@ -20724,7 +17145,7 @@
             },
             { type: REFERENCES.EXAMPLE,
               title: 'ARIA Authoring Practices',
-              url:   'https://w3c.github.io/aria-practices/'
+              url:   'https://www.w3.org/WAI/ARIA/apg/'
             }
           ]
       }
@@ -20740,19 +17161,20 @@
     rules: {}
   };
 
-  messages$1.rules = Object.assign(messages$1.rules, colorRules);
-  messages$1.rules = Object.assign(messages$1.rules, focusRules);
-  messages$1.rules = Object.assign(messages$1.rules, controlRules);
-  messages$1.rules = Object.assign(messages$1.rules, headingRules);
-  messages$1.rules = Object.assign(messages$1.rules, imageRules);
-  messages$1.rules = Object.assign(messages$1.rules, linkRules);
-  messages$1.rules = Object.assign(messages$1.rules, landmarkRules);
-  messages$1.rules = Object.assign(messages$1.rules, widgetRules);
+  messages$1.rules = Object.assign(messages$1.rules, colorRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, focusRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, controlRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, headingRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, imageRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, linkRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, landmarkRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, tableRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, widgetRules$1);
 
   /* locale.js */
 
   /* Constants */
-  const debug$c = new DebugLogging('locale', false);
+  const debug$p = new DebugLogging('locale', false);
 
   var globalUseCodeTags = false;
 
@@ -20796,7 +17218,7 @@
     if (!message) {
       message = `[common][error]: id="${id}"`;
     }
-    debug$c.flag && debug$c.log(`[${id}][${value}]: ${message}`);
+    debug$p.flag && debug$p.log(`[${id}][${value}]: ${message}`);
     return message;
   }
 
@@ -20883,7 +17305,7 @@
       for (const g in principle.guidelines) {
         const guideline = principle.guidelines[g];
         if (guideline.id === guidelineId) {
-          debug$c.flag && debug$c.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
+          debug$p.flag && debug$p.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
           return {
             num: g,
             title: guideline.title,
@@ -20893,7 +17315,7 @@
         }
       }
     }
-    debug$c.flag && debug$c.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
+    debug$p.flag && debug$p.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
     return null;
   }
 
@@ -20921,7 +17343,7 @@
         for (const sc in guideline.success_criteria) {
           const success_criterion = guideline.success_criteria[sc];
           if (sc === successCriterionId) {
-            debug$c.flag && debug$c.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
+            debug$p.flag && debug$p.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
             return {
               id: successCriterionId,
               level: success_criterion.level,
@@ -20933,7 +17355,7 @@
         }
       }
     }
-    debug$c.flag && debug$c.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
+    debug$p.flag && debug$p.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
     return null;
   }
 
@@ -20953,7 +17375,7 @@
    */
 
   function getSuccessCriteriaInfo(successCriteriaIds) {
-    debug$c.flag && debug$c.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
+    debug$p.flag && debug$p.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
     const scInfoArray = [];
     successCriteriaIds.forEach( sc => {
       scInfoArray.push(getSuccessCriterionInfo(sc));
@@ -21000,7 +17422,7 @@
    */
 
   function getRuleDefinition (ruleId) {
-    debug$c.flag && debug$c.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
+    debug$p.flag && debug$p.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
     return transformElementMarkup(messages[locale].rules[ruleId].DEFINITION);
   }
 
@@ -21015,7 +17437,7 @@
    */
 
   function getRuleSummary (ruleId) {
-    debug$c.flag && debug$c.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
+    debug$p.flag && debug$p.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
     return transformElementMarkup(messages[locale].rules[ruleId].SUMMARY);
   }
 
@@ -21030,7 +17452,7 @@
    */
 
   function getTargetResourcesDesc (ruleId) {
-    debug$c.flag && debug$c.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
+    debug$p.flag && debug$p.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
     return transformElementMarkup(messages[locale].rules[ruleId].TARGET_RESOURCES_DESC);
   }
 
@@ -21049,7 +17471,7 @@
     messages[locale].rules[ruleId].PURPOSES.forEach ( p => {
       purposes.push(transformElementMarkup(p));
     });
-    debug$c.flag && debug$c.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
+    debug$p.flag && debug$p.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
     return purposes;
   }
 
@@ -21068,7 +17490,7 @@
     messages[locale].rules[ruleId].TECHNIQUES.forEach ( t => {
       techniques.push(transformElementMarkup(t));
     });
-    debug$c.flag && debug$c.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
+    debug$p.flag && debug$p.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
     return techniques;
   }
 
@@ -21096,8 +17518,8 @@
           url: infoLink.url
         }
       );
-      debug$c.flag && debug$c.log(`[infoLink][title]: ${infoLink.title}`);
-      debug$c.flag && debug$c.log(`[infoLink][  url]: ${infoLink.url}`);
+      debug$p.flag && debug$p.log(`[infoLink][title]: ${infoLink.title}`);
+      debug$p.flag && debug$p.log(`[infoLink][  url]: ${infoLink.url}`);
     });
     return infoLinks;
   }
@@ -21117,7 +17539,7 @@
     messages[locale].rules[ruleId].MANUAL_CHECKS.forEach ( mc => {
       manualChecks.push(transformElementMarkup(mc));
     });
-    debug$c.flag && debug$c.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
+    debug$p.flag && debug$p.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
     return manualChecks;
   }
 
@@ -21136,7 +17558,7 @@
     const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$c.flag && debug$c.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$p.flag && debug$p.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -21156,7 +17578,7 @@
     const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$c.flag && debug$c.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$p.flag && debug$p.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -21221,10 +17643,5076 @@
     return newStr;
   }
 
+  /* tableInfo.js */
+
+  /* Constants */
+  const debug$o = new DebugLogging('tableInfo', false);
+  debug$o.flag = false;
+  debug$o.rows = true;
+  debug$o.cells = true;
+  debug$o.tableTree = true;
+  debug$o.headerCalc = false;
+
+  /**
+   * @class TableElement
+   *
+   * @desc Identifies a DOM element as table.
+   *
+   * @param  {Object}  domElement    - Structural Information
+   * @param  {Object}  tableElement  - Parent TableElement
+   */
+
+  class TableElement {
+    constructor (parentTableElement, domElement) {
+      domElement.tableElement = this;
+      this.domElement = domElement;
+      this.parentTableElement = parentTableElement;
+
+      this.tableType = TABLE_TYPE.UNKNOWN;
+      this.hasCaption = false;
+
+      this.children = [];
+
+      this.rows = [];
+      this.row = null;
+      this.rowCount = 0;
+      this.colCount = 0;
+
+      this.cells = [];
+
+      this.rowGroupCount = 0;
+      this.cellCount = 0;
+      this.headerCellCount = 0;
+
+      this.spannedCells = 0;
+
+      this.currentParent = this;
+    }
+
+    addCaption (rowGroup, domElement) {
+      this.hasCaption = true;
+      const caption = new TableCaption(domElement);
+      rowGroup.children.push(caption);
+    }
+
+    addRowGroup (rowGroup, domElement) {
+      this.rowGroupCount += 1;
+      const newRowGroup = new TableRowGroup(domElement);
+      rowGroup.children.push(newRowGroup);
+      return newRowGroup;
+    }
+
+    addRow (rowGroup, domElement) {
+      this.rowCount += 1;
+      this.row = this.getRow(this.rowCount, domElement);
+      rowGroup.children.push(this.row);
+    }
+
+    addCell (domElement) {
+      let rowSpan, colSpan;
+      const tagName = domElement.tagName;
+      const node    = domElement.node;
+
+      if (tagName === 'th' || tagName === 'td') {
+        rowSpan =  node.hasAttribute('rowspan') ? parseInt(node.getAttribute('rowspan')) : 1;
+        colSpan =  node.hasAttribute('colspan') ? parseInt(node.getAttribute('colspan')) : 1;
+      }
+      else {
+        rowSpan =  node.hasAttribute('aria-rowspan') ? parseInt(node.getAttribute('aria-rowspan')) : 1;
+        colSpan =  node.hasAttribute('aria-colspan') ? parseInt(node.getAttribute('aria-colspan')) : 1;
+      }
+
+      rowSpan = isNaN(rowSpan) ? 1 : rowSpan;
+      colSpan = isNaN(colSpan) ? 1 : colSpan;
+      let row = this.getRow(this.rowCount);
+
+      const column = row.getNextEmptyColumn();
+      const cell = new TableCell(domElement, row.rowNumber, column, rowSpan, colSpan);
+      this.cells.push(cell);
+      row.setCell(column, cell);
+
+      this.cellCount += 1;
+      if (cell.isHeader) {
+        this.headerCellCount += 1;
+      }
+
+      if (colSpan > 1) {
+        for (let i = 1; i < colSpan; i += 1) {
+          row.setCell((column+i), cell);
+        }
+      }
+
+      if (rowSpan > 1) {
+        for (let i = 1; i < rowSpan; i += 1) {
+          row = this.getRow(this.rowCount + i);
+          row.setCell(column, cell);
+        }
+      }
+
+      return column;
+    }
+
+    updateColumnCount (col) {
+      this.colCount = Math.max(this.colCount, col);
+    }
+
+    getRow(rowNumber, domElement=null) {
+      let rowIndex = rowNumber >= 1 ? (rowNumber - 1) : 0;
+      if (!this.rows[rowIndex]) {
+        this.rows[rowIndex] = new TableRow(domElement, rowNumber);
+      }
+      else {
+        if (domElement) {
+          this.rows[rowIndex].setDomElement(domElement);
+        }
+      }
+      return this.rows[rowIndex];
+    }
+
+    getCell(rowNumber, columnNumber) {
+      for (let i = 0; i < this.cells.length; i += 1) {
+        const cell = this.cells[i];
+        if ((rowNumber >= cell.startRow) &&
+            (rowNumber <= cell.endRow) &&
+            (columnNumber >= cell.startColumn ) &&
+            (columnNumber <= cell.endColumn )) {
+          return  cell;
+        }
+      }
+      return null;
+    }
+
+    computeHeaders (domCache) {
+      const tableElement = this;
+      this.rows.forEach( row => {
+        row.cells.forEach( cell => {
+          debug$o.headerCalc && debug$o.log(`${cell}`, 1);
+          if (cell.headerSource === HEADER_SOURCE.HEADER_NONE) {
+            if (!cell.isHeader) {
+              const node = cell.domElement.node;
+              if (node.hasAttribute('headers')) {
+                const ids = node.getAttribute('headers').split(' ');
+                debug$o.headesCalc && debug$o.log(`[headers]: ${ids.join(' ')}`);
+                for (let i = 0; i < ids.length; i += 1) {
+                  const de = domCache.getDomElementById(ids[i]);
+                  if (de && de.accName.name) {
+                    cell.headers.push(de.accName.name);
+                  }
+                }
+                if (cell.headers.length) {
+                  cell.headerSource = HEADER_SOURCE.HEADERS_ATTR;
+                }
+              }
+              else {
+                // get Column Headers
+                for (let i = 1; i < row.rowNumber; i += 1) {
+                  const hc = tableElement.getCell(i, cell.startColumn);
+                  debug$o.headerCalc && debug$o.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
+                  if (hc && hc.isHeader &&
+                      (!hc.hasScope || hc.isScopeColumn) &&
+                      hc.domElement.accName.name) {
+                    cell.headers.push(hc.domElement.accName.name);
+                  }
+                }
+
+                // get Row Headers
+                for (let i = 1; i < cell.startColumn; i += 1) {
+                  const hc = tableElement.getCell(row.rowNumber, i);
+                  debug$o.headerCalc && debug$o.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
+                  if (hc && hc.isHeader &&
+                      (!hc.hasScope || hc.isScopeRow) &&
+                      hc.domElement.accName.name) {
+                    cell.headers.push(hc.domElement.accName.name);
+                  }
+                }
+
+                if (cell.headers.length) {
+                  cell.headerSource = HEADER_SOURCE.ROW_COLUMN;
+                }
+              }
+              debug$o.headerCalc && debug$o.log(`${cell}`);
+            }
+          }
+        });
+      });
+    }
+
+    getTableType () {
+
+      const de = this.domElement;
+
+      if (de.hasRole) {
+        switch (de.role) {
+          case 'none':
+          case 'presentation':
+            return TABLE_TYPE.LAYOUT;
+
+          case 'grid':
+            return TABLE_TYPE.ARIA_GRID;
+
+          case 'table':
+            return TABLE_TYPE.ARIA_TABLE;
+
+          case 'treegrid':
+            return TABLE_TYPE.ARIA_TREEGRID;
+        }
+      }
+
+      if (((this.headerCellCount > 0) ||
+           (this.domElement.accName.name)) &&
+         (this.rowCount > 1) &&
+         (this.colCount > 1)) {
+        if (this.spannedDataCells > 0) {
+          return TABLE_TYPE.COMPLEX;
+        }
+        else {
+          return TABLE_TYPE.DATA;
+        }
+      }
+      return TABLE_TYPE.UNKNOWN;
+    }
+
+    toString () {
+      return `[TableElement][type=${getCommonMessage('tableType', this.tableType)}][role=${this.domElement.role}]: ${this.children.length} children ${this.rows.length} rows`;
+    }
+
+    debugRowGroup (prefix, item) {
+      debug$o.log(`${prefix}${item}`);
+      if (item.isGroup) {
+        item.children.forEach( child => {
+          if (child) {
+            this.debugRowGroup(prefix + '  ', child);
+          }
+        });
+      }
+    }
+
+    debug () {
+      if (debug$o.flag) {
+        debug$o.log(`${this}`);
+        if (debug$o.tableTree) {
+          this.children.forEach( child => {
+            this.debugRowGroup('  ', child);
+          });
+        }
+        debug$o.separator();
+        for (let i = 0; i < this.rows.length; i += 1) {
+          this.rows[i].debug('  ');
+        }
+      }
+    }
+  }
+
+  /**
+   * @class TableCaption
+   *
+   * @desc Identifies a DOM element as caption (e.g. CAPTION) in a table
+   *
+   * @param  {Object}  domElement - Structural Information
+   */
+
+  class TableCaption {
+    constructor (domElement) {
+      if (domElement) {
+        this.domElement   = domElement;
+      }
+    }
+
+    get isGroup () {
+      return false;
+    }
+
+    get isRow () {
+      return false;
+    }
+
+    toString() {
+      return `[TableCaption]: ${this.domElement.accName.name}`;
+    }
+  }
+
+  /**
+   * @class TableRowGroup
+   *
+   * @desc Identifies a DOM element as row group (e.g. THEAD or TBODY) in a table
+   *
+   * @param  {Object}  domElement - Structural Information
+   */
+
+  class TableRowGroup {
+    constructor (domElement) {
+      if (domElement) {
+        this.domElement   = domElement;
+      }
+      this.children = [];
+    }
+
+    get isGroup () {
+      return true;
+    }
+
+    get isRow () {
+      return false;
+    }
+
+    toString() {
+      return `[TableRowGroup][${this.domElement.tagName}]: ${this.children.length} children`;
+    }
+  }
+
+
+  /**
+   * @class TableRow
+   *
+   * @desc Identifies a DOM element as row in a table
+   *
+   * @param  {Object}  domElement - Structural Information
+   * @param  {Number}  rowNumber  - Number of the row in the table
+   */
+
+  class TableRow {
+    constructor (domElement, rowNumber) {
+      if (domElement) {
+        this.domElement   = domElement;
+      }
+      this.cells = [];
+      this.rowNumber = rowNumber;
+    }
+
+    get isGroup () {
+      return false;
+    }
+
+    get isRow () {
+      return true;
+    }
+
+    getNextEmptyColumn () {
+      let nextColumn = 1;
+      while (this.cells[nextColumn-1]) {
+        nextColumn += 1;
+      }
+      return nextColumn;
+    }
+
+    setDomElement(domElement) {
+      this.domElement = domElement;
+    }
+
+    setCell(columnNumber, cell) {
+      if (columnNumber > 0) {
+        this.cells[columnNumber - 1] = cell;
+      }
+    }
+
+    toString () {
+      return `[TableRow]: Row ${this.rowNumber} with ${this.cells.length} columns`;
+    }
+
+    debug (prefix='') {
+      if (debug$o.flag && debug$o.rows) {
+        debug$o.log(`${prefix}${this}`);
+        for (let i = 0; i < this.cells.length; i += 1) {
+          const cell = this.cells[i];
+          if (cell) {
+            cell.debug(prefix + '  ');
+          }
+          else {
+            debug$o.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * @class TableCell
+   *
+   * @desc Identifies a DOM element as a table or grid cell
+   *
+   * @param  {Object}  domElement    - Structural Information
+   * @param  {Number}  row        - Starting row in table
+   * @param  {Number}  column     - Starting column in table
+   * @param  {Number}  rowSpan    - Number of rows the cell spans, default is 1
+   * @param  {Number}  columnSpan - Number of columns the cell spans, default is 1
+   */
+
+  class TableCell {
+    constructor (domElement, rowNumber, columnNumber, rowSpan=1, columnSpan=1) {
+      // Provide a reference for elementResult object to get information about table cells
+      domElement.tableCell = this;
+
+      this.domElement   = domElement;
+
+      const node    = domElement.node;
+      const tagName = domElement.tagName;
+      const role    = domElement.role;
+      const scope   = node.hasAttribute('scope') ?
+                      node.getAttribute('scope').toLowerCase() :
+                      '';
+
+      this.isScopeRow    = (scope === 'row') || (role == 'rowheader');
+      this.isScopeColumn = (scope === 'col') || (role == 'columnheader');
+      this.hasScope = this.isScopeRow || this.isScopeColumn;
+      this.isParentTHead = node.parentNode ?
+                           node.parentNode.tagName.toLowerCase() === 'thead' :
+                           false;
+
+      this.isHeader = (tagName === 'th') ||
+                      (role == 'columnheader') ||
+                      (role == 'rowheader') ||
+                      this.hasScope ||
+                      this.isParentTHead;
+
+
+      this.startRow    = rowNumber;
+      this.startColumn = columnNumber;
+
+      this.endRow    = rowNumber    + rowSpan    - 1;
+      this.endColumn = columnNumber + columnSpan - 1;
+
+      this.headers = [];
+      this.headersSource = HEADER_SOURCE.NONE;
+
+    }
+
+    toString () {
+      const node = this.domElement.node;
+      let str = `[TableCell][${this.startRow}][${this.startColumn}]`;
+      str += ` ${node.textContent}`;
+      str += ` ${this.isHeader ? '(Header)' : ''}`;
+      const headerSource = getCommonMessage('headerSource', this.headerSource);
+      const headerInfo = this.headers.length ? `${this.headers.join(' | ')} (${headerSource})` : 'none';
+      str += !this.isHeader ? ` Headers: ${headerInfo}` : '';
+      return str;
+    }
+
+    debug (prefix='') {
+      if (debug$o.flag) {
+        debug$o.log(`${prefix}${this}`);
+      }
+    }
+
+  }
+
+
+  /**
+   * @class TableInfo
+   *
+   * @desc Collects information on table elements and their children
+   */
+
+  class TableInfo {
+    constructor () {
+      this.allTableElements = [];
+    }
+
+    update (tableElement, rowGroup, domElement) {
+
+      let te = tableElement;
+      let rg = rowGroup;
+
+      switch (domElement.tagName) {
+
+        case 'table':
+          te = new TableElement(te, domElement);
+          this.allTableElements.push(te);
+          rg = te;
+          break;
+
+        case 'caption':
+          if (te) {
+            te.addCaption(rg, domElement);
+          }
+          break;
+
+        case 'thead':
+          if (te) {
+            rg = te.addRowGroup(rg, domElement);
+          }
+          break;
+
+        case 'tbody':
+          if (te) {
+            rg= te.addRowGroup(rg, domElement);
+          }
+          break;
+
+        case 'tr':
+          if (te) {
+            te.addRow(rg, domElement);
+          }
+          break;
+
+        case 'th':
+        case 'td':
+          if (te) {
+            te.updateColumnCount(te.addCell(domElement));
+          }
+          break;
+
+        default:
+
+          // Tables defined using ARIA markup
+
+          switch (domElement.role) {
+
+            case 'table':
+              te = new TableElement(te, domElement);
+              this.allTableElements.push(te);
+              rg = te;
+              break;
+
+            case 'row':
+              if (te) {
+                te.addRow(rg, domElement);
+              }
+              break;
+
+            case 'rowgroup':
+              if (te) {
+                rg = te.addRowGroup(rg, domElement);
+              }
+              break;
+
+            case 'rowheader':
+            case 'colheader':
+            case 'cell':
+            case 'gridcell':
+              if (te) {
+                te.addCell(domElement);
+              }
+              break;
+
+          }
+        break;
+      }
+
+      return [te, rg];
+    }
+
+    computeHeaders (domCache) {
+      this.allTableElements.forEach( te => {
+        te.computeHeaders(domCache);
+      });
+    }
+
+    computeTableTypes () {
+      this.allTableElements.forEach( te => {
+        te.tableType = te.getTableType();
+      });
+    }
+
+
+    /**
+     * @method showTableInfo
+     *
+     * @desc showTableInfo is used for debugging the TableInfo objects
+     */
+
+    showTableInfo () {
+      if (debug$o.flag) {
+        debug$o.log('== All Tables ==', 1);
+          this.allTableElements.forEach( te => {
+            te.debug();
+          });
+      }
+    }
+  }
+
+  /* domCache.js */
+
+  /* Constants */
+  const debug$n = new DebugLogging('domCache', false);
+  debug$n.flag = true;
+  debug$n.showDomTexts = false;
+  debug$n.showDomElems = false;
+  debug$n.showTree = false;
+
+  const skipableElements = [
+    'base',
+    'content',
+    'input[type=hidden]',
+    'link',
+    'meta',
+    'noscript',
+    'script',
+    'style',
+    'template',
+    'shadow',
+    'title'
+  ];
+
+  /**
+   * @class ParentInfo
+   *
+   * @desc Contains reference to ancestor objects in the DOMCache
+   *
+   * @param  {Object}  info - Parent ParentInfo object
+   */
+
+  class ParentInfo {
+    constructor (info) {
+      this.controlElement  = null;
+      this.document        = null;
+      this.parentDocument  = null;
+      this.useParentDocForName = false;
+      this.documentIndex   = 0;
+      this.domElement      = null;
+      this.landmarkElement = null;
+      this.listElement     = null;
+      this.mapElement      = null;
+      this.tableElement    = null;
+      this.tableRowGroup   = null;
+
+      if (info) {
+        this.controlElement  = info.controlElement;
+        this.document        = info.document;
+        this.parentDocument  = info.parentDocument;
+        this.useParentDocForName = info.useParentDocForName;
+        this.documentIndex   = info.documentIndex;
+        this.domElement      = info.domElement;
+        this.landmarkElement = info.landmarkElement;
+        this.listElement     = info.listElement;
+        this.mapElement      = info.mapElement;
+        this.tableElement    = info.tableElement;
+        this.tableRowGroup   = info.tableRowGroup;
+      }
+    }
+  }
+
+  /**
+   * @class DOMCache
+   *
+   * @desc Builds a cache of the dom from the startingNode and computes
+   *       information useful for accessibility rules
+   *       The dom cache is passed into rules for computing evaluation
+   *       results
+   *
+   * @param  {Object}  startingDoc     - Browser document object model (DOM) to build cache
+   * @param  {Object}  startingElement - DOM node to start evalution, if not defined use
+   *                                     document.body
+   */
+
+  class DOMCache {
+    constructor (startingDoc, startingElement) {
+      if (typeof startingElement !== 'object') {
+        startingElement = startingDoc.body;
+      }
+
+      this.ordinalPosition = 2;
+      this.documentIndex = 0;
+
+      this.allDomElements = [];
+      this.allDomTexts    = [];
+
+      const parentInfo = new ParentInfo();
+      parentInfo.document        = startingDoc;
+      parentInfo.accNameDocument = startingDoc;
+
+      this.controlInfo   = new ControlInfo();
+      this.idInfo        = new IdInfo();
+      this.imageInfo     = new ImageInfo();
+      this.linkInfo      = new LinkInfo();
+      this.listInfo      = new ListInfo();
+      this.structureInfo = new StructureInfo();
+      this.tableInfo     = new TableInfo();
+      this.iframeInfo    = new IframeInfo();
+
+      this.startingDomElement = new DOMElement(parentInfo, startingElement, 1);
+      this.allDomElements.push(this.startingDomElement);
+
+      // Information on rule results associated with page
+      this.resultsHidden       = [];
+      this.resultsPassed       = [];
+      this.resultsViolations   = [];
+      this.resultsWarnings     = [];
+      this.resultsManualChecks = [];
+
+      this.transverseDOM(parentInfo, startingElement);
+      this.computeAriaOwnsRefs();
+      this.tableInfo.computeTableTypes();
+      this.tableInfo.computeHeaders(this);
+    }
+
+    getDomElementById(id) {
+      return this.allDomElements.find( de => de.id === id);
+    }
+
+    // Tests if a tag name can be skipped
+    isSkipableElement(tagName, type) {
+      const elemSelector = (tagName === 'input') && (typeof type === 'string') ? 
+                           `${tagName}[type=${type}]` :
+                           tagName;
+      return skipableElements.includes(elemSelector);
+    }
+
+    // Tests if a tag name is a custom element
+    isCustomElement(tagName) {
+      return tagName.indexOf('-') >= 0;
+    }
+
+    // Tests if a node is a iframe element
+    isIFrameElement(tagName) {
+      return tagName === 'iframe';
+    }
+
+    // Tests if a node is a slot element
+    isSlotElement(node) {
+      return (node instanceof HTMLSlotElement);
+    }
+
+    /**
+     * @method transverseDOM
+     *
+     * @desc Used to collect accessibility information for all the element nd text
+     *       nodes on a web page for use the the rules.  It pre-computes values
+     *       that are used by the accessibility rules to test accessibility 
+     *       requirements 
+     *
+     * @param {Object}  parentinfo      - Parent DomElement associated with the
+     *                                    parent element node of the starting node
+     * @param {Object}  startingNode    - The dom element to start transversing the
+     *                                    dom
+     */
+
+    transverseDOM(parentInfo, startingNode) {
+      let tagName, newParentInfo;
+      let domItem = null;
+      let parentDomElement = parentInfo.domElement;
+      for (let node = startingNode.firstChild; node !== null; node = node.nextSibling ) {
+
+        switch (node.nodeType) {
+
+          case Node.TEXT_NODE:
+            domItem = new DOMText(parentDomElement, node);
+            // Check to see if text node has any renderable content
+            if (domItem.hasContent) {
+              // Merge text nodes in to a single DomText node if sibling text nodes
+              if (parentDomElement) {
+                parentDomElement.hasContent = true;
+                // if last child node of parent is a DomText node merge text content
+                if (parentDomElement.isLastChildDomText) {
+                  parentDomElement.addTextToLastChild(domItem.text);
+                } else {
+                  parentDomElement.addChild(domItem);
+                  this.allDomTexts.push(domItem);
+                }
+              }
+            }
+            break;
+
+          case Node.ELEMENT_NODE:
+            tagName = node.tagName.toLowerCase();
+
+            if (!this.isSkipableElement(tagName, node.getAttribute('type'))) {
+              // check for slotted content
+              if (this.isSlotElement(node)) {
+                // if no slotted elements, check for default slotted content
+                const isSlotContent = node.assignedNodes().length > 0;
+
+                const assignedNodes = isSlotContent ?
+                                      node.assignedNodes() :
+                                      node.assignedNodes({ flatten: true });
+
+                for (let i = 0; i < assignedNodes.length; i += 1) {
+                  const assignedNode = assignedNodes[i];
+                  if (assignedNode.nodeType === Node.TEXT_NODE) {
+                    debug$n.log(`[assignedNode][TEXT][${i} of ${assignedNodes.length}]: ${assignedNode.tagName}`);
+  /*                  domItem = new DOMText(parentDomElement, node);
+                    // Check to see if text node has any renderable content
+                    if (domItem.hasContent) {
+                      // Merge text nodes in to a single DomText node if sibling text nodes
+                      if (parentDomElement) {
+                        parentDomElement.hasContent = true;
+                        // if last child node of parent is a DomText node merge text content
+                        if (parentDomElement.isLastChildDomText) {
+                          parentDomElement.addTextToLastChild(domItem.text);
+                        } else {
+                          parentDomElement.addChild(domItem);
+                          this.allDomTexts.push(domItem);
+                        }
+                      }
+                    }
+  */
+                  }
+
+                  if (assignedNode.nodeType === Node.ELEMENT_NODE) {
+                    debug$n.log(`[assignedNode][ELEMENT][${i} of ${assignedNodes.length}]: ${assignedNode.tagName}`);
+
+                    domItem = new DOMElement(parentInfo, assignedNode, this.ordinalPosition);
+
+                    this.ordinalPosition += 1;
+                    this.allDomElements.push(domItem);
+
+                    if (parentDomElement) {
+                      parentDomElement.addChild(domItem);
+                    }
+
+                    newParentInfo = this.updateDOMElementInformation(parentInfo, domItem);
+                    newParentInfo.useParentDocForName = isSlotContent;
+
+                    this.transverseDOM(newParentInfo, assignedNode);
+                  }
+                }
+              } else {
+                domItem = new DOMElement(parentInfo, node, this.ordinalPosition);
+                this.ordinalPosition += 1;
+                this.allDomElements.push(domItem);
+
+                if (parentDomElement) {
+                  parentDomElement.addChild(domItem);
+                }
+                newParentInfo = this.updateDOMElementInformation(parentInfo, domItem);
+
+                // check for custom elements
+                if (this.isCustomElement(tagName)) {
+                  if (node.shadowRoot) {
+                    domItem.isShadowClosed = false;
+                    newParentInfo.parentDocument  = newParentInfo.document;
+                    newParentInfo.document        = node.shadowRoot;
+                    this.documentIndex += 1;
+                    newParentInfo.documentIndex = this.documentIndex;
+                    this.transverseDOM(newParentInfo, node.shadowRoot);
+                  }
+                  else {
+                    domItem.isShadowClosed = true;
+                  }
+                } else {
+                  // Check for iframe tag
+                  if (this.isIFrameElement(tagName)) {
+                    let isCrossDomain = false;
+                    try {
+                      const doc = node.contentDocument || node.contentWindow.document;
+                      newParentInfo.document = doc;
+                      this.documentIndex += 1;
+                      newParentInfo.documentIndex = this.documentIndex;
+                      this.transverseDOM(newParentInfo, doc);
+                    } catch (error) {
+                      isCrossDomain = true;
+                    }                    
+                    this.iframeInfo.update(domItem, isCrossDomain);
+                  } else {
+                    this.transverseDOM(newParentInfo, node);
+                  }
+                }
+              }
+            }   
+            break;
+
+        } /* end switch */
+      } /* end for */
+    }
+
+
+    /**
+     * @method updateDOMElementInformation
+     *
+     * @desc  Updates page level collections of elements for landmarks, headings and controls
+     *
+     * @param {Object}  parentInfo       - Parent DomElement associated DOMElement
+     * @param {Object}  domElement       - The dom element to start transversing the dom
+     *
+     * @returns {Object} ParentInfo  - updated ParentInfo object for use in the transversal
+     */
+
+    updateDOMElementInformation (parentInfo, domElement) {
+      const documentIndex   = parentInfo.documentIndex;
+
+      const controlElement  = parentInfo.controlElement;
+      const landmarkElement = parentInfo.landmarkElement;
+      const listElement     = parentInfo.listElement;
+      const mapElement      = parentInfo.mapElement;
+      const tableElement    = parentInfo.tableElement;
+      const tableRowGroup   = parentInfo.tableRowGroup;
+
+      let newParentInfo = new ParentInfo(parentInfo);
+      newParentInfo.domElement = domElement;
+
+      newParentInfo.controlElement  = this.controlInfo.update(controlElement, domElement);
+      newParentInfo.mapElement      = this.imageInfo.update(mapElement, domElement);
+      this.idInfo.update(documentIndex, domElement);
+      this.linkInfo.update(domElement);
+      newParentInfo.listElement     = this.listInfo.update(listElement, domElement);
+      newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
+      [newParentInfo.tableElement, newParentInfo.tableRowGroup] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
+      return newParentInfo;
+    }
+
+    /**
+     * @method computeAriaOwnsRefs
+     *
+     * @desc  If aria-owns is defined, identify parent child relationships
+     */
+
+    computeAriaOwnsRefs() {
+
+      function addOwenedByRefToDescendants(ownerDomElement, domElement) {
+        domElement.ariaInfo.ownedByDomElements.push(ownerDomElement);
+        for (let i = 0; i < domElement.children.length; i += 1) {
+          const child = domElement.children[i];
+          if (child.isDomElement) {
+            addOwenedByRefToDescendants(ownerDomElement, child);
+          }
+        }
+      }
+
+      for (let i = 0; i < this.allDomElements.length; i += 1) {
+        const de = this.allDomElements[i];
+        if (de.ariaInfo.hasAriaOwns) {
+          for (let j = 0; j < de.ariaInfo.ariaOwnsIds.length; j += 1) {
+            const id = de.ariaInfo.ariaOwnsIds[j];
+            if (id) {
+              const ode = this.getDomElementById(id);
+              if (ode) {
+                de.ariaInfo.ownedDomElements.push(ode);
+                addOwenedByRefToDescendants(de, ode);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /**
+     * @method showDomElementTree
+     *
+     * @desc  Used for debugging the DOMElement tree
+     */
+
+    showDomElementTree () {
+      if (debug$n.flag) {
+        if (debug$n.showDomElems) {
+          debug$n.log(' === AllDomElements ===', true);
+          this.allDomElements.forEach( de => {
+            debug$n.domElement(de);
+          });
+        }
+
+        if (debug$n.showDomTexts) {
+          debug$n.log(' === AllDomTexts ===', true);
+          this.allDomTexts.forEach( dt => {
+            debug$n.domText(dt);
+          });
+        }
+
+        if (debug$n.showTree) {
+          debug$n.log(' === DOMCache Tree ===', true);
+          debug$n.domElement(this.startingDomElement);
+          this.startingDomElement.showDomElementTree(' ');
+        }
+      }
+    }
+  }
+
+  /* colorRules.js */
+
+  /* Constants */
+  const debug$m = new DebugLogging('Color Rules', false);
+  debug$m.flag = false;
+
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule group: Color Rules
+   */
+
+  const colorRules = [
+    /**
+     * @object COLOR_1
+     *
+     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3.1 for large text
+     */
+
+    { rule_id             : 'COLOR_1',
+      last_updated        : '2022-04-21',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      ruleset             : RULESET.TRIAGE,
+      rule_required       : true,
+      wcag_primary_id     : '1.4.3',
+      wcag_related_ids    : ['1.4.1','1.4.6'],
+      target_resources    : ['text content'],
+      validate            : function (dom_cache, rule_result) {
+
+        let index = 0;
+        function checkResult(domElement, result) {
+          const node    = domElement.node;
+          const tagName = node.tagName;
+          const id      = node.id ? `[id=${node.id}]` : '';
+          const cc      = domElement.colorContrast;
+          const crr     = cc.colorContrastRatio;
+          debug$m.flag && debug$m.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+        }
+
+
+        const MIN_CCR_NORMAL_FONT = 4.5;
+        const MIN_CCR_LARGE_FONT  = 3.1;
+
+        debug$m.flag && debug$m.log(`===== COLOR 1 ====`);
+
+        dom_cache.allDomTexts.forEach( domText => {
+          const de  = domText.parentDomElement;
+          const cc  = de.colorContrast;
+          const ccr = cc.colorContrastRatio;
+
+          if (de.visibility.isVisibleOnScreen) {
+            if (cc.isLargeFont) {
+              if (ccr >= MIN_CCR_LARGE_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
+                }
+              }
+            }
+            else {
+              if (ccr >= MIN_CCR_NORMAL_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
+                }
+              }
+            }
+          } else {
+            checkResult(de, 'HIDDEN');
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_1
+     *
+     * @desc  Use of color
+     */
+
+    { rule_id             : 'COLOR_2',
+      last_updated        : '2022-04-21',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      ruleset             : RULESET.TRIAGE,
+      wcag_primary_id     : '1.4.1',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    }
+
+  ];
+
+  /* focusRules.js */
+
+  /* Constants */
+  const debug$l = new DebugLogging('Focus Rules', false);
+  debug$l.flag = false;
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule group: Focus Rules
+   */
+
+  const focusRules = [
+
+  /**
+   * @object FOCUS_1
+   *
+   * @desc Focus order
+   */
+
+  { rule_id             : 'FOCUS_1',
+    last_updated        : '2022-05-24',
+    rule_scope          : RULE_SCOPE.PAGE,
+    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.3',
+    wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
+    target_resources    : ['Page', 'a', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
+    validate            : function (dom_cache, rule_result) {
+
+      let controlCount = 0;
+      let removedCount = 0;
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        if (de.isInteractiveElement ||
+            (de.ariaInfo.isWidget && !de.ariaInfo.hasRequiredParents)) {
+          if (de.visibility.isVisibleOnScreen) {
+            controlCount += 1;
+            if (de.isInteractiveElement && (de.tabIndex < 0)) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName, de.role, de.tabIndex]);
+              removedCount += 1;
+            }
+            else {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+              }
+            }
+          }
+          else {
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+            }
+          }
+        }
+      });
+
+      if (controlCount > 1) {
+        if (removedCount == 0) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, removedCount]);
+        }
+      }
+    } // end validation function
+  },
+
+  /**
+   * @object FOCUS_2
+   *
+   * @desc Focus style
+   */
+
+  { rule_id             : 'FOCUS_2',
+    last_updated        : '2022-05-24',
+    rule_scope          : RULE_SCOPE.PAGE,
+    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.7',
+    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
+    target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
+    validate            : function (dom_cache, rule_result) {
+
+      let controlCount = 0;
+      let hiddenCount = 0;
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        if (de.isInteractiveElement ||
+            de.ariaInfo.isWidget) {
+          if (de.visibility.isVisibleOnScreen) {
+            controlCount += 1;
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+            }
+          }
+          else {
+            hiddenCount += 1;
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+            }
+          }
+        }
+      });
+
+      if (controlCount > 1) {
+        if (hiddenCount == 0) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
+        }
+      }
+    } // end validation function
+
+  },
+
+  /**
+   * @object FOCUS_3
+   *
+   * @desc Target of a link does not go to a page with popup windows
+   */
+
+  { rule_id             : 'FOCUS_3',
+    last_updated        : '2022-05-24',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.LINKS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.2.1',
+    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+    target_resources    : ['a', 'area', 'select'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+        if (de.visibility.isVisibleOnScreen) {
+          rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object FOCUS_4
+   *
+   * @desc Select elements with onchange events
+   */
+
+  { rule_id             : 'FOCUS_4',
+    last_updated        : '2022-05-24',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.2.2',
+    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+    target_resources    : ['select'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        if (de.tagName === 'select') {
+          if (de.visibility.isVisibleOnScreen) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object FOCUS_5
+   *
+   * @desc Form include a submit button
+   *
+   */
+
+  { rule_id             : 'FOCUS_5',
+    last_updated        : '2022-05-24',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.2.2',
+    wcag_related_ids    : [],
+    target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      function getChildButtonDomElements (ce) {
+        let buttonDomElements = [];
+
+        ce.childControlElements.forEach( cce => {
+          const de = cce.domElement;
+          if (de.role === 'button') {
+            buttonDomElements.push(de);
+          }
+          buttonDomElements = buttonDomElements.concat(getChildButtonDomElements(cce));
+        });
+
+        return buttonDomElements;
+      }
+
+      dom_cache.controlInfo.allFormElements.forEach( fce => {
+        const de = fce.domElement;
+        if (de.visibility.isVisibleOnScreen) {
+          const buttonDomElements = getChildButtonDomElements(fce);
+          let submitButtons = 0;
+          let otherButtons  = 0;
+
+          buttonDomElements.forEach( b => {
+            if (b.tagName === 'input') {
+              const type = b.node.getAttribute('type');
+              if (type === 'submit') {
+                if (b.visibility.isVisibleOnScreen) {
+                  submitButtons += 1;
+                  rule_result.addElementResult(TEST_RESULT.PASS, b, 'ELEMENT_PASS_2', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_2', []);
+                }
+              }
+              else {
+                if ((type === 'button') || (type === "image")) {
+                 if (b.visibility.isVisibleOnScreen) {
+                    otherButtons += 1;
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_3', [type]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_3', [type]);
+                  }
+                }
+              }
+            }
+            else {
+              if (b.tagName === 'button') {
+               if (b.visibility.isVisibleOnScreen) {
+                  otherButtons += 1;
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_4', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_4', []);
+                }
+              } else {
+                if (b.role === 'button') {
+                 if (b.visibility.isVisibleOnScreen) {
+                    otherButtons += 1;
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_5', [b.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_5', [b.tagName]);
+                  }
+                }
+              }
+            }
+          });
+
+          if (submitButtons > 0) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+          }
+          else {
+            if (otherButtons > 0) {
+              if (otherButtons === 1) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [otherButtons]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+        }
+      });
+    } // end validation function
+  }
+
+  ];
+
+  /* controlRules.js */
+
+  /* Constants */
+  const debug$k = new DebugLogging('Control Rules', false);
+  debug$k.flag = false;
+
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule group: Form Control Rules
+   */
+
+  const controlRules = [
+
+  /**
+   * @object CONTROL_1
+   *
+   * @desc textarea, select and input elements of type text,
+   *       password, checkbox, radio and file must have an
+   *       accessible name using label elements
+   *
+   */
+
+  { rule_id             : 'CONTROL_1',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.TRIAGE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (!ce.isInputTypeImage) {
+          if (de.isLabelable) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_2
+   *
+   * @desc Every input type image must have an accessible name attribute with content
+   */
+
+  { rule_id             : 'CONTROL_2',
+    last_updated        : '2022-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.TRIAGE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="image"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeImage) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.source !== 'none') {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object CONTROL_3
+   *
+   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
+   */
+  { rule_id             : 'CONTROL_3',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="radio"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeRadio) {
+          if (de.visibility.isVisibleToAT) {
+            const gce = ce.getGroupControlElement(); 
+            if (gce) {
+              const gde = gce.domElement;
+              if (gde.tagName === 'fieldset') {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
+                }
+              }
+              else {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_4
+   *
+   * @desc Button elements must have text content and input type button must have a value attribute with content
+   */
+  { rule_id             : 'CONTROL_4',
+    last_updated        : '2022-07-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['button'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.role === 'button') {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
+            }
+              else {
+              if (de.tagName === 'input') {
+                if (de.accName.source === 'value') {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
+                }            
+              }
+              else {
+                if (de.tagName === 'button') {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                    }
+                  }            
+                }
+                else {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
+                    }
+                  }                          
+                }
+              }
+            }
+          }
+          else {
+            if (de.tagName === 'input' || ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
+            }
+            else {
+              if (de.tagName === 'button') {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
+              }
+            }
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_5
+   *
+   * @desc Ids on form controls must be unique
+   *
+   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
+   */
+  { rule_id             : 'CONTROL_5',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.1',
+    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.id) {
+          const docIndex = de.parentInfo.documentIndex;
+          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_6
+   *
+   * @desc Label element with a for attribute reference does not reference a form control
+   */
+  { rule_id             : 'CONTROL_6',
+    last_updated        : '2022-07-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel && ce.labelForAttr) {
+          if (de.visibility.isVisibleToAT) {
+            if (ce.isLabelForAttrValid) {
+              if (ce.labelforTargetUsesAriaLabeling) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_7
+   *
+   * @desc Label or legend element must contain text content
+   */
+
+  { rule_id             : 'CONTROL_7',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label', 'legend'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel || ce.isLegend) {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.hasTextContent) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              if (ce.hasSVGContent) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              }
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL 8
+   *
+   * @desc Fieldset must contain exactly one legend element
+   */
+
+  { rule_id             : 'CONTROL_8',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
+    target_resources    : ['fieldset'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        let le;
+        if (ce.isFieldset) {
+          if (de.visibility.isVisibleToAT) {
+
+            const legendCount = ce.legendElements.length;
+
+            switch (legendCount) {
+              case 0:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                break;
+
+              case 1:
+                le = ce.legendElements[0];
+                if (le.domElement.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                }
+                break;
+              
+              default:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
+                break;  
+            }
+
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_9
+   *
+   * @desc Check form controls labeled using the TITLE attribute for accessible name
+   */
+
+  { rule_id             : 'CONTROL_9',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['4.1.1'],
+    target_resources    : ['input', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.accName.source === 'title') {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+          }
+          else {      
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_10
+   *
+   * @desc Accessible labels must be unique for every textarea,
+   *       select and input element of type text, password, radio,
+   *       and checkbox on a page
+   */
+
+  { rule_id             : 'CONTROL_10',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.TRIAGE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
+        const de1 = ce1.domElement;
+        let count;
+        if (de1.ariaInfo.isNameRequired) {
+          if (de1.visibility.isVisibleToAT) {
+            count = 0;
+            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
+              const de2 = ce2.domElement;
+              if ((ce1 !== ce2) && 
+                  ((de1.ariaInfo.requiredParents.length === 0) || 
+                   (ce1.parentControlElement === ce2.parentControlElement)) &&
+                  de2.ariaInfo.isNameRequired && 
+                  de2.visibility.isVisibleToAT) {
+                if ((de1.role === de2.role) && 
+                    (ce1.nameForComparision === ce2.nameForComparision)) {
+                  count += 1;
+                }
+              }
+            });
+            if (count === 0){
+              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
+            } 
+            else {
+              // Since their ar often duplicate button on pages, when two or more buttons share the same
+              // name it should be a manual check
+              if (de1.role === 'button') {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
+                }
+              }
+              else {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
+                }
+              }
+            }
+          }
+          else {
+            if (de1.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
+            }
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_11
+   *
+   * @desc If there is more than one form on page, input element of type
+   *       submit and reset must have unique labels in each form using the value attribute
+   *
+   */
+
+  { rule_id             : 'CONTROL_11',
+    last_updated        : '2022-08-08',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      let de1, de2, count;
+
+      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
+        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
+          const sb1 = fe1.getButtonControl('submit');
+          if (sb1) {
+            de1 = sb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const sb2 = fe2.getButtonControl('submit');
+                  if (sb1 && sb2) {
+                    de2 = sb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (sb1.nameForComparision === sb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+
+          const rb1 = fe1.getButtonControl('reset');
+          if (rb1) {
+            de1 = rb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const rb2 = fe2.getButtonControl('reset');
+                  if (rb1 && rb2) {
+                    de2 = rb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (rb1.nameForComparision === rb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+        });
+      }
+    } // end validate function
+  }
+
+  ];
+
+  /* headingRules.js */
+
+  /* Constants */
+  const debug$j = new DebugLogging('Heading Rules', false);
+  debug$j.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule group: Heading Rules
+   */
+
+  const headingRules = [
+
+    /**
+     * @object HEADING_1
+     *
+     * @desc Page contains at least one H1 element and each H1 element has content
+     */
+     { rule_id            : 'HEADING_1',
+      last_updated        : '2022-05-19',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.HEADINGS,
+      ruleset             : RULESET.TRIAGE,
+      rule_required       : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
+      target_resources    : ['h1'],
+      validate            : function (dom_cache, rule_result) {
+        let h1Count = 0;
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.ariaInfo.ariaLevel === 1) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName && de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                h1Count++;
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+        if (h1Count === 0) {
+          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object HEADING_2
+     *
+     * @desc If there are main and/or banner landmarks and H1 elements,
+     *       H1 elements should be children of main or banner landmarks
+     *
+     */
+    { rule_id             : 'HEADING_2',
+      last_updated        : '2022-05-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.HEADINGS,
+      ruleset             : RULESET.MORE,
+      rule_required       : false,
+      wcag_primary_id     : '2.4.6',
+      wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
+      target_resources    : ['h1'],
+      validate            : function (dom_cache, rule_result) {
+
+        function checkForAnscetorLandmarkRole(de, role) {
+          let ple = de.parentInfo.landmarkElement;
+          while (ple) {
+             if (ple.domElement.role === role) return true;
+             ple = ple.parentLandmarkElement;
+          }
+          return false;
+        }
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.ariaInfo.ariaLevel === 1) {
+            if (de.visibility.isVisibleToAT) {
+              if (checkForAnscetorLandmarkRole(de, 'main')) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+              }
+              else {
+                if (checkForAnscetorLandmarkRole(de, 'banner')) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+  /**
+   * @object HEADING_3
+   *
+   * @desc Sibling headings of the same level that share the same parent heading should be unique
+   *       This rule applies only when there are no main landmarks on the page and at least one
+   *       sibling heading
+   *
+   */
+  { rule_id             : 'HEADING_3',
+    last_updated        : '2014-11-25',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    ruleset             : RULESET.MORE,
+    required            : false,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+
+      const visibleHeadings = [];
+      const lastHeadingNamesAtLevel = ['', '', '', '', '', '', ''];
+      const headingNameForComparison = [];
+
+      function updateLastHeadingNamesAtLevel (level, name) {
+        if ((level > 0) && (level < 7)) {
+          lastHeadingNamesAtLevel[level] = name;
+          for (let i = level + 1; i < 7; i += 1) {
+            // clear lower level names, since a new heading context
+            lastHeadingNamesAtLevel[i] = '';
+          }
+        }
+      }
+
+      function getParentHeadingName (level) {
+        let name = '';
+        while (level > 0) {
+          name = lastHeadingNamesAtLevel[level];
+          if (name.length) {
+            break;
+          }
+          level -= 1;
+        }
+        return name;
+      }
+
+      dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+        if (de.visibility.isVisibleToAT) {
+          visibleHeadings.push(de);
+        } else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+
+
+      visibleHeadings.forEach( (de, index) => {
+
+        const name = de.accName.name.toLowerCase();
+
+        // save the name of the last heading of each level
+        switch (de.ariaInfo.ariaLevel) {
+          case 1:
+            updateLastHeadingNamesAtLevel(1, name);
+            headingNameForComparison[index] = name;
+            break;
+
+          case 2:
+            updateLastHeadingNamesAtLevel(2, name);
+            headingNameForComparison[index] = getParentHeadingName(1) + name;
+            break;
+
+          case 3:
+            updateLastHeadingNamesAtLevel(3, name);
+            headingNameForComparison[index] = getParentHeadingName(2) + name;
+            break;
+
+          case 4:
+            updateLastHeadingNamesAtLevel(4, name);
+            headingNameForComparison[index] = getParentHeadingName(3) + name;
+            break;
+
+          case 5:
+            updateLastHeadingNamesAtLevel(5, name);
+            headingNameForComparison[index] = getParentHeadingName(4) + name;
+            break;
+
+          case 6:
+            updateLastHeadingNamesAtLevel(6, name);
+            headingNameForComparison[index] = getParentHeadingName(5) + name;
+            break;
+        }
+      });
+
+      visibleHeadings.forEach( (de1, index1) => {
+        let duplicate = false;
+        visibleHeadings.forEach( (de2, index2) => {
+          if ((index1 !== index2) &&
+            (headingNameForComparison[index1] ===  headingNameForComparison[index2])) {
+            duplicate = true;
+          }
+        });
+        if (duplicate) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName]);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName]);
+        }
+      });
+
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_5
+   *
+   * @desc Headings must be properly nested
+   *
+   */
+  { rule_id             : 'HEADING_5',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.PAGE,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    ruleset             : RULESET.MORE,
+    required            : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+      let nestingErrors = 0;
+      let manualChecks = 0;
+
+      if (dom_cache.structureInfo.hasMainLandmark) {
+        dom_cache.structureInfo.allLandmarkElements.forEach ( le => {
+          nestingErrors += checkHeadingNesting(dom_cache, rule_result, le.childHeadingDomElements, le.domElement.role);
+        });
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach ( de => {
+          if (!de.parentInfo.landmarkElement) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name.length === 0) {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                manualChecks += 1;
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } else {
+        nestingErrors = checkHeadingNesting(dom_cache, rule_result, dom_cache.structureInfo.allHeadingDomElements);
+      }
+
+      if (nestingErrors > 0) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [nestingErrors]);
+      }
+      else {
+        if (manualChecks > 0) {
+          if (manualChecks === 1) {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+          }
+          else {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
+          }
+        } else {
+          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+        }
+      }
+
+
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_6
+   *
+   * @desc Headings should not consist only of image content
+   *
+   */
+  { rule_id             : 'HEADING_6',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    ruleset             : RULESET.ALL,
+    required            : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.structureInfo.allHeadingDomElements.forEach( (de) => {
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length) {
+            if (de.hasTextContent()) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_7
+   *
+   * @desc First heading in contentinfo, complementary, form, navigation and search landmark must be an h2, except main landmark h1
+   */
+  { rule_id             : 'HEADING_7',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    ruleset             : RULESET.ALL,
+    required            : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+    target_resources    : ['h2', '[role="contentinfo"]', '[role="complementary"]', '[role="form"]', '[role="navigation"]', '[role="search"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      const testRoles = ['contentinfo', 'complementary', 'form', 'navigation', 'search'];
+
+      dom_cache.structureInfo.allLandmarkElements.forEach( le => {
+        const role = le.domElement.role;
+
+        if (testRoles.indexOf(role) >= 0) {
+
+          const de = le.getFirstVisibleHeadingDomElement();
+          if (de) {
+            const ariaLevel = de.ariaInfo.ariaLevel;
+            if (ariaLevel === 2) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role, ariaLevel]);
+            }
+          }
+        }
+      });
+    } // end validate function
+  }
+
+  ];
+
+  /*
+   * Heading Rule Helper Functions
+   */
+
+  function checkHeadingNesting(dom_cache, rule_result, headingDomElements) {
+    const visibleHeadings = [];
+
+    headingDomElements.forEach( de => {
+      if (de.visibility.isVisibleToAT) {
+        if (de.accName.name.length) {
+          visibleHeadings.push(de);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+        }
+      }
+      else {
+        rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+      }
+    });
+
+    let nestingErrors = 0;
+    let lastLevel = visibleHeadings.length ? visibleHeadings[0].ariaInfo.ariaLevel : 1;
+    visibleHeadings.forEach( de => {
+      const level = de.ariaInfo.ariaLevel;
+      if ( level <= (lastLevel + 1)) {
+        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+        // Only update lastLevel when you get a pass
+        lastLevel = level;
+      }
+      else {
+        nestingErrors += 1;
+        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+      }
+    });
+
+    return nestingErrors;
+  }
+
+  /* imageRules.js */
+
+  /* Constants */
+  const debug$i = new DebugLogging('Image Rules', false);
+  debug$i.flag = false;
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule group: Color Rules
+   */
+
+  const imageRules = [
+
+  /**
+   * @object IMAGE_1
+   *
+   * @desc Images must have a source for an accessible name or be identified as decorative
+   */
+
+  { rule_id             : 'IMAGE_1',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.TRIAGE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach(ie => {
+        const de = ie.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.accName.source]);
+          }
+          else {
+            if ((de.role === 'none') ||
+                (de.role === 'presentation')) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
+            }
+            else {
+              if ((de.tagName === 'img') || (de.tagName === 'area')) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+              }
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_2
+   *
+   * @desc Text alternatives accurately describe images
+   */
+  { rule_id             : 'IMAGE_2',
+    last_updated        : '2015-09-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+            }
+          } else {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_3
+   *
+   * @desc The file name of the image should not be part of the accessible name content (it must have an image file extension)
+   */
+  { rule_id             : 'IMAGE_3',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.visibility.isVisibleToAT) {
+          const name = de.accName.name.toLowerCase();
+          if (name.indexOf(ie.fileName) < 0) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);          
+          }
+        } else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object IMAGE_4_EN (English)
+   *
+   * @desc If the accessible name contains content, it should be less than 100 characters long, longer descriptions should use long description techniques (English only)
+   */
+  { rule_id             : 'IMAGE_4_EN',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            const length = de.accName.name.length;
+            if (length <= 100) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [length]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [length]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_5
+   *
+   * @desc Verify the image is decorative
+   */
+  { rule_id             : 'IMAGE_5',
+    last_updated        : '2015-09-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length === 0) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
+            }
+          }
+        } else {
+          if (de.tagName === 'img') {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_6
+   *
+   * @desc For complex images, charts or graphs provide long description
+   */
+  { rule_id             : 'IMAGE_6',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de   = ie.domElement;
+        const accName = de.accName;
+        const accDesc = de.accDescription;
+        if (accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (accDesc.name.length) {
+             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
+            }
+            else {
+              if (de.node.hasAttribute('longdesc')) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);                                
+              } else {
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);                                
+              }
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_7
+   *
+   * @desc MathML for mathematical expressions
+   */
+  { rule_id             : 'IMAGE_7',
+    last_updated        : '2015-09-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de   = ie.domElement;
+        const accName = de.accName;
+        if (accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);                    
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);                    
+            }
+          } 
+          else {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);                    
+            }
+          }
+        }
+      });
+    } // end validation function
+  }
+  ];
+
+  /* linkRules.js */
+
+  /* Constants */
+  const debug$h = new DebugLogging('Link Rules', false);
+  debug$h.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule group: Link Rules
+   */
+
+  const linkRules = [
+
+    /**
+     * @object LINK_1
+     *
+     * @desc Link should describe the target of a link
+     */
+
+    { rule_id             : 'LINK_1',
+      last_updated        : '2022-05-23',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.4',
+      wcag_related_ids    : ['2.4.9'],
+      target_resources    : ['a', 'area', '[role=link]'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
+          if (de.visibility.isVisibleToAT) {
+            const name = de.accName.name;
+            const desc = de.accDescription.name;
+            if (name.length) {
+              if (desc.length) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName, name, desc]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, name]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        });
+      } // end valifdation function
+    },
+
+    /**
+     * @object LINK_2
+     *
+     * @desc Links with the different HREFs should have the unique accessible names
+     */
+
+    { rule_id             : 'LINK_2',
+      last_updated        : '2022-05-23',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : false,
+      wcag_primary_id     : '2.4.4',
+      wcag_related_ids    : ['2.4.9'],
+      target_resources    : ['a', 'area', '[role=link]'],
+      validate            : function (dom_cache, rule_result) {
+
+        // array of visible DOM elements identified as links
+        const visibleLinks = [];
+
+        dom_cache.linkInfo.allLinkDomElements.forEach ( de => {
+          if (de.visibility.isVisibleToAT) {
+            visibleLinks.push(de);
+          }
+        });
+
+        visibleLinks.forEach( (de1, index1) => {
+          let differentHrefSameDescription      = 0;
+          let differentHrefDifferentDescription = 0;
+          let sameHref = 0;
+          visibleLinks.forEach( (de2, index2) => {
+            if (index1 !== index2) {
+              if (accNamesTheSame(de1.accName, de2.accName)) {
+                if (de1.node.href === de2.node.href) {
+                  sameHref += 1;
+                }
+                else {
+                  if (accNamesTheSame(de1.accDescription, de2.accDescription)) {
+                    differentHrefSameDescription += 1;
+                  }
+                  else {
+                    differentHrefDifferentDescription += 1;
+                  }
+                }
+              }
+            }
+          });
+
+          if (differentHrefSameDescription) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de1,  'ELEMENT_FAIL_1', [(differentHrefSameDescription + 1)]);
+          } else {
+            if (differentHrefDifferentDescription) {
+              if (differentHrefDifferentDescription === 1) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_3', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_4', [differentHrefDifferentDescription]);
+              }
+            } else {
+              if (sameHref) {
+                if (sameHref === 1) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_2', [sameHref]);
+                }
+              }
+            }
+          }
+        });
+
+      } // end validate function
+    }
+  ];
+
+  /* landmarkRules.js */
+
+  /* Constants */
+  const debug$g = new DebugLogging('Landmark Rules', false);
+  debug$g.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule group: Landmark Rules
+   */
+
+  const landmarkRules = [
+
+    /**
+     * @object LANDMARK_1
+     *
+     * @desc Each page should have at least one main landmark
+     */
+
+    { rule_id             : 'LANDMARK_1',
+      last_updated        : '2022-05-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['main', '[role="main"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'main', true);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_2
+     *
+     * @desc All rendered content should be contained in a landmark
+     */
+    { rule_id             : 'LANDMARK_2',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['Page', 'all'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.allDomElements.forEach ( de => {
+          const parentLandmark = de.parentInfo.landmarkElement;
+          const isLandmark = de.isLandmark;
+          if ((de.hasContent || de.mayHaveContent)) {
+            if (de.visibility.isVisibleToAT) {
+              if ( isLandmark || parentLandmark ) {
+                const role = isLandmark ? de.role : parentLandmark.domElement.role;
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, role]);
+              }
+              else {
+                if (de.mayHaveContent) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_3
+     *
+     * @desc Each page within a website should have at least one navigation landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_3',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['nav', '[role="navigation"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        const MINIMUM_LINKS = 4;
+        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+        let navigationCount = 0;
+
+        allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (de.role === 'navigation') {
+            if (de.visibility.isVisibleToAT) {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+              }
+              navigationCount += 1;
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+        if (navigationCount === 0) {
+          // See if there are any lists of links greater than the MINIMUM_LINKS
+          const allListElements = dom_cache.listInfo.allListElements;
+          let listWithLinksCount = 0;
+          allListElements.forEach ( le => {
+            const de = le.domElement;
+            if (le.linkCount > MINIMUM_LINKS) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, le.linkCount]);
+              listWithLinksCount += 1;
+            }
+          });
+
+          if (listWithLinksCount > 0) {
+            rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
+          }
+        } else {
+          if (navigationCount === 1) {
+            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_1', []);
+          } else {
+            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_2', [navigationCount]);
+          }
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_4
+     *
+     * @desc Each page may have at least one banner landmark
+     *
+     */
+
+    { rule_id             : 'LANDMARK_4',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'banner', false);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_5
+     *
+     * @desc Each page should not have more than one banner landmark
+     *
+     */
+
+    { rule_id             : 'LANDMARK_5',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateNoMoreThanOne(dom_cache, rule_result, 'banner');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_6
+     *
+     * @desc Each page may have one contentinfo landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_6',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'contentinfo', false);
+     } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_7
+     *
+     * @desc Each page may have only one contentinfo landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_7',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateNoMoreThanOne(dom_cache, rule_result, 'contentinfo');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_8
+     *
+     * @desc banner landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_8',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      required            : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'banner');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_9
+     *
+     * @desc Banner landmark should only contain only region, navigation and search landmarks
+     */
+    { rule_id             : 'LANDMARK_9',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+       validateLandmarkDescendants(dom_cache, rule_result, 'banner', ['navigation', 'region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_10
+     *
+     * @desc Navigation landmark should only contain only region and search landmarks
+     */
+    { rule_id             : 'LANDMARK_10',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['nav', '[role="naviation"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'navigation', ['region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_11
+     *
+     * @desc Main landmark must be a top level lanmark
+     */
+    { rule_id             : 'LANDMARK_11',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', '[role="main"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'main');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_12
+     *
+     * @desc Contentinfo landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_12',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'contentinfo');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_13
+     *
+     * @desc Contentinfo landmark should only contain only search, region and navigation landmarks
+     */
+    { rule_id             : 'LANDMARK_13',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'contentinfo', ['navigation', 'region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_14
+     *
+     * @desc Search landmark should only contain only region landmarks
+     */
+    { rule_id             : 'LANDMARK_14',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'search', ['region']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_15
+     *
+     * @desc Form landmark should only contain only region landmarks
+     */
+    { rule_id             : 'LANDMARK_15',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="form"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'form', ['region']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_16
+     *
+     * @desc Elements with the role=region must have accessible name to be considered a landmark
+     */
+    { rule_id             : 'LANDMARK_16',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="region"]'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.allDomElements.forEach( de => {
+          if (de.hasRole && de.role === 'region') {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_17
+     *
+     * @desc Landmark must have unique labels
+     */
+
+    { rule_id             : 'LANDMARK_17',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        const landmarkRoles = ['banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region', 'search'];
+        landmarkRoles.forEach( role => {
+          validateUniqueAccessibleNames(dom_cache, rule_result, role);
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_18
+     *
+     * @desc Landmark must identify content regions
+     */
+
+    { rule_id             : 'LANDMARK_18',
+      last_updated        : '2015-08-07',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.NORE,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+        allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role, de.accName.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_19
+     *
+     * @desc Complementary landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_19',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      ruleset             : RULESET.MORE,
+      rule_required       : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['aside', '[role="complementary"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'complementary');
+      } // end validate function
+    }
+  ];
+
+  /* Helper Functions for Landmarks */
+
+
+  /**
+   * @function validateTopLevelLandmark
+   *
+   * @desc Evaluate if a landmark role is top level (e.g. not contained in other landmarks)
+   *
+   * @param  {DOMCache}    dom_cache   - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result - RuleResult object
+   * @param  {String}      role        - Landmark role to check
+   */
+
+  function validateTopLevelLandmark(dom_cache, rule_result, role) {
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+
+          if (de.parentInfo.landmarkElement === null) {
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', []);
+            }
+          }
+          else {
+            // Check to see if the two elements with the role share the same DOM (e.g. iframe check)
+            // If in a different DOM, allow it to be the top level in that DOM
+            const de1 = de.parentInfo.landmarkElement.domElement;
+
+            if (de1 && (de.parentInfo.document !== de1.parentInfo.document)) {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', []);
+              }
+            }
+            else {
+              // Fails if they are in the same DOM
+              const landmarkRole = de.parentInfo.landmarkElement.domElement.role;
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, landmarkRole]);
+              } else  {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [landmarkRole]);
+              }
+            }
+          }
+        }
+        else {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * @function validateAtLeastOne
+   *
+   * @desc Evaluate if the the landmark region role exists in the page.
+   *       The required parameter determines if the landamrk is missing whether
+   *       a failure or manual check is required
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark role
+   * @oaram  {Boolean}     roleRequired - Is the landamrk region role required
+   */
+
+  function validateAtLeastOne(dom_cache, rule_result, role, roleRequired) {
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let roleCount = 0;
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+          }
+          roleCount += 1;
+        }
+        else {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+          }
+        }
+      }
+    });
+
+    if (roleCount === 0) {
+      if (roleRequired) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+      }
+      else {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      }
+    } else {
+      if (roleCount === 1) {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+      } else {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', [roleCount]);
+      }
+    }
+  }
+
+
+  /**
+   * @function validateNoMoreThanOne
+   *
+   * @desc Evaluate if the the landmark region role exists more than once on the page.
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark region role
+   */
+
+  function validateNoMoreThanOne(dom_cache, rule_result, role) {
+
+    const landmarkElementsByDoc = dom_cache.structureInfo.landmarkElementsByDoc;
+    let totalRoleCount = 0;
+    let anyMoreThanOne = false;
+
+    landmarkElementsByDoc.forEach( les => {
+      let visibleDomElements = [];
+      if (Array.isArray(les)) {
+        les.forEach( le => {
+          const de = le.domElement;
+          if (de.role === role) {
+            if (de.visibility.isVisibleToAT) {
+              visibleDomElements.push(de);
+              totalRoleCount += 1;
+            }
+            else {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+            }
+          }
+        });
+
+        visibleDomElements.forEach( de => {
+          if (visibleDomElements.length === 1) {
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+            }
+          } else {
+            anyMoreThanOne = true;
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+            }
+          }
+        });
+      }
+    });
+
+    if (totalRoleCount > 0) {
+      if (anyMoreThanOne) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [totalRoleCount]);
+      }
+      else {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+      }
+    }
+  }
+
+  /**
+   * @function validateLandmarkDescendants
+   *
+   * @desc Evaluate if the descendant landmark roles are a certain type
+   *
+   * @param  {DOMCache}    dom_cache             - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result           - RuleResult object
+   * @param  {String}      role                  - Landmark region role
+   * @param  {Array}       allowedLandmarkRoles  - An array of allowed descendant roles
+   */
+
+  function validateLandmarkDescendants(dom_cache, rule_result, role, allowedLandmarkRoles) {
+
+    function checkForDescendantLandmarks(landmarkElement) {
+      const result = {
+        failedCount: 0,
+        failedRoles : [],
+        passedCount: 0,
+        passedRoles : []
+      };
+
+      landmarkElement.descendantLandmarkElements.forEach( le => {
+        const de   = le.domElement;
+        const role = de.role;
+
+        if (de.visibility.isVisibleToAT) {
+          if (allowedLandmarkRoles.includes(role)) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
+            result.passedCount += 1;
+            result.passedRoles.push(role);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role]);
+            result.failedCount += 1;
+            result.failedRoles.push(role);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, role]);
+        }
+      });
+
+      return result;
+    }
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let visibleLandmarkElements = [];
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          visibleLandmarkElements.push(le);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      }
+    });
+
+    visibleLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      const result = checkForDescendantLandmarks(le);
+      const failedRoles = result.failedRoles.join(', ');
+      const passedRoles = result.passedRoles.join(', ');
+
+      if (result.failedCount === 1) {
+        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [failedRoles]);
+      } else {
+        if (result.failedCount > 1) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [result.failedCount, failedRoles]);
+        }
+        else {
+          if (result.passedCount === 0) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+          }
+          else {
+            if (result.passedCount === 1) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [passedRoles]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [result.passedCount, passedRoles]);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * @function validateUniqueAccessibleNames
+   *
+   * @desc Evaluate if the accessible names for the landmark role are unique.
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark region role
+   */
+
+  function validateUniqueAccessibleNames(dom_cache, rule_result, role) {
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let visibleDomElements = [];
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          visibleDomElements.push(de);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+        }
+      }
+    });
+
+    if (visibleDomElements.length > 1) {
+      visibleDomElements.forEach( (de1, index1) => {
+        let duplicate = false;
+        visibleDomElements.forEach( (de2, index2) => {
+          if ((index1 !== index2) &&
+              (accNamesTheSame(de1.accName, de2.accName))) {
+            duplicate = true;
+          }
+        });
+        if (duplicate) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.accName.name, role]);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [role]);
+        }
+      });
+    }
+  }
+
+  /* tableRules.js */
+
+  /* Constants */
+  const debug$f = new DebugLogging('Table Rules', false);
+  debug$f.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule group: Table Rules
+   */
+
+  const tableRules = [
+
+  /**
+   * @object TABLE_1
+   *
+   * @desc If a table is a data table, if each data cell has headers
+   */
+  { rule_id             : 'TABLE_1',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.TRIAGE,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        te.cells.forEach( cell => {
+          const de = cell.domElement;
+          if (de.visibility.isVisibleToAT) {
+            if (cell.isHeader) {
+              if (!de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+            }
+            else {
+              if (de.accName.name) {
+                const headerCount = cell.headers.length;
+                const headerStr = cell.headers.join (' | ');
+                if (headerCount) {
+                  if (cell.headerSource === HEADER_SOURCE.ROW_COLUMN) {
+                    if (headerCount === 1) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, headerStr]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, headerCount, headerStr]);
+                    }
+                  }
+                  else {
+                    if (headerCount === 1) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName, headerStr]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName, headerCount, headerStr]);
+                    }
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_2
+   *
+   * @desc Data table %s have an accessible name
+   */
+  { rule_id             : 'TABLE_2',
+    last_updated        : '2023-05-03',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1'],
+    target_resources    : ['table', 'caption'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if ((te.tableType === TABLE_TYPE.DATA) ||
+              (te.tableType === TABLE_TYPE.COMPLEX)) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.accName.source]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_3
+   *
+   * @desc  Complex data tables should have a text description or summary of data in the table
+   */
+
+  { rule_id             : 'TABLE_3',
+    last_updated        : '2023-05-03',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if ((te.tableType === TABLE_TYPE.DATA) || (te.tableType === TABLE_TYPE.COMPLEX)) {
+            if (de.accDescription.name) {
+              if (de.accDescription.source === 'aria-describedby') {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+              }
+            }
+            else {
+              if (te.tableType === TABLE_TYPE.DATA){
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_4
+   *
+   * @desc   Data tables with accessible names must be unique
+   */
+
+  { rule_id             : 'TABLE_4',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.ALL,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      const visibleDataTables = [];
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (te.tableType > TABLE_TYPE.LAYOUT) {
+            visibleDataTables.push(te);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+
+      visibleDataTables.forEach(te1 => {
+        let count = 0;
+        const de = te1.domElement;
+        const accName1 = te1.domElement.accName.name;
+        if (accName1) {
+          visibleDataTables.forEach(te2 => {
+            if (te1 !== te2) {
+              const accName2 = te2.domElement.accName.name;
+              if (accName2) {
+                if (accName1.toLowerCase() === accName2.toLowerCase()) {
+                  count += 1;
+                }
+              }
+            }
+          });
+          if (count) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [accName1, de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [accName1, de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object TABLE_5
+   *
+   * @desc  Identifies a table is being used for layout or tabular data, or cannot be determined form markup
+   */
+
+   { rule_id             : 'TABLE_5',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          switch (te.tableType) {
+            case TABLE_TYPE.LAYOUT:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.role]);
+              break;
+
+            case TABLE_TYPE.DATA:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.COMPLEX:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_TABLE:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_GRID:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_TREEGRID:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_6', [de.elemName]);
+              break;
+
+            default:
+
+              if (te.rowCount === 1) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                if (te.colCount === 1) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                }
+              }
+              break;
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_6
+   *
+   * @desc    Tests if table headers use TH elements instead of TD with SCOPE
+   */
+
+  { rule_id             : 'TABLE_6',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.ALL,
+    rule_required       : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td[scope]'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          te.cells.forEach( cell => {
+            const cde = cell.domElement;
+            if (cde.visibility.isVisibleToAT) {
+              if (cell.isHeader) {
+                if (cde.tagName === 'td') {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cde.elemName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
+            }
+          });
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object TABLE_7
+   *
+   * @desc  Data cells in complex table must use headers attributes
+   */
+
+  { rule_id             : 'TABLE_7',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td'],
+    validate          : function (dom_cache, rule_result) {
+
+      debug$f.flag && debug$f.log(`TABLE 7 Rule ${dom_cache} ${rule_result}`);
+
+  /*
+      function allReadyDone(span_cell) {
+
+        var span_cells_len = span_cells.length;
+
+        for (var i = 0; i < span_cells_len; i++) {
+          if (span_cell === span_cells[i]) return true;
+        }
+
+        span_cells.push(span_cell);
+        return false;
+      }
+
+      var TEST_RESULT   = TEST_RESULT;
+      var HEADER_SOURCE = HEADER_SOURCE;
+      var VISIBILITY    = VISIBILITY;
+      var TABLE_ROLE    = TABLE_ROLE;
+
+      var span_cells = [];
+
+      var table_elements   = dom_cache.tables_cache.table_elements;
+      var table_elements_len = table_elements.length;
+
+  //     logger.debug("[Table Rule 7] Table Elements on page: " + table_elements_len);
+
+      // Check to see if valid cache reference
+      if (table_elements && table_elements_len) {
+
+        for (var i=0; i < table_elements_len; i++) {
+          var te = table_elements[i];
+          var is_visible_to_at = te.dom_element.computed_style.is_visible_to_at;
+
+  //         logger.debug("[Table Rule 1] Table Element: " + te + "   is data table: " + te.table_role);
+
+          if (te.table_role === TABLE_ROLE.COMPLEX) {
+
+            var max_row    = te.max_row;
+            var max_column = te.max_column;
+            var cells      = te.cells;
+
+  //         logger.debug("[Table Rule 1] Cell: " + cell + " headers: " + cell.headers);
+
+
+            for (var r = 0; r < max_row; r++) {
+              for (var c = 0; c < max_column; c++) {
+
+                var cell = cells[r][c];
+
+                if (cell &&
+                    (cell.table_type === TABLE.TD_ELEMENT)) {
+
+                  if (is_visible_to_at == VISIBILITY.VISIBLE) {
+
+                    if(cell.has_spans && allReadyDone(cell)) continue;
+
+                    if (!cell.has_content) {
+                      rule_result.addResult(TEST_RESULT.MANUAL_CHECK, cell, 'ELEMENT_MC_1', []);
+                    }
+                    else {
+                      if (cell.header_source === HEADER_SOURCE.HEADERS_ATTRIBUTE) {
+                        if (cell.has_content) {
+                          rule_result.addResult(TEST_RESULT.PASS, cell, 'ELEMENT_PASS_1', [cell.headers]);
+                        }
+                        else {
+                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_1', [cell.headers]);
+                        }
+                      }
+                      else {
+                        if (cell.headers && cell.headers.length > 0) {
+                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_5', [cell.headers]);
+                        }
+                        else {
+                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_1', []);
+                        }
+                      }
+                    }
+                  }
+                  else {
+                   rule_result.addResult(TEST_RESULT.HIDDEN, cell, 'ELEMENT_HIDDEN_1', []);
+                  }
+                }
+              }
+            }
+          }
+        } // end loop
+      }
+      */
+
+    }
+  },
+
+  /**
+   * @object TABLE_8
+   *
+   * @desc  Accessible name and description must be different, description longer than name
+   */
+
+  { rule_id             : 'TABLE_8',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES,
+    ruleset             : RULESET.ALL,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['caption', 'table[summary]', 'table[title]'],
+    validate          : function (dom_cache, rule_result) {
+
+      debug$f.flag && debug$f.log(`TABLE 8 Rule ${dom_cache} ${rule_result}`);
+
+  /*
+      var TEST_RESULT   = TEST_RESULT;
+      var VISIBILITY    = VISIBILITY;
+      var TABLE_ROLE    = TABLE_ROLE;
+
+      var table_elements   = dom_cache.tables_cache.table_elements;
+      var table_elements_len = table_elements.length;
+
+      // Check to see if valid cache reference
+      if (table_elements && table_elements_len) {
+
+        for (var i=0; i < table_elements_len; i++) {
+          var te = table_elements[i];
+          var is_visible_to_at = te.dom_element.computed_style.is_visible_to_at;
+
+  //        logger.debug("[Table Rule 8]          Table Element: " + te);
+  //        logger.debug("[Table Rule 8]        Accessible Name: " + te.accessible_name_for_comparison);
+  //        logger.debug("[Table Rule 8] Accessible Description: " + te.accessible_description_for_comparison);
+
+          if (((te.table_role === TABLE_ROLE.DATA) ||
+               (te.table_role === TABLE_ROLE.COMPLEX)) &&
+              te.accessible_name_for_comparison.length &&
+              te.accessible_description_for_comparison.length) {
+
+            if (is_visible_to_at === VISIBILITY.VISIBLE) {
+              if (te.accessible_name_for_comparison === te.accessible_description_for_comparison ) {
+                rule_result.addResult(TEST_RESULT.FAIL, te, 'ELEMENT_FAIL_1', []);
+              }
+              else {
+                if (te.accessible_name_for_comparison.length >= te.accessible_description_for_comparison.length) {
+                  rule_result.addResult(TEST_RESULT.MANUAL_CHECK, te, 'ELEMENT_MC_1', []);
+                }
+                else {
+                  rule_result.addResult(TEST_RESULT.PASS, te, 'ELEMENT_PASS_1', []);
+                }
+              }
+            }
+            else {
+              rule_result.addResult(TEST_RESULT.HIDDEN, te, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        }
+      }
+      */
+
+    } // end validation function
+  }
+  ];
+
+  /* widgetRules.js */
+
+  /* Constants */
+  const debug$e = new DebugLogging('Widget Rules', false);
+  debug$e.flag = true;
+
+  /*
+   * OpenA11y Rules
+   * Rule group: Widget Rules
+   */
+
+  const widgetRules = [
+  /**
+   * @object WIDGET_1
+   *
+   * @desc ARIA Widgets must have accessible names
+   */
+
+  { rule_id             : 'WIDGET_1',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['ARIA Widget roles'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        const ai = de.ariaInfo;
+        // There are other rules that check for accessible name for labelable controls, landmarks, headings and links
+        if (ai.isWidget && !de.isLabelable && !de.isLink) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role, de.accName.name]);
+            }
+            else {
+              if (ai.isNameRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);              
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }
+        }
+      });
+
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_2
+   *
+   * @desc Elements with onClick event handlers event handlers need role
+   */
+
+  { rule_id             : 'WIDGET_2',
+    last_updated        : '2022-08-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['Elements with onclick events'],
+    validate            : function (dom_cache, rule_result) {
+
+      function hasDecendantWidgetRole (domElement) {
+        for (let i = 0; i < domElement.children.length; i += 1) {
+          const cde = domElement.children[i];
+          if (cde.isDomElement) {
+            if (cde.ariaInfo.isWidget) {
+              return true;
+            }
+            if (hasDecendantWidgetRole(cde)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      dom_cache.allDomElements.forEach(de => {
+        if (de.eventInfo.hasClick) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.isWidget) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
+            }
+            else {
+              if (hasDecendantWidgetRole(de)) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
+              }
+              else {
+                if (de.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+                }
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_3
+   *
+   * @desc Elements with role values must have valid widget or landmark roles
+   */
+
+  { rule_id             : 'WIDGET_3',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        if (de.hasRole) {
+          if (de.visibility.isVisibleToAT) {
+            if (!de.ariaInfo.isValidRole) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+            }
+            else {
+              if (de.ariaInfo.isAbstractRole) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.role]);
+              } else {
+                if (de.ariaInfo.isWidget) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role]);
+                }
+                else {
+                  if (de.ariaInfo.isLandmark) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.role]);
+                  }
+                  else {
+                    if (de.ariaInfo.isLive) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.role]);
+                    }
+                    else {
+                      if (de.ariaInfo.isSection) {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.role]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.role]);
+                      }
+                    }
+                  }
+                }            
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }        
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_4
+   *
+   * @desc Elements with ARIA attributes have valid values
+   */
+
+  { rule_id             : 'WIDGET_4',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-atomic]',
+                           '[aria-autocomplete]',
+                           '[aria-busy]',
+                           '[aria-checked]',
+                           '[aria-colcount]',
+                           '[aria-colindex]',
+                           '[aria-colspan]',
+                           '[aria-current]',
+                           '[aria-disabled]',
+                           '[aria-dropeffect]',
+                           '[aria-expanded]',
+                           '[aria-grabbed]',
+                           '[aria-haspopup]',
+                           '[aria-hidden]',
+                           '[aria-invalid]',
+                           '[aria-label]',
+                           '[aria-labelledby]',
+                           '[aria-live]',
+                           '[aria-modal]',
+                           '[aria-multiline]',
+                           '[aria-multiselectable]',
+                           '[aria-orientation]',
+                           '[aria-pressed]',
+                           '[aria-readonly]',
+                           '[aria-relevant]',
+                           '[aria-required]',
+                           '[aria-rowcount]',
+                           '[aria-rowindex]',
+                           '[aria-rowspan]',
+                           '[aria-selected]',
+                           '[aria-sort]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        de.ariaInfo.validAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            const allowedValues = attr.values ? attr.values.join(' | ') : '';
+            if (de.ariaInfo.invalidAttrValues.includes(attr)) {
+              if (attr.type === 'nmtoken' || attr.type === 'boolean' || attr.type === 'tristate') {
+                if (attr.value === '') {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, allowedValues]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, attr.value, allowedValues]);
+                }
+              }
+              else {
+                if (attr.type === 'nmtokens') {
+                  if (attr.value === '') {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [attr.name, allowedValues]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [attr.name, attr.value, allowedValues]);
+                  }
+                }
+                else {
+                  if (attr.type === 'integer') {
+                    if (attr.value === '') {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_5', [attr.name]);
+                    }
+                    else {
+                      if (attr.allowUndeterminedValue) {
+                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_6', [attr.name, attr.value]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_7', [attr.name, attr.value]);
+                      }
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_8', [attr.name, attr.value, attr.type]);
+                  }  
+                }
+              }
+            }
+            else {
+              if (attr.type === 'boolean' || 
+                  attr.type === 'nmtoken' || 
+                  attr.type === 'nmtokens' || 
+                  attr.type === 'tristate') {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [attr.name, attr.value, attr.type]);
+              }
+            }
+          }
+          else {
+            if (attr.value === '') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [attr.name, attr.value]);
+            }
+          }
+        });
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_5
+   *
+   * @desc ARIA attributes must be defined
+   */
+
+  { rule_id             : 'WIDGET_5',
+    last_updated        : '2022-08-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-atomic]',
+                           '[aria-autocomplete]',
+                           '[aria-busy]',
+                           '[aria-checked]',
+                           '[aria-controls]',
+                           '[aria-describedby]',
+                           '[aria-disabled]',
+                           '[aria-dropeffect]',
+                           '[aria-expanded]',
+                           '[aria-flowto]',
+                           '[aria-grabbed]',
+                           '[aria-haspopup]',
+                           '[aria-hidden]',
+                           '[aria-invalid]',
+                           '[aria-label]',
+                           '[aria-labelledby]',
+                           '[aria-level]',
+                           '[aria-live]',
+                           '[aria-multiline]',
+                           '[aria-multiselectable]',
+                           '[aria-orientation]',
+                           '[aria-owns]',
+                           '[aria-pressed]',
+                           '[aria-readonly]',
+                           '[aria-relevant]',
+                           '[aria-required]',
+                           '[aria-selected]',
+                           '[aria-sort]',
+                           '[aria-valuemax]',
+                           '[aria-valuemin]',
+                           '[aria-valuenow]',
+                           '[aria-valuetext]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        de.ariaInfo.invalidAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+        de.ariaInfo.validAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_6
+   *
+   * @desc Widgets must have required properties
+   */
+
+  { rule_id             : 'WIDGET_6',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[checkbox]',
+                           '[combobox]',
+                           '[menuitemcheckbox]',
+                           '[menuitemradio]',
+                           '[meter]',
+                           '[option]',
+                           '[separator]',
+                           '[scrollbar]',
+                           '[slider]',
+                           '[switch]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        de.ariaInfo.requiredAttrs.forEach( reqAttrInfo => {
+          if (de.visibility.isVisibleToAT) {
+            if (reqAttrInfo.isDefined) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, reqAttrInfo.name, reqAttrInfo.value]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, reqAttrInfo.name]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, reqAttrInfo.name]);
+          }
+        });
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_7
+   *
+   * @desc Widgets must have required owned elements
+   */
+
+  { rule_id             : 'WIDGET_7',
+    last_updated        : '2023-03-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[feed]',
+                           '[grid]',
+                           '[list]',
+                           '[listbox]',
+                           '[menu]',
+                           '[menubar]',
+                           '[radiogroup]',
+                           '[row]',
+                           '[rowgroup]',
+                           '[table]',
+                           '[tablist]',
+                           '[tree]',
+                           '[treegrid]'],
+    validate            : function (dom_cache, rule_result) {
+
+      function getRequiredChildrenCount(domElement, requiredChildren) {
+        let count = 0;
+        let i;
+        const ai = domElement.ariaInfo;
+        const cdes = domElement.children;
+        const odes = ai.ownedDomElements;
+        for(i = 0; i < cdes.length; i += 1) {
+          const cde = cdes[i];
+          if (cde.isDomElement) {
+            if (requiredChildren.includes(cde.role)) {
+              return 1;
+            }
+            count += getRequiredChildrenCount(cde, requiredChildren);
+          }
+        }
+
+        for(i = 0; i < odes.length; i += 1) {
+          const ode = odes[i];
+          if (requiredChildren.includes(ode.role)) {
+            return 1;
+          }
+          count += getRequiredChildrenCount(ode, requiredChildren);
+        }
+        return count;
+      }
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.hasRequiredChildren) {
+          const rc = de.ariaInfo.requiredChildren;
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.isBusy) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+            }
+            else {
+              const count = getRequiredChildrenCount(de, rc);
+              if (count > 0) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, rc.join(', ')]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rc.join(', ')]);
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rc.join(', ')]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_8
+   *
+   * @desc Widgets must have required parent roles
+   */
+
+  { rule_id             : 'WIDGET_8',
+    last_updated        : '2023-03-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : [ "caption",
+                            "cell",
+                            "columnheader",
+                            "gridcell",
+                            "listitem",
+                            "menuitem",
+                            "menuitemcheckbox",
+                            "menuitemradio",
+                            "option",
+                            "row",
+                            "rowgroup",
+                            "rowheader",
+                            "tab",
+                            "treeitem"
+                        ],
+    validate            : function (dom_cache, rule_result) {
+
+
+      function checkForRequiredParent(domElement, requiredParents) {
+        if (!domElement || !domElement.ariaInfo) {
+          return '';
+        }
+        const ai = domElement.ariaInfo;
+        const obdes = ai.ownedByDomElements;
+        const pde = domElement.parentInfo.domElement;
+
+        // Check first for aria-owns relationships
+        for (let i = 0; i < obdes.length; i += 1) {
+          const obde = obdes[i];
+          if (requiredParents.includes(obde.role)) {
+            return obde.role;
+          }
+          else {
+            return checkForRequiredParent(obde.parentInfo.domElement, requiredParents);
+          }
+        }
+
+        // Check parent domElement
+        if (pde) {
+          if (requiredParents.includes(pde.role)) {
+            return pde.role;
+          }
+          else {
+            return checkForRequiredParent(pde, requiredParents);
+          }
+        }
+        return '';
+      }
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.hasRequiredParents) {
+          const rp = de.ariaInfo.requiredParents;
+          if (de.visibility.isVisibleToAT) {
+            const result = checkForRequiredParent(de, rp);
+            if (result) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, result]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rp.join(', ')]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rp.join(', ')]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_9
+   *
+   * @desc Widgets cannot be owned by more than one widget
+   */
+
+  { rule_id             : 'WIDGET_9',
+    last_updated        : '2023-04-05',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-owns]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach( de => {
+        const ownedByCount = de.ariaInfo.ownedByDomElements.length;
+        if (ownedByCount > 0) {
+          if (ownedByCount === 1) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, ownedByCount]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_10
+   *
+   * @desc Range widgets with aria-valuenow mut be in range of aria-valuemin and aria-valuemax
+   */
+
+  { rule_id             : 'WIDGET_10',
+    last_updated        : '2023-04-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role="meter"]',
+                           '[role="progress"]',
+                           '[role="scrollbar"]',
+                           '[role="separator"][tabindex=0]',
+                           '[role="slider"]',
+                           '[role="spinbutton"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isRange) {
+          const ai = de.ariaInfo;
+          if (de.visibility.isVisibleToAT) {
+            const now  = ai.valueNow;
+            const min  = ai.valueMin;
+            const max  = ai.valueMax;
+            const text = ai.valueText;
+            if (ai.hasValueNow) {
+              if (ai.validValueNow) {
+                if (ai.validValueMin && ai.validValueMax) {
+                  if ((now >= min) && (now <= max)) {
+                    if (text) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, text, now]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, now, min, max]);
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [now, min, max]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [min, max]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [now]);
+              }
+            }
+            else {
+              if (ai.isValueNowRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [de.elemName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+
+
+        }
+      });
+   } // end validation function
+  },
+
+  /**
+   * @object WIDGET_11
+   *
+   * @desc Verify range elements with aria-valuetext attribute
+   */
+
+  { rule_id             : 'WIDGET_11',
+    last_updated        : '2023-04-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role="meter"]',
+                           '[role="progress"]',
+                           '[role="scrollbar"]',
+                           '[role="separator"][tabindex=0]',
+                           '[role="slider"]',
+                           '[role="spinbutton"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isRange && de.ariaInfo.valueText) {
+          const ai = de.ariaInfo;
+          if (de.visibility.isVisibleToAT) {
+            const now  = ai.valueNow;
+            const text = ai.valueText;
+            if (ai.hasValueNow) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [text, now]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    }
+  },
+  /**
+   * @object WIDGET_12
+   *
+   * @desc Element with widget role label should describe the purpose of the widget
+   *
+   */
+
+  { rule_id             : 'WIDGET_12',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[Widget roles'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isWidget) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.accName.name, de.elemName]);
+            }
+            else {
+              if (de.ariaInfo.isNameRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, de.role]);
+              }
+              else {
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName, de.role]);
+
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_13
+   *
+   * @desc Roles that prohibit accessible names
+   */
+
+  { rule_id             : 'WIDGET_13',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : [ "caption",
+                            "code",
+                            "deletion",
+                            "emphasis",
+                            "generic",
+                            "insertion",
+                            "none",
+                            "paragraph",
+                            "presentation",
+                            "strong",
+                            "subscript",
+                            "superscript"],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (!de.ariaInfo.isNameRequired &&
+             de.accName.name &&
+             de.accName.source.includes('aria-label')) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_14
+   *
+   * @desc     Verify live regions are being used properly
+   */
+  { rule_id             : 'WIDGET_14',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : [],
+    target_resources    : ['[role="alert"]','[role="log"]','[role="status"]','[aria-live]'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isLive) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.ariaLive) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.ariaLive]);
+            }
+            else {
+              if (de.role === 'alert') {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              }
+              else {
+                if (de.role === 'log') {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', []);
+                }
+                else {
+                  // Status role
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', []);
+                }
+              }
+            }
+          }
+          else {
+            if (de.ariaInfo.ariaLive) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.ariaLive]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.role]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_15
+   *
+   * @desc     Roles with deprecated ARIA attributes
+   */
+  { rule_id             : 'WIDGET_15',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.1',
+    wcag_related_ids    : ['4.1.2'],
+    target_resources    : [
+          "alert",
+          "alertdialog",
+          "article",
+          "banner",
+          "blockquote",
+          "button",
+          "caption",
+          "cell",
+          "checkbox",
+          "code",
+          "command",
+          "complementary",
+          "composite",
+          "contentinfo",
+          "definition",
+          "deletion",
+          "dialog",
+          "directory",
+          "document",
+          "emphasis",
+          "feed",
+          "figure",
+          "form",
+          "generic",
+          "grid",
+          "group",
+          "heading",
+          "img",
+          "input",
+          "insertion",
+          "landmark",
+          "link",
+          "list",
+          "listbox",
+          "listitem",
+          "log",
+          "main",
+          "marquee",
+          "math",
+          "meter",
+          "menu",
+          "menubar",
+          "menuitem",
+          "menuitemcheckbox",
+          "menuitemradio",
+          "navigation",
+          "note",
+          "option",
+          "paragraph",
+          "presentation",
+          "progressbar",
+          "radio",
+          "radiogroup",
+          "range",
+          "region",
+          "row",
+          "rowgroup",
+          "scrollbar",
+          "search",
+          "section",
+          "sectionhead",
+          "select",
+          "separator",
+          "spinbutton",
+          "status",
+          "strong",
+          "structure",
+          "subscript",
+          "superscript",
+          "switch",
+          "tab",
+          "table",
+          "tablist",
+          "tabpanel",
+          "term",
+          "time",
+          "timer",
+          "toolbar",
+          "tooltip",
+          "tree",
+          "treegrid",
+          "treeitem",
+          "widget",
+          "window"
+      ],
+    validate : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.deprecatedAttrs) {
+          if (de.visibility.isVisibleToAT) {
+            de.ariaInfo.deprecatedAttrs.forEach( attr => {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, de.elemName]);
+            });
+          }
+          else {
+            de.ariaInfo.deprecatedAttrs.forEach( attr => {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, de.elemName]);
+            });
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_16
+   *
+   * @desc     Web components require manual check
+   */
+  { rule_id             : 'WIDGET_16',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    ruleset             : RULESET.MORE,
+    rule_required       : true,
+    wcag_primary_id     : '2.1.1',
+    wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
+    target_resources    : ["Custom elements using web component APIs"],
+    validate          : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.tagName.includes('-') && de.isShadowClosed) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  }
+
+  ];
+
   /* rule.js */
 
   /* Constants */
-  const debug$b = new DebugLogging('Rule', false);
+  const debug$d = new DebugLogging('Rule', false);
 
   /* ----------------------------------------------------------------   */
   /*                             Rule                                   */
@@ -21277,7 +22765,7 @@
       this.rule_result_msgs = getRuleResultMessages(this.rule_id); // Object with keys to strings
       this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
 
-      debug$b.flag && this.toJSON();
+      debug$d.flag && this.toJSON();
     }
 
     /**
@@ -21618,7 +23106,7 @@
       };
 
       const json = JSON.stringify(ruleInfo, null, '  ');
-      debug$b.flag && debug$b.log(`[JSON]: ${json}`);
+      debug$d.flag && debug$d.log(`[JSON]: ${json}`);
       return json;
 
     }
@@ -21627,7 +23115,7 @@
   /* allRules.js */
 
   /* Constants */
-  const debug$a = new DebugLogging('Rules', false);
+  const debug$c = new DebugLogging('Rules', false);
 
   const allRules = [];
 
@@ -21637,17 +23125,18 @@
     });
   }
 
-  addToArray(colorRules$1);
-  addToArray(focusRules$1);
-  addToArray(controlRules$1);
-  addToArray(headingRules$1);
-  addToArray(imageRules$1);
-  addToArray(linkRules$1);
-  addToArray(landmarkRules$1);
-  addToArray(widgetRules$1);
+  addToArray(colorRules);
+  addToArray(focusRules);
+  addToArray(controlRules);
+  addToArray(headingRules);
+  addToArray(imageRules);
+  addToArray(linkRules);
+  addToArray(landmarkRules);
+  addToArray(tableRules);
+  addToArray(widgetRules);
 
 
-  if (debug$a.flag) {
+  if (debug$c.flag) {
     console.log('All rules loaded');
   }
 
@@ -21745,7 +23234,7 @@
 
   /* resultSummary.js */
 
-  const debug$9 = new DebugLogging('ruleResultSummary', false);
+  const debug$b = new DebugLogging('ruleResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             RuleResultsSummary                        */
@@ -21787,7 +23276,7 @@
       this.is  = -1;  // implementation score for group
       this.iv  = IMPLEMENTATION_VALUE.UNDEFINED; // implementation value for the group
 
-      debug$9.flag && debug$9.log(`[RuleResultsSummary]: ${this.toString()}`);
+      debug$b.flag && debug$b.log(`[RuleResultsSummary]: ${this.toString()}`);
     }
 
      get violations()     { return this.v;  }
@@ -21881,7 +23370,7 @@
   /* ruleGroupResult.js */
 
   /* Constants */
-  const debug$8 = new DebugLogging('ruleGroupResult', false);
+  const debug$a = new DebugLogging('ruleGroupResult', false);
 
   /**
    * @class RuleGroupResult
@@ -21930,7 +23419,7 @@
       this.rule_results = [];
       this.rule_results_summary = new RuleResultsSummary();
 
-      debug$8.flag && debug$8.log(`[title]: ${this.title} (${ruleset})`);
+      debug$a.flag && debug$a.log(`[title]: ${this.title} (${ruleset})`);
     }
 
     /**
@@ -22100,7 +23589,7 @@
       };
 
       const json = JSON.stringify(ruleGroupResultInfo);
-      debug$8.flag && debug$8.log(`[JSON]: ${json}`);
+      debug$a.flag && debug$a.log(`[JSON]: ${json}`);
       return json;
     }
   }
@@ -22108,7 +23597,7 @@
   /* baseResult.js */
 
   /* constants */
-  const debug$7 = new DebugLogging('baseResult', false);
+  const debug$9 = new DebugLogging('baseResult', false);
 
   /**
    * @class baseResult
@@ -22139,9 +23628,9 @@
       this.result_type       = RESULT_TYPE.BASE;
       this.rule_result       = ruleResult;
       this.result_value      = resultValue;
-      debug$7.flag && debug$7.log(`[  msgId]: ${msgId}`);
-      debug$7.flag && debug$7.log(`[    msg]: ${msg}`);
-      debug$7.flag && debug$7.log(`[msgArgs]: ${msgArgs}`);
+      debug$9.flag && debug$9.log(`[  msgId]: ${msgId}`);
+      debug$9.flag && debug$9.log(`[    msg]: ${msg}`);
+      debug$9.flag && debug$9.log(`[msgArgs]: ${msgArgs}`);
       this.result_message    = getBaseResultMessage(msg, msgArgs);
       this.result_identifier = result_identifier;
 
@@ -22205,7 +23694,7 @@
      *
      * @desc Returns the result type: element, page or website
      *
-     * @return {Object} see @desc
+     * @return {String} see @desc
      */
     getResultType () {
       return getCommonMessage('resultType', this.result_type);
@@ -22318,7 +23807,8 @@
 
   /* Constants */
 
-  const debug$6 = new DebugLogging('ElementResult', false);
+  const debug$8 = new DebugLogging('ElementResult', false);
+  debug$8.flag = false;
 
   /**
    * @class ElementResult
@@ -22357,8 +23847,8 @@
       this.domElement = domElement;
       this.result_type    = RESULT_TYPE.ELEMENT;
 
-      if (debug$6.flag) {
-        debug$6.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$8.flag) {
+        debug$8.log(`${this.result_value}: ${this.result_message}`);
       }
     }
     /**
@@ -22378,6 +23868,19 @@
                           de.tagName;
       return identifier;
     }
+
+    /**
+     * @method getNode
+     *
+     * @desc Gets the dom node
+     *
+     * @return {Object} see description
+     */
+
+    getNode () {
+      return this.domElement.node;
+    }
+
 
     /**
      * @method getTagName
@@ -22531,6 +24034,45 @@
     }
 
     /**
+    * @method getTableInfo
+    *
+    * @desc Gets table information
+    *
+    * @return {Object} Object with keys and values
+    */
+    getTableInfo () {
+      const info = {};
+      const te = this.domElement.tableElement;
+      if (te) {
+        info.type     = getCommonMessage('tableType', te.tableType);
+        info.rows     = te.rowCount;
+        info.columns  = te.colCount;
+        info.header_cells     = te.headerCellCount;
+        info.data_cells       = te.cellCount - te.headerCellCount;
+        info.cells_with_spans = te.spannedCells;
+      }
+      return info;
+    }
+
+    /**
+    * @method getTableCellHeaderInfo
+    *
+    * @desc Gets table header information for data cells
+    *
+    * @return {Object} Object with header keys and values
+    */
+    getTableCellHeaderInfo () {
+      const info = {};
+      const tableCell = this.domElement.tableCell;
+      if (tableCell) {
+        info.count   = tableCell.headers.length;
+        info.headers = tableCell.headers.join(' | ');
+        info.source  = tableCell.headerSource;
+      }
+      return info;
+    }
+
+    /**
     * @method getVisibilityInfo
     *
     * @desc Gets visibility information for an element result
@@ -22555,7 +24097,7 @@
 
   /* elementResultSummary.js */
 
-  const debug$5 = new DebugLogging('ElementResultSummary', false);
+  const debug$7 = new DebugLogging('ElementResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             ResultSummary                        */
@@ -22586,7 +24128,7 @@
       this.mc  = 0;
       this.h   = 0;
 
-      debug$5.flag && debug$5.log(`[ElementResultsSummary]: ${this.toString()}`);
+      debug$7.flag && debug$7.log(`[ElementResultsSummary]: ${this.toString()}`);
     }
 
     get violations()     { return this.v;   }
@@ -22697,7 +24239,7 @@
 
   /* Constants */
 
-  const debug$4 = new DebugLogging('PageResult', false);
+  const debug$6 = new DebugLogging('PageResult', false);
 
   /**
    * @class PageResult
@@ -22732,8 +24274,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.PAGE;
 
-      if (debug$4.flag) {
-        debug$4.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$6.flag) {
+        debug$6.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -22743,7 +24285,7 @@
 
   /* Constants */
 
-  const debug$3 = new DebugLogging('PageResult', false);
+  const debug$5 = new DebugLogging('PageResult', false);
 
   /**
    * @class WebsiteResult
@@ -22778,8 +24320,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.WEBSITE;
 
-      if (debug$3.flag) {
-        debug$3.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$5.flag) {
+        debug$5.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -22789,7 +24331,8 @@
 
 
   /* constants */
-  const debug$2 = new DebugLogging('ruleResult', false);
+  const debug$4 = new DebugLogging('ruleResult', false);
+  debug$4.flag = false;
 
    /**
    * @class RuleResult
@@ -22833,8 +24376,6 @@
       this.results_hidden         = [];
 
       this.results_summary = new ResultsSummary();
-
-      debug$2.flag && debug$2.log('');
     }
 
     /**
@@ -23388,7 +24929,8 @@
   /* evaluationResult.js */
 
   /* Constants */
-  const debug$1 = new DebugLogging('EvaluationResult', false);
+  const debug$3 = new DebugLogging('EvaluationResult', false);
+  debug$3.flag = false;
 
   class EvaluationResult {
     constructor (allRules, domCache, title, url) {
@@ -23400,20 +24942,20 @@
       this.allRuleResults = [];
 
       const startTime = new Date();
-      debug$1.flag && debug$1.log(`[title]: ${this.title}`);
+      debug$3.flag && debug$3.log(`[title]: ${this.title}`);
 
       allRules.forEach (rule => {
         const ruleResult = new RuleResult(rule);
-        debug$1.flag && debug$1.log(`[validate]: ${ruleResult.rule.getId()}`);
+        debug$3.flag && debug$3.log(`[validate]: ${ruleResult.rule.getId()}`);
         ruleResult.validate(domCache);
         this.allRuleResults.push(ruleResult);
       });
 
       const json = this.toJSON(true);
-      debug$1.flag && debug$1.log(`[JSON]: ${json}`);
+      debug$3.flag && debug$3.log(`[JSON]: ${json}`);
 
       const endTime = new Date();
-      debug$1.flag && debug$1.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+      debug$3.flag && debug$3.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
 
 
     }
@@ -23609,7 +25151,9 @@
   /* evaluatationLibrary.js */
 
   /* Constants */
-  const debug   = new DebugLogging('EvaluationLibrary', false);
+  const debug$2   = new DebugLogging('EvaluationLibrary', false);
+  debug$2.flag = true;
+  debug$2.json = false;
 
   /**
    * @class EvaluateLibrary
@@ -23640,8 +25184,20 @@
     evaluate (startingDoc, title='', url='') {
       let domCache = new DOMCache(startingDoc);
       let evaluationResult = new EvaluationResult(allRules, domCache, title, url);
-      if (debug.flag) {
-        debug.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON()}`);
+
+      // Debug features
+      if (debug$2.flag) {
+        domCache.showDomElementTree();
+        domCache.controlInfo.showControlInfo();
+        domCache.iframeInfo.showIFrameInfo();
+        domCache.idInfo.showIdInfo();
+        domCache.imageInfo.showImageInfo();
+        domCache.linkInfo.showLinkInfo();
+        domCache.listInfo.showListInfo();
+        domCache.tableInfo.showTableInfo();
+        domCache.structureInfo.showStructureInfo();
+
+        debug$2.json && debug$2.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
       }
       return evaluationResult;
     }
@@ -23679,6 +25235,17 @@
     let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href);
     return evaluationResult;
   }
+
+  /* panel-constants.js*/
+
+    // viewId is a copy of viewId constant in
+    // panel.js
+
+  const viewId = {
+    summary : 'summary',
+    ruleResults: 'rule-results',
+    elementResults: 'element-results'
+  };
 
   /* getDetailsAction.js */
 
@@ -23930,10 +25497,8 @@
   *   (2) return result objec for the rule view in the sidebar;
   */
 
-  function getElementResultsInfo(ruleId) {
+  function getElementResultsInfo(ruleResult) {
 
-    const evaluationResult  = evaluate();
-    const ruleResult = evaluationResult.getRuleResult(ruleId);
     const elemSummaryResult = ruleResult.getResultsSummary();
 
     const rule = ruleResult.getRule();
@@ -23953,7 +25518,7 @@
     info.detailsAction  = getDetailsAction(ruleResult);
     info.ruleResult     = getRuleResultInfo(ruleResult);
     info.elementResults = getElementResultInfo(ruleResult);
-    info.otherResult = getPageOrWebsiteResultInfo(ruleResult);
+    info.otherResult    = getPageOrWebsiteResultInfo(ruleResult);
 
     // get JSON with element result details
     info.json = ruleResult.toJSON('', true);
@@ -23994,11 +25559,13 @@
 
     function addElementResult(index, elementResult) {
 
-      let accNameInfo    = JSON.stringify(elementResult.getAccessibleNameInfo());
-      let ccrInfo        = JSON.stringify(elementResult.getColorContrastInfo());
-      let visibilityInfo = JSON.stringify(elementResult.getVisibilityInfo());
-      let htmlAttrInfo   = JSON.stringify(elementResult.getHTMLAttributes());
-      let ariaAttrInfo   = JSON.stringify(elementResult.getAriaAttributes());
+      let accNameInfo     = JSON.stringify(elementResult.getAccessibleNameInfo());
+      let ccrInfo         = JSON.stringify(elementResult.getColorContrastInfo());
+      let headerInfo      = JSON.stringify(elementResult.getTableCellHeaderInfo());
+      let tableInfo       = JSON.stringify(elementResult.getTableInfo());
+      let visibilityInfo  = JSON.stringify(elementResult.getVisibilityInfo());
+      let htmlAttrInfo    = JSON.stringify(elementResult.getHTMLAttributes());
+      let ariaAttrInfo    = JSON.stringify(elementResult.getAriaAttributes());
 
       const item = {
         'index'            : (index + 1).toString(),
@@ -24015,6 +25582,8 @@
         'resultType'       : elementResult.getResultType(),
         'accNameInfo'      : accNameInfo,
         'ccrInfo'          : ccrInfo,
+        'headerInfo'       : headerInfo,
+        'tableInfo'        : tableInfo,
         'visibilityInfo'   : visibilityInfo,
         'htmlAttrInfo'     : htmlAttrInfo,
         'ariaAttrInfo'     : ariaAttrInfo,
@@ -24074,715 +25643,264 @@
     return null;
   }
 
-  /**
-   * @file highlightModule.js
-   *
-   * @desc Module that provides data structures and functions for highlighting
-   *       elements on the current page.
-   * */
-
-  /* ---------------------------------------------------------------- */
-  /*                      Highlight Module                            */
-  /* ---------------------------------------------------------------- */
-
-  const highlightModule = {
-
-    /**
-     * @function initHighlight
-     *
-     * @desc Initialize helper objects
-     */
-    initHighlight: function (properties) {
-
-      if (typeof properties !== 'object') {
-        this.highlightDivClass = 'ainspector_highlight';
-        this.offScreenDivClass = 'ainspector_offscreen';
-        this.offScreenDivId    = 'ainspector_offscreen_id';
-      }
-      else {
-        this.highlightDivClass = properties.highlightDivClass;
-        this.offScreenDivClass = properties.offScreenDivClass;
-        this.offScreenDivId    = properties.offScreenDivId;
-      }
-
-      this.show_element_manual_check = true;
-      this.show_page_manual_check    = true;
-      this.show_pass                 = true;
-      this.show_hidden               = true;
-
-      // TODO: this code needs to be updated to support multiple languages
-
-      this.STRINGS = {
-        violations:   'Violation;Violations',
-        warnings:     'Warning:Warnings',
-        manualChecks: 'Manual Check;Manual Checks',
-        passes:       'Pass;Passes',
-        hidden:       'Hidden',
-        offScreen:    'Off Screen',
-        notVisible:   'Not Visible',
-        noResults:    'No Result;No Results'
-      };
-
-      this.STYLES = {
-        violations:   'border-collapse: separate; border: 2px solid crimson;',
-        warnings:     'border-collapse: separate; border: 2px solid gold;',
-        manualChecks: 'border-collapse: separate; border: 2px solid mediumblue;',
-        passes:       'border-collapse: separate; border: 2px solid seagreen;',
-        hidden:       'border-collapse: separate; border: 2px dotted grey;',
-        noResults:    'border-collapse: separate; border: 2px dotted black;',
-
-        visibleDiv:   'position: relative; height: 100%; padding: 2px;',
-
-        offScreen:    'width: 40%; padding: 10px; margin: 2px; opacity: 0.85; ' +
-                      'background-color: white; color: black; font-size: 12pt; ' +
-                      'position: fixed; top: 2em; left: 2em; z-index: 100;' ,
-
-        iconImage:    'background-color: transparent; border: 0; ' +
-                      'position: absolute; top: 2px; right: 2px; ' +
-                      'width: 16px; height: 16px;'
-      };
-
-      this.elementsWithoutContent = [
-        'applet', 'area', 'dl', 'embed', 'frame', 'img', 'input',
-        'object', 'ol', 'select', 'textarea', 'table', 'ul'
-      ];
-
-      this.infoImageBase64_v = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB2klEQVQ4EZVTyytEURj/nTt3iAkL8khGjI1HFsiKKRQpW/+BiNhYS0pWSl4pslOyVJJSJknZ2JhGUx5ThlLyKBmaO+Me33fm4ZrRxF3c853f9/t955zvIaSUsH7Bss766Gd0gOBuCDiVTyIoBPZ1m77uvPecW/kiGaBlyH4d9M8RMEIhNSspYQvAlEKsuJy14zhdjTAeC0DiwI1/T0J2JciZVgFxUF1Z28tB1El88l/FHJi5rGFb3JR21EejEa/12mVbs7CVFOGuZxAw1E1ROD2GnLYmvCxsILTtofTA1HV7o6YSlvJmaUpkN9TAXlXOhyCL7IKhfmj5DrzvHSuMD2StprKtoO+f4btUmyxXhVoLJ4chqAxPUyuQYSNJZK2WLFUSBsLnV2pnr3Eip70ZuR2t+Dg5Q2jn0MIik8qs/0RiO8MXD1BdAUdvO6Rp4nFiMZ1KPaBTSoPkqbN6I4E7mKEPOPrcsBXk4XVzF4b3wkqJ2+JW4w5L89DjDH9Aic23dzzPrKVRGGCtxu3JJUllhOOJfJnfwOfDc6o7VkbWcitfF7uXIOVoGisTIMSy6+FoTHUi9za3Zya+1cdcNQ8ExoaGelr1NkX97TkJsfIRJzEHjH9PY5z133H+AoP7xxWGaaVLAAAAAElFTkSuQmCC";
-
-      this.infoImageBase64_w = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABrklEQVQ4Ea1Tu0pDQRA9u3mgicYHCgo+UvhCCxv/QHz9hYU2wTTiB1iKhSBGKz/APxCEVJY2igoRrGJtBPGBRLOeubMbY6EYcJrduTPnzJm5s8Y5h292a6bwgRU4zPP7kI+VYXCCGA4x4q4b880XgUmghB0m5gi2jUn1u0GNsQNMYB1wVfnuCQi+wTGDs/Xk3y4GRYxjSUi0klT+K1iIJVcwNAvpWWSL9WwC2XMg1h+5SFGQ+L1b6tsMMHwGDJ5Qu80J1vqB+Z55tEwDiQEFdG+on5xUv2MZaJ0BXk6pohZhLeXItNWqZT3jfSQZA9IL6ts0TwN0rQG1Z+BhX78TG+ct/CqgTsAWUnMMcdCvbMG2kWwRSI4ClV2SVJSAWC/d++9egVQXuY9HwNuVEnTlKfudBNHsFGDghMCjeKveaaBzlYNs1+QPVktkVYEQhiKS6XBn2RpH6s2xPwHEMsBzkdUv6N9TQYoj4Awq2yFTT2JttJ6yYcHCHILU0O/TMQkvQ5bMtCZY3cSS2WOEI27KCphw+X9aZXkY0W6jEEn7SYi2WgjvQNIaXqNHNfmcPwFafJrgyp1/fQAAAABJRU5ErkJggg==";
-
-      this.infoImageBase64_m = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3ElEQVQ4Ea1Tu0pDQRA960ViEgW/wEKIhRbxprZSEGz9ARsr0UbsLMQfUNAQLNLYWVjZBAIW+YDkRjCgSBAj8YES3xoNyTgz9y6JhaJg4GZ2ds6cPTM7a4gInT9jDkaA5ixgJnl/IIhVAMoCTpooXvqCtwTGoBvw1jg4x+CuTlB7bVq8TgHuIp/bkH0jBEFyhhMn2uCfVmafSaaEJDhJTv5tshALVtWKU+SaC00gT9PTZSoWX2hp6Zx2d2tUqzUom32gvj6PVlcvqFyuk+e90NjYETdOciQX+XVJlm9j45orIvr4aNH29i2dntbVF5vLPVImc6/+3t6d4iWXS9BuixQkEhG1y8tVzMycYWfnTv1qtYHx8ROsrFyqH4nYHptJWelVdfEqHg+j2SRsbd0qMBYLqU2lbngfGB7uUf/4+F0t/w1YKgi4t9fB4eEbnp7ktrjPrq8ol3tW3yosFF7V52bqfVfEs8F83g/29zsYHAzh6qoBKaET0yYw56xAJqx9mg26bliTrC8ljo6GwQ1GqVTXmOTytpPmRrYSCZvwpkGryBIMDYUQjUqJdSaR8ZepdNLBJHqbzDYf0P7SmCSRu/A/o+w/DHeKZSV9ad+JENmC8d+BoFRBJ/yvz/kTYO78YEkFRNMAAAAASUVORK5CYII=";
-
-      this.infoImageBase64_p = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACL0lEQVQ4Ea1TTUhUURg998174+TYpEOjDYam9DMzbjSGoGgRWFK0aFEEtRaLqCAXrVq3NCIQDLNFELkoJAphShKKqDCaqBaJQmUhlDQyDpXNz+18d+bhG6gg6Fu8d+93zzn3+7tKaw2vdV442qGLpV6l0MOTFjlTwAfCUspnDafPXH/jxStXIHn5mFPIZQd0CScAbXlBK2tVUhYG7bpQ/1TfUF78RkDI+aXsOLTuXgH/ZaXUhLM6tE9EbIHJzV7y7k3b0Lf9ICZnp5BoasfW9THMLnzEufFBvM/MM0DdbTjAKd/YmukOhj1CHaZatsOde7BrYxJdzTHMLMzBYkES69oRa2rD2OvJMkir5NDTWzdtKRg9VTkLWOzqs9u49OgGamwHD09eoeAWBGw/fhR+8lRbuqh7RbzHoCsfcWyOtJrdted3zX+5kC+Hzl0oEKwgGTK5ltsq19sWbsYqpwaZb1ksfl8ybhFtqY9imTd/yS26UAi3KnQ5STBPsYbaECLBBrPeH9+JgONH+tNbkkhzjRvbDAl5ri9eEZD9wIF+PH73Eke69rLwmvUYdWHmz8DmLJkwrzfOtomdvz+CaGgtju84JLni7J2LeDU/44VSFClbxpPVPC1VVexkrHEDCqUi2/UAo+kUGuvCzDtTHbqR4VT61LAlsy3jKb7WcBS1/oAZGqm82Ofc19+Q2QFyhGuKKLPNOCciwXq8YKHuTT8x5D9+iDUcAv7PY/Le9K/P+Refku1NobDFbQAAAABJRU5ErkJggg==";
-
-      this.infoImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAByklEQVQ4EZVTvWoCQRCeW5JCC386GwNWItGIrdpIQExlpb0QEFIo5glELCWdgnD4ABaihUYEO58gmgfQ2IqNVgdn5lvcY6M2WTh29vuZnb2dNU6nE+kjnU4/2rb9yljWMIwHcKzZ8DQTQpiLxeIbmBqGSlAul++Xy+UHE2/8CSXAzEnJ7/fTdDq1LcvqxGKx9263a4GTCWBerVafnOwZoD6SySS1Wi0JmaZJvV6PuLJ5NBp9QRK5E3a+ZYbL7XY7+Vwul4yhPVdLRiqVwpm/mPlTtnLxuSmXy5HP56PRaETH41FRNnNPd+cfdtMMJfM0mUyUSZ8FvDBmdVTFgUCAms0mjcdjqlarCr6cs0Jdlc7E43Fqt9sUDofl3y8Wi+TxeHSJjOG9WXo+n6dKpSLLh3K329HhcLhKwMBJ8B/dXDKNRoMikQgFg0FJ9ft9J5muZe8PKpjpIGIujUqlkoSx82AwuJSoNbpTmLyyFYI5k8lQKBSS0HA4lFfo9Xp1CWJcoynOvd3R2UKh4CxhrNfrxGIHOwcdeCWK3uay50qBu8fgM0pjrVaj/X6vaNnK8AC4+Zi4fUUikaD1ek3b7dYxcoDM149JV/z3Of8CSFrKn7VA+jwAAAAASUVORK5CYII=";
-
-    },
-
-    /**
-     * @function setHighlightPreferences
-     *
-     * @desc Set module properties that control highlighting according to
-     *       user preferences
-     *
-     * @param {Boolean} show_element_manual_check
-     * @param {Boolean} show_page_manual_check
-     * @param {Boolean} show_pass
-     * @param {Boolean} show_hidden
-     */
-    setHighlightPreferences: function (show_element_manual_check,
-                                       show_page_manual_check,
-                                       show_pass,
-                                       show_hidden) {
-
-      this.show_element_manual_check = show_element_manual_check;
-      this.show_page_manual_check    = show_page_manual_check;
-      this.show_pass                 = show_pass;
-      this.show_hidden               = show_hidden;
-    },
-
-    getRuleScope: function (elementResult) {
-      return elementResult.getRuleResult().getRuleScope();
-    },
-
-    isElementScopeRule: function (elementResult) {
-      return (this.getRuleScope(elementResult) === RULE_SCOPE.ELEMENT);
-    },
-
-    isPageScopeRule: function (elementResult) {
-      return (this.getRuleScope(elementResult) === RULE_SCOPE.PAGE);
-    },
-
-    /**
-     * @function scopePageCount
-     *
-     * @desc Calculate the number of element results in the list that are from rules
-     *       with a scope property set to page.
-     *
-     * @param {Array} element_results - List of ElementResult objects
-     *
-     * @return {Number} Number of element results with page scope
-     */
-    scopePageCount: function(element_results) {
-      let count = 0;
-      for (let i = 0; i < element_results.length; i++)
-        if (this.isPageScopeRule(element_results[i])) count++;
-      return count;
-    },
-
-    /**
-     * @function scopeElementCount
-     *
-     * @desc Calculate the number of element results in the list that are from rules
-     *       with a scope property set to element.
-     *
-     * @param {Array} element_results - List of ElementResult objects
-     *
-     * @return {Number} Number of element results with element scope
-     *
-     */
-    scopeElementCount: function (element_results) {
-      let count = 0;
-      for (let i = 0; i < element_results.length; i++)
-        if (this.isElementScopeRule(element_results[i])) count++;
-      return count;
-    },
-
-    /**
-     * @function highlightElementResults
-     *
-     * @desc Highlights a set of nodes on a page, uses the element result value
-     *       for highlighting style
-     *
-     * @param {Object} document - the DOM to apply highlight operation
-     * @param {Array} element_results  - An array of OAA element results to highlight
-     *                (i.e. from rule results of filtered rule results)
-     */
-
-    highlightElementResults: function (document, element_results) {
-
-      // counters
-      let v = 0; // violations
-      let w = 0; // warnings
-      let m = 0; // manual checks
-      let p = 0; // passes
-      let h = 0; // hidden
-
-      this.removeHighlight(document);
-
-      if (typeof element_results !== 'object') return;
-
-      // if not an array assume it is a element result object
-      if (typeof element_results.length !== 'number') element_results = [element_results];
-
-      let element_results_len = element_results.length;
-      let first_visible_node = null;
-      let off_screen_elements = [];
-
-      for (let i = 0; i < element_results_len; i++) {
-
-        try {
-          let element_result = element_results[i];
-          let dom_element    = element_result.getDOMElement();
-          let tag_name       = dom_element.tag_name;
-
-          // The node property of DOMElement is a reference to the DOM node in
-          // the actual DOM of the current web page.
-          let node = dom_element.node;
-
-          if (node) {
-
-            // store reference to first visible node
-            if (first_visible_node === null) {
-              first_visible_node = node;
-            }
-
-            switch (element_result.getResultValue()) {
-            case RESULT_VALUE.VIOLATION:
-              this.insertDIV(document, node, tag_name, this.STYLES.violations, 1, 0, 0, 0, 0);
-              break;
-
-            case RESULT_VALUE.WARNING:
-              this.insertDIV(document, node, tag_name, this.STYLES.warnings, 0, 1, 0, 0, 0);
-              break;
-
-            case RESULT_VALUE.MANUAL_CHECK:
-              if (this.isElementScopeRule(element_result) && !this.show_element_manual_check)
-                continue;
-              if (this.isPageScopeRule(element_result) && !this.show_page_manual_check)
-                continue;
-              this.insertDIV(document, node, tag_name, this.STYLES.manualChecks, 0, 0, 1, 0, 0);
-              break;
-
-            case RESULT_VALUE.PASS:
-              if (this.show_pass)
-                this.insertDIV(document, node, tag_name, this.STYLES.passes, 0, 0, 0, 1, 0);
-              break;
-
-            case RESULT_VALUE.HIDDEN:
-              if (this.show_hidden)
-                this.insertDIV(document, node, tag_name, this.STYLES.hidden, 0, 0, 0, 0, 1);
-              break;
-
-            default:
-              break;
-            }
-          }
-        }
-        catch (error) {
-          console.log('[highlightElementResults][catch]: ' + error);
-        }
-      } //end for
-
-      // scroll the first node in the list into view
-      if (first_visible_node) {
-        // scroll into view aligned with top of viewport
-        first_visible_node.scrollIntoView(true);
-      }
-
-      if (off_screen_elements.length > 0) {
-        this.showOffScreenElementResults(document, off_screen_elements, v, w, m, p, h);
-      }
-
-    },
-
-    /**
-     * @function pluralForm
-     *
-     * @desc  Return the singular or plural form a string
-     *
-     * @param {value}   value     - number to test
-     * @param {String}  stringId  - Reference to the strings with singular and plural forms
-     */
-    pluralForm: function (value, stringRef) {
-
-      let parts = stringRef.split(';');
-
-      if (parts.length === 2) {
-        if (value !== 1) {
-          return parts[1];
-        }
-      }
-
-      return parts[0];
-    },
-
-    /**
-     * @function removeHighlightedElements
-     *
-     * @desc Removes the DIV used to highlight elements and restores the content
-     *       nodes to their orginal parent nodes.
-     *
-     * @param {Array}  elems  - Array of elements with highlight class
-     */
-    removeHighlightedElements: function (elems) {
-      if (!Array.isArray(elems)) {
-        return;
-      }
-      let highlightClass = this.highlightDivClass;
-      elems.forEach(elem => {
-        // Verify the element has the highlight class and is a element node
-        if (elem.classList && elem.classList.contains(highlightClass)) {
-          let parentNode = elem.parentNode;
-
-          if (parentNode) {
-            while(elem.firstChild) {
-              parentNode.insertBefore(elem.firstChild, elem);
-            }
-            parentNode.removeChild(elem);
-          }
-        }
-      });
-    },
-
-    /**
-     * @function removeHighlight
-     *
-     * @desc Unhighlights the nodes that were highlighted earlier and
-     *       removes the informational message added to a page if the
-     *       element is hidden from assistive technologies.
-     *
-     * @param {Object}  document  - the DOM to which highlight operation is applied
-     */
-    removeHighlight: function (document) {
-      let highlightClass = this.highlightDivClass;
-
-      /**
-       * @function getHighlightedElements
-       *
-       * @desc  A recursive function to traverse the DOM, including custom elements,
-       *        for accumulating an array of elements with the highlight class.
-       *        This is initally called using the document as the startingNode
-       *
-       *
-       * @param {DOM node}  startingNode  - Dom element to start (e.g. continue)
-       *                                    traversal of the DOM
-       * @param {Array}     elems         - Array of elements with the highliht class,
-       *                                    it is empty array when starting the 
-       *                                    transversal
-       *
-       * @return {Array} Accummulated elements with the highlight class
-       */
-
-      function getHighlightedElements(startingNode, elems) {
-
-        if (!startingNode || !startingNode.firstChild) {
-          return;
-        }
-
-        for (let node = startingNode.firstChild; node !== null; node = node.nextSibling ) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.tagName.indexOf('-') >= 0) {
-              elems = getHighlightedElements(node.shadowRoot, elems);
-            } else {
-              switch (node.tagName.toLowerCase()) {
-
-                case 'base':
-                case 'link':
-                case 'noscript':
-                case 'script':
-                case 'style':
-                case 'template':
-                case 'content':
-                case 'shadow':
-                  break;
-
-                case 'frame':
-                case 'iframe':
-                  try {
-                    const doc = node.contentDocument || node.contentWindow.document;
-                    if (doc) {
-                      elems = getHighlightedElements(doc, elems);
-                    }
-                  } catch (error) {
-                    console.log('[removeFromDocument][catch]' + error);
-                  }
-                  break;
-
-                case 'slot':
-                  node.assignedNodes({ flatten: true }).forEach( assignedNode => {
-                    if (assignedNode.parentNode) {
-                      elems = getHighlightedElements(assignedNode.parentNode, elems);
-                    }
-                  });
-                  break;
-
-                default:
-                  if (node.classList.contains(highlightClass)) {
-                    elems.push(node);
-                  }
-                  elems = getHighlightedElements(node, elems);
-                  break;
-              }
-            }
-          }
-        }
-        return elems;
-      } // end of getHighlightedElements
-
-      /**
-       * @function removeFromFrames
-       *
-       * @desc  A recursive function to traverse a frameset, as frames
-       *        are traversed the highlighted elements are rmeoved from
-       *        them
-       *
-       *
-       * @param {Array}  frames  - Array of frames defined on a page
-       *                           (NOTE: frames are rarely used in 
-       *                           modern web development)
-       */
-
-      function removeFromFrames(frames) {
-
-        if (typeof frames !== 'object' || typeof frames.length !== 'number') return;
-
-        for (let i=0; i < frames.length; i++) {
-          try {
-            let frame = frames[i];
-            if (frame.document) {
-              let elems = getHighlightedElements(frame.document, []);
-              this.removeHighlightedElements(elems);
-            }
-            removeFromFrames(frame.frames);
-          }
-          catch (error) {
-            console.log('[removeFromFrames][catch]: ' + error);
-          }
-        }
-      } // end of removeFromFrames
-
-      // Start transversal of DOM to get all highlighted elements
-      let elems = getHighlightedElements(document, []);
-
-      // Remove highlighted elements
-      this.removeHighlightedElements(elems);
-
-      // If the page uses frameset start transversal of frameset
-      removeFromFrames(window.frames);
-
-    },
-
-    /**
-     * @function showOffScreenElementResults
-     *
-     * @desc Display information about a list of element results of a rule
-     *       Designed to provide information about element results that are not
-     *       visible on screen
-     *
-     * @param {Object} document - the DOM to remove highlighting from
-     * @param {Array} element_results - List of ElementResult objects that are off screen
-     * @param {Number} v - number of violations in the list of element results
-     * @param {Number} w - number of warnings in the list of element results
-     * @param {Number} m - number of manual checks in the list of element results
-     * @param {Number} p - number of passes in the list of element results
-     * @param {Number} h - number of hidden in the list of element results
-     */
-    showOffScreenElementResults: function (document, element_results, v, w, m, p, h) {
-
-      let element_results_plural =
-        this.pluralForm(element_results.length, this.STRINGS.offScreen);
-      let str = element_results.length + ' ' + element_results_plural;
-      let style = this.STYLES.offScreen + ' ';
-
-      if (v > 0) style += this.STYLES.violations;
-      else if (w > 0) style += this.STYLES.warnings;
-      else if (m > 0) style += this.STYLES.manualChecks;
-      else if (p > 0) style += this.STYLES.passes;
-      else if (h > 0) style += this.STYLES.hidden;
-
-      if (v > 0) str +=  ': ' + v + ' ' + this.pluralForm(v, this.STRINGS.violations);
-      if (w > 0) str +=  ': ' + w + ' ' + this.pluralForm(w, this.STRINGS.warnings);
-      if (m > 0) str +=  ': ' + m + ' ' + this.pluralForm(m, this.STRINGS.manualChecks);
-      if (p > 0) str +=  ': ' + p + ' ' + this.pluralForm(p, this.STRINGS.passes);
-      if (h > 0) str +=  ': ' + h + ' ' + this.pluralForm(h, this.STRINGS.hidden);
-
-      this.positionDIV(document, style, str);
-    },
-
-    /**
-     * @function positionDIV
-     *
-     * @desc Create a div element to position at top left of the web page to
-     *       display a message re. off-screen elements and their severities,
-     *       outlined with the worst result value styling.
-     *
-     * @param {Object} document - the DOM in which to position DIV
-     * @param {String} style - the DIV CSS style
-     * @param {String} result_value_message - message to show inside the DIV
-     */
-    positionDIV : function (document, style, result_value_message) {
-
-      let div_element = document.createElement('div');
-      div_element.id = this.offScreenDivId;
-
-      div_element.setAttribute("class", this.offScreenDivClass);
-      div_element.setAttribute("style", style);
-
-      let text_node = document.createTextNode(result_value_message);
-      div_element.appendChild(text_node);
-
-      document.body.insertBefore(div_element, document.body.childNodes[0]);
-
-      // scroll into view aligned with top of viewport
-      div_element.scrollIntoView(true);
-
-    },
-
-    /**
-     * @function insertDIV
-     *
-     * @desc Create a DIV element styled as specified, insert the DIV just
-     *       before the node and then move the node inside the DIV.
-     *
-     * @param {Object} document - the DOM that contains the node to highlight
-     * @param {Object} node - the node to highlight
-     * @param {Object} tagName - tag name of the node
-     * @param {String} style - CSS styling properties for DIV
-     * @param {Number} v - violations
-     * @param {Number} w - warnings
-     * @param {Number} m - manual checks
-     * @param {Number} p - passed
-     * @param {Number} h - hidden
-     */
-    insertDIV: function (document, node, tagName, style, v, w, m, p, h) {
-      let parentNode = null;
-      let title = this.getResultValueMessage(v, w, m, p, h);
-      let divStyle = this.STYLES.visibleDiv + ' ';
-
-      // Create the div element
-      let divElement = document.createElement('div');
-      divElement.setAttribute("class", this.highlightDivClass);
-      divElement.setAttribute("style", divStyle + style);
-      divElement.setAttribute("title", title);
-
-      // Get the corresponding info icon
-      let imageData = this.infoImageBase64;
-      if (v > 0) imageData = this.infoImageBase64_v;
-      else if (w > 0) imageData = this.infoImageBase64_w;
-      else if (m > 0) imageData = this.infoImageBase64_m;
-      else if (p > 0) imageData = this.infoImageBase64_p;
-
-      // Create the info image
-      let iconImage = document.createElement('img');
-      iconImage.setAttribute("src", "data:image/png;base64," + imageData);
-      iconImage.setAttribute("class", this.highlightDivClass);
-      iconImage.setAttribute("style", this.STYLES.iconImage);
-
-      // Determine method of inserting div based on tagName
-      let index = this.elementsWithoutContent.indexOf(tagName);
-
-      try {
-        if (index != -1) { // node is a member of elementsWithoutContent...
-          // In this method, the div becomes a container for the node itself;
-          // insert the div just before the node and then move the node
-          // into the div.
-          parentNode = node.parentNode;
-          parentNode.insertBefore(divElement, node);
-          divElement.appendChild(node);
-        }
-        else { // node may have content...
-          // In this method, the div becomes the container for all child elements
-          // of the node; move all of the node's children into the div and then
-          // insert the div as a child of the node.
-          while (node.firstChild) {
-            divElement.appendChild(node.firstChild);
-          }
-          node.appendChild(divElement);
-        }
-        divElement.appendChild(iconImage);
-      }
-      catch (error) {
-        console.log('[insertDIV][catch]: ' + error);
-      }
-    },
-
-    /**
-     * @function getWorstResultValueStyle
-     *
-     * @desc Return a CSS formatted string to be used for highlighting a DOM node.
-     *       Result is based on the worst element result value associated with the node.
-     *
-     * @param {Object} dom_element - OAA DOM element object
-     *
-     * @return {String} Returns a CSS string that can be used with a style property of a DOM node
-     */
-    getWorstResultValueStyle: function (dom_element) {
-
-      if (dom_element.rules_violations.length > 0)
-        return this.STYLES.violations;
-      else if (dom_element.rules_warnings.length  > 0 )
-        return this.STYLES.warnings;
-      else if (this.show_page_manual_check  && (this.scopePageCount(dom_element.rules_manual_checks) > 0))
-        return this.STYLES.manualChecks;
-      else if (this.show_element_manual_check && (this.scopeElementCount(dom_element.rules_manual_checks) > 0))
-        return this.STYLES.manualChecks;
-      else if (this.show_pass &&  (dom_element.rules_passed.length  > 0))
-        return this.STYLES.passes;
-      else if (this.show_hidden &&  (dom_element.rules_hidden.length  > 0))
-        return this.STYLES.hidden;
-      else
-        return this.STYLES.noResults;
-    },
-
-    /**
-     * @function getResultValueMessage
-     *
-     * @desc Create value for title attribute of div element to provide summary
-     *       of number of violations, warnings, manual checks and passes
-     *
-     * @param {Number} v_count - Number of violations
-     * @param {Number} w_count - Number of warnings
-     * @param {Number} m_count - Number of manual checks
-     * @param {Number} p_count - Number of pass
-     * @param {Number} h_count - Number of hidden
-     *
-     * @return {String} title
-     */
-    getResultValueMessage: function (v_count, w_count, m_count, p_count, h_count) {
-
-      let title = '';
-
-      if (v_count > 0)
-        title += v_count + ' ' + this.pluralForm(v_count, this.STRINGS.violations) + ' ';
-      if (m_count > 0)
-        title += m_count + ' ' + this.pluralForm(m_count, this.STRINGS.manualChecks) + ' ';
-      if (w_count > 0)
-        title += w_count + ' ' + this.pluralForm(w_count, this.STRINGS.warnings) + ' ';
-      if (p_count > 0)
-        title += p_count + ' ' + this.pluralForm(p_count, this.STRINGS.passes) + ' ';
-      if (h_count > 0)
-        title += h_count + ' ' + this.pluralForm(h_count, this.STRINGS.hidden) + ' ';
-
-      if (title.length === 0)
-        title = this.STRINGS.noResults;
-
-      return title;
-    }
-
-  };
-
-  /* highlightElements.js */
-
   /*
-  *   highlightElements
+  *   highlight.js
   */
 
-  function highlightElements(highlight, position) {
+  const debug$1 = new DebugLogging('highlight', false);
+  debug$1.flag = true;
 
-    function validElementResults () {
-      // NOTE: ainspectorSidebarRuleResult is a global variable in the page
-      return ainspectorSidebarRuleResult && // eslint-disable-line
-        ainspectorSidebarRuleResult.getElementResultsArray; // eslint-disable-line
+  const dataAttrName     = 'data-ainspector-result';
+  const highlightClass   = 'ainspector-highlight';
+  const styleName        = 'ainspector-styles';
+
+  const violationColor   = 'hsl(0, 100%, 50%)';
+  const warningColor     = 'hsl(49, 100%, 50%)';
+  const passColor        = 'hsl(90, 67%, 40%)';
+  const manualCheckColor = 'hsl(198, 52%, 45%);';
+  const selectedColorDark   = '333333';
+  const selectedColorLight  = 'dddddd';
+
+  const violationId   = 'v';
+  const warningId     = 'w';
+  const passId        = 'p';
+  const manualCheckId = 'mc';
+
+
+  const styleTemplate = document.createElement('template');
+  styleTemplate.innerHTML = `
+<style title="${styleName}">
+  .${highlightClass} {
+    position: absolute;
+    overflow: hidden;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 10000;
+  }
+  .${highlightClass}:after {
+    color: white;
+    font-family: sans-serif;
+    font-size: 0.9em;
+    font-weight: bold;
+    font-style: italic;
+    position: absolute;
+    overflow: visible;
+    top: 3px;
+    right: 0;
+    padding-right: 3px
+    z-index: 20000;
+  }
+
+  .${highlightClass}[${dataAttrName}=${manualCheckId}] {
+    box-shadow: inset 0 0 0 3px ${manualCheckColor}, inset 0 0 0 5px white;
+  }
+  .${highlightClass}[${dataAttrName}=${manualCheckId}]:after {
+    content: 'MC';
+    background-color: ${manualCheckColor};
+    padding: 2px 7px 2px 8px;
+  }
+
+  .${highlightClass}[${dataAttrName}=${passId}] {
+    box-shadow: inset 0 0 0 3px ${passColor}, inset 0 0 0 5px white;
+  }
+  .${highlightClass}[${dataAttrName}=${passId}]:after {
+    content: 'P';
+    background-color: ${passColor};
+    padding: 2px 7px 2px 8px;
+  }
+
+  .${highlightClass}[${dataAttrName}=${violationId}] {
+    box-shadow: inset 0 0 0 3px ${violationColor}, inset 0 0 0 5px white;
+  }
+  .${highlightClass}[${dataAttrName}=${violationId}]:after {
+    content: 'V';
+    background-color: ${violationColor};
+    padding: 2px 7px 2px 8px;
+  }
+
+  .${highlightClass}[${dataAttrName}=${warningId}] {
+    box-shadow: inset 0 0 0 3px ${warningColor}, inset 0 0 0 5px white;
+  }
+  .${highlightClass}[${dataAttrName}=${warningId}]:after {
+    content: 'W';
+    background-color: ${warningColor};
+    padding: 2px 7px 2px 8px;
+  }
+
+  .${highlightClass}[${dataAttrName}=selected-light] {
+    outline: 3px dashed #${selectedColorLight};
+    outline-offset: 3px;
+  }
+
+  .${highlightClass}[${dataAttrName}=selected-dark] {
+    outline: 3px dashed #${selectedColorDark};
+    outline-offset: 3px;
+  }
+
+</style>
+`;
+
+  // Add highlighting stylesheet to document if not already there
+  function addHighlightStyle () {
+    if (document.querySelector(`style[title="${styleName}"]`) === null) {
+      document.body.appendChild(styleTemplate.content.cloneNode(true));
+      if (debug$1) { console.debug(`Added style element (${styleName}) to document`); }
     }
+  }
 
-  /*
-    function getElementResultByPosition() {
-      if (validElementResults()) {
-        const elementResults = ainspectorSidebarRuleResult.getElementResultsArray();
+  function highlightElements (allResults, option, position) {
+    let count = 0;
+    clearHighlights();
+    allResults.forEach( r => {
+      if (r.isElementResult) {
+        const resultValue = r.getResultValue();
+        const node = r.getNode();
+        const parentDomElement = r.domElement.parentDomElement;
+        const cc = parentDomElement ?
+                   parentDomElement.colorContrast :
+                   r.domElement.colorContrast;
 
-        for (let i = 0; i < elementResults.length; i++) {
-          if (elementResults[i].getOrdinalPosition() === position) {
-            return elementResults[i];
+        if (option === 'selected') {
+          if (r.getOrdinalPosition() === parseInt(position)) {
+            highlightElement(node, resultValue);
+            count += 1;
+          }
+        }
+        else {
+          if (option === 'all') {
+            highlightElement(node, resultValue);
+            count += 1;
+          }
+          else {
+            if ((option === 'vw') &&
+                ((resultValue === RESULT_VALUE.VIOLATION) ||
+                 (resultValue === RESULT_VALUE.WARNING))) {
+              highlightElement(node, resultValue);
+              count += 1;
+            }
+          }
+        }
+
+        if ((option !== 'selected') &&
+            (r.getOrdinalPosition() === parseInt(position))) {
+          // use the best contrast color for the outline of the selection
+          const ccr1 = computeCCR(selectedColorDark, cc.backgroundColorHex);
+          const ccr2 = computeCCR(selectedColorLight, cc.backgroundColorHex);
+          if (ccr1 > ccr2) {
+            highlightSelected(node, 'selected-dark');
+          }
+          else {
+            highlightSelected(node, 'selected-light');
           }
         }
       }
-      return false;
+    });
+    return count;
+  }
+
+  function highlightElement (element, resultValue) {
+
+    if (element === null) {
+      console.warn(`Unable highlight element with attribute: ${dataAttrName}="${resultValue}"`);
+      return;
     }
+
+    const elementInfo = { element: element, resultValue: resultValue };
+    addHighlightBox(elementInfo);
+  }
+
+  function highlightSelected (element, selectionColorOption) {
+
+    if (element === null) {
+      console.warn(`Unable highlight selected element`);
+      return;
+    }
+
+    const elementInfo = { element: element, resultValue: selectionColorOption };
+    addHighlightBox(elementInfo);
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+
+  /*
+  *   clearHighlights: Utilize 'highlightClass' to remove highlight overlays created
+  *   by previous calls to 'addHighlightBox'.
   */
-    let domNode = false;
 
-    let info = {};
-
-    info.option = 'highlight';
-
-    if (validElementResults()) {
-      // NOTE: ainspectorSidebarRuleResult is a global variable in the page
-      const elementResults = ainspectorSidebarRuleResult.getElementResultsArray(); // eslint-disable-line
-
-      if (elementResults) {
-        highlightModule.initHighlight();
-
-        switch(highlight) {
-          case 'all':
-            highlightModule.highlightElementResults(document, elementResults);
-            domNode = elementResults[0].getDOMElement();
-            break;
-
-          case 'none':
-            highlightModule.removeHighlight(document);
-            break;
-
-          case 'selected':
-            for (let i = 0; i < elementResults.length; i++) {
-              if (elementResults[i].getOrdinalPosition() === position) {
-                highlightModule.highlightElementResults(document, [elementResults[i]]);
-                domNode = elementResults[i].getDOMElement();
-                break;
-              }
-            }
-            break;
-
-          case 'vw':
-            highlightModule.setHighlightPreferences(false, false, false, false);
-            highlightModule.highlightElementResults(document, elementResults);
-            domNode = elementResults[0].getDOMElement();
-            break;
-        }
-
-        if (domNode && domNode.scrollIntoView) {
-          domNode.scrollIntoView();
-        }
-
-      }
+  function clearHighlights () {
+    const selector = `div.${highlightClass}`;
+    const elements = document.querySelectorAll(selector);
+    for (let i = 0; i < elements.length; i += 1) {
+      document.body.removeChild(elements[i]);
     }
+  }
 
-    return info;
+  /*
+  *   addHighlightBox: Clear previous highlighting and add highlight border box
+  *   to specified element.
+  */
+  function addHighlightBox (elementInfo) {
+    const { element, resultValue } = elementInfo;
+    if (element) {
+      const boundingRect = element.getBoundingClientRect();
+      const overlayDiv = createOverlay(boundingRect, resultValue);
+      document.body.appendChild(overlayDiv);
+    }
+  }
+
+  /*
+  *   createOverlay: Use bounding client rectangle and offsets to create an element
+  *   that appears as a highlighted border around element corresponding to 'rect'.
+  */
+  function createOverlay (rect, resultValue) {
+
+
+    const minWidth = 68, minHeight = 27;
+    const offset = 5;
+    const radius = 3;
+
+    const div = document.createElement('div');
+    div.setAttribute('class', highlightClass);
+    switch (resultValue) {
+      case RESULT_VALUE.MANUAL_CHECK:
+        div.setAttribute(dataAttrName, manualCheckId);
+        break;
+
+      case RESULT_VALUE.PASS:
+        div.setAttribute(dataAttrName, passId);
+        break;
+
+      case RESULT_VALUE.VIOLATION:
+        div.setAttribute(dataAttrName, violationId);
+        break;
+
+      case RESULT_VALUE.WARNING:
+        div.setAttribute(dataAttrName, warningId);
+        break;
+
+      case 'selected-light':
+      case 'selected-dark':
+        div.setAttribute(dataAttrName, resultValue);
+        break;
+    }
+    div.style.setProperty('border-radius', radius + 'px');
+
+    div.style.left   = Math.round(rect.left - offset + window.scrollX) + 'px';
+    div.style.top    = Math.round(rect.top  - offset + window.scrollY) + 'px';
+
+    div.style.width  = Math.max(rect.width  + offset * 2, minWidth)  + 'px';
+    div.style.height = Math.max(rect.height + offset * 2, minHeight) + 'px';
+
+    return div;
   }
 
   /*
   *   content.js
   */
+
+
+  const debug = new DebugLogging('Content', false);
+  debug.flag = false;
 
   /*
   **  Connect to panel.js script and set up listener/handler
@@ -24807,20 +25925,21 @@
   function getEvaluationInfo(panelPort) {
 
     // NOTE: infoAInspectorEvaluation is a global variable in the page
-    const aiInfo     = infoAInspectorEvaluation; // eslint-disable-line 
-    const ruleResult = ainspectorSidebarRuleResult; // eslint-disable-line
+    const aiInfo   = infoAInspectorEvaluation;    // eslint-disable-line
+    let ruleResult = ainspectorSidebarRuleResult; // eslint-disable-line
 
-    {
-      console.log(`[getEvaluationInfo][           view]: ${aiInfo.view}`);
-      console.log(`[getEvaluationInfo][      groupType]: ${aiInfo.groupType}`);
-      console.log(`[getEvaluationInfo][        groupId]: ${aiInfo.groupId}`);
-      console.log(`[getEvaluationInfo][         ruleId]: ${aiInfo.ruleId}`);
-      console.log(`[getEvaluationInfo][      rulesetId]: ${aiInfo.rulesetId}`);
-      console.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
-      console.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
-      console.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
-      console.log(`[getEvaluationInfo][removeHighlight]: ${aiInfo.removeHighlight}`);
-      console.log(`[ainspectorSidebarRuleResult][ruleId]: ${(ruleResult && ruleResult.rule) ? ruleResult.rule.getId() : 'none'}`);
+    if (debug.flag) {
+      debug.log(`[getEvaluationInfo][           view]: ${aiInfo.view}`);
+      debug.log(`[getEvaluationInfo][      groupType]: ${aiInfo.groupType}`);
+      debug.log(`[getEvaluationInfo][        groupId]: ${aiInfo.groupId}`);
+      debug.log(`[getEvaluationInfo][         ruleId]: ${aiInfo.ruleId}`);
+      debug.log(`[getEvaluationInfo][      rulesetId]: ${aiInfo.rulesetId}`);
+      debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
+      debug.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
+      debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
+      debug.log(`[getEvaluationInfo][removeHighlight]: ${aiInfo.removeHighlight}`);
+      debug.log(`[ainspectorSidebarRuleResult][ruleId]: ${(ruleResult && ruleResult.rule) ? ruleResult.rule.getId() : 'none'}`);
+      debug.log(`[ainspectorSidebarRuleResult][length]: ${(ruleResult && ruleResult.rule) ? ruleResult.getAllResultsArray().length : 'none'}`);
     }
 
     let info = {};
@@ -24831,22 +25950,30 @@
 
     switch(aiInfo.view) {
       case viewId.summary:
-        highlightModule.removeHighlight(document);
+        clearHighlights();
         info.infoSummary = getSummaryInfo();
+        window.ainspectorAllResultsArray = false;
         break;
 
       case viewId.ruleResults:
-        highlightModule.removeHighlight(document);
+        clearHighlights();
         info.infoRuleResults = getRuleResultsInfo(aiInfo.groupType, aiInfo.groupId);
+        window.ainspectorAllResultsArray = false;
         break;
 
       case viewId.elementResults:
+        clearHighlights();
+        addHighlightStyle();
         if (aiInfo.highlightOnly) {
-          info.infoHighlight = highlightElements(aiInfo.highlight, aiInfo.position);
+          if (ruleResult.getAllResultsArray) {
+            highlightElements(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
+            info.infoHighlight = true;
+          }
         } else {
-          highlightModule.removeHighlight(document);
-          info.infoElementResults = getElementResultsInfo(aiInfo.ruleId, aiInfo.highlight, aiInfo.position);
-          highlightElements(aiInfo.highlight, aiInfo.position);
+          const evaluationResult  = evaluate();
+          ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
+          info.infoElementResults = getElementResultsInfo(ruleResult);
+          highlightElements(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
         }
         break;
     }
@@ -24862,7 +25989,9 @@
   browser.runtime.onMessage.addListener(request => {  // eslint-disable-line
     // to be executed on receiving messages from the panel
     if ((request.option    === 'highlight') &&
-        (request.highlight === 'none')) ;
+        (request.highlight === 'none')) {
+      clearHighlights();
+    }
   });
 
 })();

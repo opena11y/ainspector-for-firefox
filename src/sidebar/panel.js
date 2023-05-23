@@ -77,7 +77,7 @@ preferencesButton.addEventListener('click', onPreferencesClick);
 
 var contentPort;
 var myWindowId;
-var logInfo = true;
+var logInfo = false;
 var debug = false;
 
 // The viewId object is used to both identify a view and
@@ -517,7 +517,11 @@ function updateSidebar (info) {
   // page-title and headings
   if (typeof info === 'object') {
 
-    if (logInfo) console.log(`updateSidebar: info object received for ${info.location}`);
+    if (logInfo) console.log(`\n[updateSidebar][location          ]: ${info.location}`);
+    if (logInfo) console.log(`[updateSidebar][infoSummary       ]: ${info.infoSummary}`);
+    if (logInfo) console.log(`[updateSidebar][infoRuleResults   ]: ${info.infoRuleResults}`);
+    if (logInfo) console.log(`[updateSidebar][infoElementResults]: ${info.infoElementResults}`);
+    if (logInfo) console.log(`[updateSidebar][infoHighlight     ]: ${info.infoHighlight}`);
 
     // Update the page information footer
     infoTitle.textContent    = info.title;

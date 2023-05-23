@@ -79,6 +79,14 @@ template.innerHTML = `
           </table>
         </div>
 
+        <div id="other-info">
+          <h3 id="other-info-label">Other Information</h3>
+          <table  aria-labelledby="other-info-label" class="ccr-info">
+            <tbody id="other-content">
+            </tbody>
+          </table>
+        </div>
+
         <div id="visibility-info">
           <h3 id="visibility-info-label">Visibility</h3>
           <table  aria-labelledby="visibility-info-label" class="visibility-info">
@@ -155,6 +163,10 @@ export default class ResultElementInfo extends HTMLElement {
 
     this.ccrInfoDiv    = this.shadowRoot.querySelector('#ccr-info');
     this.ccrInfoTbody  = this.shadowRoot.querySelector('#ccr-content');
+
+    this.otherInfoDiv      = this.shadowRoot.querySelector('#other-info');
+    this.otherInfoTbody    = this.shadowRoot.querySelector('#other-content');
+    this.otherInfoHeading  = this.shadowRoot.querySelector('#other-info-label');
 
     this.visInfoDiv    = this.shadowRoot.querySelector('#visibility-info');
     this.visInfoTbody  = this.shadowRoot.querySelector('#visibility-content');
@@ -406,6 +418,14 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
+  updateOtherInfo(otherInfo, otherHeading) {
+    const hasInfo = this.renderContent(this.otherInfoTbody, otherInfo);
+    if (hasInfo) {
+      this.otherInfoHeading.textContent = otherHeading;
+      this.otherInfoDiv.classList.remove('hide');
+    }
+  }
+
   updateVisibilityInfo(elementInfo) {let hasInfo = false;
 
     this.clearContent(this.visInfoTbody);
@@ -440,12 +460,21 @@ export default class ResultElementInfo extends HTMLElement {
     // Update action Information
     this.updateMessageOrAction(elementInfo);
 
+    // Clear other info section and hide it
+    this.clearContent(this.otherInfoTbody);
+    this.otherInfoDiv.classList.remove('hide');
+    this.otherInfoHeading.textContent = '';
+
     if (elementInfo.isElementResult) {
       this.updateTagName(elementInfo);
       // Accessible name and description information
       this.updateAccessibleNameInfo(elementInfo);
       // Color contrast information
       this.updateCCRInfo(elementInfo);
+      // Table information
+      this.updateOtherInfo(elementInfo.tableInfo, 'Table Information');
+      // Table header information
+      this.updateOtherInfo(elementInfo.headerInfo, 'Table Cell Headers');
       // Visibility information
       this.updateVisibilityInfo(elementInfo);
       // Attribute information
