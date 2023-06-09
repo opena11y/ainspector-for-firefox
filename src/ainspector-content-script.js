@@ -6483,7 +6483,7 @@
       return Math.round((Math.max(L1, L2) + 0.05)/(Math.min(L1, L2) + 0.05)*10)/10;
   }
 
-  /**
+  /*
    * @class ColorContrast
    *
    * @desc Identifies the text properties used to determine WCAG color contrast 
@@ -6656,7 +6656,7 @@
       return backgroundImage;
     }
 
-    /**
+    /*
      * @method normalizeFontSize
      *
      * @desc Normalizes font size to a number 
@@ -6688,7 +6688,7 @@
       return fontSize;
     }
 
-    /**
+    /*
      * @method normalizeFontWeight
      *
      * @desc Normalizes font weight to a number 
@@ -11274,7 +11274,7 @@
     },
     {
       id           : RULE_CATEGORIES.STYLES_READABILITY,
-      title        : 'Styles/Content',
+      title        : 'Color/Content',
       url          : '',
       description  : 'Use proper HTML markup to identify the semantics and language of text content. Ensure that text is readable by adhering to color contrast guidelines, and that information is not conveyed solely by the use of color, shape, location or sound.'
     },
@@ -15700,9 +15700,9 @@
           NOT_APPLICABLE: 'No data tables and/or @td@ cells on the page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   'The @%1@ element has one header defined using row and/or column headers cells, header content: "%2".',
+          ELEMENT_PASS_1:   'The @%1@ element has 1 header defined using row and/or column headers cells, header content: "%2".',
           ELEMENT_PASS_2:   'The @%1@ element has %2 headers defined using row and/or column headers cells, header content: "%3".',
-          ELEMENT_PASS_3:   'The @%1@ element has one header defined using the @header@ attribute, header content: "%2".',
+          ELEMENT_PASS_3:   'The @%1@ element has 1 header defined using the @header@ attribute, header content: "%2".',
           ELEMENT_PASS_4:   'The @%1@ element has %2 headers defined using the @header@ attribute, header content: "%3".',
           ELEMENT_FAIL_1:   'Add table cells to be used as header cells for the @%1@ element using either row/column headers or the @headers@ attribute.',
           ELEMENT_MC_1:     'The @%1@ element does not have any text content and it does not have any header cells. Verify that this cell is being used for formatting and does not need headers.',
@@ -16091,19 +16091,16 @@
         RULE_RESULT_MESSAGES: {
           FAIL_S:         'Add a @headers@ attribute to the data cell to identify the header cells for the data cell.',
           FAIL_P:         'Add %N_F data cells use the @headers@ attribute to identify the header cells for the data cell.',
-          MANUAL_CHECK_S: 'The @td@ element does not have any text content and it does not have any header cells, verify that this cell is being used for formatting and does not need headers.',
-          MANUAL_CHECK_P: 'There are %N_MC @td@ elements that do not have any text content and do not have any header cells, verify that thess cells are being used for formatting and do not need headers.',
           HIDDEN_S:       'One @td@ element that is hidden was not evaluated.',
           HIDDEN_P:       '%N_H @td@ elements that are hidden were not evaluated.',
           NOT_APPLICABLE: 'No complex data tables on the page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   'The header comes from the @headers@ attribute with the following ids: \'%1\'.',
-          ELEMENT_FAIL_1:   'Add header cells using the @headers@ attribute, since this table is a complex data table.',
-          ELEMENT_FAIL_2:   'Add text content to the header cells with the following ids: \'%1\'.',
-          ELEMENT_FAIL_3:   'Change the idrefs \'%1\' in the @headers@ attribute to valid ids.',
-          ELEMENT_MC_1:     'The @td@ element does not have any text content and it does not have any header cells, verify that this cell is being used for formatting and does not need headers.',
-          ELEMENT_HIDDEN_1: 'Data cell was not evaluated because it is hidden from assistive technologies.'
+          ELEMENT_PASS_1:   '@headers@ attribute references the following header: \'%1\'.',
+          ELEMENT_PASS_2:   '@headers@ attribute references the following %1 headers: \'%2\'.',
+          ELEMENT_FAIL_1:   'Add header cells using the @headers@ attribute, since the cell spans more than one row and/or column table.',
+          ELEMENT_HIDDEN_1: 'The cells of the table were not evaluated because the table is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_2: 'Data cell was not evaluated because it is hidden from assistive technologies.'
         },
         PURPOSES: [
           'The data cells in complex data tables need to use the @headers@ attribute to identify the appropriate header cells, since simple row/column relationships cannot be relied upon to provide header information.',
@@ -16157,13 +16154,12 @@
           'Accessible description is designed to provide a longer summary of the table, this could include author intended conclusions of the data.'
         ],
         TECHNIQUES: [
-          'Accessible name is typically defined using the @caption@ element, but the @summary@, @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
-          'Accessible description is typically defined using the @summary@ attribute, but the @title@ and @aria-describedby@ attribute can also be used.',
-          'The accessible name is defined before the accessible description, so if using the @summary@ and/or @title@ attribute for the accessible name will require a different technique to add an accessible description.'
+          'Accessible name is typically defined using the @caption@ element, but the @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
+          'Accessible description is typically defined using the @aria-describedby@ attribute, but the @title@ attribute can also be used.'
         ],
         MANUAL_CHECKS: [
-          'Verify the accessible name clearly identifies the table.',
-          'Verify the summary accurately summarizes the table.'
+          'Verify the accessible name clearly identifies the purpose of the table.',
+          'Verify the description summarizes the content of the table.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -17647,7 +17643,7 @@
 
   /* Constants */
   const debug$o = new DebugLogging('tableInfo', false);
-  debug$o.flag = false;
+  debug$o.flag = true;
   debug$o.rows = true;
   debug$o.cells = true;
   debug$o.tableTree = true;
@@ -17729,24 +17725,21 @@
       const column = row.getNextEmptyColumn();
       const cell = new TableCell(domElement, row.rowNumber, column, rowSpan, colSpan);
       this.cells.push(cell);
-      row.setCell(column, cell);
 
       this.cellCount += 1;
       if (cell.isHeader) {
         this.headerCellCount += 1;
       }
 
-      if (colSpan > 1) {
-        for (let i = 1; i < colSpan; i += 1) {
-          row.setCell((column+i), cell);
+      for (let i = column; i < (column + colSpan); i++) {
+        for (let j = 0; j < rowSpan; j++) {
+          row = this.getRow(this.rowCount + j);
+          row.setCell(i, cell);
         }
       }
 
-      if (rowSpan > 1) {
-        for (let i = 1; i < rowSpan; i += 1) {
-          row = this.getRow(this.rowCount + i);
-          row.setCell(column, cell);
-        }
+      if (cell.rowSpan || cell.colSpan) {
+        this.spannedCells += 1;
       }
 
       return column;
@@ -17773,9 +17766,9 @@
       for (let i = 0; i < this.cells.length; i += 1) {
         const cell = this.cells[i];
         if ((rowNumber >= cell.startRow) &&
-            (rowNumber <= cell.endRow) &&
+            (rowNumber < cell.endRow) &&
             (columnNumber >= cell.startColumn ) &&
-            (columnNumber <= cell.endColumn )) {
+            (columnNumber < cell.endColumn )) {
           return  cell;
         }
       }
@@ -17862,7 +17855,7 @@
            (this.domElement.accName.name)) &&
          (this.rowCount > 1) &&
          (this.colCount > 1)) {
-        if (this.spannedDataCells > 0) {
+        if (this.spannedCells > 0) {
           return TABLE_TYPE.COMPLEX;
         }
         else {
@@ -18064,16 +18057,27 @@
                       this.hasScope ||
                       this.isParentTHead;
 
-
       this.startRow    = rowNumber;
       this.startColumn = columnNumber;
 
-      this.endRow    = rowNumber    + rowSpan    - 1;
-      this.endColumn = columnNumber + columnSpan - 1;
+      this.endRow    = rowNumber    + rowSpan;
+      this.endColumn = columnNumber + columnSpan;
 
       this.headers = [];
       this.headersSource = HEADER_SOURCE.NONE;
 
+    }
+
+    get columnSpan () {
+      let span = this.endColumn - this.startColumn;
+      span = isNaN(span) ? 1 : span;
+      return span;
+    }
+
+    get rowSpan () {
+      let span = this.endRow - this.startRow;
+      span = isNaN(span) ? 1 : span;
+      return span;
     }
 
     toString () {
@@ -18094,7 +18098,6 @@
     }
 
   }
-
 
   /**
    * @class TableInfo
@@ -21297,7 +21300,7 @@
   /**
    * @object TABLE_2
    *
-   * @desc Data table %s have an accessible name
+   * @desc Data table have an accessible name
    */
   { rule_id             : 'TABLE_2',
     last_updated        : '2023-05-03',
@@ -21547,11 +21550,11 @@
   /**
    * @object TABLE_7
    *
-   * @desc  Data cells in complex table must use headers attributes
+   * @desc  Spanned data cells in complex table must use headers attributes
    */
 
   { rule_id             : 'TABLE_7',
-    last_updated        : '2023-04-21',
+    last_updated        : '2023-05-08',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
     ruleset             : RULESET.MORE,
@@ -21560,97 +21563,38 @@
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['td'],
     validate          : function (dom_cache, rule_result) {
-
-      debug$f.flag && debug$f.log(`TABLE 7 Rule ${dom_cache} ${rule_result}`);
-
-  /*
-      function allReadyDone(span_cell) {
-
-        var span_cells_len = span_cells.length;
-
-        for (var i = 0; i < span_cells_len; i++) {
-          if (span_cell === span_cells[i]) return true;
-        }
-
-        span_cells.push(span_cell);
-        return false;
-      }
-
-      var TEST_RESULT   = TEST_RESULT;
-      var HEADER_SOURCE = HEADER_SOURCE;
-      var VISIBILITY    = VISIBILITY;
-      var TABLE_ROLE    = TABLE_ROLE;
-
-      var span_cells = [];
-
-      var table_elements   = dom_cache.tables_cache.table_elements;
-      var table_elements_len = table_elements.length;
-
-  //     logger.debug("[Table Rule 7] Table Elements on page: " + table_elements_len);
-
-      // Check to see if valid cache reference
-      if (table_elements && table_elements_len) {
-
-        for (var i=0; i < table_elements_len; i++) {
-          var te = table_elements[i];
-          var is_visible_to_at = te.dom_element.computed_style.is_visible_to_at;
-
-  //         logger.debug("[Table Rule 1] Table Element: " + te + "   is data table: " + te.table_role);
-
-          if (te.table_role === TABLE_ROLE.COMPLEX) {
-
-            var max_row    = te.max_row;
-            var max_column = te.max_column;
-            var cells      = te.cells;
-
-  //         logger.debug("[Table Rule 1] Cell: " + cell + " headers: " + cell.headers);
-
-
-            for (var r = 0; r < max_row; r++) {
-              for (var c = 0; c < max_column; c++) {
-
-                var cell = cells[r][c];
-
-                if (cell &&
-                    (cell.table_type === TABLE.TD_ELEMENT)) {
-
-                  if (is_visible_to_at == VISIBILITY.VISIBLE) {
-
-                    if(cell.has_spans && allReadyDone(cell)) continue;
-
-                    if (!cell.has_content) {
-                      rule_result.addResult(TEST_RESULT.MANUAL_CHECK, cell, 'ELEMENT_MC_1', []);
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (te.tableType > TABLE_TYPE.DATA) {
+          if (de.visibility.isVisibleToAT) {
+            te.cells.forEach( cell => {
+              const cde = cell.domElement;
+              if (cde.visibility.isVisibleToAT) {
+                if (!cell.isHeader &&
+                   ((cell.rowSpan > 1) || (cell.columnSpan > 1))) {
+                  if (cell.headerSource === HEADER_SOURCE.HEADERS_ATTR) {
+                    if (cell.headers.length == 1) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cell.headers[0]]);
                     }
                     else {
-                      if (cell.header_source === HEADER_SOURCE.HEADERS_ATTRIBUTE) {
-                        if (cell.has_content) {
-                          rule_result.addResult(TEST_RESULT.PASS, cell, 'ELEMENT_PASS_1', [cell.headers]);
-                        }
-                        else {
-                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_1', [cell.headers]);
-                        }
-                      }
-                      else {
-                        if (cell.headers && cell.headers.length > 0) {
-                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_5', [cell.headers]);
-                        }
-                        else {
-                          rule_result.addResult(TEST_RESULT.FAIL, cell, 'ELEMENT_FAIL_1', []);
-                        }
-                      }
+                      rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_2', [cell.headers.length, cell.headers.join(' | ')]);
                     }
                   }
                   else {
-                   rule_result.addResult(TEST_RESULT.HIDDEN, cell, 'ELEMENT_HIDDEN_1', []);
+                    rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
                   }
                 }
               }
-            }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
+              }
+            });
           }
-        } // end loop
-      }
-      */
-
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
     }
   },
 
@@ -21668,55 +21612,35 @@
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['caption', 'table[summary]', 'table[title]'],
+    target_resources    : ['caption', 'table[aria-label]', 'table[aria-labelledby]', 'table[aria-describedby]', 'table[title]'],
     validate          : function (dom_cache, rule_result) {
 
-      debug$f.flag && debug$f.log(`TABLE 8 Rule ${dom_cache} ${rule_result}`);
-
-  /*
-      var TEST_RESULT   = TEST_RESULT;
-      var VISIBILITY    = VISIBILITY;
-      var TABLE_ROLE    = TABLE_ROLE;
-
-      var table_elements   = dom_cache.tables_cache.table_elements;
-      var table_elements_len = table_elements.length;
-
-      // Check to see if valid cache reference
-      if (table_elements && table_elements_len) {
-
-        for (var i=0; i < table_elements_len; i++) {
-          var te = table_elements[i];
-          var is_visible_to_at = te.dom_element.computed_style.is_visible_to_at;
-
-  //        logger.debug("[Table Rule 8]          Table Element: " + te);
-  //        logger.debug("[Table Rule 8]        Accessible Name: " + te.accessible_name_for_comparison);
-  //        logger.debug("[Table Rule 8] Accessible Description: " + te.accessible_description_for_comparison);
-
-          if (((te.table_role === TABLE_ROLE.DATA) ||
-               (te.table_role === TABLE_ROLE.COMPLEX)) &&
-              te.accessible_name_for_comparison.length &&
-              te.accessible_description_for_comparison.length) {
-
-            if (is_visible_to_at === VISIBILITY.VISIBLE) {
-              if (te.accessible_name_for_comparison === te.accessible_description_for_comparison ) {
-                rule_result.addResult(TEST_RESULT.FAIL, te, 'ELEMENT_FAIL_1', []);
+     dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (te.tableType > TABLE_TYPE.DATA) {
+          if (de.visibility.isVisibleToAT) {
+            const de = te.domElement;
+            if (de.accName.name && de.accDescription.name) {
+              if (de.accName.name.toLowerCase() ===  de.accDescription.name.toLowerCase()) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
               }
               else {
-                if (te.accessible_name_for_comparison.length >= te.accessible_description_for_comparison.length) {
-                  rule_result.addResult(TEST_RESULT.MANUAL_CHECK, te, 'ELEMENT_MC_1', []);
+                if (de.accName.name.length < de.accDescription.name.length) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
                 }
                 else {
-                  rule_result.addResult(TEST_RESULT.PASS, te, 'ELEMENT_PASS_1', []);
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
                 }
               }
             }
-            else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, te, 'ELEMENT_HIDDEN_1', []);
-            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
           }
         }
-      }
-      */
+      });
+
+
 
     } // end validation function
   }
@@ -25645,14 +25569,17 @@
 
   /*
   *   highlight.js
+  *   Code is based on highlight.js module developed by
+  *   Nicholas Hoyt for page structure extension
   */
 
   const debug$1 = new DebugLogging('highlight', false);
-  debug$1.flag = true;
+  debug$1.flag = false;
 
-  const dataAttrName     = 'data-ainspector-result';
-  const highlightClass   = 'ainspector-highlight';
-  const styleName        = 'ainspector-styles';
+  const dataAttrResult     = 'data-ai-result';
+  const dataAttrSelected   = 'data-ai-selected';
+  const highlightClass     = 'ainspector-highlight';
+  const styleName          = 'ainspector-styles';
 
   const violationColor   = 'hsl(0, 100%, 50%)';
   const warningColor     = 'hsl(49, 100%, 50%)';
@@ -25666,6 +25593,14 @@
   const passId        = 'p';
   const manualCheckId = 'mc';
 
+  const selectedDark  = 'dark';
+  const selectedLight = 'light';
+  const selectedClose = '-close';
+
+  const minWidth = 68;
+  const minHeight = 27;
+  const offset = 5;
+  const radius = 3;
 
   const styleTemplate = document.createElement('template');
   styleTemplate.innerHTML = `
@@ -25691,50 +25626,60 @@
     z-index: 20000;
   }
 
-  .${highlightClass}[${dataAttrName}=${manualCheckId}] {
+  .${highlightClass}[${dataAttrResult}=${manualCheckId}] {
     box-shadow: inset 0 0 0 3px ${manualCheckColor}, inset 0 0 0 5px white;
   }
-  .${highlightClass}[${dataAttrName}=${manualCheckId}]:after {
+  .${highlightClass}[${dataAttrResult}=${manualCheckId}]:after {
     content: 'MC';
     background-color: ${manualCheckColor};
     padding: 2px 7px 2px 8px;
   }
 
-  .${highlightClass}[${dataAttrName}=${passId}] {
+  .${highlightClass}[${dataAttrResult}=${passId}] {
     box-shadow: inset 0 0 0 3px ${passColor}, inset 0 0 0 5px white;
   }
-  .${highlightClass}[${dataAttrName}=${passId}]:after {
+  .${highlightClass}[${dataAttrResult}=${passId}]:after {
     content: 'P';
     background-color: ${passColor};
     padding: 2px 7px 2px 8px;
   }
 
-  .${highlightClass}[${dataAttrName}=${violationId}] {
+  .${highlightClass}[${dataAttrResult}=${violationId}] {
     box-shadow: inset 0 0 0 3px ${violationColor}, inset 0 0 0 5px white;
   }
-  .${highlightClass}[${dataAttrName}=${violationId}]:after {
+  .${highlightClass}[${dataAttrResult}=${violationId}]:after {
     content: 'V';
     background-color: ${violationColor};
     padding: 2px 7px 2px 8px;
   }
 
-  .${highlightClass}[${dataAttrName}=${warningId}] {
+  .${highlightClass}[${dataAttrResult}=${warningId}] {
     box-shadow: inset 0 0 0 3px ${warningColor}, inset 0 0 0 5px white;
   }
-  .${highlightClass}[${dataAttrName}=${warningId}]:after {
+  .${highlightClass}[${dataAttrResult}=${warningId}]:after {
     content: 'W';
     background-color: ${warningColor};
     padding: 2px 7px 2px 8px;
   }
 
-  .${highlightClass}[${dataAttrName}=selected-light] {
+  .${highlightClass}[${dataAttrSelected}=${selectedLight}] {
     outline: 3px dashed #${selectedColorLight};
     outline-offset: 3px;
   }
 
-  .${highlightClass}[${dataAttrName}=selected-dark] {
+  .${highlightClass}[${dataAttrSelected}=${selectedDark}] {
     outline: 3px dashed #${selectedColorDark};
     outline-offset: 3px;
+  }
+
+  .${highlightClass}[${dataAttrSelected}=${selectedLight}${selectedClose}] {
+    outline: 3px dashed #${selectedColorLight};
+    outline-offset: 1px;
+  }
+
+  .${highlightClass}[${dataAttrSelected}=${selectedDark}${selectedClose}] {
+    outline: 3px dashed #${selectedColorDark};
+    outline-offset: 1px;
   }
 
 </style>
@@ -25744,9 +25689,23 @@
   function addHighlightStyle () {
     if (document.querySelector(`style[title="${styleName}"]`) === null) {
       document.body.appendChild(styleTemplate.content.cloneNode(true));
-      if (debug$1) { console.debug(`Added style element (${styleName}) to document`); }
+      if (debug$1.flag) {debug$1.log(`Added style element (${styleName}) to document`); }
     }
   }
+
+  /*
+   *  @function  highlightElements
+   *
+   *  @desc  Iterates the current element results in the sidebar
+   *         and highlights the positions of each element result
+   *         based on the result value, the currently selected
+   *         element result is receives an additional highlight border
+   *
+   *  @param  {Object}  allResuls  -  Array of results shown in the sidebar
+   *  @param  {String}  option     -  Page highlighting option
+   *  @param  {String}  position   -  The ordinal position of the selected
+   *                                  element result
+   */
 
   function highlightElements (allResults, option, position) {
     let count = 0;
@@ -25755,6 +25714,7 @@
       if (r.isElementResult) {
         const resultValue = r.getResultValue();
         const node = r.getNode();
+        // Use backgroung colors from parent element for styling selected element
         const parentDomElement = r.domElement.parentDomElement;
         const cc = parentDomElement ?
                    parentDomElement.colorContrast :
@@ -25781,16 +25741,16 @@
           }
         }
 
-        if ((option !== 'selected') &&
-            (r.getOrdinalPosition() === parseInt(position))) {
+        // Highlight selected element
+        if (r.getOrdinalPosition() === parseInt(position)) {
           // use the best contrast color for the outline of the selection
           const ccr1 = computeCCR(selectedColorDark, cc.backgroundColorHex);
           const ccr2 = computeCCR(selectedColorLight, cc.backgroundColorHex);
           if (ccr1 > ccr2) {
-            highlightSelected(node, 'selected-dark');
+            highlightSelected(node, selectedDark, option);
           }
           else {
-            highlightSelected(node, 'selected-light');
+            highlightSelected(node, selectedLight, option);
           }
         }
       }
@@ -25798,34 +25758,115 @@
     return count;
   }
 
-  function highlightElement (element, resultValue) {
-
-    if (element === null) {
-      console.warn(`Unable highlight element with attribute: ${dataAttrName}="${resultValue}"`);
-      return;
-    }
-
-    const elementInfo = { element: element, resultValue: resultValue };
-    addHighlightBox(elementInfo);
-  }
-
-  function highlightSelected (element, selectionColorOption) {
+  /*
+   *  @function  highlightSelected
+   *
+   *  @desc  Create an overlay element that appears as a highlighted border
+   *         around element to visually identifying the selected element in the
+   *         sidebar.
+   *
+   *  @param  {Object}  element  -  DOM element node to highlight
+   *  @param  {String}  style    -  CSS selector for light or dark border
+   *  @param  {String}  style    -  The page highlighting option
+   */
+  function highlightSelected (element, style, option) {
 
     if (element === null) {
       console.warn(`Unable highlight selected element`);
       return;
     }
 
-    const elementInfo = { element: element, resultValue: selectionColorOption };
-    addHighlightBox(elementInfo);
+    const selectedStyle = (option === 'none') ? (style+selectedClose) : style;
+
+    const div = getOverlayElement(element);
+    div.setAttribute(`${dataAttrSelected}`, selectedStyle);
+    document.body.appendChild(div);
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  /*
+   *  @function  highlightElement
+   *
+   *  @desc  Create an overlay element that appears as a highlighted border
+   *         around element to visually identifying it's location and the
+   *         result value (e.h. pass, violation, etc.).
+   *
+   *  @param  {Object}  element     -  DOM element node to highlight
+   *  @param  {Number}  resultValue -  Used to determine the styling and icon
+   */
+  function highlightElement (element, resultValue) {
+
+    if (element === null) {
+      console.warn(`Unable highlight element with "${resultValue}" result value`);
+      return;
+    }
+
+    const div = getOverlayElement(element);
+
+    switch (resultValue) {
+      case RESULT_VALUE.MANUAL_CHECK:
+        div.setAttribute(dataAttrResult, manualCheckId);
+        break;
+
+      case RESULT_VALUE.PASS:
+        div.setAttribute(dataAttrResult, passId);
+        break;
+
+      case RESULT_VALUE.VIOLATION:
+        div.setAttribute(dataAttrResult, violationId);
+        break;
+
+      case RESULT_VALUE.WARNING:
+        div.setAttribute(dataAttrResult, warningId);
+        break;
+
+      case 'selected-light':
+      case 'selected-dark':
+        div.setAttribute(dataAttrResult, resultValue);
+        break;
+    }
+
+    document.body.appendChild(div);
+  }
+
+  /*
+   *  @function  getOverlayElement
+   *
+   *  @desc  Create an overlay element and set its position on the page.
+   *
+   *  @param  {Object}  element  -  DOM element node to highlight
+   *
+   *  @returns {Object} DOM node element used for the Overlay
+   */
+
+  function getOverlayElement (element) {
+
+    const rect = element.getBoundingClientRect();
+    const overlayElem = document.createElement('div');
+
+    overlayElem.setAttribute('class', highlightClass);
+    overlayElem.style.setProperty('border-radius', radius + 'px');
+
+    overlayElem.style.left   = Math.round(rect.left - offset + window.scrollX) + 'px';
+    overlayElem.style.top    = Math.round(rect.top  - offset + window.scrollY) + 'px';
+
+    overlayElem.style.width  = Math.max(rect.width  + offset * 2, minWidth)  + 'px';
+    overlayElem.style.height = Math.max(rect.height + offset * 2, minHeight) + 'px';
+
+    return overlayElem;
+  }
 
   /*
   *   clearHighlights: Utilize 'highlightClass' to remove highlight overlays created
   *   by previous calls to 'addHighlightBox'.
   */
+
+  /*
+   *  @function  clearHighlights
+   *
+   *  @desc  Utilize 'highlightClass' to remove highlight overlays created
+   *   by previous calls to 'addHighlightBox'.
+   */
 
   function clearHighlights () {
     const selector = `div.${highlightClass}`;
@@ -25833,65 +25874,6 @@
     for (let i = 0; i < elements.length; i += 1) {
       document.body.removeChild(elements[i]);
     }
-  }
-
-  /*
-  *   addHighlightBox: Clear previous highlighting and add highlight border box
-  *   to specified element.
-  */
-  function addHighlightBox (elementInfo) {
-    const { element, resultValue } = elementInfo;
-    if (element) {
-      const boundingRect = element.getBoundingClientRect();
-      const overlayDiv = createOverlay(boundingRect, resultValue);
-      document.body.appendChild(overlayDiv);
-    }
-  }
-
-  /*
-  *   createOverlay: Use bounding client rectangle and offsets to create an element
-  *   that appears as a highlighted border around element corresponding to 'rect'.
-  */
-  function createOverlay (rect, resultValue) {
-
-
-    const minWidth = 68, minHeight = 27;
-    const offset = 5;
-    const radius = 3;
-
-    const div = document.createElement('div');
-    div.setAttribute('class', highlightClass);
-    switch (resultValue) {
-      case RESULT_VALUE.MANUAL_CHECK:
-        div.setAttribute(dataAttrName, manualCheckId);
-        break;
-
-      case RESULT_VALUE.PASS:
-        div.setAttribute(dataAttrName, passId);
-        break;
-
-      case RESULT_VALUE.VIOLATION:
-        div.setAttribute(dataAttrName, violationId);
-        break;
-
-      case RESULT_VALUE.WARNING:
-        div.setAttribute(dataAttrName, warningId);
-        break;
-
-      case 'selected-light':
-      case 'selected-dark':
-        div.setAttribute(dataAttrName, resultValue);
-        break;
-    }
-    div.style.setProperty('border-radius', radius + 'px');
-
-    div.style.left   = Math.round(rect.left - offset + window.scrollX) + 'px';
-    div.style.top    = Math.round(rect.top  - offset + window.scrollY) + 'px';
-
-    div.style.width  = Math.max(rect.width  + offset * 2, minWidth)  + 'px';
-    div.style.height = Math.max(rect.height + offset * 2, minHeight) + 'px';
-
-    return div;
   }
 
   /*
@@ -25952,20 +25934,20 @@
       case viewId.summary:
         clearHighlights();
         info.infoSummary = getSummaryInfo();
-        window.ainspectorAllResultsArray = false;
+        ruleResult = false;
         break;
 
       case viewId.ruleResults:
         clearHighlights();
         info.infoRuleResults = getRuleResultsInfo(aiInfo.groupType, aiInfo.groupId);
-        window.ainspectorAllResultsArray = false;
+        ruleResult = false;
         break;
 
       case viewId.elementResults:
-        clearHighlights();
         addHighlightStyle();
+        clearHighlights();
         if (aiInfo.highlightOnly) {
-          if (ruleResult.getAllResultsArray) {
+          if (ruleResult && ruleResult.getAllResultsArray) {
             highlightElements(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
             info.infoHighlight = true;
           }

@@ -90,8 +90,8 @@
   },
 
   "stylesContentLabel": {
-    "message": "Styles/Content",
-    "description": "Label for Styles/Content rule category view"
+    "message": "Color/Content",
+    "description": "Label for Color/Content rule category view"
   },
 
   "imagesLabel": {
@@ -916,8 +916,8 @@
   },
 
   "csvSummary-stylesContentLabel": {
-    "message": "Number of Styles/Content rules with",
-    "description": "CSV label for Styles/Content rule category for number of rules with"
+    "message": "Number of Color/Content rules with",
+    "description": "CSV label for Color/Content rule category for number of rules with"
   },
 
   "csvSummary-imagesLabel": {
