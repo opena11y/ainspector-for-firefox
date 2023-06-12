@@ -126,8 +126,9 @@ export default class ViewAllRules {
     glMiddleSection.appendChild(this.glDetailsButton)
     this.glResultGrid.setDetailsButton(this.glDetailsButton);
 
-    this.rcResults = [];
-    this.glResults = [];
+    this.rcResults    = [];
+    this.glResults    = [];
+    this.scopeResults = [];
 
     this.allRuleResults = [];
 
@@ -299,43 +300,65 @@ export default class ViewAllRules {
     row.setAttribute('aria-label', rowAccName);
   }
 
-  update (infoSummary) {
+  update (infoAllRules) {
     let i, gResult, row, rowAccName, cell, celAcclName;
 
     this.rcResultGrid.enable();
     this.glResultGrid.enable();
 
-    this.ruleSummary.violations   = infoSummary.violations;
-    this.ruleSummary.warnings     = infoSummary.warnings;
-    this.ruleSummary.manualChecks = infoSummary.manual_checks;
-    this.ruleSummary.passed       = infoSummary.passed;
+    this.ruleSummary.violations   = infoAllRules.violations;
+    this.ruleSummary.warnings     = infoAllRules.warnings;
+    this.ruleSummary.manualChecks = infoAllRules.manual_checks;
+    this.ruleSummary.passed       = infoAllRules.passed;
 
-    this.json = infoSummary.json;
+    this.json = infoAllRules.json;
 
-    this.allRuleResults = infoSummary.allRuleResults;
+    this.allRuleResults = infoAllRules.allRuleResults;
 
-    this.rcResults = infoSummary.rcResults;
+    // Update Rule Category
+
+    this.rcResults = infoAllRules.rcResults;
 
     for (i = 0; i < this.rcResults.length; i += 1) {
       gResult = this.rcResults[i];
       this.updateRow('rc' + gResult.id, this.rcResultGrid, gResult);
     }
-    this.updateRow('rc' + RULE_CATEGORIES.ALL, this.rcResultGrid, infoSummary);
+    this.updateRow('rc' + RULE_CATEGORIES.ALL, this.rcResultGrid, infoAllRules);
     this.rcResultGrid.setSelectedRowUsingLastId();
 
-    this.glResults = infoSummary.glResults;
+    // Update WCAG Guidelines
+
+    this.glResults = infoAllRules.glResults;
 
     for (i = 0; i < this.glResults.length; i += 1) {
       gResult = this.glResults[i];
       this.updateRow('gl' + gResult.id, this.glResultGrid, gResult);
     }
-    this.updateRow('gl' + GUIDELINES.ALL, this.glResultGrid, infoSummary);
+    this.updateRow('gl' + GUIDELINES.ALL, this.glResultGrid, infoAllRules);
     this.glResultGrid.setSelectedRowUsingLastId();
+
+    // Update Scope
+
+    this.scopeResults = infoAllRules.scopeResults;
+
+    console.log(`[scopeResults][website]: ${this.scopeResults.website.violations}`);
+    console.log(`[scopeResults][   page]: ${this.scopeResults.page.volations}`);
+    console.log(`[scopeResults][element]: ${this.scopeResults.element.violations}`);
+
+    this.updateRow('scope-website', this.scopeResultGrid, this.scopeResults.website);
+    this.updateRow('scope-page',    this.scopeResultGrid, this.scopeResults.page);
+    this.updateRow('scope-element', this.scopeResultGrid, this.scopeResults.element);
+    this.updateRow('scope-all',     this.scopeResultGrid, infoAllRules);
+
 
     if (this.resultTablist.selectedTabId === 'tabpanel-1') {
       this.rcResultGrid.focus();
     } else {
-      this.glResultGrid.focus();
+      if (this.resultTablist.selectedTabId === 'tabpanel-2') {
+        this.glResultGrid.focus();
+      } else {
+        this.scopeResultGrid.focus();
+      }
     }
 
   }
