@@ -17,6 +17,7 @@ const msg = {
   allRulesLabel        : getMessage('allRulesLabel'),
   audioVideoLabel      : getMessage('audioVideoLabel'),
   detailsLabel         : getMessage('detailsLabel'),
+  elementLabel         : getMessage('elementLabel'),
   formsLabel           : getMessage('formsLabel'),
   g1_1                 : getMessage('g1.1'),
   g1_2                 : getMessage('g1.2'),
@@ -40,6 +41,7 @@ const msg = {
   manualChecksAbbrev   : getMessage('manualChecksAbbrev'),
   manualChecksLabel    : getMessage('manualChecksLabel'),
   manualCheckLabel     : getMessage('manualCheckLabel'),
+  pageLabel            : getMessage('pageLabel'),
   passedAbbrev         : getMessage('passedAbbrev'),
   passedLabel          : getMessage('passedLabel'),
   siteNavigationLabel  : getMessage('siteNavigationLabel'),
@@ -49,6 +51,7 @@ const msg = {
   widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
   ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
   ruleCategoryLabel    : getMessage('ruleCategoryLabel'),
+  scopeLabel           : getMessage('scopeLabel'),
   summaryLabel         : getMessage('summaryLabel'),
   viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel'),
   violationsAbbrev     : getMessage('violationsAbbrev'),
@@ -56,7 +59,8 @@ const msg = {
   violationLabel       : getMessage('violationLabel'),
   warningsAbbrev       : getMessage('warningsAbbrev'),
   warningsLabel        : getMessage('warningsLabel'),
-  warningLabel         : getMessage('warningLabel')
+  warningLabel         : getMessage('warningLabel'),
+  websiteLabel         : getMessage('websiteLabel')
 };
 
 // The summary view for AInspector WCAG
@@ -104,6 +108,18 @@ export default class ViewAllRules {
     const glMiddleSection = document.createElement('div');
     glMiddleSection.className = 'middle-section';
     this.resultTablist.tabpanel2.appendChild(glMiddleSection);
+
+    // Scope tabpanel
+    // create grid for scope results
+    this.scopeResultGrid = document.createElement('result-grid');
+    this.scopeResultGrid.addClassNameToTable('summary');
+    this.resultTablist.tabpanel3.appendChild(this.scopeResultGrid);
+    this.scopeResultGrid.setRowActivationEventHandler(handleRowActivation);
+
+    // create a middle section DIV for scope
+    const scopeMiddleSection = document.createElement('div');
+    scopeMiddleSection.className = 'middle-section';
+    this.resultTablist.tabpanel3.appendChild(scopeMiddleSection);
 
     // create the guidelines details button
     this.glDetailsButton = this.createDetailsButton('gl-details');
@@ -208,6 +224,46 @@ export default class ViewAllRules {
       this.glResultGrid.addDataCell(row, '', '-', 'summ num');
       this.glResultGrid.addDataCell(row, '', '-', 'summ num');
     }
+
+    // Scope view
+
+    this.resultTablist.tabLabel3 = msg.scopeLabel;
+
+    this.scopeResultGrid.addHeaderCell(msg.scopeLabel,     'group text');
+    this.scopeResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
+    this.scopeResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
+    this.scopeResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
+    this.scopeResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
+
+
+    row = this.scopeResultGrid.addRow('scope-website');
+    this.scopeResultGrid.addDataCell(row, msg.websiteLabel, '', 'text');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+
+    row = this.scopeResultGrid.addRow('scope-page');
+    this.scopeResultGrid.addDataCell(row, msg.pageLabel, '', 'text');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+
+    row = this.scopeResultGrid.addRow('scope-element');
+    this.scopeResultGrid.addDataCell(row, msg.elementLabel, '', 'text');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+
+    row = this.scopeResultGrid.addRow('scope-all');
+    this.scopeResultGrid.addDataCell(row, msg.allRulesLabel, '', 'text');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+
   }
 
   getNameForNumber(count, messageOne, messageNotOne) {
@@ -296,6 +352,12 @@ export default class ViewAllRules {
     guidelineIds.forEach( (id) => {
       this.glResultGrid.clearRow('gl' + id);
     });
+
+    this.scopeResultGrid.disable();
+    this.scopeResultGrid.clearRow('scope-website');
+    this.scopeResultGrid.clearRow('scope-page');
+    this.scopeResultGrid.clearRow('scope-element');
+    this.scopeResultGrid.clearRow('scope-all');
 
   }
 }

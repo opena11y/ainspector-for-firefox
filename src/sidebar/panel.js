@@ -77,7 +77,7 @@ preferencesButton.addEventListener('click', onPreferencesClick);
 
 var contentPort;
 var myWindowId;
-var logInfo = true;
+var logInfo = false;
 var debug = false;
 
 // The viewId object is used to both identify a view and
