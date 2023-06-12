@@ -209,6 +209,21 @@
     "description": "Label for WCAG Guideline 4.1 view"
   },
 
+  "scopeLabel": {
+    "message": "Scope",
+    "description": "Label for rule scope"
+  },
+
+  "pageLabel": {
+    "message": "Page",
+    "description": "Label for page scope"
+  },
+
+  "websiteLabel": {
+    "message": "Website",
+    "description": "Label for website scope"
+  },
+
   "violationsAbbrev": {
     "message": "V",
     "description": "Abbreviation for violations"
