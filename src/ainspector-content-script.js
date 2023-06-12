@@ -223,10 +223,12 @@
    */
 
   const RULE_SCOPE =  {
-    UNKNOWN : 0,
-    ELEMENT : 1,
-    PAGE    : 2,
-    WEBSITE : 4
+    UNDEFINED  : 0x0000,
+    ELEMENT    : 0x0001,
+    PAGE       : 0x0002,
+    WEBSITE    : 0x0004,
+    // Composite scopes
+    ALL        : 0x0007
   };
 
   /**
@@ -11621,7 +11623,7 @@
     },
     {
       id           : RULE_SCOPE.WEBSITE,
-      title        : 'Page',
+      title        : 'Website',
       url          : '',
       description  : 'Accessibility requirements that apply to the pages in a website.'
     }
@@ -18429,6 +18431,7 @@
     const ruleScopes = messages[locale].ruleScopes;
     for (let i = 0; i < ruleScopes.length; i +=1) {
       let rs = ruleScopes[i];
+      console.log(`[getRuleScopeInfo][rs.id]: ${rs.id}  [scopeId]: ${scopeId}`);
       if (rs.id === scopeId) {
         return rs;
       }
@@ -26899,7 +26902,9 @@
      */
 
     getRuleResultsByScope (scopeId, ruleset=RULESET.ALL) {
+      console.log(`[getRuleResultsByScope][scopeId]: ${scopeId}`);
       const scopeInfo = getRuleScopeInfo(scopeId);
+      console.log(`[getRuleResultsByScope][scopeInfo]: ${scopeInfo}`);
       const rgr = new RuleGroupResult(this, scopeInfo.title, scopeInfo.url, scopeInfo.description, ruleset);
 
       this.allRuleResults.forEach( rr => {
@@ -27196,7 +27201,7 @@
 
     let rcResults = [];
     rcIds.forEach ((id) => {
-      let summary = evalResult.getRuleResultsByCategory(id).getRuleResultsSummary();
+      const summary = evalResult.getRuleResultsByCategory(id).getRuleResultsSummary();
       rcResults.push(getSummaryItem(summary, id));
     });
     return rcResults;
@@ -27221,7 +27226,7 @@
 
     let glResults = [];
     glIds.forEach ((id) => {
-      let summary = evalResult.getRuleResultsByGuideline(id).getRuleResultsSummary();
+      const summary = evalResult.getRuleResultsByGuideline(id).getRuleResultsSummary();
       glResults.push(getSummaryItem(summary, id));
     });
     return glResults;
@@ -27229,13 +27234,18 @@
 
   function getScopeResults (evalResult) {
 
-    const scopeResults = {
-      website: getSummaryItem(evalResult.getRuleResultsByScope(RULE_SCOPE.WEBSITE).getRuleResultsSummary(), 'scope-website'),
-      page:    getSummaryItem(evalResult.getRuleResultsByScope(RULE_SCOPE.PAGE).getRuleResultsSummary(), 'scope-page'),
-      element: getSummaryItem(evalResult.getRuleResultsByScope(RULE_SCOPE.ELEMENT).getRuleResultsSummary(), 'scope-element')
-    };
+    const scIds = [
+      RULE_SCOPE.ELEMENT,
+      RULE_SCOPE.PAGE,
+      RULE_SCOPE.WEBSITE
+    ];
 
-    return scopeResults;
+    let scResults = [];
+    scIds.forEach ((id) => {
+      const summary = evalResult.getRuleResultsByScope(id).getRuleResultsSummary();
+      scResults.push(getSummaryItem(summary, id));
+    });
+    return scResults;
   }
 
   /*
@@ -27260,9 +27270,9 @@
     info.manual_checks = ruleSummaryResult.manual_checks;
     info.passed        = ruleSummaryResult.passed;
 
-    info.rcResults    = getRuleCategoryResults(evaluationResult);
-    info.glResults    = getGuidelineResults(evaluationResult);
-    info.scopeResults = getScopeResults(evaluationResult);
+    info.rcResults = getRuleCategoryResults(evaluationResult);
+    info.glResults = getGuidelineResults(evaluationResult);
+    info.scResults = getScopeResults(evaluationResult);
     info.json = evaluationResult.toJSON();
 
     info.allRuleResults = [];

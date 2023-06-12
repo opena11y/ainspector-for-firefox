@@ -3,11 +3,15 @@
 import {
   GUIDELINES,
   RULE_CATEGORIES,
-  ruleCategoryIds,
-  guidelineIds,
+  RULE_SCOPE,
+  getGuidelineLabelId,
   getRuleCategoryLabelId,
-  getGuidelineLabelId
+  getScopeLabelId,
+  guidelineIds,
+  ruleCategoryIds,
+  scopeIds
 } from '../constants.js';
+
 
 import ViewAllRulesCSV  from './viewAllRulesCSV.js';
 
@@ -93,7 +97,7 @@ export default class ViewAllRules {
     this.resultTablist.tabpanel1.appendChild(rcMiddleSectionDiv);
 
     // create the rule category rule details buttons
-    this.rcDetailsButton = this.createDetailsButton('rc-details', 'd');
+    this.rcDetailsButton = this.createDetailsButton('rc-details');
     this.rcResultGrid.setDetailsButton(this.rcDetailsButton);
     rcMiddleSectionDiv.appendChild(this.rcDetailsButton);
 
@@ -105,30 +109,36 @@ export default class ViewAllRules {
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     // create a middle section DIV for guidelines
-    const glMiddleSection = document.createElement('div');
-    glMiddleSection.className = 'middle-section';
-    this.resultTablist.tabpanel2.appendChild(glMiddleSection);
+    const glMiddleSectionDiv = document.createElement('div');
+    glMiddleSectionDiv.className = 'middle-section';
+    this.resultTablist.tabpanel2.appendChild(glMiddleSectionDiv);
+
+    // create the guideline rule details buttons
+    this.glDetailsButton = this.createDetailsButton('gl-details');
+    this.glResultGrid.setDetailsButton(this.glDetailsButton);
+    glMiddleSectionDiv.appendChild(this.glDetailsButton);
 
     // Scope tabpanel
     // create grid for scope results
-    this.scopeResultGrid = document.createElement('result-grid');
-    this.scopeResultGrid.addClassNameToTable('summary');
-    this.resultTablist.tabpanel3.appendChild(this.scopeResultGrid);
-    this.scopeResultGrid.setRowActivationEventHandler(handleRowActivation);
+    this.scResultGrid = document.createElement('result-grid');
+    this.scResultGrid.addClassNameToTable('summary');
+    this.resultTablist.tabpanel3.appendChild(this.scResultGrid);
+    this.scResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     // create a middle section DIV for scope
-    const scopeMiddleSection = document.createElement('div');
-    scopeMiddleSection.className = 'middle-section';
-    this.resultTablist.tabpanel3.appendChild(scopeMiddleSection);
+    const scMiddleSectionDiv = document.createElement('div');
+    scMiddleSectionDiv.className = 'middle-section';
+    this.resultTablist.tabpanel3.appendChild(scMiddleSectionDiv);
 
-    // create the guidelines details button
-    this.glDetailsButton = this.createDetailsButton('gl-details');
-    glMiddleSection.appendChild(this.glDetailsButton)
-    this.glResultGrid.setDetailsButton(this.glDetailsButton);
+    // create the scope details button
+    this.scDetailsButton = this.createDetailsButton('sc-details');
+    scMiddleSectionDiv.appendChild(this.scDetailsButton)
+    this.scResultGrid.setDetailsButton(this.scDetailsButton);
+    scMiddleSectionDiv.appendChild(this.scDetailsButton);
 
     this.rcResults    = [];
     this.glResults    = [];
-    this.scopeResults = [];
+    this.scResults = [];
 
     this.allRuleResults = [];
 
@@ -147,13 +157,15 @@ export default class ViewAllRules {
   }
 
   set disabled (value) {
-      this.rcResultGrid.disabled = value;
       this.glResultGrid.disabled = value;
+      this.rcResultGrid.disabled = value;
+      this.scResultGrid.disabled = value;
   }
 
   get disabled () {
-    let value = this.rcResultGrid.disabled && this.glResultGrid.disabled;
-    return value;
+    return this.glResultGrid.disabled &&
+           this.rcResultGrid.disabled &&
+           this.scResultGrid.disabled;
   }
 
   createDetailsButton (id) {
@@ -171,10 +183,14 @@ export default class ViewAllRules {
     let rowId = '';
 
     if (tgt.id) {
-      if (tgt.id.indexOf('rc') >= 0) {
-        rowId = this.rcResultGrid.getSelectedRowId();
-      } else {
+      if (tgt.id.indexOf('gl') >= 0) {
         rowId = this.glResultGrid.getSelectedRowId();
+      } else {
+        if (tgt.id.indexOf('rc') >= 0) {
+          rowId = this.rcResultGrid.getSelectedRowId();
+        } else {
+          rowId = this.scResultGrid.getSelectedRowId();
+        }
       }
       if (this.handleRowActivation && rowId) {
         this.handleRowActivation(rowId);
@@ -183,7 +199,7 @@ export default class ViewAllRules {
   }
 
   initGrids () {
-    let i, id, label, row;
+    let id, label, row;
 
     this.resultTablist.tabLabel1 = msg.ruleCategoriesLabel;
 
@@ -193,7 +209,7 @@ export default class ViewAllRules {
     this.rcResultGrid.addHeaderCell(msg.manualChecksAbbrev,  'summ num', msg.manualChecksLabel);
     this.rcResultGrid.addHeaderCell(msg.passedAbbrev,        'summ num', msg.passedLabel);
 
-    for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
+    for (let i = 0; i < ruleCategoryIds.length; i += 1 ) {
       id = ruleCategoryIds[i];
       label = msg[getRuleCategoryLabelId(id)];
       // The row ID identifies the row as a rule category rule group and
@@ -213,7 +229,7 @@ export default class ViewAllRules {
     this.glResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
     this.glResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
 
-    for (i = 0; i < guidelineIds.length; i += 1 ) {
+    for (let i = 0; i < guidelineIds.length; i += 1 ) {
       id = guidelineIds[i];
       label = msg[getGuidelineLabelId(id).replaceAll('.', '_')];
       // The row ID identifies the row as a guideline rule group and
@@ -229,41 +245,24 @@ export default class ViewAllRules {
     // Scope view
 
     this.resultTablist.tabLabel3 = msg.scopeLabel;
+    this.scResultGrid.addHeaderCell(msg.scopeLabel,     'group text');
+    this.scResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
+    this.scResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
+    this.scResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
+    this.scResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
 
-    this.scopeResultGrid.addHeaderCell(msg.scopeLabel,     'group text');
-    this.scopeResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
-    this.scopeResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
-    this.scopeResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
-    this.scopeResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
-
-
-    row = this.scopeResultGrid.addRow('scope-website');
-    this.scopeResultGrid.addDataCell(row, msg.websiteLabel, '', 'text');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-
-    row = this.scopeResultGrid.addRow('scope-page');
-    this.scopeResultGrid.addDataCell(row, msg.pageLabel, '', 'text');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-
-    row = this.scopeResultGrid.addRow('scope-element');
-    this.scopeResultGrid.addDataCell(row, msg.elementLabel, '', 'text');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-
-    row = this.scopeResultGrid.addRow('scope-all');
-    this.scopeResultGrid.addDataCell(row, msg.allRulesLabel, '', 'text');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
-    this.scopeResultGrid.addDataCell(row, '', '-', 'summ num');
+    for (let i = 0; i < scopeIds.length; i += 1 ) {
+      id = scopeIds[i];
+      label = msg[getScopeLabelId(id)];
+      // The row ID identifies the row as a guideline rule group and
+      // includes which guideline using its numerical constant
+      row = this.scResultGrid.addRow('sc' + id);
+      this.scResultGrid.addDataCell(row, label, '', 'text');
+      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
+      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
+      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
+      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
+    }
 
   }
 
@@ -301,7 +300,7 @@ export default class ViewAllRules {
   }
 
   update (infoAllRules) {
-    let i, gResult, row, rowAccName, cell, celAcclName;
+    let row, rowAccName, cell, celAcclName;
 
     this.rcResultGrid.enable();
     this.glResultGrid.enable();
@@ -319,9 +318,9 @@ export default class ViewAllRules {
 
     this.rcResults = infoAllRules.rcResults;
 
-    for (i = 0; i < this.rcResults.length; i += 1) {
-      gResult = this.rcResults[i];
-      this.updateRow('rc' + gResult.id, this.rcResultGrid, gResult);
+    for (let i = 0; i < this.rcResults.length; i += 1) {
+      const rcResult = this.rcResults[i];
+      this.updateRow('rc' + rcResult.id, this.rcResultGrid, rcResult);
     }
     this.updateRow('rc' + RULE_CATEGORIES.ALL, this.rcResultGrid, infoAllRules);
     this.rcResultGrid.setSelectedRowUsingLastId();
@@ -330,26 +329,23 @@ export default class ViewAllRules {
 
     this.glResults = infoAllRules.glResults;
 
-    for (i = 0; i < this.glResults.length; i += 1) {
-      gResult = this.glResults[i];
-      this.updateRow('gl' + gResult.id, this.glResultGrid, gResult);
+    for (let i = 0; i < this.glResults.length; i += 1) {
+      const glResult = this.glResults[i];
+      this.updateRow('gl' + glResult.id, this.glResultGrid, glResult);
     }
     this.updateRow('gl' + GUIDELINES.ALL, this.glResultGrid, infoAllRules);
     this.glResultGrid.setSelectedRowUsingLastId();
 
     // Update Scope
 
-    this.scopeResults = infoAllRules.scopeResults;
+    this.scResults = infoAllRules.scResults;
 
-    console.log(`[scopeResults][website]: ${this.scopeResults.website.violations}`);
-    console.log(`[scopeResults][   page]: ${this.scopeResults.page.volations}`);
-    console.log(`[scopeResults][element]: ${this.scopeResults.element.violations}`);
-
-    this.updateRow('scope-website', this.scopeResultGrid, this.scopeResults.website);
-    this.updateRow('scope-page',    this.scopeResultGrid, this.scopeResults.page);
-    this.updateRow('scope-element', this.scopeResultGrid, this.scopeResults.element);
-    this.updateRow('scope-all',     this.scopeResultGrid, infoAllRules);
-
+    for (let i = 0; i < this.scResults.length; i += 1) {
+      const scResult = this.scResults[i];
+      this.updateRow('sc' + scResult.id, this.scResultGrid, scResult);
+    }
+    this.updateRow('sc' + RULE_SCOPE.ALL, this.scResultGrid, infoAllRules);
+    this.scResultGrid.setSelectedRowUsingLastId();
 
     if (this.resultTablist.selectedTabId === 'tabpanel-1') {
       this.rcResultGrid.focus();
@@ -357,7 +353,7 @@ export default class ViewAllRules {
       if (this.resultTablist.selectedTabId === 'tabpanel-2') {
         this.glResultGrid.focus();
       } else {
-        this.scopeResultGrid.focus();
+        this.scResultGrid.focus();
       }
     }
 
@@ -376,11 +372,10 @@ export default class ViewAllRules {
       this.glResultGrid.clearRow('gl' + id);
     });
 
-    this.scopeResultGrid.disable();
-    this.scopeResultGrid.clearRow('scope-website');
-    this.scopeResultGrid.clearRow('scope-page');
-    this.scopeResultGrid.clearRow('scope-element');
-    this.scopeResultGrid.clearRow('scope-all');
+    this.scResultGrid.disable();
+    scopeIds.forEach( (id) => {
+      this.scResultGrid.clearRow('sc' + id);
+    });
 
   }
 }
