@@ -1,7 +1,7 @@
 /* summaryInfo.js */
 
 /* Imports */
-import { getOptions }  from '../storage.js';
+import { getOptions }  from '../../storage.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -123,12 +123,12 @@ export default class summaryInfo extends HTMLElement {
     // Use external CSS stylesheet
     let link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'dialog.css');
+    link.setAttribute('href', './css/dialog.css');
     this.shadowRoot.appendChild(link);
 
     link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'summaryInfo.css');
+    link.setAttribute('href', './css/summaryInfo.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

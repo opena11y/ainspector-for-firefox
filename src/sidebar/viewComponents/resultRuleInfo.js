@@ -65,7 +65,7 @@ export default class ResultRuleInfo extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'resultRuleInfo.css');
+    link.setAttribute('href', './css/resultRuleInfo.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

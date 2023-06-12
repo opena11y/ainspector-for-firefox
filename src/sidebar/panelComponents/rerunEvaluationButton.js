@@ -3,7 +3,7 @@
 import {
   getOptions,
   saveOptions
-} from '../storage.js';
+} from '../../storage.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -68,7 +68,7 @@ export default class RerunEvaluationButton extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'dialog.css');
+    link.setAttribute('href', './css/dialog.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

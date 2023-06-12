@@ -4,11 +4,11 @@ import {
   getSCSortingValue, 
   getLevelSortingValue, 
   getRequiredSortingValue 
-} from './sortUtils.js';
+} from '../sortUtils.js';
 
-import { getResultStyle }  from './utils.js';
-import { getOptions }      from '../storage.js';
-import ViewRuleResultsCSV  from './viewRuleResultsCSV.js';
+import { getResultStyle }  from '../utils.js';
+import { getOptions }      from '../../storage.js';
+import ViewRuleGroupCSV  from './viewRuleGroupCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -38,7 +38,7 @@ const msg = {
   warningLabel          : getMessage('warningLabel')
 };
 
-export default class ViewRuleResults {
+export default class ViewRuleGroup {
   // The id is a reference to a DIV element used as the contaner
   // for the rule results view content
   constructor(id, handleRowActivation) {
@@ -46,7 +46,7 @@ export default class ViewRuleResults {
     this.handleRowActivation = handleRowActivation;
 
     this.containerDiv = document.getElementById(id);
-    this.ruleSummary = document.createElement('rule-summary');
+    this.ruleSummary = document.createElement('rule-group-summary');
     this.containerDiv.appendChild(this.ruleSummary);
 
     // Add heading for the rule result details
@@ -121,7 +121,7 @@ export default class ViewRuleResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewRuleResultsCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.groupId);
+    let viewCSV = new ViewRuleGroupCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.groupId);
     return viewCSV.getCSV(options, title, location);
   }
 

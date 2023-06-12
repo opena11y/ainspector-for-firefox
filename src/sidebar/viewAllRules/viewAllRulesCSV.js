@@ -1,9 +1,9 @@
 /* viewSummaryCSV.js */
 
-import { commonCSV } from './commonCSV.js';
-import { getOptions } from '../storage.js';
+import { commonCSV } from '../commonCSV.js';
+import { getOptions } from '../../storage.js';
 
-import { getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+import { getRuleCategoryLabelId, getGuidelineLabelId } from '../constants.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage  = browser.i18n.getMessage;
@@ -42,7 +42,7 @@ const msg = {
   widgetsScriptsLabel : getMessage('widgetsScriptsLabel')
 };
 
-export default class ViewSummaryCSV extends commonCSV {
+export default class ViewAllRulesCSV extends commonCSV {
   constructor(ruleSummary, rcResults, glResults, ruleResults) {
     super();
 

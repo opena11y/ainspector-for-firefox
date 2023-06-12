@@ -42,12 +42,12 @@ export default class ResultTablist extends HTMLElement {
     // Use external CSS stylesheet
     const link1 = document.createElement('link');
     link1.setAttribute('rel', 'stylesheet');
-    link1.setAttribute('href', 'resultTablist.css');
+    link1.setAttribute('href', './css/resultTablist.css');
     this.shadowRoot.appendChild(link1);
 
     const link2 = document.createElement('link');
     link2.setAttribute('rel', 'stylesheet');
-    link2.setAttribute('href', 'middleSection.css');
+    link2.setAttribute('href', './css/middleSection.css');
     this.shadowRoot.appendChild(link2);
 
     // Add DOM tree from template

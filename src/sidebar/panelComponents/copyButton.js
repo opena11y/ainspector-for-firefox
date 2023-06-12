@@ -28,7 +28,7 @@ export default class CopyButton extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'copyButton.css');
+    link.setAttribute('href', './css/copyButton.css');
     this.shadowRoot.appendChild(link);
 
     // Get constants

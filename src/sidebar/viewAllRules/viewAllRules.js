@@ -1,7 +1,15 @@
-/* viewSummary.js */
+/* viewAllRules.js */
 
-import { GUIDELINES, RULE_CATEGORIES, ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
-import ViewSummaryCSV  from './viewSummaryCSV.js';
+import {
+  GUIDELINES,
+  RULE_CATEGORIES,
+  ruleCategoryIds,
+  guidelineIds,
+  getRuleCategoryLabelId,
+  getGuidelineLabelId
+} from '../constants.js';
+
+import ViewAllRulesCSV  from './viewAllRulesCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage  = browser.i18n.getMessage;
@@ -53,7 +61,7 @@ const msg = {
 
 // The summary view for AInspector WCAG
 
-export default class ViewSummary {
+export default class ViewAllRules {
   // The id is a reference to a DIV element used as the contaner
   // for the summary view content
   constructor (id, handleRowActivation) {
@@ -62,7 +70,7 @@ export default class ViewSummary {
 
     this.containerDiv   = document.getElementById(id);
 
-    this.ruleSummary = document.createElement('rule-summary');
+    this.ruleSummary = document.createElement('rule-group-summary');
     this.containerDiv.appendChild(this.ruleSummary);
 
     this.resultTablist = document.createElement('result-tablist');
@@ -113,7 +121,7 @@ export default class ViewSummary {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewSummaryCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
+    let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
     return viewCSV.getCSV(options, title, location);
   }
 

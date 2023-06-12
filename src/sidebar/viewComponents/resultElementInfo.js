@@ -1,6 +1,6 @@
 /* resultElementInfojs */
 
-import { getResultStyle }     from './utils.js';
+import { getResultStyle }     from '../utils.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -117,7 +117,7 @@ export default class ResultElementInfo extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'resultElementInfo.css');
+    link.setAttribute('href', './css/resultElementInfo.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

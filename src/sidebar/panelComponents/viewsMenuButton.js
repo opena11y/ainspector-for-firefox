@@ -1,8 +1,8 @@
 /* viewMenuButton.js */
 
-import { getOptions } from '../storage.js';
+import { getOptions } from '../../storage.js';
 
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from './constants.js';
+import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from '../constants.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -64,7 +64,7 @@ export default class ViewsMenuButton extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'viewsMenuButton.css');
+    link.setAttribute('href', './css/viewsMenuButton.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

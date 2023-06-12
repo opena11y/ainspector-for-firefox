@@ -1,8 +1,8 @@
 /* viewElementResults.js */
 
-import { getOptions }         from '../storage.js';
-import { getResultStyle }     from './utils.js';
-import ViewElementResultsCSV  from './viewElementResultsCSV.js';
+import { getOptions }      from '../../storage.js';
+import { getResultStyle }  from '../utils.js';
+import ViewRuleResultCSV   from './viewRuleResultCSV.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -25,7 +25,7 @@ const msg = {
   warningLabel         : getMessage('warningLabel')
 };
 
-export default class ViewElementResults {
+export default class ViewRuleResult {
   // The id is a reference to a DIV element used as the container
   // for the element results view content
   constructor(id, handleRowSelection) {
@@ -33,7 +33,7 @@ export default class ViewElementResults {
     this.handleRowSelection = handleRowSelection;
 
     this.containerDiv = document.getElementById(id);
-    this.elementSummary = document.createElement('element-summary');
+    this.elementSummary = document.createElement('rule-result-summary');
     this.containerDiv.appendChild(this.elementSummary);
 
     // Add heading for the element result details
@@ -89,7 +89,7 @@ export default class ViewElementResults {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewElementResultsCSV(this.detailsAction, this.elementResults, this.elementSummary);
+    let viewCSV = new ViewRuleResultCSV(this.detailsAction, this.elementResults, this.elementSummary);
     return viewCSV.getCSV(options, title, location);
   }
 

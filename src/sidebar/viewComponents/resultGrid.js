@@ -25,7 +25,7 @@ export default class ResultGrid extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'resultGrid.css');
+    link.setAttribute('href', './css/resultGrid.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

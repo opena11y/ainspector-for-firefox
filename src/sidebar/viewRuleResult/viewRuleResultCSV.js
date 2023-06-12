@@ -1,6 +1,9 @@
 /* viewElementResultsCSV.js */
 
-import { cleanCSVItem, commonCSV } from './commonCSV.js';
+import {
+  cleanCSVItem,
+  commonCSV
+} from '../commonCSV.js';
 
 const basicProps = ['tagName', 'result',  'resultValue', 'position', 'role', 'actionMessage'];
 
@@ -11,7 +14,7 @@ const msg = {
   pageResultLabel:      getMessage('pageResultLabel'),
   websiteResultLabel:   getMessage('websiteResultLabel')
 };
-export default class ViewElementResultsCSV extends commonCSV{
+export default class ViewRuleResultCSV extends commonCSV{
   constructor(detailsAction, elementResults, elementSummary) {
     super();
     this.detailsAction  = detailsAction;

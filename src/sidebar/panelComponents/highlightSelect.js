@@ -1,6 +1,6 @@
 /* highlightSelect.js */
 
-import { getOptions, saveOptions } from '../storage.js';
+import { getOptions, saveOptions } from '../../storage.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -33,7 +33,7 @@ export default class HighlightSelect extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'highlightSelect.css');
+    link.setAttribute('href', './css/highlightSelect.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

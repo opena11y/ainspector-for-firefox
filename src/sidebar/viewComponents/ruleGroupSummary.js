@@ -1,11 +1,8 @@
-/* elementSummary.js */
-
-const getMessage = browser.i18n.getMessage;
+/* ruleSummary.js */
 
 // Get message strings from locale-specific messages.json file
+const getMessage = browser.i18n.getMessage;
 const msg = {
-  hiddenAbbrev       : getMessage('hiddenAbbrev'),
-  hiddenLabel        : getMessage('hiddenLabel'),
   manualChecksAbbrev : getMessage('manualChecksAbbrev'),
   manualChecksLabel  : getMessage('manualChecksLabel'),
   passedAbbrev       : getMessage('passedAbbrev'),
@@ -23,33 +20,29 @@ template.innerHTML = `
     </div>
     <div class="center">
       <table aria-label="Summary of rule results">
-        <thead>
+        <tbody>
           <tr>
             <th id="violations-label" aria-label="Violations">V</th>
             <th id="warnings-label" aria-label="Warnings">W</th>
             <th id="manual-checks-label" aria-label="Manual Checks">MC</th>
             <th id="passed-label" aria-label="Passed">P</th>
-            <th id="hidden-label" aria-label="Hidden">H</th>
           </tr>
-        </thead>
-        <tbody>
           <tr>
             <td id="violations-value">-</td>
             <td id="warnings-value">-</td>
             <td id="manual-checks-value">-</td>
             <td id="passed-value">-</td>
-            <td id="hidden-value">-</td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="right">
-      <summary-info data-info="element-info"></summary-info>
+      <summary-info data-info="rule-info"></summary-info>
     </div>
-  <div>
+  </div>
 `;
 
-export default class ElementSummary extends HTMLElement {
+export default class RuleGroupSummary extends HTMLElement {
   constructor () {
     super();
     this.attachShadow({ mode: 'open' });
@@ -57,14 +50,11 @@ export default class ElementSummary extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'summary.css');
+    link.setAttribute('href', './css/summary.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-    this.summaryTable = this.shadowRoot.querySelector('table');
-    this.summaryInfo = this.shadowRoot.querySelector('summary-info');
 
     // Initialize abbreviations and labels
     this.violationsTh = this.shadowRoot.querySelector('#violations-label');
@@ -87,17 +77,13 @@ export default class ElementSummary extends HTMLElement {
     this.passedTh.setAttribute('aria-label', msg.passedLabel);
     this.passedTh.setAttribute('title', msg.passedLabel);
 
-    this.hiddenTh = this.shadowRoot.querySelector('#hidden-label');
-    this.hiddenTh.textContent = msg.hiddenAbbrev;
-    this.hiddenTh.setAttribute('aria-label', msg.hiddenLabel);
-    this.hiddenTh.setAttribute('title', msg.hiddenLabel);
+    this.summaryInfo = this.shadowRoot.querySelector('summary-info');
 
     // Initialize references
     this.violationsTd   = this.shadowRoot.querySelector('#violations-value');
     this.warningsTd     = this.shadowRoot.querySelector('#warnings-value');
     this.manualChecksTd = this.shadowRoot.querySelector('#manual-checks-value');
     this.passedTd       = this.shadowRoot.querySelector('#passed-value');
-    this.hiddenTd       = this.shadowRoot.querySelector('#hidden-value');
   }
 
   set violations (value) {
@@ -116,11 +102,6 @@ export default class ElementSummary extends HTMLElement {
     this.passedTd.textContent = value;
   }
 
-  set hidden (value) {
-    this.hiddenTd.textContent = value;
-  }
-
-
   get violations () {
     return this.violationsTd.textContent;
   }
@@ -129,7 +110,7 @@ export default class ElementSummary extends HTMLElement {
     return this.warningsTd.textContent;
   }
 
-  get manualChecks () {
+  get manual_checks () {
     return this.manualChecksTd.textContent;
   }
 
@@ -137,20 +118,10 @@ export default class ElementSummary extends HTMLElement {
     return this.passedTd.textContent;
   }
 
-  get hidden () {
-    return this.hiddenTd.textContent;
-  }
-
   clear () {
     this.violationsTd.textContent   = '-';
-    this.violationsTd.title         = '';
-
     this.warningsTd.textContent     = '-';
-    this.warningsTd.title           = '';
-
     this.manualChecksTd.textContent = '-';
     this.passedTd.textContent       = '-';
-    this.hiddenTd.textContent       = '-';
   }
-
 }

@@ -1,7 +1,7 @@
 /* rerunEvaluationButton.js */
 
-import { getOptions, saveOptions } from '../storage.js';
-import { isCharacterAllowed, validatePrefix } from '../validate.js';
+import { getOptions, saveOptions } from '../../storage.js';
+import { isCharacterAllowed, validatePrefix } from '../../validate.js';
 
 
 // Get message strings from locale-specific messages.json file
@@ -102,7 +102,7 @@ export default class ExportButton extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'dialog.css');
+    link.setAttribute('href', './css/dialog.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template

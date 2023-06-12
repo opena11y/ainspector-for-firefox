@@ -4,29 +4,29 @@ import { getOptions }        from '../storage.js';
 import { getExportFileName } from './commonCSV.js';
 
 // Classes for manipulating views
-import ViewSummary           from './viewSummary.js';
-import ViewRuleResults       from './viewRuleResults.js';
-import ViewElementResults    from './viewElementResults.js';
+import ViewAllRules          from './viewAllRules/viewAllRules.js';
+import ViewRuleGroup         from './viewRuleGroup/viewRuleGroup.js';
+import ViewRuleResult        from './viewRuleResult/viewRuleResult.js';
 
 // Custom elements for views
-import ElementSummary        from './elementSummary.js';
-import RuleSummary           from './ruleSummary.js';
-import ResultElementInfo     from './resultElementInfo.js';
-import ResultGrid            from './resultGrid.js';
-import ResultRuleInfo        from './resultRuleInfo.js';
-import ResultTablist         from './resultTablist.js';
-import SummaryInfo           from './summaryInfo.js';
+import RuleResultSummary     from './viewComponents/ruleResultSummary.js';
+import RuleGroupSummary      from './viewComponents/ruleGroupSummary.js';
+import ResultElementInfo     from './viewComponents/resultElementInfo.js';
+import ResultGrid            from './viewComponents/resultGrid.js';
+import ResultRuleInfo        from './viewComponents/resultRuleInfo.js';
+import ResultTablist         from './viewComponents/resultTablist.js';
+import SummaryInfo           from './viewComponents/summaryInfo.js';
 
 
 // Custom elements for controls
-import CopyButton            from './copyButton.js';
-import ExportButton          from './exportButton.js';
-import HighlightSelect       from './highlightSelect.js';
-import RerunEvaluationButton from './rerunEvaluationButton.js';
-import ViewsMenuButton       from './viewsMenuButton.js';
+import CopyButton            from './panelComponents/copyButton.js';
+import ExportButton          from './panelComponents/exportButton.js';
+import HighlightSelect       from './panelComponents/highlightSelect.js';
+import RerunEvaluationButton from './panelComponents/rerunEvaluationButton.js';
+import ViewsMenuButton       from './panelComponents/viewsMenuButton.js';
 
-customElements.define('element-summary',     ElementSummary);
-customElements.define('rule-summary',        RuleSummary);
+customElements.define('rule-result-summary', RuleResultSummary);
+customElements.define('rule-group-summary',  RuleGroupSummary);
 customElements.define('result-element-info', ResultElementInfo);
 customElements.define('result-grid',         ResultGrid);
 customElements.define('result-rule-info',    ResultRuleInfo);
@@ -77,24 +77,24 @@ preferencesButton.addEventListener('click', onPreferencesClick);
 
 var contentPort;
 var myWindowId;
-var logInfo = false;
+var logInfo = true;
 var debug = false;
 
 // The viewId object is used to both identify a view and
 // the ID of the associated DIV element that contains the rendered
 // content of the view
 const viewId = {
-  summary : 'summary',
-  ruleResults: 'rule-results',
-  elementResults: 'element-results'
+  allRules : 'all-rules',
+  ruleGroup: 'rule-group',
+  ruleResult: 'rule-result'
 };
 
 // Instantiate view classes with corresponding callbacks
-var vSummary = new ViewSummary(viewId.summary, onSummaryRowActivation);
-var vRuleResults = new ViewRuleResults(viewId.ruleResults, onRuleResultsRowActivation);
-var vElementResults = new ViewElementResults(viewId.elementResults, onUpdateHighlight);
+var vAllRules   = new ViewAllRules(viewId.allRules, onAllRulesRowActivation);
+var vRuleGroup  = new ViewRuleGroup(viewId.ruleGroup, onRuleGroupRowActivation);
+var vRuleResult = new ViewRuleResult(viewId.ruleResult, onUpdateHighlight);
 
-var sidebarView      = viewId.summary;  // default view when sidebar loads
+var sidebarView      = viewId.allRules;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
@@ -126,27 +126,27 @@ function addSidebarLabels () {
 
 // Callback functions used by views for activation or selection of rows
 
-function onSummaryRowActivation (id) {
-  sidebarView      = viewId.ruleResults;
+function onAllRulesRowActivation (id) {
+  sidebarView      = viewId.ruleGroup;
   sidebarGroupType = id.substring(0,2);
   sidebarGroupId   = parseInt(id.substring(2));
-  runContentScripts('onSummaryRowActivation');
+  runContentScripts('onAllRulesRowActivation');
 }
 
-function onRuleResultsRowActivation (id) {
-  sidebarView   = viewId.elementResults;
+function onRuleGroupRowActivation (id) {
+  sidebarView   = viewId.ruleResult;
   sidebarRuleId = id;
-  runContentScripts('onRuleResultsRowActivation');
+  runContentScripts('onRuleGroupRowActivation');
 }
 
 function onViewsMenuActivation(id) {
   if (id && id.length) {
     if (id === 'summary') {
-      sidebarView = viewId.summary;
+      sidebarView = viewId.allRules;
     }
 
     if (id === 'all-rules') {
-      sidebarView = viewId.ruleResults;
+      sidebarView = viewId.ruleGroup;
       if (sidebarGroupType === 'rc') {
         sidebarGroupId = 0x0FFF;  // All rules id for rule categories
       } else {
@@ -157,7 +157,7 @@ function onViewsMenuActivation(id) {
     if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
       const groupType = id.substring(0, 2);
       const groupId = parseInt(id.substring(2));
-      sidebarView = viewId.ruleResults;
+      sidebarView = viewId.ruleGroup;
       sidebarGroupType = groupType;
       sidebarGroupId   = groupId;
     }
@@ -226,12 +226,12 @@ function onError (error) {
 
 function shortcutCopy () {
   switch (sidebarView) {
-    case viewId.ruleResults:
-      vRuleResults.copyButton.click();
+    case viewId.ruleGroup:
+      vRuleGroup.copyButton.click();
       break;
 
-    case viewId.elementResults:
-      vElementResults.elemCopyButton.click();
+    case viewId.ruleResult:
+      vRuleResult.elemCopyButton.click();
       break;
 
     default:
@@ -298,12 +298,12 @@ function onShortcutsKeydown (event) {
 function onBackButton() {
 
   switch (sidebarView) {
-    case viewId.ruleResults:
-      sidebarView = viewId.summary;
+    case viewId.ruleGroup:
+      sidebarView = viewId.allRules;
       break;
 
-    case viewId.elementResults:
-      sidebarView = viewId.ruleResults;
+    case viewId.ruleResult:
+      sidebarView = viewId.ruleGroup;
       break;
 
     default:
@@ -324,19 +324,19 @@ function onExportClick () {
     if (options.exportFormat === 'CSV') {
       switch (sidebarView) {
 
-        case viewId.summary:
-          fname = options.filenameSummary;
-          csv = vSummary.toCSV(options, pageTitle, pageLocation);
+        case viewId.allRules:
+          fname = options.filenameAllRules;
+          csv = vAllRules.toCSV(options, pageTitle, pageLocation);
           break;
 
-        case viewId.ruleResults:
-          fname = options.filenameRuleResults;
-          csv = vRuleResults.toCSV(options, pageTitle, pageLocation, sidebarGroupId);
+        case viewId.ruleGroup:
+          fname = options.filenameRuleGroup;
+          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation, sidebarGroupId);
           break;
 
-        case viewId.elementResults:
-          fname = options.filenameElementResults;
-          csv = vElementResults.toCSV(options, pageTitle, pageLocation);
+        case viewId.ruleResult:
+          fname = options.filenameRuleResult;
+          csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
           break;
 
         default:
@@ -350,19 +350,19 @@ function onExportClick () {
 
       switch (sidebarView) {
 
-        case viewId.summary:
-          fname = options.filenameSummary;
-          json = vSummary.toJSON();
+        case viewId.allRules:
+          fname = options.filenameAllRules;
+          json = vAllRules.toJSON();
           break;
 
-        case viewId.ruleResults:
-          fname = options.filenameRuleResults;
-          json = vRuleResults.toJSON();
+        case viewId.ruleGroup:
+          fname = options.filenameRuleGroup;
+          json = vRuleGroup.toJSON();
           break;
 
-        case viewId.elementResults:
-          fname = options.filenameElementResults;
-          json = vElementResults.toJSON();
+        case viewId.ruleResult:
+          fname = options.filenameRuleResult;
+          json = vRuleResult.toJSON();
           break;
 
         default:
@@ -471,7 +471,7 @@ function showView (id) {
 
 function updateBackButton () {
 
-  if (sidebarView === viewId.summary) {
+  if (sidebarView === viewId.allRules) {
     backButton.disabled = true;
   } else {
     backButton.disabled = false;
@@ -482,7 +482,7 @@ function disableButtons() {
   viewsMenuButton.disabled = true;
   exportButton.disabled = true;
   rerunEvaluationButton.disabled = true;
-  vSummary.disabled = true;
+  vAllRules.disabled = true;
 
   updateBackButton();
 }
@@ -491,7 +491,7 @@ function enableButtons() {
   viewsMenuButton.disabled = false;
   exportButton.disabled = false;
   rerunEvaluationButton.disabled = false;
-  vSummary.disabled = false;
+  vAllRules.disabled = false;
 
   updateBackButton();
 }
@@ -517,10 +517,10 @@ function updateSidebar (info) {
   // page-title and headings
   if (typeof info === 'object') {
 
-    if (logInfo) console.log(`\n[updateSidebar][location          ]: ${info.location}`);
-    if (logInfo) console.log(`[updateSidebar][infoSummary       ]: ${info.infoSummary}`);
-    if (logInfo) console.log(`[updateSidebar][infoRuleResults   ]: ${info.infoRuleResults}`);
-    if (logInfo) console.log(`[updateSidebar][infoElementResults]: ${info.infoElementResults}`);
+    if (logInfo) console.log(`\n[updateSidebar][location        ]: ${info.location}`);
+    if (logInfo) console.log(`[updateSidebar][infoAllRules      ]: ${info.infoAllRules}`);
+    if (logInfo) console.log(`[updateSidebar][infoRuleGroup     ]: ${info.infoRuleGroup}`);
+    if (logInfo) console.log(`[updateSidebar][infoRuleResul t   ]: ${info.infoRuleResult}`);
     if (logInfo) console.log(`[updateSidebar][infoHighlight     ]: ${info.infoHighlight}`);
 
     // Update the page information footer
@@ -532,38 +532,38 @@ function updateSidebar (info) {
     pageLocation = info.location;
 
     // Update the headings box
-    if (typeof info.infoSummary === 'object') {
+    if (typeof info.infoAllRules === 'object') {
       viewTitle.textContent = msg.viewTitleSummaryLabel;
-        viewTitle.title = '';
-      vSummary.update(info.infoSummary);
+      viewTitle.title = '';
+      vAllRules.update(info.infoAllRules);
       enableButtons();
     }
     else {
-      if (typeof info.infoRuleResults === 'object') {
-        if (info.infoRuleResults.groupType === 'rc') {
-          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleResults.groupLabel;
+      if (typeof info.infoRuleGroup === 'object') {
+        if (info.infoRuleGroup.groupType === 'rc') {
+          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleGroup.groupLabel;
         }
         else {
-          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleResults.groupLabel;
+          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleGroup.groupLabel;
         }
         viewTitle.title = '';
-        vRuleResults.update(info.infoRuleResults, sidebarGroupId);
+        vRuleGroup.update(info.infoRuleGroup, sidebarGroupId);
         enableButtons();
       }
       else {
-        if (info.infoElementResults) {
-          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoElementResults.title;
-          viewTitle.title = info.infoElementResults.title;
-          vElementResults.update(info.infoElementResults);
+        if (info.infoRuleResult) {
+          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoRuleResult.title;
+          viewTitle.title = info.infoRuleResult.title;
+          vRuleResult.update(info.infoRuleResult);
           enableButtons();
         }
         else {
           if (info.infoHighlight) {
             enableButtons();
           } else {
-            vSummary.clear();
-            vRuleResults.clear();
-            vElementResults.clear();
+            vAllRules.clear();
+            vRuleGroup.clear();
+            vRuleResult.clear();
             disableButtons();
           }
         }
@@ -575,20 +575,20 @@ function updateSidebar (info) {
     if (parts.length == 1) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;
-      vSummary.clear(info);
-      vRuleResults.clear(info);
-      vElementResults.clear(info);
+      vAllRules.clear(info);
+      vRuleGroup.clear(info);
+      vRuleResult.clear(info);
     } else {
       if (parts.length == 2) {
         infoLocation.textContent = parts[0];
         infoTitle.textContent = parts[1];
-        vSummary.clear(parts[0], parts[1]);
-        vRuleResults.clear(parts[0], parts[1]);
-        vElementResults.clear(parts[0], parts[1]);
+        vAllRules.clear(parts[0], parts[1]);
+        vRuleGroup.clear(parts[0], parts[1]);
+        vRuleResult.clear(parts[0], parts[1]);
       } else {
-        vSummary.clear();
-        vRuleResults.clear();
-        vElementResults.clear();
+        vAllRules.clear();
+        vRuleGroup.clear();
+        vRuleResult.clear();
       }
     }
     disableButtons();
