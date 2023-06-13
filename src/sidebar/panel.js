@@ -53,6 +53,7 @@ const msg = {
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
   protocolNotSupported   : getMessage("protocolNotSupported"),
   ruleCategoryLabel      : getMessage("ruleCategoryLabel"),
+  ruleScopeLabel         : getMessage("ruleScopeLabel"),
   ruleLabel              : getMessage("ruleLabel"),
   tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
@@ -147,14 +148,18 @@ function onViewsMenuActivation(id) {
 
     if (id === 'all-rules') {
       sidebarView = viewId.ruleGroup;
-      if (sidebarGroupType === 'rc') {
-        sidebarGroupId = 0x0FFF;  // All rules id for rule categories
-      } else {
+      if (sidebarGroupType === 'gl') {
         sidebarGroupId = 0x01FFF0; // All rules id for guidelines
+      } else {
+        if (sidebarGroupType === 'rc') {
+          sidebarGroupId = 0x0FFF;  // All rules id for rule categories
+        } else {
+          sidebarGroupId = 0x0007; // All rules id for rule scope
+        }
       }
     }
 
-    if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
+    if (id.includes('rc') || id.includes('gl') || id.includes('sc')) {
       const groupType = id.substring(0, 2);
       const groupId = parseInt(id.substring(2));
       sidebarView = viewId.ruleGroup;
@@ -540,11 +545,16 @@ function updateSidebar (info) {
     }
     else {
       if (typeof info.infoRuleGroup === 'object') {
-        if (info.infoRuleGroup.groupType === 'rc') {
-          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleGroup.groupLabel;
+        if (info.infoRuleGroup.groupType === 'gl') {
+          viewTitle.textContent = msg.guidelineLabel + ': ' + info.infoRuleGroup.groupLabel;
         }
         else {
-          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleGroup.groupLabel;
+          if (info.infoRuleGroup.groupType === 'rc') {
+            viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleGroup.groupLabel;
+          }
+          else {
+            viewTitle.textContent = msg.ruleScopeLabel + ': ' + info.infoRuleGroup.groupLabel;
+          }
         }
         viewTitle.title = '';
         vRuleGroup.update(info.infoRuleGroup, sidebarGroupId);

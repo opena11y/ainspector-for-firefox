@@ -3,8 +3,9 @@
 import {
   GUIDELINES,
   RULE_CATEGORIES,
+  getGuidelineLabelId,
   getRuleCategoryLabelId,
-  getGuidelineLabelId
+  getScopeLabelId
 } from '../constants.js';
 
 
@@ -30,16 +31,19 @@ export default class ViewRuleResultsCSV extends commonCSV {
   }
 
   getCSV (options, title, url) {
-    let incRC = false, incGL = false;
     let csv = super.getCSV(options, title, url);
     let msgId = '';
 
-    if (this.groupType === 'rc') {
-      msgId = getRuleCategoryLabelId(this.groupId);
-    } else {
+    if (this.groupType === 'gl') {
       msgId = getGuidelineLabelId(this.groupId);
       if (typeof msgId === 'string') {
         msgId = msgId.replace('.', '_');
+      }
+    } else {
+      if (this.groupType === 'rc') {
+        msgId = getRuleCategoryLabelId(this.groupId);
+      } else {
+        msgId = getScopeLabelId(this.groupId);
       }
     }
 
@@ -48,13 +52,10 @@ export default class ViewRuleResultsCSV extends commonCSV {
 
     csv += this.getRuleSummary(this.ruleSummary, msgId);
 
-    if (this.groupType === 'gl' || this.isAllRules) {
-      incRC = true;
-    }
-    if (this.groupType !== 'gl' || this.isAllRules) {
-      incGL = true;
-    }
-    csv += this.getRuleResultsCSV(options, this.ruleResults, incRC, incGL);
+    const incGL = this.groupType.includes('gl') || this.isAllRules;
+    const incRC = this.groupType.includes('rc') || this.isAllRules;
+    const incSC = this.groupType.includes('sc') || this.isAllRules;
+    csv += this.getRuleResultsCSV(options, this.ruleResults, incRC, incGL, incSC);
     return csv
   }
 

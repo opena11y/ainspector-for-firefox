@@ -10,6 +10,7 @@ export const defaultOptions = {
   isSidebarOpen: false,
   rulesetId: 'ARIA_STRICT',
   viewsMenuIncludeGuidelines: true,
+  viewsMenuIncludeRuleScope: true,
   rerunDelayEnabled: true,
   rerunDelayValue: '5',
   resultsIncludePassNa: true,

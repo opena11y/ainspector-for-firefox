@@ -148,7 +148,7 @@ export default class ViewAllRules {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
+    let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.scResults, this.allRuleResults);
     return viewCSV.getCSV(options, title, location);
   }
 

@@ -404,6 +404,11 @@
     "description": "Label for rule results grid"
   },
 
+  "ruleScopeGridLabel": {
+    "message": "Scope Results",
+    "description": "Label for rule results grid"
+  },
+
   "ruleSelectedLabel": {
     "message": "Selected Rule",
     "description": "Selected rule label for rule information"

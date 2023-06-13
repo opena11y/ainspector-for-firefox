@@ -29,6 +29,7 @@ const msg = {
   requiredValue         : getMessage('requiredValue'),
   ruleCategoryGridLabel : getMessage('ruleCategoryGridLabel'),
   ruleResultsGridLabel  : getMessage('ruleResultsGridLabel'),
+  ruleScopeGridLabel    : getMessage('ruleScopeGridLabel'),
   ruleSelectedLabel     : getMessage('ruleSelectedLabel'),
   ruleLabel             : getMessage('ruleLabel'),
   singleALabel          : getMessage('singleALabel'),
@@ -177,11 +178,16 @@ export default class ViewRuleGroup {
     this.groupType = infoRuleResults.groupType;
     this.groupId = groupId;
 
-    if (this.groupType === 'rc') {
-      this.gridLabelH2.textContent = msg.ruleCategoryGridLabel;
+    if (this.groupType === 'gl') {
+      this.gridLabelH2.textContent = msg.guidelinGridLabel;
     }
     else {
-      this.gridLabelH2.textContent = msg.guidelineGridLabel;
+      if (this.groupType === 'rc') {
+        this.gridLabelH2.textContent = msg.ruleCategoryGridLabel;
+      }
+      else {
+        this.gridLabelH2.textContent = msg.ruleScopeGridLabel;
+      }
     }
 
     getOptions().then( (options) => {

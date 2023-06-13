@@ -2,13 +2,21 @@
 
 import { getOptions } from '../../storage.js';
 
-import { ruleCategoryIds, guidelineIds, getRuleCategoryLabelId, getGuidelineLabelId } from '../constants.js';
+import {
+  guidelineIds,
+  ruleCategoryIds,
+  scopeIds,
+  getGuidelineLabelId,
+  getRuleCategoryLabelId,
+  getScopeLabelId
+} from '../constants.js';
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
   allRulesLabel        : getMessage('allRulesLabel'),
   audioVideoLabel      : getMessage('audioVideoLabel'),
+  elementLabel         : getMessage('elementLabel'),
   formsLabel           : getMessage('formsLabel'),
   g1_1                 : getMessage('g1.1'),
   g1_2                 : getMessage('g1.2'),
@@ -27,6 +35,7 @@ const msg = {
   keyboardLabel        : getMessage('keyboardLabel'),
   landmarksLabel       : getMessage('landmarksLabel'),
   linksLabel           : getMessage('linksLabel'),
+  pageLabel            : getMessage('pageLabel'),
   siteNavigationLabel  : getMessage('siteNavigationLabel'),
   stylesContentLabel   : getMessage('stylesContentLabel'),
   tablesLabel          : getMessage('tablesLabel'),
@@ -34,8 +43,10 @@ const msg = {
   widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
   guidelinesLabel      : getMessage('guidelinesLabel'),
   ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
+  ruleScopeLabel       : getMessage('ruleScopeLabel'),
   summaryLabel         : getMessage('summaryLabel'),
-  viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel')
+  viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel'),
+  websiteLabel         : getMessage('websiteLabel')
 };
 
 const template = document.createElement('template');
@@ -156,7 +167,7 @@ export default class ViewsMenuButton extends HTMLElement {
   }
 
   initMenu (options) {
-    let i, rcId, glId, msgId;
+    let msgId;
 
     this.menuDiv.innerHTML = '';
     this.menuitems = [];
@@ -167,21 +178,34 @@ export default class ViewsMenuButton extends HTMLElement {
     this.addMenuitem(this.menuDiv, 'summary', msg.summaryLabel);
     const rcGroupDiv = this.addGroup(this.menuDiv, msg.ruleCategoriesLabel);
 
-    for (i = 0; i < ruleCategoryIds.length; i += 1 ) {
-      rcId = ruleCategoryIds[i];
+    for (let i = 0; i < ruleCategoryIds.length; i += 1 ) {
+      const rcId = ruleCategoryIds[i];
       msgId = getRuleCategoryLabelId(rcId);
       this.addMenuitem(rcGroupDiv, 'rc' + rcId, msg[msgId]);
     }
 
     if (options.viewsMenuIncludeGuidelines) {
       const glGroupDiv = this.addGroup(this.menuDiv, msg.guidelinesLabel);
-      for (i = 0; i < guidelineIds.length; i += 1 ) {
-        glId = guidelineIds[i];
-        // cannot have periods in the msgId, so converted to underscrore character
+      for (let i = 0; i < guidelineIds.length; i += 1 ) {
+        const glId = guidelineIds[i];
+        // cannot have periods in the msgId, so converted to underscore character
         msgId = getGuidelineLabelId(glId).replaceAll('.', '_');
         this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
       }
     }
+
+    if (options.viewsMenuIncludeRuleScope) {
+      const scGroupDiv = this.addGroup(this.menuDiv, msg.ruleScopeLabel);
+
+      for (let i = 0; i < scopeIds.length; i += 1 ) {
+        const scId = scopeIds[i];
+        // cannot have periods in the msgId, so converted to underscore character
+        msgId = getScopeLabelId(scId);
+        this.addMenuitem(scGroupDiv, 'sc' + scId, msg[msgId]);
+      }
+
+    }
+
   }
 
   setFocusToMenuitem(newMenuitem) {
