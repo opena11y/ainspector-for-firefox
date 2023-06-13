@@ -20,6 +20,7 @@ const msg = {
   optionsExportPrompt          : getMessage('optionsExportPrompt'),
   optionsInclPassNaLabel       : getMessage('optionsInclPassNaLabel'),
   optionsInclWcagGlLabel       : getMessage('optionsInclWcagGlLabel'),
+  optionsInclRuleScopeLabel    : getMessage('optionsInclRuleScopeLabel'),
   optionsNoDelayLabel          : getMessage('optionsNoDelayLabel'),
   optionsPromptForDelayLabel   : getMessage('optionsPromptForDelayLabel'),
   optionsRerunEvaluationLegend : getMessage('optionsRerunEvaluationLegend'),
@@ -45,6 +46,7 @@ const msg = {
 
 const debug = false;
 const inclWcagGl     = document.querySelector('input[id="options-incl-wcag-gl"]');
+const inclRuleScope  = document.querySelector('input[id="options-incl-rule-scope"]');
 const noDelay        = document.querySelector('input[id="options-no-delay"]');
 const promptForDelay = document.querySelector('input[id="options-prompt-for-delay"]');
 
@@ -72,6 +74,7 @@ function setFormLabels () {
   const optionsTitle            = document.querySelector('#options-title');
   const optionsViewsMenuLegend  = document.querySelector('#options-views-menu-legend');
   const optionsInclWcagGlLabel  = document.querySelector('#options-incl-wcag-gl-label');
+  const optionsInclRuleScopeLabel  = document.querySelector('#options-incl-rule-scope-label');
 
   const optionsRerunEvaluationLegend = document.querySelector('#options-rerun-evaluation-legend');
   const optionsNoDelayLabel          = document.querySelector('#options-no-delay-label');
@@ -107,6 +110,7 @@ function setFormLabels () {
   optionsTitle.textContent            = msg.optionsTitle;
   optionsViewsMenuLegend.textContent  = msg.optionsViewsMenuLegend;
   optionsInclWcagGlLabel.textContent  = msg.optionsInclWcagGlLabel;
+  optionsInclRuleScopeLabel.textContent    = msg.optionsInclRuleScopeLabel;
   optionsRerunEvaluationLegend.textContent = msg.optionsRerunEvaluationLegend;
   optionsNoDelayLabel.textContent          = msg.optionsNoDelayLabel;
   optionsPromptForDelayLabel.textContent   = msg.optionsPromptForDelayLabel;
@@ -146,6 +150,7 @@ function saveFormOptions (e) {
   const options = {
   //  rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
+    viewsMenuIncludeRuleScope: inclRuleScope.checked,
 
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
@@ -173,6 +178,7 @@ function saveFormOptions (e) {
 function updateForm (options) {
   // Set form element values and states
   inclWcagGl.checked     = options.viewsMenuIncludeGuidelines;
+  inclRuleScope.checked  = options.viewsMenuIncludeRuleScope;
   noDelay.checked        = !options.rerunDelayEnabled;
   promptForDelay.checked = options.rerunDelayEnabled;
 //  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
@@ -298,6 +304,7 @@ function onShortcutBlur (event) {
 
 document.addEventListener('DOMContentLoaded', updateOptionsForm);
 inclWcagGl.addEventListener('change', saveFormOptions);
+inclRuleScope.addEventListener('change', saveFormOptions);
 noDelay.addEventListener('change', saveFormOptions);
 promptForDelay.addEventListener('change', saveFormOptions);
 // rulesetStrict.addEventListener('change', saveFormOptions);
