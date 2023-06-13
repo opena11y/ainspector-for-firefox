@@ -291,14 +291,15 @@ export default class ViewRuleResult {
   }
 
   onRowSelectionCallback (id) {
-    let position = false;
     if (id) {
       this.resultElementInfo.update(this.elementResults[id]);
-      position = parseInt(id.substring(3));
-      if (position && typeof position === 'number') {
-        if (this.handleRowSelection) {
-          this.handleRowSelection(position);
-        }
+      const position = parseInt(id.substring(3));
+      // if page or website result, send -1 instead of position
+      if (isNaN(position)) {
+        this.handleRowSelection(-1);
+      }
+      else {
+        this.handleRowSelection(position);
       }
     }
   }
