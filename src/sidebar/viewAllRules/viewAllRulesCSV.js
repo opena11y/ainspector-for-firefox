@@ -33,7 +33,6 @@ const msg = {
   manualChecksLabel   : getMessage('manualChecksLabel'),
   passedLabel         : getMessage('passedLabel'),
   ruleCategoryLabel   : getMessage('ruleCategoryLabel'),
-  ruleScopeLabel      : getMessage('ruleScopeLabel'),
   siteNavigationLabel : getMessage('siteNavigationLabel'),
   stylesContentLabel  : getMessage('stylesContentLabel'),
   tablesLabel         : getMessage('tablesLabel'),
@@ -44,13 +43,12 @@ const msg = {
 };
 
 export default class ViewAllRulesCSV extends commonCSV {
-  constructor(ruleSummary, rcResults, glResults, scResults, ruleResults) {
+  constructor(ruleSummary, rcResults, glResults, ruleResults) {
     super();
 
     this.ruleSummary = ruleSummary;
     this.rcResults     = rcResults;
     this.glResults     = glResults;
-    this.scResults     = scResults;
     this.ruleResults   = ruleResults;
   }
 
@@ -78,16 +76,6 @@ export default class ViewAllRulesCSV extends commonCSV {
     }
     csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
     csv += this.getBlankRow();
-
-    // Rule Scope Results
-    csv += this.getRuleSummaryRowHeaders(msg.ruleScopeLabel);
-    for (i = 0; i < this.scResults.length; i += 1) {
-      r = this.scResults[i];
-      csv += this.getRuleSummaryRow(msg[getGuidelineLabelId(r.id)], r);
-    }
-    csv += this.getRuleSummaryRow(msg.allRulesLabel,this.ruleSummary);
-    csv += this.getBlankRow();
-
 
     csv += this.getGroupTitle(msg.allRulesLabel);
     csv += this.getRuleResultsCSV(options, this.ruleResults, true, true);
