@@ -11520,7 +11520,23 @@
     required: 'Required',
     recommended: 'Recommended',
     tableType: ['undefined', 'Unknown', 'Layout', 'Data', 'Complex', 'ARIA Table', 'Grid', 'Tree Grid'],
-    headerSource: ['undefined', 'none', 'headers attribute', 'row and column']
+    headerSource: ['undefined', 'none', 'headers attribute', 'row and column'],
+
+    elementViolationLabel:   'V',
+    elementWarningLabel:     'W',
+    elementPassLabel:        'P',
+    elementManualCheckLabel: 'MC',
+
+    pageViolationLabel:   'Page Violation',
+    pageWarningLabel:     'Page Warning',
+    pagePassLabel:        'Page Pass',
+    pageManualCheckLabel: 'Page Manual Check',
+
+    websiteViolationLabel:   'Website Violation',
+    websiteWarningLabel:     'Website Warning',
+    websitePassLabel:        'Website Pass',
+    websiteManualCheckLabel: 'Website Manual Check'
+
   };
 
   /* ruleCategories.js */
@@ -27518,20 +27534,23 @@
   const passId        = 'p';
   const manualCheckId = 'mc';
 
-  const elementViolationLabel   = 'V';
-  const elementWarningLabel     = 'W';
-  const elementPassLabel        = 'P';
-  const elementManualCheckLabel = 'MC';
+  const msg = {
+    elementViolationLabel:   getCommonMessage('elementViolationLabel'),
+    elementWarningLabel:     getCommonMessage('elementWarningLabel'),
+    elementPassLabel:        getCommonMessage('elementPassLabel'),
+    elementManualCheckLabel: getCommonMessage('elementManualCheckLabel'),
 
-  const pageViolationLabel   = 'Page Violation';
-  const pageWarningLabel     = 'Page Warning';
-  const pagePassLabel        = 'Page Pass';
-  const pageManualCheckLabel = 'Page Manual Check';
+    pageViolationLabel:   getCommonMessage('pageViolationLabel'),
+    pageWarningLabel:     getCommonMessage('pageWarningLabel'),
+    pagePassLabel:        getCommonMessage('pagePassLabel'),
+    pageManualCheckLabel: getCommonMessage('pageManualCheckLabel'),
 
-  const websiteViolationLabel   = 'Website Violation';
-  const websiteWarningLabel     = 'Website Warning';
-  const websitePassLabel        = 'Website Pass';
-  const websiteManualCheckLabel = 'Website Manual Check';
+    websiteViolationLabel:   getCommonMessage('websiteViolationLabel'),
+    websiteWarningLabel:     getCommonMessage(' websiteWarningLabel'),
+    websitePassLabel:        getCommonMessage('websitePassLabel'),
+    websiteManualCheckLabel: getCommonMessage('websiteManualCheckLabel')
+
+  };
 
 
   const selectedDark  = 'dark';
@@ -27589,15 +27608,15 @@
   }
 
   .${highlightClass}.${elementClass}[${dataAttrResult}=${manualCheckId}]:after {
-    content: '${elementManualCheckLabel}';
+    content: '${msg.elementManualCheckLabel}';
   }
 
   .${highlightClass}.${pageClass}[${dataAttrResult}=${manualCheckId}]:before {
-    content: '${pageManualCheckLabel}';
+    content: '${msg.pageManualCheckLabel}';
   }
 
   .${highlightClass}.${websiteClass}[${dataAttrResult}=${manualCheckId}]:before {
-    content: '${websiteManualCheckLabel}';
+    content: '${msg.websiteManualCheckLabel}';
   }
 
   .${highlightClass}[${dataAttrResult}=${passId}] {
@@ -27611,15 +27630,15 @@
   }
 
   .${highlightClass}.${elementClass}[${dataAttrResult}=${passId}]:after {
-    content: '${elementPassLabel}';
+    content: '${msg.elementPassLabel}';
   }
 
   .${highlightClass}.${pageClass}[${dataAttrResult}=${passId}]:before {
-    content: '${pagePassLabel}';
+    content: '${msg.pagePassLabel}';
   }
 
   .${highlightClass}.${websiteClass}[${dataAttrResult}=${passId}]:before {
-    content: '${websitePassLabel}';
+    content: '${msg.websitePassLabel}';
   }
 
   .${highlightClass}[${dataAttrResult}=${violationId}] {
@@ -27633,16 +27652,15 @@
   }
 
   .${highlightClass}.${elementClass}[${dataAttrResult}=${violationId}]:after {
-    content: '${elementViolationLabel}';
+    content: '${msg.elementViolationLabel}';
   }
 
-
   .${highlightClass}.${pageClass}[${dataAttrResult}=${violationId}]:before {
-    content: '${pageViolationLabel}';
+    content: '${msg.pageViolationLabel}';
   }
 
   .${highlightClass}.${websiteClass}[${dataAttrResult}=${violationId}]:before {
-    content: '${websiteViolationLabel}';
+    content: '${msg.websiteViolationLabel}';
   }
 
   .${highlightClass}[${dataAttrResult}=${warningId}] {
@@ -27656,15 +27674,15 @@
   }
 
   .${highlightClass}.${elementClass}[${dataAttrResult}=${warningId}]:after {
-    content: '${elementWarningLabel}';
+    content: '${msg.elementWarningLabel}';
   }
 
   .${highlightClass}.${pageClass}[${dataAttrResult}=${warningId}]:before {
-    content: '${pageWarningLabel}';
+    content: '${msg.pageWarningLabel}';
   }
 
   .${highlightClass}.${websiteClass}[${dataAttrResult}=${warningId}]:before {
-    content: '${websiteWarningLabel}';
+    content: '${msg.websiteWarningLabel}';
   }
 
   .${highlightClass}[${dataAttrSelected}=${selectedLight}] {
@@ -27740,7 +27758,8 @@
           else {
             if ((option === 'vw') &&
                 ((resultValue === RESULT_VALUE.VIOLATION) ||
-                 (resultValue === RESULT_VALUE.WARNING))) {
+                 (resultValue === RESULT_VALUE.WARNING) ||
+                 (r.getOrdinalPosition() === pos))) {
               highlightElement(node, resultValue);
               count += 1;
             }
