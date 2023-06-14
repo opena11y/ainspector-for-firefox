@@ -7,7 +7,8 @@ import { getExportFileName } from './commonCSV.js';
 import ViewAllRules          from './viewAllRules/viewAllRules.js';
 import ViewAllRulesTablist   from './viewAllRules/viewAllRulesTablist.js';
 
-import ViewRuleGroup         from './viewRuleGroup/viewRuleGroup.js';
+import ViewRuleGroup                from './viewRuleGroup/viewRuleGroup.js';
+import ViewRuleGroupRuleResultInfo  from './viewRuleGroup/viewRuleGroupRuleResultInfo.js';
 
 import ViewRuleResult        from './viewRuleResult/viewRuleResult.js';
 import ViewRuleResultInfo    from './viewRuleResult/viewRuleResultInfo.js';
@@ -16,7 +17,6 @@ import ViewRuleResultInfo    from './viewRuleResult/viewRuleResultInfo.js';
 import RuleResultSummary     from './viewComponents/ruleResultSummary.js';
 import RuleGroupSummary      from './viewComponents/ruleGroupSummary.js';
 import ResultGrid            from './viewComponents/resultGrid.js';
-import ResultRuleInfo        from './viewComponents/resultRuleInfo.js';
 import SummaryInfo           from './viewComponents/summaryInfo.js';
 
 
@@ -32,7 +32,7 @@ customElements.define('rule-result-summary', RuleResultSummary);
 customElements.define('rule-group-summary',  RuleGroupSummary);
 customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
-customElements.define('result-rule-info',    ResultRuleInfo);
+customElements.define('rule-group-rule-result-info',    ViewRuleGroupRuleResultInfo);
 customElements.define('summary-info',        SummaryInfo);
 
 customElements.define('copy-button',         CopyButton);

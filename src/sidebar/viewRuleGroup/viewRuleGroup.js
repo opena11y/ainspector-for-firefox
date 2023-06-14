@@ -91,14 +91,14 @@ export default class ViewRuleGroup {
     h2.textContent = msg.ruleSelectedLabel;
     ruleInfoHeaderDiv.appendChild(h2);
 
-    this.resultRuleInfo = document.createElement('result-rule-info');
+    this.ruleResultInfo = document.createElement('rule-group-rule-result-info');
 
     this.copyButton = document.createElement('copy-button');
-    this.copyButton.setGetTextFunct(this.resultRuleInfo.getText.bind(this.resultRuleInfo));
+    this.copyButton.setGetTextFunct(this.ruleResultInfo.getText.bind(this.ruleResultInfo));
     this.copyButton.title = msg.copyRuleInfoDesc;
     ruleInfoHeaderDiv.appendChild(this.copyButton);
 
-    div.appendChild(this.resultRuleInfo);
+    div.appendChild(this.ruleResultInfo);
 
     this.groupTitle = 'Rule Group';
     this.ruleResults = [];
@@ -242,12 +242,12 @@ export default class ViewRuleGroup {
         if (id) {
           const detailsActions = this.detailsActions[id];
           if (detailsActions) {
-            this.resultRuleInfo.update(detailsActions);
+            this.ruleResultInfo.update(detailsActions);
           } else {
-            this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+            this.ruleResultInfo.update(this.ruleResultGrid.getFirstDataRowId());
           }
         } else {
-          this.resultRuleInfo.update(this.ruleResultGrid.getFirstDataRowId());
+          this.ruleResultInfo.update(this.ruleResultGrid.getFirstDataRowId());
         }
       } else {
         if (infoRuleResults.ruleResults.length === 0) {
@@ -256,7 +256,7 @@ export default class ViewRuleGroup {
           label = msg.noViolationsWarningsMCResultsMsg;
         }
         this.ruleResultGrid.addMessageRow(label);
-        this.resultRuleInfo.clear(label);
+        this.ruleResultInfo.clear(label);
       }
 
       this.ruleResultGrid.focus();
@@ -271,12 +271,12 @@ export default class ViewRuleGroup {
     this.ruleResultGrid.disable();
     this.ruleSummary.clear();
     this.ruleResultGrid.deleteDataRows(message1, message2);
-    this.resultRuleInfo.clear(message1, message2);
+    this.ruleResultInfo.clear(message1, message2);
   }
 
   handleRowSelection (id) {
     if (id) {
-      this.resultRuleInfo.update(this.detailsActions[id]);
+      this.ruleResultInfo.update(this.detailsActions[id]);
     }
   }
 
