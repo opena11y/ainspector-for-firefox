@@ -459,6 +459,12 @@
     "description": "Definition section label for rule information"
   },
 
+  "ruleRuleDefinitionLabel": {
+    "message": "Rule Definition",
+    "description": "Rule definition label "
+  },
+
+
   "ruleActionLabel": {
     "message": "Action",
     "description": "Action section label for rule information"

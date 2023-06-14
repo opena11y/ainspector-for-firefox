@@ -5,7 +5,6 @@ import { getOptions } from '../../storage.js';
 import {
   guidelineIds,
   ruleCategoryIds,
-  scopeIds,
   getGuidelineLabelId,
   getRuleCategoryLabelId,
   getScopeLabelId
@@ -193,19 +192,6 @@ export default class ViewsMenuButton extends HTMLElement {
         this.addMenuitem(glGroupDiv, 'gl' + glId, msg[msgId]);
       }
     }
-
-    if (options.viewsMenuIncludeRuleScope) {
-      const scGroupDiv = this.addGroup(this.menuDiv, msg.ruleScopeLabel);
-
-      for (let i = 0; i < scopeIds.length; i += 1 ) {
-        const scId = scopeIds[i];
-        // cannot have periods in the msgId, so converted to underscore character
-        msgId = getScopeLabelId(scId);
-        this.addMenuitem(scGroupDiv, 'sc' + scId, msg[msgId]);
-      }
-
-    }
-
   }
 
   setFocusToMenuitem(newMenuitem) {

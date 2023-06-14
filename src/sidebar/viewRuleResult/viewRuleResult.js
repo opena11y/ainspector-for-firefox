@@ -44,6 +44,8 @@ export default class ViewRuleResult {
     this.containerDiv.appendChild(h2);
 
     this.elementResultGrid = document.createElement('result-grid');
+    console.log(`[A]: ${this.elementResultGrid}`);
+
     this.elementResultGrid.addClassNameToTable('rule');
     this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
     this.containerDiv.appendChild(this.elementResultGrid);
@@ -70,12 +72,12 @@ export default class ViewRuleResult {
     h2.textContent = msg.elementSelectedLabel;
     elemInfoHeaderDiv.appendChild(h2);
 
-    this.resultElementInfo = document.createElement('result-element-info');
-    this.containerDiv.appendChild(this.resultElementInfo);
+    this.ruleResultInfo = document.createElement('rule-result-info');
+    this.containerDiv.appendChild(this.ruleResultInfo);
 
     // Add copy element result details button
     this.elemCopyButton = document.createElement('copy-button');
-    this.elemCopyButton.setGetTextFunct(this.resultElementInfo.getText.bind(this.resultElementInfo));
+    this.elemCopyButton.setGetTextFunct(this.ruleResultInfo.getText.bind(this.ruleResultInfo));
     this.elemCopyButton.title = msg.copyElemInfoDesc;
     elemInfoHeaderDiv.appendChild(this.elemCopyButton);
 
@@ -135,7 +137,7 @@ export default class ViewRuleResult {
     return accName;
   }
 
-  update (infoElementResults) {
+  update (infoRuleResult) {
     let i, id, pos, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
@@ -143,15 +145,17 @@ export default class ViewRuleResult {
 
     this.elementResults = {};
 
-    this.elementSummary.violations   = infoElementResults.violations;
-    this.elementSummary.warnings     = infoElementResults.warnings;
-    this.elementSummary.manualChecks = infoElementResults.manual_checks;
-    this.elementSummary.passed       = infoElementResults.passed;
-    this.elementSummary.hidden       = infoElementResults.hidden;
+    this.elementSummary.violations   = infoRuleResult.violations;
+    this.elementSummary.warnings     = infoRuleResult.warnings;
+    this.elementSummary.manualChecks = infoRuleResult.manual_checks;
+    this.elementSummary.passed       = infoRuleResult.passed;
+    this.elementSummary.hidden       = infoRuleResult.hidden;
 
-    this.json = infoElementResults.json;
+    this.ruleResult = infoRuleResult.ruleResult;
 
-    this.detailsAction = infoElementResults.detailsAction;
+    this.json = infoRuleResult.json;
+
+    this.detailsAction = infoRuleResult.detailsAction;
 
     this.elementResultGrid.updateHeaderCell(msg.elementLabel, 'element-info');
 
@@ -159,7 +163,7 @@ export default class ViewRuleResult {
 
     getOptions().then( (options) => {
 
-      const or = infoElementResults.otherResult;
+      const or = infoRuleResult.otherResult;
 
       // Check for Page or Website result
       if (or && 
@@ -194,8 +198,8 @@ export default class ViewRuleResult {
 
       }
 
-      for (i = 0; i < infoElementResults.elementResults.length; i += 1) {
-        er = infoElementResults.elementResults[i];
+      for (i = 0; i < infoRuleResult.elementResults.length; i += 1) {
+        er = infoRuleResult.elementResults[i];
 
         // check to exclude pass and not applicable rules
         if (options.resultsIncludePassNa ||
@@ -269,15 +273,15 @@ export default class ViewRuleResult {
       if (count > 0) {
         this.elementResultGrid.sortGridByColumn(2, 3, 0, 'descending');
         id = this.elementResultGrid.setSelectedRowUsingLastId();
-        this.resultElementInfo.update(this.elementResults[id]);
+        this.ruleResultInfo.update(this.elementResults[id], this.ruleResult);
       } else {
-        if (infoElementResults.elementResults.length === 0) {
+        if (infoRuleResult.elementResults.length === 0) {
           label = msg.noResultsMsg;
         } else {
           label = msg.noViolationsWarningsMCResultsMsg;
         }
         this.elementResultGrid.deleteDataRows(label);
-        this.resultElementInfo.clear(label);
+        this.ruleResultInfo.clear(label);
       }
       this.elementResultGrid.setSelectedRowUsingLastId();
       this.elementResultGrid.focus();
@@ -287,12 +291,12 @@ export default class ViewRuleResult {
   clear (message1, message2) {
     this.elementResultGrid.disable();
     this.elementResultGrid.deleteDataRows(message1, message2);
-    this.resultElementInfo.clear(message1, message2);
+    this.ruleResultInfo.clear(message1, message2);
   }
 
   onRowSelectionCallback (id) {
     if (id) {
-      this.resultElementInfo.update(this.elementResults[id]);
+      this.ruleResultInfo.update(this.elementResults[id], this.ruleResult);
       const position = parseInt(id.substring(3));
       // if page or website result, send -1 instead of position
       if (isNaN(position)) {

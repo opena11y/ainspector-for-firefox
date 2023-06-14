@@ -6,10 +6,8 @@ import {
   RULE_SCOPE,
   getGuidelineLabelId,
   getRuleCategoryLabelId,
-  getScopeLabelId,
   guidelineIds,
   ruleCategoryIds,
-  scopeIds
 } from '../constants.js';
 
 
@@ -55,7 +53,6 @@ const msg = {
   widgetsScriptsLabel  : getMessage('widgetsScriptsLabel'),
   ruleCategoriesLabel  : getMessage('ruleCategoriesLabel'),
   ruleCategoryLabel    : getMessage('ruleCategoryLabel'),
-  scopeLabel           : getMessage('scopeLabel'),
   summaryLabel         : getMessage('summaryLabel'),
   viewsMenuButtonLabel : getMessage('viewsMenuButtonLabel'),
   violationsAbbrev     : getMessage('violationsAbbrev'),
@@ -81,20 +78,20 @@ export default class ViewAllRules {
     this.ruleSummary = document.createElement('rule-group-summary');
     this.containerDiv.appendChild(this.ruleSummary);
 
-    this.resultTablist = document.createElement('result-tablist');
-    this.containerDiv.appendChild(this.resultTablist);
+    this.allRulesTablist = document.createElement('all-rules-tablist');
+    this.containerDiv.appendChild(this.allRulesTablist);
 
     // Rule Category tabpanel
     // create grid for rule category results
     this.rcResultGrid = document.createElement('result-grid');
     this.rcResultGrid.addClassNameToTable('summary');
-    this.resultTablist.tabpanel1.appendChild(this.rcResultGrid);
+    this.allRulesTablist.tabpanel1.appendChild(this.rcResultGrid);
     this.rcResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     // create a middle section DIV for rule category
     const rcMiddleSectionDiv = document.createElement('div');
     rcMiddleSectionDiv.className = 'middle-section';
-    this.resultTablist.tabpanel1.appendChild(rcMiddleSectionDiv);
+    this.allRulesTablist.tabpanel1.appendChild(rcMiddleSectionDiv);
 
     // create the rule category rule details buttons
     this.rcDetailsButton = this.createDetailsButton('rc-details');
@@ -105,40 +102,21 @@ export default class ViewAllRules {
     // create grid for guideline results
     this.glResultGrid = document.createElement('result-grid');
     this.glResultGrid.addClassNameToTable('summary');
-    this.resultTablist.tabpanel2.appendChild(this.glResultGrid);
+    this.allRulesTablist.tabpanel2.appendChild(this.glResultGrid);
     this.glResultGrid.setRowActivationEventHandler(handleRowActivation);
 
     // create a middle section DIV for guidelines
     const glMiddleSectionDiv = document.createElement('div');
     glMiddleSectionDiv.className = 'middle-section';
-    this.resultTablist.tabpanel2.appendChild(glMiddleSectionDiv);
+    this.allRulesTablist.tabpanel2.appendChild(glMiddleSectionDiv);
 
     // create the guideline rule details buttons
     this.glDetailsButton = this.createDetailsButton('gl-details');
     this.glResultGrid.setDetailsButton(this.glDetailsButton);
     glMiddleSectionDiv.appendChild(this.glDetailsButton);
 
-    // Scope tabpanel
-    // create grid for scope results
-    this.scResultGrid = document.createElement('result-grid');
-    this.scResultGrid.addClassNameToTable('summary');
-    this.resultTablist.tabpanel3.appendChild(this.scResultGrid);
-    this.scResultGrid.setRowActivationEventHandler(handleRowActivation);
-
-    // create a middle section DIV for scope
-    const scMiddleSectionDiv = document.createElement('div');
-    scMiddleSectionDiv.className = 'middle-section';
-    this.resultTablist.tabpanel3.appendChild(scMiddleSectionDiv);
-
-    // create the scope details button
-    this.scDetailsButton = this.createDetailsButton('sc-details');
-    scMiddleSectionDiv.appendChild(this.scDetailsButton)
-    this.scResultGrid.setDetailsButton(this.scDetailsButton);
-    scMiddleSectionDiv.appendChild(this.scDetailsButton);
-
     this.rcResults    = [];
     this.glResults    = [];
-    this.scResults = [];
 
     this.allRuleResults = [];
 
@@ -148,7 +126,7 @@ export default class ViewAllRules {
   }
 
   toCSV (options, title, location) {
-    let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.scResults, this.allRuleResults);
+    let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
     return viewCSV.getCSV(options, title, location);
   }
 
@@ -159,13 +137,11 @@ export default class ViewAllRules {
   set disabled (value) {
       this.glResultGrid.disabled = value;
       this.rcResultGrid.disabled = value;
-      this.scResultGrid.disabled = value;
   }
 
   get disabled () {
     return this.glResultGrid.disabled &&
-           this.rcResultGrid.disabled &&
-           this.scResultGrid.disabled;
+           this.rcResultGrid.disabled;
   }
 
   createDetailsButton (id) {
@@ -186,11 +162,7 @@ export default class ViewAllRules {
       if (tgt.id.indexOf('gl') >= 0) {
         rowId = this.glResultGrid.getSelectedRowId();
       } else {
-        if (tgt.id.indexOf('rc') >= 0) {
-          rowId = this.rcResultGrid.getSelectedRowId();
-        } else {
-          rowId = this.scResultGrid.getSelectedRowId();
-        }
+        rowId = this.rcResultGrid.getSelectedRowId();
       }
       if (this.handleRowActivation && rowId) {
         this.handleRowActivation(rowId);
@@ -201,7 +173,7 @@ export default class ViewAllRules {
   initGrids () {
     let id, label, row;
 
-    this.resultTablist.tabLabel1 = msg.ruleCategoriesLabel;
+    this.allRulesTablist.tabLabel1 = msg.ruleCategoriesLabel;
 
     this.rcResultGrid.addHeaderCell(msg.ruleCategoryLabel, 'group text');
     this.rcResultGrid.addHeaderCell(msg.violationsAbbrev,    'summ num', msg.violationsLabel);
@@ -222,7 +194,7 @@ export default class ViewAllRules {
       this.rcResultGrid.addDataCell(row, '', '-', 'summ num');
     }
 
-    this.resultTablist.tabLabel2 = msg.guidelinesLabel;
+    this.allRulesTablist.tabLabel2 = msg.guidelinesLabel;
     this.glResultGrid.addHeaderCell(msg.guidelineLabel,     'group text');
     this.glResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
     this.glResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
@@ -240,28 +212,6 @@ export default class ViewAllRules {
       this.glResultGrid.addDataCell(row, '', '-', 'summ num');
       this.glResultGrid.addDataCell(row, '', '-', 'summ num');
       this.glResultGrid.addDataCell(row, '', '-', 'summ num');
-    }
-
-    // Scope view
-
-    this.resultTablist.tabLabel3 = msg.scopeLabel;
-    this.scResultGrid.addHeaderCell(msg.scopeLabel,     'group text');
-    this.scResultGrid.addHeaderCell(msg.violationsAbbrev,   'summ num', msg.violationsLabel);
-    this.scResultGrid.addHeaderCell(msg.warningsAbbrev,     'summ num', msg.warningsLabel);
-    this.scResultGrid.addHeaderCell(msg.manualChecksAbbrev, 'summ num', msg.manualChecksLabel);
-    this.scResultGrid.addHeaderCell(msg.passedAbbrev,       'summ num', msg.passedLabel);
-
-    for (let i = 0; i < scopeIds.length; i += 1 ) {
-      id = scopeIds[i];
-      label = msg[getScopeLabelId(id)];
-      // The row ID identifies the row as a guideline rule group and
-      // includes which guideline using its numerical constant
-      row = this.scResultGrid.addRow('sc' + id);
-      this.scResultGrid.addDataCell(row, label, '', 'text');
-      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
-      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
-      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
-      this.scResultGrid.addDataCell(row, '', '-', 'summ num');
     }
 
   }
@@ -338,25 +288,6 @@ export default class ViewAllRules {
 
     // Update Scope
 
-    this.scResults = infoAllRules.scResults;
-
-    for (let i = 0; i < this.scResults.length; i += 1) {
-      const scResult = this.scResults[i];
-      this.updateRow('sc' + scResult.id, this.scResultGrid, scResult);
-    }
-    this.updateRow('sc' + RULE_SCOPE.ALL, this.scResultGrid, infoAllRules);
-    this.scResultGrid.setSelectedRowUsingLastId();
-
-    if (this.resultTablist.selectedTabId === 'tabpanel-1') {
-      this.rcResultGrid.focus();
-    } else {
-      if (this.resultTablist.selectedTabId === 'tabpanel-2') {
-        this.glResultGrid.focus();
-      } else {
-        this.scResultGrid.focus();
-      }
-    }
-
   }
 
   clear () {
@@ -371,11 +302,5 @@ export default class ViewAllRules {
     guidelineIds.forEach( (id) => {
       this.glResultGrid.clearRow('gl' + id);
     });
-
-    this.scResultGrid.disable();
-    scopeIds.forEach( (id) => {
-      this.scResultGrid.clearRow('sc' + id);
-    });
-
   }
 }

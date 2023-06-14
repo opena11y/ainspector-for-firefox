@@ -1,4 +1,4 @@
-/* resultElementInfojs */
+/* viewRuleResultInfo.js */
 
 import { getResultStyle }     from '../utils.js';
 
@@ -20,21 +20,22 @@ const msg = {
   elementResultType            : getMessage('elementResultType'),
   elementResultValueHeader     : getMessage('elementResultValueHeader'),
   elementResultVisibility      : getMessage('elementResultVisibility'),
-  ruleActionLabel              : getMessage('ruleActionLabel')
+  ruleActionLabel              : getMessage('ruleActionLabel'),
+  ruleDefinitionLabel          : getMessage('ruleRuleDefinitionLabel')
 };
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <section class="result-element-info" aria-label="Selected Element">
+    <section class="rule-result-info" aria-label="Selected Result">
       <div id="messages">
         <div id="message1" class="message"></div>
         <div id="message2" class="message"></div>
       </div>
       <div id="info" class="hide">
 
-        <div id="result-type">
-          <h3  id="result-type-label" class="first">Result Type</h3>
-          <div id="result-type-value"></div>
+        <div>
+          <h3  id="rule-definition-label" class="first">Definition</h3>
+          <div id="rule-definition-content"></div>
         </div>
 
         <div id="message-info">
@@ -105,11 +106,17 @@ template.innerHTML = `
           <tbody id="attrs-content">
           </tbody>
         </table>
+
+        <div>
+          <h3  id="result-type-label">Result Type</h3>
+          <div id="result-type-value"></div>
+        </div>
+
       </div>
     </section>
 `;
 
-export default class ResultElementInfo extends HTMLElement {
+export default class ViewRuleResultInfo extends HTMLElement {
   constructor () {
     super();
     this.attachShadow({ mode: 'open' });
@@ -117,7 +124,7 @@ export default class ResultElementInfo extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/resultElementInfo.css');
+    link.setAttribute('href', './css/ruleResultInfo.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template
@@ -127,7 +134,7 @@ export default class ResultElementInfo extends HTMLElement {
     this.setHeading('#action-label', msg.ruleActionLabel);
 
     // Create content references
-    this.resultElemInfoSect = this.shadowRoot.querySelector('.result-element-info');
+    this.ruleResultInfoSect = this.shadowRoot.querySelector('.rule-result-info');
 
     this.messagesDiv = this.shadowRoot.querySelector('#messages');
     this.message1Div = this.shadowRoot.querySelector('#message1');
@@ -135,7 +142,8 @@ export default class ResultElementInfo extends HTMLElement {
 
     this.infoDiv = this.shadowRoot.querySelector('#info');
 
-    this.resultTypeDiv = this.shadowRoot.querySelector('#result-type-value');
+    this.ruleDefinitionDiv = this.shadowRoot.querySelector('#rule-definition-content');
+    this.resultTypeDiv     = this.shadowRoot.querySelector('#result-type-value');
 
     this.messageH3   = this.shadowRoot.querySelector('#message-label');
     this.actionH3    = this.shadowRoot.querySelector('#action-label');
@@ -180,11 +188,14 @@ export default class ResultElementInfo extends HTMLElement {
 
     // Update accessible name for the region
 
-    this.resultElemInfoSect.setAttribute('aria-label', msg.elementSelectedLabel);
+    this.ruleResultInfoSect.setAttribute('aria-label', msg.elementSelectedLabel);
 
   }
 
   initLabels () {
+
+    const ruleDefinitionLabel = this.shadowRoot.querySelector('#rule-definition-label');
+    ruleDefinitionLabel.textContent = msg.ruleDefinitionLabel;
 
     const resultTypeLabel = this.shadowRoot.querySelector('#result-type-label');
     resultTypeLabel.textContent = msg.elementResultType;
@@ -225,7 +236,7 @@ export default class ResultElementInfo extends HTMLElement {
   }
 
   focus () {
-    this.resultElemInfoSect.focus();
+    this.ruleResultInfoSect.focus();
   }
 
   setHeading (headingId, message) {
@@ -337,7 +348,7 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  updateMessageOrAction(elementInfo) {
+  updateMessageOrAction(elementInfo, ruleResult) {
     if (elementInfo.isActionMessage) {
       this.actionH3.classList.remove('hide');
       this.messageH3.classList.add('hide');
@@ -346,6 +357,7 @@ export default class ResultElementInfo extends HTMLElement {
       this.messageH3.classList.remove('hide');
       this.actionH3.classList.add('hide');
     }
+    this.renderContent(this.ruleDefinitionDiv,   ruleResult.definition);
     this.renderContent(this.resultTypeDiv,       elementInfo.resultType);
     this.renderContent(this.messageValueSpan,    elementInfo.actionMessage);
     this.renderContent(this.messageResultSpan,   elementInfo.resultLong);
@@ -453,12 +465,12 @@ export default class ResultElementInfo extends HTMLElement {
     }
   }
 
-  update(elementInfo) {
+  update(elementInfo, ruleResult) {
     this.messagesDiv.classList.add('hide');
     this.infoDiv.classList.remove('hide');
 
     // Update action Information
-    this.updateMessageOrAction(elementInfo);
+    this.updateMessageOrAction(elementInfo, ruleResult);
 
     // Clear other info section and hide it
     this.clearContent(this.otherInfoTbody);
@@ -510,8 +522,8 @@ export default class ResultElementInfo extends HTMLElement {
   updateCopyText (elementInfo) {
     this.copyText = '';
 
-    this.copyText += msg.elementResultType  + '\n';
-    this.copyText += elementInfo.resultType + '\n\n';
+    this.copyText += msg.ruleDefinitionLabel  + '\n';
+    this.copyText += elementInfo.ruleDefinition + '\n\n';
 
     this.copyText += elementInfo.isActionMessage ? msg.elementResultAction + '\n' : msg.elementResultMessage + '\n';
     this.copyText += elementInfo.actionMessage + '\n\n';
@@ -569,6 +581,10 @@ export default class ResultElementInfo extends HTMLElement {
         this.copyText += htmlAttrText;
         this.copyText += ariaAttrText;
       }
+
+    this.copyText += msg.elementResultType  + '\n';
+    this.copyText += elementInfo.resultType + '\n\n';
+
     }
 
   }

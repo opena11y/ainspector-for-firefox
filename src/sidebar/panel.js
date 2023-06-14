@@ -5,16 +5,18 @@ import { getExportFileName } from './commonCSV.js';
 
 // Classes for manipulating views
 import ViewAllRules          from './viewAllRules/viewAllRules.js';
+import ViewAllRulesTablist   from './viewAllRules/viewAllRulesTablist.js';
+
 import ViewRuleGroup         from './viewRuleGroup/viewRuleGroup.js';
+
 import ViewRuleResult        from './viewRuleResult/viewRuleResult.js';
+import ViewRuleResultInfo    from './viewRuleResult/viewRuleResultInfo.js';
 
 // Custom elements for views
 import RuleResultSummary     from './viewComponents/ruleResultSummary.js';
 import RuleGroupSummary      from './viewComponents/ruleGroupSummary.js';
-import ResultElementInfo     from './viewComponents/resultElementInfo.js';
 import ResultGrid            from './viewComponents/resultGrid.js';
 import ResultRuleInfo        from './viewComponents/resultRuleInfo.js';
-import ResultTablist         from './viewComponents/resultTablist.js';
 import SummaryInfo           from './viewComponents/summaryInfo.js';
 
 
@@ -25,12 +27,12 @@ import HighlightSelect       from './panelComponents/highlightSelect.js';
 import RerunEvaluationButton from './panelComponents/rerunEvaluationButton.js';
 import ViewsMenuButton       from './panelComponents/viewsMenuButton.js';
 
+customElements.define('all-rules-tablist',   ViewAllRulesTablist);
 customElements.define('rule-result-summary', RuleResultSummary);
 customElements.define('rule-group-summary',  RuleGroupSummary);
-customElements.define('result-element-info', ResultElementInfo);
+customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
 customElements.define('result-rule-info',    ResultRuleInfo);
-customElements.define('result-tablist',      ResultTablist);
 customElements.define('summary-info',        SummaryInfo);
 
 customElements.define('copy-button',         CopyButton);

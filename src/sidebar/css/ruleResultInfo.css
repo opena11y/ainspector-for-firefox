@@ -1,4 +1,4 @@
-/* resultRuleInfo.css */
+/* ruleResultInfo.css */
 
 .hide {
   display: none;
@@ -8,7 +8,7 @@
   font-style: italic;
 }
 
-.result-element-info {
+.rule-result-info {
   margin: 0;
   border: 1px solid #aaa;
   padding: 2px;
@@ -22,7 +22,7 @@
   user-select: text;
 }
 
-.result-element-info h3 {
+.rule-result-info h3 {
   margin: 0;
   padding: 0;
   margin-top: 1em;
@@ -30,44 +30,44 @@
   font-weight: bold;
 }
 
-.result-element-info h3.first {
+.rule-result-info h3.first {
   margin-top: 0;
 }
 
-.result-element-info ul {
+.rule-result-info ul {
   margin: 0;
   padding: 0;
 }
 
-.result-element-info li {
+.rule-result-info li {
   margin:  0;
   padding: 0;
   margin-left:  1em;
   line-spacing: 1.25em;
 }
 
-.result-element-info .source {
+.rule-result-info .source {
   margin-bottom:  0.25em;
 }
 
-.result-element-info .source span:first-child {
+.rule-result-info .source span:first-child {
   font-style: italic;
 }
 
 
-.result-element-info table.ccr-info,
-.result-element-info table.visibility-info {
+.rule-result-info table.ccr-info,
+.rule-result-info table.visibility-info {
   margin: 0;
   border-collapse: collapse;
   width: 100%;
 }
 
-.result-element-info table.ccr-info tr:nth-child(odd) {
+.rule-result-info table.ccr-info tr:nth-child(odd) {
   background-color: #ddd;
 }
 
-.result-element-info table.ccr-info th,
-.result-element-info table.visibility-info th {
+.rule-result-info table.ccr-info th,
+.rule-result-info table.visibility-info th {
   font-weight: normal;
   padding-right: 4px;
   text-align: left;
@@ -77,27 +77,27 @@
   white-space: nowrap;
 }
 
-.result-element-info tableccr-info td,
-.result-element-info table.visibility-info td {
+.rule-result-info tableccr-info td,
+.rule-result-info table.visibility-info td {
   font-weight:  normal;
   text-align: left;
 }
 
-.result-element-info table.attrs-info {
+.rule-result-info table.attrs-info {
   margin-top: 1em;
   border-collapse: collapse;
   width: 100%;
 }
 
-.result-element-info table.attrs-info tbody tr:nth-child(odd) {
+.rule-result-info table.attrs-info tbody tr:nth-child(odd) {
   background: #eee;
 }
 
-.result-element-info table.attrs-info thead th {
+.rule-result-info table.attrs-info thead th {
   text-align: left;
 }
 
-.result-element-info table.attrs-info tbody th {
+.rule-result-info table.attrs-info tbody th {
   padding-right: 0.25em;
   font-weight:  normal;
   text-align: left;
@@ -107,7 +107,7 @@
   white-space: nowrap;
 }
 
-.result-element-info table.attrs-info tbody td.value {
+.rule-result-info table.attrs-info tbody td.value {
   font-weight:  normal;
   text-align: left;
 }

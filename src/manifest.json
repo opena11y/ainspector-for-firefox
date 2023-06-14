@@ -29,8 +29,8 @@
   },
 
   "sidebar_action": {
-    "default_icon" : "icons/ainspector-icon.png",
-    "default_title" : "__MSG_extensionName__",
+    "default_icon":  "icons/ainspector-icon.png",
+    "default_title": "__MSG_extensionName__",
     "default_panel": "sidebar/panel.html"
   },
 
