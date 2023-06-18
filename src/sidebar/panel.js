@@ -32,7 +32,7 @@ customElements.define('rule-result-summary', RuleResultSummary);
 customElements.define('rule-group-summary',  RuleGroupSummary);
 customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
-customElements.define('rule-group-rule-result-info',    ViewRuleGroupRuleResultInfo);
+customElements.define('rule-group-rule-result-info', ViewRuleGroupRuleResultInfo);
 customElements.define('summary-info',        SummaryInfo);
 
 customElements.define('copy-button',         CopyButton);
@@ -637,7 +637,9 @@ function runContentScripts (callerfn) {
       contentCode += `  view: "${sidebarView}",`;
       contentCode += `  groupType: "${sidebarGroupType}",`;
       contentCode += `  ruleId: "${sidebarRuleId}",`;
-      contentCode += `  rulesetId: "${options.rulesetId}",`;
+      contentCode += `  ruleset: "${options.ruleset}",`;
+      contentCode += `  scopeFilter: "${options.scopeFilter}",`;
+      contentCode += `  firstStepRules: ["${options.firstStepRules.join('","')}"],`;
       contentCode += `  highlight: "${options.highlight}",`;
       // note the following properties are number and boolean values
       contentCode += `  groupId: ${sidebarGroupId},`;

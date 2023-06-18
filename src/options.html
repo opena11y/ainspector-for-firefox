@@ -39,6 +39,51 @@
         </label>
       </fieldset>
 
+      <fieldset>
+        <legend id="options-ruleset-legend">Ruleset Options</legend>
+
+        <label>
+          <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
+          <span id="options-ruleset-filter-label">First step rules</span>
+        </label>
+
+        <label>
+          <input type="radio" name="ruleset" value="A" id="options-ruleset-wcag-a"/>
+          <span id="options-ruleset-wcag-a-label">WCAG Level A Rules</span>
+        </label>
+
+        <label>
+          <input type="radio" name="ruleset" value="AA" checked id="options-ruleset-wcag-aa"/>
+          <span id="options-ruleset-wcag-aa-label">WCAG Level A and AA Rules (default)</span>
+        </label>
+
+        <label>
+          <input type="radio" name="ruleset" value="AAA" id="options-ruleset-wcag-aaa"/>
+          <span id="options-ruleset-wcag-aaa-label">Include SC 1.4.6 Contrast (Enhanced) Rule (Level AAA) </span>
+        </label>
+
+      </fieldset>
+
+      <fieldset>
+          <legend id="options-scope-legend">Rule Scope Filter</legend>
+
+        <label>
+          <input type="radio" name="scope" value="ALL" checked id="options-scope-all"/>
+          <span id="options-scope-all-label">All rule results (default)</span>
+        </label>
+
+        <label>
+          <input type="radio" name="scope" value="PAGE" id="options-scope-page"/>
+          <span id="options-scope-page-label">Page only rule results</span>
+        </label>
+
+
+        <label>
+          <input type="radio" name="scope" value="WEBSITE" id="options-scope-website"/>
+          <span id="options-scope-website-label">Website only rule results</span>
+        </label>
+      </fieldset>
+
 
       <h2 id="options-export-heading">Export Options</h2>
 

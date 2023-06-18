@@ -52,6 +52,15 @@ const promptForDelay = document.querySelector('input[id="options-prompt-for-dela
 // const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
+const rulesetRadioFilter = document.querySelector('#options-ruleset-filter');
+const rulesetRadioWCAG_A    = document.querySelector('#options-ruleset-wcag-a');
+const rulesetRadioWCAG_AA   = document.querySelector('#options-ruleset-wcag-aa');
+const rulesetRadioWCAG_AAA  = document.querySelector('#options-ruleset-wcag-aaa');
+
+const rulesetScopeAll     = document.querySelector('#options-scope-all');
+const rulesetScopePage    = document.querySelector('#options-scope-page');
+const rulesetScopeWebsite = document.querySelector('#options-scope-website');
+
 const exportPrompt     = document.querySelector('#options-export-prompt');
 const exportCSV        = document.querySelector('#options-export-csv');
 const exportJSON       = document.querySelector('#options-export-json');
@@ -143,13 +152,40 @@ function setFormLabels () {
 function saveFormOptions (e) {
   e.preventDefault();
 
+  let ruleset = 'AA';
+
+  if (rulesetRadioFilter.checked) {
+    ruleset = rulesetRadioFilter.value;
+  }
+  if (rulesetRadioWCAG_A.checked) {
+    ruleset = rulesetRadioWCAG_A.value;
+  }
+  if (rulesetRadioWCAG_AAA.checked) {
+    ruleset = rulesetRadioWCAG_AAA.value;
+  }
+
+  let scopeFilter = 'ALL';
+
+  if (rulesetScopeAll.checked) {
+    scopeFilter = rulesetScopeAll.value;
+  }
+
+  if (rulesetScopePage.checked) {
+    scopeFilter = rulesetScopePage.value;
+  }
+
+  if (rulesetScopeWebsite.checked) {
+    scopeFilter = rulesetScopeWebsite.value;
+  }
+
   const options = {
   //  rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
 
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
-
+    ruleset: ruleset,
+    scopeFilter: scopeFilter,
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
     filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
@@ -178,6 +214,15 @@ function updateForm (options) {
 //  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
 //  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
+
+  rulesetRadioFilter.checked = rulesetRadioFilter.value === options.ruleset;
+  rulesetRadioWCAG_A.checked    = rulesetRadioWCAG_A.value === options.ruleset;
+  rulesetRadioWCAG_AA.checked   = rulesetRadioWCAG_AA.value === options.ruleset;
+  rulesetRadioWCAG_AAA.checked  = rulesetRadioWCAG_AAA.value === options.ruleset;
+
+  rulesetScopeAll.checked     = rulesetScopeAll.value === options.scopeFilter;
+  rulesetScopePage.checked    = rulesetScopePage.value === options.scopeFilter;
+  rulesetScopeWebsite.checked = rulesetScopeWebsite.value === options.scopeFilter;
 
   exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
@@ -303,6 +348,15 @@ promptForDelay.addEventListener('change', saveFormOptions);
 // rulesetStrict.addEventListener('change', saveFormOptions);
 // rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
+
+rulesetRadioFilter.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG_A.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG_AA.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG_AAA.addEventListener('change', saveFormOptions);
+
+rulesetScopeAll.addEventListener('change', saveFormOptions);
+rulesetScopePage.addEventListener('change', saveFormOptions);
+rulesetScopeWebsite.addEventListener('change', saveFormOptions);
 
 exportPrompt.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);

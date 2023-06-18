@@ -79,6 +79,10 @@ button[type=reset] {
   margin-top:  2em;
 }
 
+select {
+  display: block;
+}
+
 table.shortcuts  {
   margin: 0;
   padding: 0;

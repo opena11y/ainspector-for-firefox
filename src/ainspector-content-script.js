@@ -19437,7 +19437,7 @@
 
   /* Constants */
   const debug$q = new DebugLogging('domCache', false);
-  debug$q.flag = true;
+  debug$q.flag = false;
   debug$q.showDomTexts = false;
   debug$q.showDomElems = false;
   debug$q.showTree = false;
@@ -19633,29 +19633,9 @@
 
                 for (let i = 0; i < assignedNodes.length; i += 1) {
                   const assignedNode = assignedNodes[i];
-                  if (assignedNode.nodeType === Node.TEXT_NODE) {
-                    debug$q.log(`[assignedNode][TEXT][${i} of ${assignedNodes.length}]: ${assignedNode.tagName}`);
-  /*                  domItem = new DOMText(parentDomElement, node);
-                    // Check to see if text node has any renderable content
-                    if (domItem.hasContent) {
-                      // Merge text nodes in to a single DomText node if sibling text nodes
-                      if (parentDomElement) {
-                        parentDomElement.hasContent = true;
-                        // if last child node of parent is a DomText node merge text content
-                        if (parentDomElement.isLastChildDomText) {
-                          parentDomElement.addTextToLastChild(domItem.text);
-                        } else {
-                          parentDomElement.addChild(domItem);
-                          this.allDomTexts.push(domItem);
-                        }
-                      }
-                    }
-  */
-                  }
+                  if (assignedNode.nodeType === Node.TEXT_NODE) ;
 
                   if (assignedNode.nodeType === Node.ELEMENT_NODE) {
-                    debug$q.log(`[assignedNode][ELEMENT][${i} of ${assignedNodes.length}]: ${assignedNode.tagName}`);
-
                     domItem = new DOMElement(parentInfo, assignedNode, this.ordinalPosition);
 
                     this.ordinalPosition += 1;
@@ -20085,7 +20065,7 @@
     },
 
     /**
-     * @object COLOR_1
+     * @object COLOR_2
      *
      * @desc  Use of color
      */
@@ -24574,6 +24554,30 @@
       debug$d.flag && this.toJSON();
     }
 
+    get isLevelA () {
+      return this.wcag_level === 'A';
+    }
+
+    get isLevelAA () {
+      return this.wcag_level === 'AA';
+    }
+
+    get isLevelAAA () {
+      return this.wcag_level === 'AAA';
+    }
+
+    get isScopeElement () {
+      return this.rule_scope_id === RULE_SCOPE.ELEMENT;
+    }
+
+    get isScopePage () {
+      return this.rule_scope_id === RULE_SCOPE.PAGE;
+    }
+
+    get isScopeWebsite () {
+      return this.rule_scope_id === RULE_SCOPE.WEBSITE;
+    }
+
     /**
      * @method getId
      *
@@ -26753,7 +26757,8 @@
   debug$3.flag = false;
 
   class EvaluationResult {
-    constructor (allRules, domCache, title, url) {
+    constructor (allRules, domCache, title, url,  ruleset="AA", scopeFilter="ALL", ruleFilter=[]) {
+
       this.title = title;
       this.url = url;
       this.date = getFormattedDate();
@@ -26762,13 +26767,24 @@
       this.allRuleResults = [];
 
       const startTime = new Date();
-      debug$3.flag && debug$3.log(`[title]: ${this.title}`);
+      debug$3.flag && debug$3.log(`[ruleset]: ${this.ruleset}`);
+      debug$3.flag && debug$3.log(`[scopeFilter]: ${this.scopeFilter}`);
 
       allRules.forEach (rule => {
-        const ruleResult = new RuleResult(rule);
-        debug$3.flag && debug$3.log(`[validate]: ${ruleResult.rule.getId()}`);
-        ruleResult.validate(domCache);
-        this.allRuleResults.push(ruleResult);
+        if (((ruleset === 'A')  && (rule.isLevelA)) ||
+            ((ruleset === 'AA') && (rule.isLevelA || rule.isLevelAA)) ||
+             (ruleset === 'AAA') ||
+            ((ruleset === 'FILTER') && ruleFilter.includes(rule.getId()))) {
+
+          if ((scopeFilter === 'ALL') ||
+              ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
+              ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
+            const ruleResult = new RuleResult(rule);
+            debug$3.flag && debug$3.log(`[validate]: ${ruleResult.rule.getId()}`);
+            ruleResult.validate(domCache);
+            this.allRuleResults.push(ruleResult);
+          }
+        }
       });
 
       const json = this.toJSON(true);
@@ -26997,7 +27013,7 @@
 
   /* Constants */
   const debug$2   = new DebugLogging('EvaluationLibrary', false);
-  debug$2.flag = true;
+  debug$2.flag = false;
   debug$2.json = false;
 
   /**
@@ -27024,11 +27040,18 @@
      * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
      * @param  {String}  title       - Title of document being analyzed
      * @param  {String}  url         - url of document being analyzed
+     * @param  {String}  ruleset     - Set of rules to evaluate (values: "FIRST-STEP" | "A" | "AA" | "AAA")
+     * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
      */
 
-    evaluate (startingDoc, title='', url='') {
+    evaluate (startingDoc, title='', url='', ruleset='AA', scopeFilter='ALL', ruleFilter = []) {
+
+      debug$2.log(`[    ruleset]: ${ruleset}`);
+      debug$2.log(`[scopeFilter]: ${scopeFilter}`);
+      debug$2.log(`[ ruleFilter]: ${ruleFilter}`);
+
       let domCache = new DOMCache(startingDoc);
-      let evaluationResult = new EvaluationResult(allRules, domCache, title, url);
+      let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, scopeFilter, ruleFilter);
 
       // Debug features
       if (debug$2.flag) {
@@ -27072,12 +27095,16 @@
 
   /* evaluate.js */
 
-  function evaluate () {
+  function evaluate (ruleset="AA", scopeFilter="ALL", ruleFilter=[]) {
+
+    console.log(`[eveluate][    ruleset]: ${ruleset}`);
+    console.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
+    console.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
 
     // evaluation script
     let doc = window.document;
     let evaluationLibrary = new EvaluationLibrary();
-    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href);
+    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href, ruleset, scopeFilter, ruleFilter);
     return evaluationResult;
   }
 
@@ -27277,13 +27304,17 @@
   /*
   *   getAllRulesInfo
   *   (1) Run evlauation library;
-  *   (2) return result objec for the summary view in the sidebar;
+  *   (2) return result object for the all rules view in the sidebar;
   */
-  function getAllRulesInfo () {
+  function getAllRulesInfo (ruleset, scopeFilter, firstStepRules) {
+
+    console.log(`[getAllRulesInfo][    ruleset]: ${ruleset}`);
+    console.log(`[getAllRulesInfo][scopeFilter]: ${scopeFilter}`);
+    console.log(`[getAllRulesInfo][ ruleFilter]: ${firstStepRules}`);
 
     const info = {};
 
-    const evaluationResult  = evaluate();
+    const evaluationResult  = evaluate(ruleset, scopeFilter, firstStepRules);
     const ruleGroupResult   = evaluationResult.getRuleResultsAll();
     const ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
     const ruleResults       = ruleGroupResult.getRuleResultsArray();
@@ -28029,7 +28060,7 @@
 
 
   const debug = new DebugLogging('Content', false);
-  debug.flag = false;
+  debug.flag = true;
 
   /*
   **  Connect to panel.js script and set up listener/handler
@@ -28062,7 +28093,9 @@
       debug.log(`[getEvaluationInfo][      groupType]: ${aiInfo.groupType}`);
       debug.log(`[getEvaluationInfo][        groupId]: ${aiInfo.groupId}`);
       debug.log(`[getEvaluationInfo][         ruleId]: ${aiInfo.ruleId}`);
-      debug.log(`[getEvaluationInfo][      rulesetId]: ${aiInfo.rulesetId}`);
+      debug.log(`[getEvaluationInfo][        ruleset]: ${aiInfo.ruleset}`);
+      debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
+      debug.log(`[getEvaluationInfo][ firstStepRules]: ${aiInfo.firstStepRules} (${aiInfo.firstStepRules.length})` );
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
       debug.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
       debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
@@ -28080,7 +28113,7 @@
     switch(aiInfo.view) {
       case viewId.allRules:
         clearHighlights();
-        info.infoAllRules = getAllRulesInfo();
+        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
         ruleResult = false;
         break;
 
