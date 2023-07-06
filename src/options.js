@@ -78,7 +78,7 @@ const shortcutCopyTextbox       = document.querySelector('#shortcut-copy');
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
 function setFormLabels () {
-  const optionsTitle            = document.querySelector('#options-title');
+  const optionsTitle            = document.querySelector('#tab-general-options');
   const optionsViewsMenuLegend  = document.querySelector('#options-views-menu-legend');
   const optionsInclWcagGlLabel  = document.querySelector('#options-incl-wcag-gl-label');
 
@@ -89,7 +89,7 @@ function setFormLabels () {
   const optionsRuleResultsLegend     = document.querySelector('#options-rule-results-legend');
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
-  const optionsExportHeading         = document.querySelector('#options-export-heading');
+  const optionsExportHeading         = document.querySelector('#tab-export-options');
   const optionsExportPromptLabel     = document.querySelector('#options-export-prompt-label');
   const optionsExportButtonLegend    = document.querySelector('#options-export-button-legend');
   const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
@@ -99,7 +99,7 @@ function setFormLabels () {
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
   const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
-  const shortcutsHeading       = document.querySelector('#shortcuts-heading');
+  const shortcutsHeading       = document.querySelector('#tab-shortcut-keys');
   const shortcutsEnabledLabel  = document.querySelector('#shortcuts-enabled-label');
   const shortcutsTableShortcut = document.querySelector('#shortcut-table-shortcut');
   const shortcutsTableAction   = document.querySelector('#shortcut-table-action');

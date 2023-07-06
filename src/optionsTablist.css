@@ -1,0 +1,31 @@
+/* optionsTablist.css */
+
+div.tab {
+  mnargin: 0;
+  padding: 6px;
+  display: inline-block;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+div.tab:hover {
+  padding-bottom: 4px;
+  border-bottom: 2px solid #888;
+}
+
+
+div[aria-selected].tab {
+  padding-bottom: 4px;
+  border-bottom: 2px solid #222;
+  font-weight: bold;
+}
+
+div.tabpanel {
+  min-height: 36em;
+}
+
+div.tabpanel.hide {
+  display:  none;
+}
+
+

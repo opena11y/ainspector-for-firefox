@@ -4904,13 +4904,61 @@
         'aria-invalid'
       ],
       supportedProps: [
+        'aria-orientation'
+      ],
+      hasRange: false,
+      requiredProps: [],
+      nameRequired: false,
+      nameFromContent: false,
+      nameProhibited: false,
+      childrenPresentational: true,
+      requiredParents: [],
+      requiredChildren: [],
+      roleType: 'structure',
+      isAbstract: false
+    },
+    separatorFocusable: {
+      inheritedProps: [
+        'aria-atomic',
+        'aria-busy',
+        'aria-controls',
+        'aria-current',
+        'aria-describedby',
+        'aria-details',
+        'aria-dropeffect',
+        'aria-errormessage',
+        'aria-flowto',
+        'aria-grabbed',
+        'aria-haspopup',
+        'aria-hidden',
+        'aria-invalid',
+        'aria-keyshortcuts',
+        'aria-label',
+        'aria-labelledby',
+        'aria-live',
+        'aria-owns',
+        'aria-relevant',
+        'aria-roledescription',
+        'aria-valuenow',
         'aria-disabled',
         'aria-orientation',
         'aria-valuemax',
         'aria-valuemin',
         'aria-valuetext'
       ],
-      hasRange: false,
+      deprecatedProps: [
+        'aria-errormessage',
+        'aria-haspopup',
+        'aria-invalid'
+      ],
+      supportedProps: [
+        'aria-disabled',
+        'aria-orientation',
+        'aria-valuemax',
+        'aria-valuemin',
+        'aria-valuetext'
+      ],
+      hasRange: true,
       requiredProps: [
         'aria-valuenow'
       ],
@@ -4920,7 +4968,7 @@
       childrenPresentational: true,
       requiredParents: [],
       requiredChildren: [],
-      roleType: 'structure widget',
+      roleType: 'widget range',
       isAbstract: false
     },
     slider: {
@@ -6020,6 +6068,7 @@
 
   /* Constants */
   const debug$I = new DebugLogging('AriaInfo', false);
+  debug$I.flag = true;
 
   /* Debug helper functions */
 
@@ -6080,8 +6129,15 @@
       const level = parseInt(node.getAttribute('aria-level'));
 
       let designPattern = designPatterns[role];
-      this.isValidRole  = typeof designPattern === 'object';
 
+      // Separator role is a special case of a role that can be interactive
+      if (role === 'separator' &&
+          node.hasAttribute('tabindex') &&
+          node.tabIndex >= 0) {
+        designPattern = designPatterns['separatorFocusable'];
+      }
+
+      this.isValidRole  = typeof designPattern === 'object';
       this.isAbstractRole = false;
 
 
@@ -6091,6 +6147,15 @@
       } else {
         this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;     
       }
+
+      if (!designPattern) {
+        designPattern = designPatterns['generic'];
+      }
+
+
+      debug$I.log(`\n[     tagName]: ${tagName}`);
+      debug$I.log(`[        role]: ${role} (${defaultRole})`);
+      debug$I.log(`[designPattern]: ${typeof designPattern}`);
 
       this.isNameRequired     = designPattern.nameRequired;
       this.isNameProhibited   = designPattern.nameProhibited;
@@ -6111,9 +6176,7 @@
       this.ownedDomElements   = [];
       this.ownedByDomElements = [];
 
-      const isFocusableSeparator =  (role === 'separator') && (node.tabIndex >= 0);
-
-      this.isRange    = (designPattern.roleType.indexOf('range') >= 0) || isFocusableSeparator;
+      this.isRange    = (designPattern.roleType.indexOf('range') >= 0);
       this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
                         (designPattern.roleType.indexOf('window') >= 0);
 
@@ -6123,8 +6186,8 @@
       this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;     
 
       // for range widgets
-      if (this.isRange || isFocusableSeparator) {
-        this.isValueNowRequired =  isFocusableSeparator || designPattern.requiredProps.includes('aria-valuenow');
+      if (this.isRange) {
+        this.isValueNowRequired = designPattern.requiredProps.includes('aria-valuenow');
 
         this.hasValueNow = node.hasAttribute('aria-valuenow');
         if (this.hasValueNow) {
@@ -6855,7 +6918,7 @@
   /* generated file, see https://github.com/opena11y/aria-in-html-to-code */
   const ariaInHTMLInfo = {
     title: 'ARIA in HTML',
-    status: 'W3C Recommendation 15 February 2023',
+    status: 'W3C Recommendation 05 July 2023',
     reference: 'https://www.w3.org/TR/html-aria/',
     elementInfo: {
       'a[href]': {
@@ -6888,7 +6951,7 @@
       },
       abbr: {
         tagName: 'abbr',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'abbr'
@@ -6916,7 +6979,6 @@
         allowedRoles: [
           'button',
           'link',
-          'generic',
           'generic'
         ],
         id: 'area'
@@ -6956,7 +7018,7 @@
       },
       audio: {
         tagName: 'audio',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -6973,7 +7035,7 @@
       },
       base: {
         tagName: 'base',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'base'
@@ -7008,7 +7070,7 @@
       },
       br: {
         tagName: 'br',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7025,21 +7087,24 @@
         allowedRoles: [
           'checkbox',
           'combobox',
+          'gridcell',
           'link',
           'menuitem',
           'menuitemcheckbox',
           'menuitemradio',
           'option',
           'radio',
+          'slider',
           'switch',
           'tab',
+          'treeitem',
           'button'
         ],
         id: 'button'
       },
       canvas: {
         tagName: 'canvas',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'canvas'
@@ -7053,7 +7118,7 @@
       },
       cite: {
         tagName: 'cite',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'cite'
@@ -7067,14 +7132,14 @@
       },
       col: {
         tagName: 'col',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'col'
       },
       colgroup: {
         tagName: 'colgroup',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'colgroup'
@@ -7095,7 +7160,7 @@
       },
       dd: {
         tagName: 'dd',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'dd'
@@ -7141,7 +7206,7 @@
       },
       dl: {
         tagName: 'dl',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7154,7 +7219,7 @@
       },
       dt: {
         tagName: 'dt',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7171,7 +7236,7 @@
       },
       embed: {
         tagName: 'embed',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7198,7 +7263,7 @@
       },
       figcaption: {
         tagName: 'figcaption',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7243,8 +7308,7 @@
           'navigation',
           'region',
           'role=contentinfo',
-          'role=generic',
-          'generic'
+          'role=generic'
         ],
         isLandmark: true,
         id: 'footer[contentinfo]'
@@ -7269,8 +7333,7 @@
           'navigation',
           'region',
           'role=contentinfo',
-          'role=generic',
-          'generic'
+          'role=generic'
         ],
         id: 'footer'
       },
@@ -7367,7 +7430,7 @@
       },
       head: {
         tagName: 'head',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'head'
@@ -7392,8 +7455,7 @@
           'navigation',
           'region',
           'role=contentinfo',
-          'role=generic',
-          'generic'
+          'role=generic'
         ],
         isLandmark: true,
         id: 'header[banner]'
@@ -7418,8 +7480,7 @@
           'navigation',
           'region',
           'role=contentinfo',
-          'role=generic',
-          'generic'
+          'role=generic'
         ],
         id: 'header'
       },
@@ -7458,7 +7519,7 @@
       },
       iframe: {
         tagName: 'iframe',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7545,14 +7606,17 @@
         allowedRoles: [
           'checkbox',
           'combobox',
+          'gridcell',
           'link',
           'menuitem',
           'menuitemcheckbox',
           'menuitemradio',
           'option',
           'radio',
+          'slider',
           'switch',
           'tab',
+          'treeitem',
           'button'
         ],
         attr1: 'type=button',
@@ -7575,7 +7639,7 @@
       },
       'input[type=color]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=color',
@@ -7583,7 +7647,7 @@
       },
       'input[type=date]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=date',
@@ -7591,7 +7655,7 @@
       },
       'input[type=datetime-local]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=datetime-local',
@@ -7616,7 +7680,7 @@
       },
       'input[type=file]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=file',
@@ -7624,7 +7688,7 @@
       },
       'input[type=hidden]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=hidden',
@@ -7636,20 +7700,26 @@
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
+          'button',
+          'checkbox',
+          'gridcell',
           'link',
           'menuitem',
           'menuitemcheckbox',
           'menuitemradio',
+          'option',
           'radio',
+          'slider',
           'switch',
-          'button'
+          'tab',
+          'treeitem'
         ],
         attr1: 'type=image',
         id: 'input[type=image]'
       },
       'input[type=month]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=month',
@@ -7665,7 +7735,7 @@
       },
       'input[type=password]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=password',
@@ -7694,8 +7764,9 @@
       'input[type=reset]': {
         tagName: 'input',
         defaultRole: 'button',
-        noRoleAllowed: true,
+        noRoleAllowed: false,
         anyRoleAllowed: false,
+        allowedRoles: [],
         attr1: 'type=reset',
         id: 'input[type=reset]'
       },
@@ -7719,8 +7790,9 @@
       'input[type=submit]': {
         tagName: 'input',
         defaultRole: 'button',
-        noRoleAllowed: true,
+        noRoleAllowed: false,
         anyRoleAllowed: false,
+        allowedRoles: [],
         attr1: 'type=submit',
         id: 'input[type=submit]'
       },
@@ -7766,7 +7838,7 @@
       },
       'input[type=time]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=time',
@@ -7791,7 +7863,7 @@
       },
       'input[type=week]': {
         tagName: 'input',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         attr1: 'type=week',
@@ -7806,48 +7878,45 @@
       },
       kbd: {
         tagName: 'kbd',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'kbd'
       },
       label: {
         tagName: 'label',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'label'
       },
       legend: {
         tagName: 'legend',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'legend'
       },
-      li: {
+      'li[listitem]': {
         tagName: 'li',
         defaultRole: 'listitem',
-        noRoleAllowed: false,
+        noRoleAllowed: true,
         anyRoleAllowed: false,
-        allowedRoles: [
-          'menuitem',
-          'menuitemcheckbox',
-          'menuitemradio',
-          'option',
-          'none',
-          'presentation',
-          'radio',
-          'separator',
-          'tab',
-          'treeitem',
-          'listitem'
-        ],
+        ownedbyOL: true,
+        ownedbyUL: true,
+        ownedbyMenu: true,
+        id: 'li[listitem]'
+      },
+      li: {
+        tagName: 'li',
+        defaultRole: 'generic',
+        noRoleAllowed: false,
+        anyRoleAllowed: true,
         id: 'li'
       },
       link: {
         tagName: 'link',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'link'
@@ -7861,14 +7930,14 @@
       },
       map: {
         tagName: 'map',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'map'
       },
       mark: {
         tagName: 'mark',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'mark'
@@ -7902,7 +7971,7 @@
       },
       meta: {
         tagName: 'meta',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'meta'
@@ -7931,14 +8000,14 @@
       },
       noscript: {
         tagName: 'noscript',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'noscript'
       },
       object: {
         tagName: 'object',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -7998,14 +8067,14 @@
       },
       param: {
         tagName: 'param',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'param'
       },
       picture: {
         tagName: 'picture',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'picture'
@@ -8033,28 +8102,28 @@
       },
       rp: {
         tagName: 'rp',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'rp'
       },
       rt: {
         tagName: 'rt',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'rt'
       },
       ruby: {
         tagName: 'ruby',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'ruby'
       },
       s: {
         tagName: 's',
-        defaultRole: 'generic',
+        defaultRole: 'deletion',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 's'
@@ -8068,10 +8137,25 @@
       },
       script: {
         tagName: 'script',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'script'
+      },
+      search: {
+        tagName: 'search',
+        defaultRole: 'search',
+        noRoleAllowed: false,
+        anyRoleAllowed: false,
+        allowedRoles: [
+          'form',
+          'group',
+          'none',
+          'presentation',
+          'region',
+          'search'
+        ],
+        id: 'search'
       },
       'section[accname]': {
         tagName: 'section',
@@ -8099,8 +8183,8 @@
           'search',
           'status',
           'tabpanel',
-          'section',
-          'role=region'
+          'role=region',
+          'role=generic'
         ],
         hasAccname: true,
         id: 'section[accname]'
@@ -8131,8 +8215,8 @@
           'search',
           'status',
           'tabpanel',
-          'section',
-          'role=region'
+          'role=region',
+          'role=generic'
         ],
         id: 'section'
       },
@@ -8157,7 +8241,7 @@
       },
       slot: {
         tagName: 'slot',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'slot'
@@ -8171,7 +8255,7 @@
       },
       source: {
         tagName: 'source',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'source'
@@ -8192,7 +8276,7 @@
       },
       style: {
         tagName: 'style',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'style'
@@ -8208,7 +8292,7 @@
         tagName: 'summary',
         defaultRole: 'summary',
         noRoleAllowed: true,
-        anyRoleAllowed: false,
+        anyRoleAllowed: true,
         id: 'summary'
       },
       sup: {
@@ -8241,7 +8325,7 @@
       },
       template: {
         tagName: 'template',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'template'
@@ -8276,7 +8360,7 @@
       },
       title: {
         tagName: 'title',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'title'
@@ -8358,7 +8442,7 @@
       },
       track: {
         tagName: 'track',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: true,
         anyRoleAllowed: false,
         id: 'track'
@@ -8392,14 +8476,14 @@
       },
       var: {
         tagName: 'var',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: true,
         id: 'var'
       },
       video: {
         tagName: 'video',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -8409,7 +8493,7 @@
       },
       wbr: {
         tagName: 'wbr',
-        defaultRole: 'generic',
+        defaultRole: '',
         noRoleAllowed: false,
         anyRoleAllowed: false,
         allowedRoles: [
@@ -8453,7 +8537,7 @@
   * @desc Uses the ARIA in HTML specification to identify a default role and provide
   *       role restriction information
   *
-  * @param  {Object}  node        - Element node from a berowser DOM
+  * @param  {Object}  node        - Element node from a browser DOM
   */
 
   function getAriaInHTMLInfo (node) {
@@ -8562,6 +8646,15 @@
 
         break;
 
+      case 'li':
+        if (isListitemInList(node)) {
+          elemInfo = elementInfo[`${tagName}[listitem]`];
+        } else {
+          elemInfo = elementInfo[`${tagName}`];
+        }
+        break;
+
+
       case 'section':
         if (node.hasAttribute('aria-label') ||
           node.hasAttribute('aria-labelledby')||
@@ -8650,7 +8743,7 @@
   *       elements with default landmark roles or is the descendant
   *       of an element with a defined landmark role
   *
-  * @param  {Object}  node        - Element node from a berowser DOM
+  * @param  {Object}  node        - Element node from a browser DOM
   */
 
   function isTopLevel (node) {
@@ -8668,12 +8761,35 @@
     return true;
   }
 
+
+  /**
+  * @function isListiemInList
+  *
+  * @desc Returns true if the listitem is a descendant of OL, UL or MENU element
+  *
+  * @param  {Object}  node - Element node from a browser DOM
+  *
+  * @return {Boolean} see @desc
+  */
+
+  function isListitemInList  (node) {
+    node = node && node.parentNode;
+    while (node && (node.nodeType === Node.ELEMENT_NODE)) {
+      const tagName = getString(node.tagName);
+      if (['menu', 'ol', 'ul'].includes(tagName)) {
+        return true;
+      }
+      node = node.parentNode;
+    }
+    return false;
+  }
+
   /**
   * @function isCellInGrid
   *
   * @desc Tests the table cell is part of a grid widget
   *
-  * @param  {Object}  node - Element node from a berowser DOM
+  * @param  {Object}  node - Element node from a browser DOM
   */
 
   function isCellInGrid  (node) {
@@ -8697,7 +8813,7 @@
   * @desc Tests the table cell is part of a table that
   *       has been identified as being used for layout
   *
-  * @param  {Object}  node - Element node from a berowser DOM
+  * @param  {Object}  node - Element node from a browser DOM
   */
 
   function isCellInLayoutTable  (node) {
@@ -24284,9 +24400,9 @@
                             "superscript"],
     validate            : function (dom_cache, rule_result) {
       dom_cache.allDomElements.forEach( de => {
-        if (!de.ariaInfo.isNameRequired &&
-             de.accName.name &&
-             de.accName.source.includes('aria-label')) {
+        if (de.ariaInfo.isNameProhibited &&
+            de.accName.name &&
+            de.accName.source.includes('aria-label')) {
           if (de.visibility.isVisibleToAT) {
             rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
           }

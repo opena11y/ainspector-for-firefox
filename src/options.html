@@ -4,224 +4,258 @@
   <head>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="options.css"/>
+    <link rel="stylesheet" href="optionsTablist.css"/>
   </head>
 
   <body>
     <form>
+      <h2>AInpsector Preferences</h2>
 
-      <h2 id="options-title">General Options</h2>
-
-      <fieldset>
-        <legend id="options-rule-results-legend">Rule Results</legend>
-        <label>
-          <input type="checkbox" checked id="options-incl-pass-na"/>
-          <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend id="options-rerun-evaluation-legend">'Rerun Evaluation' Button</legend>
-        <label>
-          <input type="radio" name="delay" id="options-no-delay" checked/>
-          <span id="options-no-delay-label">Rerun with no delay</span>
-        </label>
-        <label>
-          <input type="radio" name="delay" id="options-prompt-for-delay"/>
-          <span id="options-prompt-for-delay-label">Prompt for delay setting</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend id="options-views-menu-legend">'Views' menu</legend>
-        <label>
-          <input type="Checkbox" checked id="options-incl-wcag-gl"/>
-          <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend id="options-ruleset-legend">Ruleset Options</legend>
-
-        <label>
-          <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
-          <span id="options-ruleset-filter-label">First step rules</span>
-        </label>
-
-        <label>
-          <input type="radio" name="ruleset" value="A" id="options-ruleset-wcag-a"/>
-          <span id="options-ruleset-wcag-a-label">WCAG Level A Rules</span>
-        </label>
-
-        <label>
-          <input type="radio" name="ruleset" value="AA" checked id="options-ruleset-wcag-aa"/>
-          <span id="options-ruleset-wcag-aa-label">WCAG Level A and AA Rules (default)</span>
-        </label>
-
-        <label>
-          <input type="radio" name="ruleset" value="AAA" id="options-ruleset-wcag-aaa"/>
-          <span id="options-ruleset-wcag-aaa-label">Include SC 1.4.6 Contrast (Enhanced) Rule (Level AAA) </span>
-        </label>
-
-      </fieldset>
-
-      <fieldset>
-          <legend id="options-scope-legend">Rule Scope Filter</legend>
-
-        <label>
-          <input type="radio" name="scope" value="ALL" checked id="options-scope-all"/>
-          <span id="options-scope-all-label">All rule results (default)</span>
-        </label>
-
-        <label>
-          <input type="radio" name="scope" value="PAGE" id="options-scope-page"/>
-          <span id="options-scope-page-label">Page only rule results</span>
-        </label>
-
-
-        <label>
-          <input type="radio" name="scope" value="WEBSITE" id="options-scope-website"/>
-          <span id="options-scope-website-label">Website only rule results</span>
-        </label>
-      </fieldset>
-
-
-      <h2 id="options-export-heading">Export Options</h2>
-
-      <fieldset>
-        <legend id="options-export-button-legend">'Export Data' Button</legend>
-        <label>
-          <input type="checkbox" checked id="options-export-prompt"/>
-          <span id="options-export-prompt-label">Prompt for export options</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend id="options-export-format-legend">Export Format</legend>
-        <label>
-          <input type="radio" name="export-format" id="options-export-csv" checked/>
-          <span id="options-export-csv-label">CSV</span>
-        </label>
-        <label>
-          <input type="radio" name="export-format" id="options-export-json"/>
-          <span id="options-export-json-label">JSON</span>
-        </label>
-      </fieldset>
-
-      <fieldset>
-        <legend id="options-filename-legend">Filename Options</legend>
-
-        <label id="options-export-prefix-label"
-          for="options-export-prefix">
-          Export File Prefix (up to 16 characters)
-        </label>
-        <div class="input">
-          <input id="options-export-prefix" type="text" size="20" aria-describedby="options-export-prefix-desc options-export-prefix-note"/>
-          <span class="feedback prefix">
-            <img src="icons/error-icon-15.png" alt=""/>
-            <span id="options-export-prefix-desc" aria-live="assertive"></span>
-          </span>
+      <div class="tablist" role="tablist">
+        <div class="tab"
+             role="tab"
+             id="tab-general-options"
+             aria-controls="tabpanel-general-options">
+          General Options
         </div>
-        <div class="desc" id="options-export-prefix-note">
-          Note: Prefix cannot contain spaces or <code>&lt;&gt;:"/\|?*[]</code> characters.
+        <div class="tab"
+             role="tab"
+             id="tab-export-options"
+             aria-controls="tabpanel-export-options">
+          Export Options
+        </div>
+        <div class="tab"
+             role="tab"
+             id="tab-shortcut-keys"
+             aria-controls="tabpanel-shortcut-keys">
+          Shortcut Keys
+        </div>
+      </div>
+
+      <div class="tabpanel"
+           role="tabpanel"
+           id="tabpanel-general-options"
+           aria-labelledby="tab-general-options">
+        <fieldset>
+          <legend id="options-rule-results-legend">Rule Results</legend>
+          <label>
+            <input type="checkbox" checked id="options-incl-pass-na"/>
+            <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-rerun-evaluation-legend">'Rerun Evaluation' Button</legend>
+          <label>
+            <input type="radio" name="delay" id="options-no-delay" checked/>
+            <span id="options-no-delay-label">Rerun with no delay</span>
+          </label>
+          <label>
+            <input type="radio" name="delay" id="options-prompt-for-delay"/>
+            <span id="options-prompt-for-delay-label">Prompt for delay setting</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-views-menu-legend">'Views' menu</legend>
+          <label>
+            <input type="Checkbox" checked id="options-incl-wcag-gl"/>
+            <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-ruleset-legend">Ruleset Options</legend>
+
+          <label>
+            <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
+            <span id="options-ruleset-filter-label">First step rules</span>
+          </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="A" id="options-ruleset-wcag-a"/>
+            <span id="options-ruleset-wcag-a-label">WCAG Level A Rules</span>
+          </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="AA" checked id="options-ruleset-wcag-aa"/>
+            <span id="options-ruleset-wcag-aa-label">WCAG Level A and AA Rules (default)</span>
+          </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="AAA" id="options-ruleset-wcag-aaa"/>
+            <span id="options-ruleset-wcag-aaa-label">Include SC 1.4.6 Contrast (Enhanced) Rule (Level AAA) </span>
+          </label>
+
+        </fieldset>
+
+        <fieldset>
+            <legend id="options-scope-legend">Rule Scope Filter</legend>
+
+          <label>
+            <input type="radio" name="scope" value="ALL" checked id="options-scope-all"/>
+            <span id="options-scope-all-label">All rule results (default)</span>
+          </label>
+
+          <label>
+            <input type="radio" name="scope" value="PAGE" id="options-scope-page"/>
+            <span id="options-scope-page-label">Page only rule results</span>
+          </label>
+
+
+          <label>
+            <input type="radio" name="scope" value="WEBSITE" id="options-scope-website"/>
+            <span id="options-scope-website-label">Website only rule results</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <div class="tabpanel"
+           role="tabpanel"
+           id="tabpanel-export-options"
+           aria-labelledby="tab-export-options">
+
+        <fieldset>
+          <legend id="options-export-button-legend">'Export Data' Button</legend>
+          <label>
+            <input type="checkbox" checked id="options-export-prompt"/>
+            <span id="options-export-prompt-label">Prompt for export options</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-export-format-legend">Export Format</legend>
+          <label>
+            <input type="radio" name="export-format" id="options-export-csv" checked/>
+            <span id="options-export-csv-label">CSV</span>
+          </label>
+          <label>
+            <input type="radio" name="export-format" id="options-export-json"/>
+            <span id="options-export-json-label">JSON</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-filename-legend">Filename Options</legend>
+
+          <label id="options-export-prefix-label"
+            for="options-export-prefix">
+            Export File Prefix (up to 16 characters)
+          </label>
+          <div class="input">
+            <input id="options-export-prefix" type="text" size="20" aria-describedby="options-export-prefix-desc options-export-prefix-note"/>
+            <span class="feedback prefix">
+              <img src="icons/error-icon-15.png" alt=""/>
+              <span id="options-export-prefix-desc" aria-live="assertive"></span>
+            </span>
+          </div>
+          <div class="desc" id="options-export-prefix-note">
+            Note: Prefix cannot contain spaces or <code>&lt;&gt;:"/\|?*[]</code> characters.
+          </div>
+
+          <label>
+            <input type="checkbox" checked id="options-export-date"/>
+            <span id="options-export-date-label">Include date and time in default file name (e.g. yyyy-mm-dd-XXh-YYm-ZZs).</span>
+          </label>
+
+        </fieldset>
+      </div>
+
+      <div class="tabpanel"
+           role="tabpanel"
+           id="tabpanel-shortcut-keys"
+           aria-labelledby="tab-shortcut-keys">
+         <div style="margin-top: 1em">
+          <label>
+            <input type="checkbox" checked id="shortcuts-enabled"/>
+            <span id="shortcuts-enabled-label">Enable keyboard shortcuts.</span>
+          </label>
         </div>
 
-        <label>
-          <input type="checkbox" checked id="options-export-date"/>
-          <span id="options-export-date-label">Include date and time in default file name (e.g. yyyy-mm-dd-XXh-YYm-ZZs).</span>
-        </label>
-
-      </fieldset>
-
-      <h2 id="shortcuts-heading">Shortcut Keys</h2>
-
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" checked id="shortcuts-enabled"/>
-          <span id="shortcuts-enabled-label">Enable keyboard shortcuts.</span>
-        </label>
-
-      <table class="shortcuts">
-        <thead>
-          <tr>
-            <th id="shortcut-table-shortcut">Shortcut</th>
-            <th id="shortcut-table-action">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <kbd id="shortcut-back">Backspace/<br/>Delete</kbd>
-            </td>
-            <td>
-              <div id="shortcut-back-label">
-                Activates Back button.
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="shortcut-copy" size="1" aria-describedby="shortcut-copy-desc">
-              <div class="feedback shortcut">
-                <img src="icons/error-icon-15.png" alt=""/>
-                <span id="shortcut-copy-desc" aria-live="assertive"></span>
-              </div>
-            </td>
-            <td>
-              <label id="shortcut-copy-label" for="shortcut-copy">
-                Activates Copy button.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="shortcut-export" size="1" aria-describedby="shortcut-export-desc">
-              <div class="feedback shortcut">
-                <img src="icons/error-icon-15.png" alt=""/>
-                <span id="shortcut-export-desc" aria-live="assertive"></span>
-              </div>
-            </td>
-            <td>
-              <label id="shortcut-export-label" for="shortcut-export">
-                Activates Export button.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="shortcut-rerun" size="1" aria-describedby="shortcut-rerun-desc">
-              <div class="feedback shortcut">
-                <img src="icons/error-icon-15.png" alt=""/>
-                <span id="shortcut-rerun-desc" aria-live="assertive"></span>
-              </div>
-            </td>
-            <td>
-              <label id="shortcut-rerun-label" for="shortcut-rerun">
-                Activates Rerun Evaluation button.
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="text" id="shortcut-views" size="1" aria-describedby="shortcut-views-desc">
-              <div class="feedback shortcut">
-                <img src="icons/error-icon-15.png" alt=""/>
-                <span id="shortcut-views-desc" aria-live="assertive"></span>
-              </div>
-            </td>
-            <td>
-              <label id="shortcut-views-label" for="shortcut-views">
-               Activates View button.
-              </label>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p id="shortcuts-note" class="note">Note: Leaving the shortcut key value empty disables the shortcut.</p>
+        <table class="shortcuts">
+          <thead>
+            <tr>
+              <th id="shortcut-table-shortcut">Shortcut</th>
+              <th id="shortcut-table-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <kbd id="shortcut-back">Backspace/<br/>Delete</kbd>
+              </td>
+              <td>
+                <div id="shortcut-back-label">
+                  Activates Back button.
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" id="shortcut-copy" size="1" aria-describedby="shortcut-copy-desc">
+                <div class="feedback shortcut">
+                  <img src="icons/error-icon-15.png" alt=""/>
+                  <span id="shortcut-copy-desc" aria-live="assertive"></span>
+                </div>
+              </td>
+              <td>
+                <label id="shortcut-copy-label" for="shortcut-copy">
+                  Activates Copy button.
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" id="shortcut-export" size="1" aria-describedby="shortcut-export-desc">
+                <div class="feedback shortcut">
+                  <img src="icons/error-icon-15.png" alt=""/>
+                  <span id="shortcut-export-desc" aria-live="assertive"></span>
+                </div>
+              </td>
+              <td>
+                <label id="shortcut-export-label" for="shortcut-export">
+                  Activates Export button.
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" id="shortcut-rerun" size="1" aria-describedby="shortcut-rerun-desc">
+                <div class="feedback shortcut">
+                  <img src="icons/error-icon-15.png" alt=""/>
+                  <span id="shortcut-rerun-desc" aria-live="assertive"></span>
+                </div>
+              </td>
+              <td>
+                <label id="shortcut-rerun-label" for="shortcut-rerun">
+                  Activates Rerun Evaluation button.
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="text" id="shortcut-views" size="1" aria-describedby="shortcut-views-desc">
+                <div class="feedback shortcut">
+                  <img src="icons/error-icon-15.png" alt=""/>
+                  <span id="shortcut-views-desc" aria-live="assertive"></span>
+                </div>
+              </td>
+              <td>
+                <label id="shortcut-views-label" for="shortcut-views">
+                 Activates View button.
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p id="shortcuts-note" class="note">Note: Leaving the shortcut key value empty disables the shortcut.</p>
+      </div>
 
       <button id="options-reset-defaults" type="reset">Reset Defaults</button>
 
     </form>
 
     <script type="module" src="options.js"></script>
+    <script type="module" src="optionsTablist.js"></script>
   </body>
 </html>
