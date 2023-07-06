@@ -148,7 +148,7 @@
   /* constants.js */
 
   /* Constants */
-  const debug$K = new DebugLogging('constants', false);
+  const debug$N = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta1';
 
@@ -597,13 +597,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$K.flag && debug$K.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$N.flag && debug$N.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$K.flag && debug$K.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$N.flag && debug$N.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -899,7 +899,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$J = new DebugLogging('ControlInfo', false);
+  const debug$M = new DebugLogging('ControlInfo', false);
 
   /**
    * @class ControlElement
@@ -1039,7 +1039,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$J.domElement(ce.domElement, prefix);
+        debug$M.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1260,15 +1260,15 @@
      */
 
     showControlInfo () {
-      if (debug$J.flag) {
-        debug$J.log('== Control Tree ==', 1);
+      if (debug$M.flag) {
+        debug$M.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$J.domElement(ce.domElement);
+          debug$M.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$J.log('== Forms ==', 1);
+        debug$M.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$J.domElement(ce.domElement);
+          debug$M.domElement(ce.domElement);
         });
       }
     }
@@ -6067,8 +6067,8 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$I = new DebugLogging('AriaInfo', false);
-  debug$I.flag = true;
+  const debug$L = new DebugLogging('AriaInfo', false);
+  debug$L.flag = false;
 
   /* Debug helper functions */
 
@@ -6151,11 +6151,6 @@
       if (!designPattern) {
         designPattern = designPatterns['generic'];
       }
-
-
-      debug$I.log(`\n[     tagName]: ${tagName}`);
-      debug$I.log(`[        role]: ${role} (${defaultRole})`);
-      debug$I.log(`[designPattern]: ${typeof designPattern}`);
 
       this.isNameRequired     = designPattern.nameRequired;
       this.isNameProhibited   = designPattern.nameProhibited;
@@ -6296,15 +6291,15 @@
       }
 
 
-      if (debug$I.flag) {
-        node.attributes.length && debug$I.log(`${node.outerHTML}`, 1);
-        debug$I.log(`[         isWidget]: ${this.isWidget}`);
-        debug$I.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$I.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$I.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$I.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$I.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
-        debug$I.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$L.flag) {
+        node.attributes.length && debug$L.log(`${node.outerHTML}`, 1);
+        debug$L.log(`[         isWidget]: ${this.isWidget}`);
+        debug$L.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$L.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$L.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$L.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$L.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$L.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6398,7 +6393,6 @@
               }
             } catch (error) {
               refInfo.invalidIds.push(id);
-              debug$I.log(`[checkForInvalidReferences][error]: ${error}`);
             }
           });
           if (refInfo.invalidIds.length) {
@@ -6509,7 +6503,7 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$H = new DebugLogging('colorContrast', false);
+  const debug$K = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -6564,9 +6558,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$H.flag) {
-        debug$H.separator();
-        debug$H.tag(elementNode);
+      if (debug$K.flag) {
+        debug$K.separator();
+        debug$K.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -6588,11 +6582,11 @@
 
       this.colorContrastRatio = computeCCR(this.colorHex, this.backgroundColorHex);
 
-      if (debug$H.flag) {
-        debug$H.log(`[                    opacity]: ${this.opacity}`);
-        debug$H.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$H.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$H.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$K.flag) {
+        debug$K.log(`[                    opacity]: ${this.opacity}`);
+        debug$K.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$K.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$K.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -6679,10 +6673,10 @@
           (backgroundColor == 'transparent') ||
           (backgroundColor == 'inherit')) {
 
-        debug$H.flag && debug$H.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
+        debug$K.flag && debug$K.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
 
         if (parentColorContrast) {
-          debug$H.flag && debug$H.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
+          debug$K.flag && debug$K.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
           backgroundColor   = parentColorContrast.backgroundColor;
         }
         else {
@@ -6895,7 +6889,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$G = new DebugLogging('EventInfo', false);
+  const debug$J = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -6908,7 +6902,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$G.flag) {
+      if (debug$J.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -8508,7 +8502,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$F = new DebugLogging('ariaInHtml', false);
+  const debug$I = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8709,11 +8703,11 @@
       };
     }
 
-    if (debug$F.flag) {
+    if (debug$I.flag) {
       if (tagName === 'h2') {
-        debug$F.tag(node);
+        debug$I.tag(node);
       }
-      debug$F.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$I.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -8833,7 +8827,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$E = new DebugLogging('visibility', false);
+  const debug$H = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -8881,17 +8875,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$E.flag) {
-        debug$E.separator();
-        debug$E.tag(elementNode);
-        debug$E.log('[          isHidden]: ' + this.isHidden);
-        debug$E.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$E.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$E.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$E.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$E.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$E.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$E.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$H.flag) {
+        debug$H.separator();
+        debug$H.tag(elementNode);
+        debug$H.log('[          isHidden]: ' + this.isHidden);
+        debug$H.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$H.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$H.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$H.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$H.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$H.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$H.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -9204,8 +9198,8 @@
   /*
   *   namefrom.js
   */
-  const debug$D = new DebugLogging('nameFrom', false);
-  debug$D.flag = true;
+  const debug$G = new DebugLogging('nameFrom', false);
+  debug$G.flag = false;
 
   /*
   *   @function getElementContents
@@ -9351,7 +9345,7 @@
           if (name.length) return { name: normalize(name), source: 'label reference' };
         }
       } catch (error) {
-        debug$D.log(`[nameFromLabelElement][error]: ${error}`);
+        debug$G.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -9765,8 +9759,8 @@
   'h6',
   'summary'
   ];
-  const debug$C = new DebugLogging('getAccName', false);
-  debug$C.flag = true;
+  const debug$F = new DebugLogging('getAccName', false);
+  debug$F.flag = false;
 
   /*
   *   @function getAccessibleName
@@ -10073,8 +10067,8 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$B = new DebugLogging('DOMElement', false);
-  debug$B.flag = false;
+  const debug$E = new DebugLogging('DOMElement', false);
+  debug$E.flag = false;
 
   const elementsWithContent = [
     'area',
@@ -10396,12 +10390,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$B.flag) {
+      if (debug$E.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$B.domText(domItem, prefix);
+            debug$E.domText(domItem, prefix);
           } else {
-            debug$B.domElement(domItem, prefix);
+            debug$E.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -10494,7 +10488,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$A = new DebugLogging('domText', false);
+  const debug$D = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -10513,8 +10507,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$A.flag) {
-        debug$A.log(`[text]: ${this.text}`);
+      if (debug$D.flag) {
+        debug$D.log(`[text]: ${this.text}`);
       }
     }
 
@@ -10577,7 +10571,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$z = new DebugLogging('iframeInfo', false);
+  const debug$C = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -10595,9 +10589,9 @@
     }
 
     showInfo () {
-      if (debug$z.flag) {
-        debug$z.log(`[          src]: ${this.src}`);
-        debug$z.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$C.flag) {
+        debug$C.log(`[          src]: ${this.src}`);
+        debug$C.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -10633,8 +10627,8 @@
      */
 
     showIFrameInfo () {
-      if (debug$z.flag) {
-        debug$z.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$C.flag) {
+        debug$C.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
         });
@@ -10645,7 +10639,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$y = new DebugLogging('idInfo', false);
+  const debug$B = new DebugLogging('idInfo', false);
 
   /**
    * @class idInfo
@@ -10688,10 +10682,10 @@
      */
 
     showIdInfo () {
-      if (debug$y.flag) {
-        debug$y.log('== All Links ==', 1);
+      if (debug$B.flag) {
+        debug$B.log('== All Links ==', 1);
         this.idCounts.for( id => {
-          debug$y.log(`[${id}]: ${this.idCounts[id]}`);
+          debug$B.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -10700,7 +10694,7 @@
   /* imageInfo.js */
 
   /* Constants */
-  const debug$x = new DebugLogging('imageInfo', false);
+  const debug$A = new DebugLogging('imageInfo', false);
 
   /**
    * @class ImageElement
@@ -10893,22 +10887,22 @@
      */
 
     showImageInfo () {
-      if (debug$x.flag) {
-        debug$x.log('== All Image elements ==', 1);
+      if (debug$A.flag) {
+        debug$A.log('== All Image elements ==', 1);
         this.allImageElements.forEach( ie => {
-          debug$x.log(`[fileName]: ${ie.fileName}`, true);
-          debug$x.log(`[    role]: ${ie.domElement.role}`);
-          debug$x.log(`[    name]: ${ie.domElement.accName.name}`);
-          debug$x.log(`[  source]: ${ie.domElement.accName.source}`);
-          debug$x.log(`[  length]: ${ie.domElement.accName.name.length}`);
+          debug$A.log(`[fileName]: ${ie.fileName}`, true);
+          debug$A.log(`[    role]: ${ie.domElement.role}`);
+          debug$A.log(`[    name]: ${ie.domElement.accName.name}`);
+          debug$A.log(`[  source]: ${ie.domElement.accName.source}`);
+          debug$A.log(`[  length]: ${ie.domElement.accName.name.length}`);
         });
-        debug$x.log('== All SVG domElements  ==', 1);
+        debug$A.log('== All SVG domElements  ==', 1);
         this.allSVGDomElements.forEach( de => {
-          debug$x.domElement(de);
+          debug$A.domElement(de);
         });
-        debug$x.log('== All MapElements ==', 1);
+        debug$A.log('== All MapElements ==', 1);
         this.allMapElements.forEach( me => {
-          debug$x.domElement(me.domElement);
+          debug$A.domElement(me.domElement);
         });
       }
     }
@@ -10917,7 +10911,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$w = new DebugLogging('linkInfo', false);
+  const debug$z = new DebugLogging('linkInfo', false);
 
   /**
    * @class LinkInfo
@@ -10963,10 +10957,10 @@
      */
 
     showLinkInfo () {
-      if (debug$w.flag) {
-        debug$w.log('== All Links ==', 1);
+      if (debug$z.flag) {
+        debug$z.log('== All Links ==', 1);
         this.allLinkDomElements.forEach( de => {
-          debug$w.domElement(de);
+          debug$z.domElement(de);
         });
       }
     }
@@ -10975,7 +10969,7 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$v = new DebugLogging('ListInfo', false);
+  const debug$y = new DebugLogging('ListInfo', false);
   const allListitemRoles = ['list', 'listitem', 'menu', 'menuitem', 'menuitemcheckbox', 'menuitemradio'];
   const listRoles = ['list', 'menu'];
 
@@ -10996,8 +10990,8 @@
       this.isListRole = this.isList(domElement);
       this.linkCount = 0;  // Used in determining if a list is for navigation
 
-      if (debug$v.flag) {
-        debug$v.log('');
+      if (debug$y.flag) {
+        debug$y.log('');
       }
     }
 
@@ -11022,9 +11016,9 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      debug$v.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
+      debug$y.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
       this.childListElements.forEach( le => {
-        debug$v.domElement(le.domElement, prefix);
+        debug$y.domElement(le.domElement, prefix);
         le.showListInfo(prefix + '  ');
       });
     }
@@ -11132,16 +11126,16 @@
      */
 
     showListInfo () {
-      if (debug$v.flag) {
-        debug$v.log('== All ListElements ==', 1);
-        debug$v.log(`[linkCount]: ${this.linkCount}`);
+      if (debug$y.flag) {
+        debug$y.log('== All ListElements ==', 1);
+        debug$y.log(`[linkCount]: ${this.linkCount}`);
         this.allListElements.forEach( le => {
-          debug$v.domElement(le.domElement);
+          debug$y.domElement(le.domElement);
         });
-        debug$v.log('== List Tree ==', 1);
-        debug$v.log(`[linkCount]: ${this.linkCount}`);
+        debug$y.log('== List Tree ==', 1);
+        debug$y.log(`[linkCount]: ${this.linkCount}`);
         this.childListElements.forEach( le => {
-          debug$v.domElement(le.domElement);
+          debug$y.domElement(le.domElement);
           le.showListInfo('  ');
         });
       }
@@ -11151,8 +11145,8 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$u = new DebugLogging('MediaInfo', false);
-  debug$u.flag = false;
+  const debug$x = new DebugLogging('MediaInfo', false);
+  debug$x.flag = false;
 
   /**
    * @class MediaElement
@@ -11385,25 +11379,25 @@
      */
 
     showListInfo () {
-      if (debug$u.flag) {
-        debug$u.log('== Audio Elements ==', 1);
+      if (debug$x.flag) {
+        debug$x.log('== Audio Elements ==', 1);
         this.audioElements.forEach( ae => {
-          debug$u.log(ae);
+          debug$x.log(ae);
         });
 
-        debug$u.log('== Video Elements ==', 1);
+        debug$x.log('== Video Elements ==', 1);
         this.videoElements.forEach( ve => {
-          debug$u.log(ve);
+          debug$x.log(ve);
         });
 
-        debug$u.log('== Object Elements ==', 1);
+        debug$x.log('== Object Elements ==', 1);
         this.objectElements.forEach( oe => {
-          debug$u.log(oe);
+          debug$x.log(oe);
         });
 
-        debug$u.log('== Embed Elements ==', 1);
+        debug$x.log('== Embed Elements ==', 1);
         this.embedElements.forEach( ee => {
-          debug$u.log(ee);
+          debug$x.log(ee);
         });
 
 
@@ -11414,7 +11408,7 @@
   /* structureInfo.js */
 
   /* Constants */
-  const debug$t = new DebugLogging('structureInfo', false);
+  const debug$w = new DebugLogging('structureInfo', false);
 
   /**
    * @class LandmarkElement
@@ -11453,11 +11447,11 @@
         prefix = '';
       }
       this.childLandmarkElements.forEach( le => {
-        debug$t.domElement(le.domElement, prefix);
+        debug$w.domElement(le.domElement, prefix);
         le.showLandmarkInfo(prefix + '  ');
       });
       this.childHeadingDomElements.forEach( h => {
-        debug$t.domElement(h, prefix);
+        debug$w.domElement(h, prefix);
       });
     }
 
@@ -11581,27 +11575,27 @@
      */
 
     showStructureInfo () {
-      if (debug$t.flag) {
-        debug$t.log('== All Headings ==', 1);
+      if (debug$w.flag) {
+        debug$w.log('== All Headings ==', 1);
         this.allHeadingDomElements.forEach( h => {
-          debug$t.domElement(h);
+          debug$w.domElement(h);
         });
-        debug$t.log('== All Landmarks ==', 1);
+        debug$w.log('== All Landmarks ==', 1);
         this.allLandmarkElements.forEach( le => {
-          debug$t.domElement(le.domElement);
+          debug$w.domElement(le.domElement);
         });
-        debug$t.log('== Landmarks By Doc ==', 1);
+        debug$w.log('== Landmarks By Doc ==', 1);
         this.landmarkElementsByDoc.forEach( (les, index) => {
-          debug$t.log(`Document Index: ${index} (${Array.isArray(les)})`);
+          debug$w.log(`Document Index: ${index} (${Array.isArray(les)})`);
           if (Array.isArray(les)) {
             les.forEach(le => {
-              debug$t.domElement(le.domElement);
+              debug$w.domElement(le.domElement);
             });
           }
         });
-        debug$t.log('== Structure Tree ==', 1);
+        debug$w.log('== Structure Tree ==', 1);
         this.childLandmarkElements.forEach( le => {
-          debug$t.domElement(le.domElement);
+          debug$w.domElement(le.domElement);
           le.showLandmarkInfo('  ');
         });
       }
@@ -13034,8 +13028,8 @@
   const colorRules$1 = {
     COLOR_1: {
         ID:                    'Color 1',
-        DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 3.1 for large and/or bolded text and 4.5 for any other size or style of text.',
-        SUMMARY:               'Text must exceed CCR threshold',
+        DEFINITION:            'Text content must exceed minimum Color Contrast Ratio (CCR) of 3.1 for large and/or bolded text and 4.5 for any other size or style of text.',
+        SUMMARY:               'Text must exceed minimum CCR threshold',
         TARGET_RESOURCES_DESC: 'All elements with text content',
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Change the foreground and background colors of the text element to meet the CCR threshold.',
@@ -13067,12 +13061,12 @@
                           'Verify the range of colors that could be part of the background of text is have a CCR > 4.5.'
         ],
         INFORMATIONAL_LINKS: [{ type:  REFERENCES.SPECIFICATION,
-                           title: 'WCAG 2.0 Success Criterion 1.4.3 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 4.5:1',
-                           url:   'https://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast'
+                           title: 'WCAG Success Criterion 1.4.3 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, with exceptions',
+                           url:   'https://www.w3.org/TR/WCAG/#contrast-minimum'
                          },
                          { type:  REFERENCES.WCAG_TECHNIQUE,
-                           title: 'How to meet Success Criterion 1.4.3 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 4.5:1',
-                           url:   'https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast'
+                           title: 'How to meet Success Criterion 1.4.3 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, with exceptions',
+                           url:   'https://www.w3.org/WAI/WCAG21/quickref/#contrast-minimum'
                          },
                         { type:  REFERENCES.WCAG_TECHNIQUE,
                           title: 'G17: Ensuring that a contrast ratio of at least 7:1 exists between text (and images of text) and background behind the text',
@@ -13122,6 +13116,66 @@
                         { type:  REFERENCES.WCAG_TECHNIQUE,
                           title: 'G14: Ensuring that information conveyed by color differences is also available in text',
                           url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G14'
+                        }
+                        ]
+    },
+    COLOR_3: {
+        ID:                    'Color 3',
+        DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 4.5 for large and/or bolded text and 7.1 for any other size or style of text.',
+        SUMMARY:               'Text must exceed enhanced CCR threshold',
+        TARGET_RESOURCES_DESC: 'All elements with text content',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:   'Change the foreground and background colors of the text element to meet the CCR threshold.',
+          FAIL_P:   'Change the foreground and background colors of the %N_F text elements to meet the CCR threshold.',
+          MANUAL_CHECK_S:     'One element requires manual checking for CCR threshold to the use of a background image.',
+          MANUAL_CHECK_P:     '%N_MC elements require manual checking for CCR thrshold to the use of background images.',
+          HIDDEN_S: 'The element with text content that is hidden was not analyzed for color contrast accessibility.',
+          HIDDEN_P: 'The %N_H elements with text content that are hidden were not analyzed for color contrast accessibility.',
+          NOT_APPLICABLE:  'No visible text content on this page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'CCR of %1 exceeds 7.1.',
+          ELEMENT_PASS_2:   'CCR of %1 exceeds 4.5 for large or bolded text.',
+          ELEMENT_FAIL_1:   'CCR of %1, adjust foreground and background colors to exceed 7.1.',
+          ELEMENT_FAIL_2:   'CCR of %1 for large or bolded text, adjust foreground and background colors to exceed 4.5.',
+          ELEMENT_MC_1:     'CCR of %1 is greater than 7.1, but background image may reduce color contrast.',
+          ELEMENT_MC_2:     'CCR of %1 is less than or equal to 7.1, but background image may improve color contrast.',
+          ELEMENT_MC_3:     'CCR of %1 is greater than 4.5 for large or bolded text, but background image may reduce color contrast.',
+          ELEMENT_MC_4:     'CCR of %1 is less than or equal to 4.5 for large and bolded text, but background image may improve color contrast.',
+          ELEMENT_HIDDEN_1: 'CCR was not tested since the text is hidden from assistive technologies.'
+        },
+        PURPOSES:       [ 'The higher the color contrast of text the more easy it is to read, especially for people with visual impairments.'
+                        ],
+        TECHNIQUES:     [ 'Change the foreground color to a more complementary color to the background color.',
+                          'Change the background color to a more complementary color to the foreground color.',
+                          'Remove background images or verify they do not compromise color contrast requirements.'
+                        ],
+        MANUAL_CHECKS:  [ 'Use graphic editing tools to analyze the color(s) of the background image and then recacluate the CCR with the range of colors in the background image.',
+                          'Verify the range of colors that could be part of the background of text is have a CCR > 7.1.'
+        ],
+        INFORMATIONAL_LINKS: [{ type:  REFERENCES.SPECIFICATION,
+                           title: 'WCAG 2.0 Success Criterion 1.4.6 Contrast (Enhanced): The visual presentation of text and images of text has a contrast ratio of at least 7.1:1, with exceptions',
+                           url:   'https://www.w3.org/TR/WCAG/#contrast-enhanced'
+                         },
+                         { type:  REFERENCES.WCAG_TECHNIQUE,
+                           title: 'How to meet Success Criterion 1.4.6 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 7.1:1, with exceptions',
+                           url:   'https://www.w3.org/WAI/WCAG21/quickref/#contrast-enhanced'
+                         },
+                        { type:  REFERENCES.WCAG_TECHNIQUE,
+                          title: 'G17: Ensuring that a contrast ratio of at least 7:1 exists between text (and images of text) and background behind the text',
+                          url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G17'
+                        },
+                        { type:  REFERENCES.WCAG_TECHNIQUE,
+                          title: 'G18: Ensuring that a contrast ratio of at least 4.5:1 exists between text (and images of text) and background behind the text',
+                          url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G18'
+                        },
+                        { type:  REFERENCES.WCAG_TECHNIQUE,
+                          title: 'G148: Not specifying background color, not specifying text color, and not using technology features that change those default',
+                          url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G148'
+                        },
+                        { type:  REFERENCES.WCAG_TECHNIQUE,
+                          title: 'G174: Providing a control with a sufficient contrast ratio that allows users to switch to a presentation that uses sufficient contrast',
+                          url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G174'
                         }
                         ]
     }
@@ -18466,7 +18520,7 @@
   /* locale.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('locale', false);
+  const debug$v = new DebugLogging('locale', false);
 
   var globalUseCodeTags = false;
 
@@ -18510,7 +18564,7 @@
     if (!message) {
       message = `[common][error]: id="${id}"`;
     }
-    debug$s.flag && debug$s.log(`[${id}][${value}]: ${message}`);
+    debug$v.flag && debug$v.log(`[${id}][${value}]: ${message}`);
     return message;
   }
 
@@ -18579,31 +18633,6 @@
   }
 
   /**
-   * @function getRulesetInfo
-   *
-   * @desc Gets a object with keys into strings with ruleset information,
-   *       keys are:
-   *       'title'
-   *       'url'
-   *       'description'
-   *
-   * @param {Integer} rulesetId - Used to idenitify the ruleset
-   * 
-   * @return {Object}  see @desc
-   */
-
-  function getRulesetInfo (rulesetId) {
-    const rulesets = messages[locale].rulesets;
-    for (let i = 0; i < rulesets.length; i +=1) {
-      let rs = rulesets[i];
-      if (rs.id === rulesetId) {
-        return rs;
-      }
-    }
-    return null;
-  }
-
-  /**
    * @function getGuidelineInfo
    *
    * @desc Gets a object with keys into strings with WCAG Guideline information,
@@ -18622,7 +18651,7 @@
       for (const g in principle.guidelines) {
         const guideline = principle.guidelines[g];
         if (guideline.id === guidelineId) {
-          debug$s.flag && debug$s.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
+          debug$v.flag && debug$v.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
           return {
             num: g,
             title: guideline.title,
@@ -18632,7 +18661,7 @@
         }
       }
     }
-    debug$s.flag && debug$s.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
+    debug$v.flag && debug$v.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
     // Assume all rules
     return {
       title: messages[locale].common.allRules,
@@ -18665,7 +18694,7 @@
         for (const sc in guideline.success_criteria) {
           const success_criterion = guideline.success_criteria[sc];
           if (sc === successCriterionId) {
-            debug$s.flag && debug$s.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
+            debug$v.flag && debug$v.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
             return {
               id: successCriterionId,
               level: success_criterion.level,
@@ -18677,7 +18706,7 @@
         }
       }
     }
-    debug$s.flag && debug$s.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
+    debug$v.flag && debug$v.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
     return null;
   }
 
@@ -18697,7 +18726,7 @@
    */
 
   function getSuccessCriteriaInfo(successCriteriaIds) {
-    debug$s.flag && debug$s.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
+    debug$v.flag && debug$v.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
     const scInfoArray = [];
     successCriteriaIds.forEach( sc => {
       scInfoArray.push(getSuccessCriterionInfo(sc));
@@ -18744,7 +18773,7 @@
    */
 
   function getRuleDefinition (ruleId) {
-    debug$s.flag && debug$s.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
+    debug$v.flag && debug$v.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
     return transformElementMarkup(messages[locale].rules[ruleId].DEFINITION);
   }
 
@@ -18759,7 +18788,7 @@
    */
 
   function getRuleSummary (ruleId) {
-    debug$s.flag && debug$s.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
+    debug$v.flag && debug$v.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
     return transformElementMarkup(messages[locale].rules[ruleId].SUMMARY);
   }
 
@@ -18774,7 +18803,7 @@
    */
 
   function getTargetResourcesDesc (ruleId) {
-    debug$s.flag && debug$s.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
+    debug$v.flag && debug$v.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
     return transformElementMarkup(messages[locale].rules[ruleId].TARGET_RESOURCES_DESC);
   }
 
@@ -18793,7 +18822,7 @@
     messages[locale].rules[ruleId].PURPOSES.forEach ( p => {
       purposes.push(transformElementMarkup(p));
     });
-    debug$s.flag && debug$s.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
+    debug$v.flag && debug$v.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
     return purposes;
   }
 
@@ -18812,7 +18841,7 @@
     messages[locale].rules[ruleId].TECHNIQUES.forEach ( t => {
       techniques.push(transformElementMarkup(t));
     });
-    debug$s.flag && debug$s.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
+    debug$v.flag && debug$v.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
     return techniques;
   }
 
@@ -18840,8 +18869,8 @@
           url: infoLink.url
         }
       );
-      debug$s.flag && debug$s.log(`[infoLink][title]: ${infoLink.title}`);
-      debug$s.flag && debug$s.log(`[infoLink][  url]: ${infoLink.url}`);
+      debug$v.flag && debug$v.log(`[infoLink][title]: ${infoLink.title}`);
+      debug$v.flag && debug$v.log(`[infoLink][  url]: ${infoLink.url}`);
     });
     return infoLinks;
   }
@@ -18861,7 +18890,7 @@
     messages[locale].rules[ruleId].MANUAL_CHECKS.forEach ( mc => {
       manualChecks.push(transformElementMarkup(mc));
     });
-    debug$s.flag && debug$s.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
+    debug$v.flag && debug$v.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
     return manualChecks;
   }
 
@@ -18880,7 +18909,7 @@
     const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$s.flag && debug$s.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$v.flag && debug$v.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -18900,7 +18929,7 @@
     const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$s.flag && debug$s.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$v.flag && debug$v.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -18968,12 +18997,12 @@
   /* tableInfo.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('tableInfo', false);
-  debug$r.flag = false;
-  debug$r.rows = false;
-  debug$r.cells = false;
-  debug$r.tableTree = false;
-  debug$r.headerCalc = false;
+  const debug$u = new DebugLogging('tableInfo', false);
+  debug$u.flag = false;
+  debug$u.rows = false;
+  debug$u.cells = false;
+  debug$u.tableTree = false;
+  debug$u.headerCalc = false;
 
   /**
    * @class TableElement
@@ -19105,13 +19134,13 @@
       const tableElement = this;
       this.rows.forEach( row => {
         row.cells.forEach( cell => {
-          debug$r.headerCalc && debug$r.log(`${cell}`, 1);
+          debug$u.headerCalc && debug$u.log(`${cell}`, 1);
           if (cell.headerSource === HEADER_SOURCE.HEADER_NONE) {
             if (!cell.isHeader) {
               const node = cell.domElement.node;
               if (node.hasAttribute('headers')) {
                 const ids = node.getAttribute('headers').split(' ');
-                debug$r.headesCalc && debug$r.log(`[headers]: ${ids.join(' ')}`);
+                debug$u.headesCalc && debug$u.log(`[headers]: ${ids.join(' ')}`);
                 for (let i = 0; i < ids.length; i += 1) {
                   const de = domCache.getDomElementById(ids[i]);
                   if (de && de.accName.name) {
@@ -19126,7 +19155,7 @@
                 // get Column Headers
                 for (let i = 1; i < row.rowNumber; i += 1) {
                   const hc = tableElement.getCell(i, cell.startColumn);
-                  debug$r.headerCalc && debug$r.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
+                  debug$u.headerCalc && debug$u.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeColumn) &&
                       hc.domElement.accName.name) {
@@ -19137,7 +19166,7 @@
                 // get Row Headers
                 for (let i = 1; i < cell.startColumn; i += 1) {
                   const hc = tableElement.getCell(row.rowNumber, i);
-                  debug$r.headerCalc && debug$r.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
+                  debug$u.headerCalc && debug$u.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeRow) &&
                       hc.domElement.accName.name) {
@@ -19149,7 +19178,7 @@
                   cell.headerSource = HEADER_SOURCE.ROW_COLUMN;
                 }
               }
-              debug$r.headerCalc && debug$r.log(`${cell}`);
+              debug$u.headerCalc && debug$u.log(`${cell}`);
             }
           }
         });
@@ -19196,7 +19225,7 @@
     }
 
     debugRowGroup (prefix, item) {
-      debug$r.log(`${prefix}${item}`);
+      debug$u.log(`${prefix}${item}`);
       if (item.isGroup) {
         item.children.forEach( child => {
           if (child) {
@@ -19207,14 +19236,14 @@
     }
 
     debug () {
-      if (debug$r.flag) {
-        debug$r.log(`${this}`);
-        if (debug$r.tableTree) {
+      if (debug$u.flag) {
+        debug$u.log(`${this}`);
+        if (debug$u.tableTree) {
           this.children.forEach( child => {
             this.debugRowGroup('  ', child);
           });
         }
-        debug$r.separator();
+        debug$u.separator();
         for (let i = 0; i < this.rows.length; i += 1) {
           this.rows[i].debug('  ');
         }
@@ -19329,15 +19358,15 @@
     }
 
     debug (prefix='') {
-      if (debug$r.flag && debug$r.rows) {
-        debug$r.log(`${prefix}${this}`);
+      if (debug$u.flag && debug$u.rows) {
+        debug$u.log(`${prefix}${this}`);
         for (let i = 0; i < this.cells.length; i += 1) {
           const cell = this.cells[i];
           if (cell) {
             cell.debug(prefix + '  ');
           }
           else {
-            debug$r.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
+            debug$u.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
           }
         }
       }
@@ -19418,8 +19447,8 @@
     }
 
     debug (prefix='') {
-      if (debug$r.flag) {
-        debug$r.log(`${prefix}${this}`);
+      if (debug$u.flag) {
+        debug$u.log(`${prefix}${this}`);
       }
     }
 
@@ -19540,8 +19569,8 @@
      */
 
     showTableInfo () {
-      if (debug$r.flag) {
-        debug$r.log('== All Tables ==', 1);
+      if (debug$u.flag) {
+        debug$u.log('== All Tables ==', 1);
           this.allTableElements.forEach( te => {
             te.debug();
           });
@@ -19552,11 +19581,11 @@
   /* domCache.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('domCache', false);
-  debug$q.flag = false;
-  debug$q.showDomTexts = false;
-  debug$q.showDomElems = false;
-  debug$q.showTree = false;
+  const debug$t = new DebugLogging('domCache', false);
+  debug$t.flag = false;
+  debug$t.showDomTexts = false;
+  debug$t.showDomElems = false;
+  debug$t.showTree = false;
 
   const skipableElements = [
     'base',
@@ -19895,24 +19924,24 @@
      */
 
     showDomElementTree () {
-      if (debug$q.flag) {
-        if (debug$q.showDomElems) {
-          debug$q.log(' === AllDomElements ===', true);
+      if (debug$t.flag) {
+        if (debug$t.showDomElems) {
+          debug$t.log(' === AllDomElements ===', true);
           this.allDomElements.forEach( de => {
-            debug$q.domElement(de);
+            debug$t.domElement(de);
           });
         }
 
-        if (debug$q.showDomTexts) {
-          debug$q.log(' === AllDomTexts ===', true);
+        if (debug$t.showDomTexts) {
+          debug$t.log(' === AllDomTexts ===', true);
           this.allDomTexts.forEach( dt => {
-            debug$q.domText(dt);
+            debug$t.domText(dt);
           });
         }
 
-        if (debug$q.showTree) {
-          debug$q.log(' === DOMCache Tree ===', true);
-          debug$q.domElement(this.startingDomElement);
+        if (debug$t.showTree) {
+          debug$t.log(' === DOMCache Tree ===', true);
+          debug$t.domElement(this.startingDomElement);
           this.startingDomElement.showDomElementTree(' ');
         }
       }
@@ -19922,8 +19951,8 @@
   /* audioRules.js */
 
   /* Constants */
-  const debug$p = new DebugLogging('Audio Rules', false);
-  debug$p.flag = false;
+  const debug$s = new DebugLogging('Audio Rules', false);
+  debug$s.flag = false;
 
 
   /*
@@ -20075,8 +20104,8 @@
   /* colorRules.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('Color Rules', false);
-  debug$o.flag = false;
+  const debug$r = new DebugLogging('Color Rules', false);
+  debug$r.flag = false;
 
 
   /*
@@ -20095,7 +20124,6 @@
       last_updated        : '2022-04-21',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
-      ruleset             : RULESET.TRIAGE,
       rule_required       : true,
       wcag_primary_id     : '1.4.3',
       wcag_related_ids    : ['1.4.1','1.4.6'],
@@ -20109,14 +20137,14 @@
           const id      = node.id ? `[id=${node.id}]` : '';
           const cc      = domElement.colorContrast;
           const crr     = cc.colorContrastRatio;
-          debug$o.flag && debug$o.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+          debug$r.flag && debug$r.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
         }
 
 
         const MIN_CCR_NORMAL_FONT = 4.5;
         const MIN_CCR_LARGE_FONT  = 3.1;
 
-        debug$o.flag && debug$o.log(`===== COLOR 1 ====`);
+        debug$r.flag && debug$r.log(`===== COLOR 1 ====`);
 
         dom_cache.allDomTexts.forEach( domText => {
           const de  = domText.parentDomElement;
@@ -20190,7 +20218,6 @@
       last_updated        : '2022-04-21',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
-      ruleset             : RULESET.TRIAGE,
       wcag_primary_id     : '1.4.1',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -20199,15 +20226,109 @@
         rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
 
       } // end validate function
-    }
+    },
+
+    /**
+     * @object COLOR_3
+     *
+     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3.1 for large text
+     */
+
+    { rule_id             : 'COLOR_3',
+      last_updated        : '2022-07-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required        : true,
+      wcag_primary_id     : '1.4.6',
+      wcag_related_ids    : ['1.4.1','1.4.3'],
+      target_resources    : ['text content'],
+      validate            : function (dom_cache, rule_result) {
+
+        let index = 0;
+        function checkResult(domElement, result) {
+          const node    = domElement.node;
+          const tagName = node.tagName;
+          const id      = node.id ? `[id=${node.id}]` : '';
+          const cc      = domElement.colorContrast;
+          const crr     = cc.colorContrastRatio;
+          debug$r.flag && debug$r.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+        }
+
+
+        const MIN_CCR_NORMAL_FONT = 7.1;
+        const MIN_CCR_LARGE_FONT  = 4.5;
+
+        debug$r.flag && debug$r.log(`===== COLOR 3 ====`);
+
+        dom_cache.allDomTexts.forEach( domText => {
+          const de  = domText.parentDomElement;
+          const cc  = de.colorContrast;
+          const ccr = cc.colorContrastRatio;
+
+          if (de.visibility.isVisibleOnScreen) {
+            if (cc.isLargeFont) {
+              if (ccr >= MIN_CCR_LARGE_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
+                }
+              }
+            }
+            else {
+              if (ccr >= MIN_CCR_NORMAL_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
+                }
+              }
+            }
+          } else {
+            checkResult(de, 'HIDDEN');
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
+          }
+        });
+      } // end validate function
+    },
 
   ];
 
   /* focusRules.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('Focus Rules', false);
-  debug$n.flag = false;
+  const debug$q = new DebugLogging('Focus Rules', false);
+  debug$q.flag = false;
 
   /*
    * OpenA11y Alliance Rules
@@ -20505,8 +20626,8 @@
   /* controlRules.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('Control Rules', false);
-  debug$m.flag = false;
+  const debug$p = new DebugLogging('Control Rules', false);
+  debug$p.flag = false;
 
 
   /*
@@ -21086,8 +21207,8 @@
   /* headingRules.js */
 
   /* Constants */
-  const debug$l = new DebugLogging('Heading Rules', false);
-  debug$l.flag = false;
+  const debug$o = new DebugLogging('Heading Rules', false);
+  debug$o.flag = false;
 
   /*
    * OpenA11y Rules
@@ -21483,8 +21604,8 @@
   /* imageRules.js */
 
   /* Constants */
-  const debug$k = new DebugLogging('Image Rules', false);
-  debug$k.flag = false;
+  const debug$n = new DebugLogging('Image Rules', false);
+  debug$n.flag = false;
 
   /*
    * OpenA11y Alliance Rules
@@ -21760,8 +21881,8 @@
   /* keyboardRules.js */
 
   /* Constants */
-  const debug$j = new DebugLogging('Keyboard Rules', false);
-  debug$j.flag = false;
+  const debug$m = new DebugLogging('Keyboard Rules', false);
+  debug$m.flag = false;
 
 
   /*
@@ -21818,7 +21939,7 @@
       target_resources    : ['Page', 'object', 'widgets'],
       validate            : function (dom_cache, rule_result) {
 
-        debug$j.log(`[KEYBOARD 2]: ${dom_cache} ${rule_result}`);
+        debug$m.log(`[KEYBOARD 2]: ${dom_cache} ${rule_result}`);
 
     /*
          var VISIBILITY  = VISIBILITY;
@@ -21899,7 +22020,7 @@
       target_resources    : ['object'],
       validate            : function (dom_cache, rule_result) {
 
-        debug$j.log(`[KEYBOARD 3]: ${dom_cache} ${rule_result}`);
+        debug$m.log(`[KEYBOARD 3]: ${dom_cache} ${rule_result}`);
 
     /*
          var VISIBILITY  = VISIBILITY;
@@ -21938,8 +22059,8 @@
   /* landmarkRules.js */
 
   /* Constants */
-  const debug$i = new DebugLogging('Landmark Rules', false);
-  debug$i.flag = false;
+  const debug$l = new DebugLogging('Landmark Rules', false);
+  debug$l.flag = false;
 
   /*
    * OpenA11y Rules
@@ -22738,8 +22859,8 @@
   /* linkRules.js */
 
   /* Constants */
-  const debug$h = new DebugLogging('Link Rules', false);
-  debug$h.flag = false;
+  const debug$k = new DebugLogging('Link Rules', false);
+  debug$k.flag = false;
 
   /*
    * OpenA11y Rules
@@ -22865,8 +22986,8 @@
   /* tableRules.js */
 
   /* Constants */
-  const debug$g = new DebugLogging('Table Rules', false);
-  debug$g.flag = false;
+  const debug$j = new DebugLogging('Table Rules', false);
+  debug$j.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23291,8 +23412,8 @@
   /* videoRules.js */
 
   /* Constants */
-  const debug$f = new DebugLogging('Audio Rules', false);
-  debug$f.flag = false;
+  const debug$i = new DebugLogging('Audio Rules', false);
+  debug$i.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23627,8 +23748,8 @@
   /* widgetRules.js */
 
   /* Constants */
-  const debug$e = new DebugLogging('Widget Rules', false);
-  debug$e.flag = true;
+  const debug$h = new DebugLogging('Widget Rules', false);
+  debug$h.flag = false;
 
   /*
    * OpenA11y Rules
@@ -24223,7 +24344,7 @@
   /**
    * @object WIDGET_10
    *
-   * @desc Range widgets with aria-valuenow mut be in range of aria-valuemin and aria-valuemax
+   * @desc Range widgets with aria-valuenow must be in range of aria-valuemin and aria-valuemax
    */
 
   { rule_id             : 'WIDGET_10',
@@ -24614,7 +24735,7 @@
   /* rule.js */
 
   /* Constants */
-  const debug$d = new DebugLogging('Rule', false);
+  const debug$g = new DebugLogging('Rule', false);
 
   /* ----------------------------------------------------------------   */
   /*                             Rule                                   */
@@ -24637,7 +24758,6 @@
       this.rule_required       = rule_item.rule_required; // Boolean
       this.rule_scope_id       = rule_item.rule_scope; // Integer
       this.rule_category_id    = rule_item.rule_category; // Integer
-      this.ruleset_id          = rule_item.ruleset; // Integer
       this.last_updated        = rule_item.last_updated; // String
       this.target_resources    = rule_item.target_resources; // array of strings
       this.wcag_primary_id     = rule_item.wcag_primary_id;  // String (P.G.SC)
@@ -24648,7 +24768,6 @@
       // Rule information that is locale dependent
       this.rule_category_info  = getRuleCategoryInfo(this.rule_category_id); // Object with keys to strings
       this.guideline_info      = getGuidelineInfo(this.wcag_guideline_id); // Object with keys to strings
-      this.ruleset_info        = getRulesetInfo(this.ruleset_id); // Object with keys to strings
       this.rule_scope          = getScope(this.rule_scope_id); // String
       this.wcag_primary        = getSuccessCriterionInfo(this.wcag_primary_id);
       this.wcag_related        = getSuccessCriteriaInfo(this.wcag_related_ids);
@@ -24667,7 +24786,7 @@
       this.rule_result_msgs = getRuleResultMessages(this.rule_id); // Object with keys to strings
       this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
 
-      debug$d.flag && this.toJSON();
+      debug$g.flag && this.toJSON();
     }
 
     get isLevelA () {
@@ -24764,30 +24883,6 @@
 
     getCategoryInfo () {
       return this.rule_category_info;
-    }
-
-    /**
-     * @method getRuleset
-     *
-     * @desc Get a numerical constant representing the ruleset
-     *
-     * @return {Integer}  see @desc
-     */
-
-    getRuleset () {
-      return this.ruleset_id;
-    }
-
-    /**
-     * @method getRulesetInfo
-     *
-     * @desc Get a localized title, url and description of the ruleset
-     *
-     * @return {Object}  see @desc
-     */
-
-    getRulesetInfo () {
-      return this.ruleset_info;
     }
 
     /**
@@ -25009,9 +25104,6 @@
         rule_category_id:   this.rule_category_id,
         rule_category_info: this.rule_category_info,
         
-        ruleset_id:   this.ruleset_id,
-        ruleset_info: this.ruleset_info,
-        
         wcag_guideline_id:  this.wcag_guideline_id,
         guideline_info:     this.guideline_info,
 
@@ -25032,7 +25124,7 @@
       };
 
       const json = JSON.stringify(ruleInfo, null, '  ');
-      debug$d.flag && debug$d.log(`[JSON]: ${json}`);
+      debug$g.flag && debug$g.log(`[JSON]: ${json}`);
       return json;
 
     }
@@ -25041,7 +25133,7 @@
   /* allRules.js */
 
   /* Constants */
-  const debug$c = new DebugLogging('All Rules', false);
+  const debug$f = new DebugLogging('All Rules', false);
 
   const allRules = [];
 
@@ -25076,7 +25168,7 @@
   addToArray(widgetRules);
 
 
-  if (debug$c.flag) {
+  if (debug$f.flag) {
     console.log('All rules loaded');
   }
 
@@ -25109,7 +25201,6 @@
       ruleInfo.filename      = 'rule-' + rule.rule_id.toLowerCase().replace('_', '-') + '.html';
       ruleInfo.last_updated  = rule.last_updated;
 
-      ruleInfo.ruleset          = getRulesetInfo(rule.ruleset);
       ruleInfo.rule_scope       = rule.rule_scope;
       ruleInfo.rule_category    = getRuleCategoryInfo(rule.rule_category_id);
       ruleInfo.rule_category_id = rule.rule_category_id;
@@ -25174,7 +25265,7 @@
 
   /* resultSummary.js */
 
-  const debug$b = new DebugLogging('ruleResultSummary', false);
+  const debug$e = new DebugLogging('ruleResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             RuleResultsSummary                        */
@@ -25216,7 +25307,7 @@
       this.is  = -1;  // implementation score for group
       this.iv  = IMPLEMENTATION_VALUE.UNDEFINED; // implementation value for the group
 
-      debug$b.flag && debug$b.log(`[RuleResultsSummary]: ${this.toString()}`);
+      debug$e.flag && debug$e.log(`[RuleResultsSummary]: ${this.toString()}`);
     }
 
      get violations()     { return this.v;  }
@@ -25310,7 +25401,7 @@
   /* ruleGroupResult.js */
 
   /* Constants */
-  const debug$a = new DebugLogging('ruleGroupResult', false);
+  const debug$d = new DebugLogging('ruleGroupResult', false);
 
   /**
    * @class RuleGroupResult
@@ -25326,9 +25417,6 @@
    * @param  {String}  url       - URL to more information on the group
    * @param  {String}  desc      - Description of the group
    *
-   * @param  {Integer} ruleset - Numerical constant that specifies the ruleset
-   *                             By default all rules ar included
-   * 
    * @property  {Object}  rule_group_information - Information on rules in the group
    * @property  {Array}   rule_results           - List of rule result objects in the group
    *
@@ -25342,7 +25430,7 @@
 
 
   class RuleGroupResult {
-    constructor (evaluationResult, title, url, desc, ruleset=RULESET.ALL) {
+    constructor (evaluationResult, title, url, desc) {
       this.evaluation_result = evaluationResult;
 
       this.rule_group_information = {};
@@ -25354,12 +25442,10 @@
       this.rule_group_information.rules_required    = 0;
       this.rule_group_information.rules_recommended = 0;
 
-      this.ruleset = ruleset;
-
       this.rule_results = [];
       this.rule_results_summary = new RuleResultsSummary();
 
-      debug$a.flag && debug$a.log(`[title]: ${this.title} (${ruleset})`);
+      debug$d.flag && debug$d.log(`[title]: ${this.title} (${ruleset})`);
     }
 
     /**
@@ -25487,16 +25573,14 @@
      */
 
     addRuleResult (rule_result) {
-      if (rule_result.rule.getRuleset() <= this.ruleset) {
-        this.rule_results.push(rule_result);
-        this.rule_results_summary.updateSummary(rule_result);
+      this.rule_results.push(rule_result);
+      this.rule_results_summary.updateSummary(rule_result);
 
-        if (rule_result.isRuleRequired()) {
-          this.rule_group_information.rules_required += 1;
-        }
-        else {
-          this.rule_group_information.rules_recommended += 1;
-        }
+      if (rule_result.isRuleRequired()) {
+        this.rule_group_information.rules_required += 1;
+      }
+      else {
+        this.rule_group_information.rules_recommended += 1;
       }
     }
 
@@ -25529,7 +25613,7 @@
       };
 
       const json = JSON.stringify(ruleGroupResultInfo);
-      debug$a.flag && debug$a.log(`[JSON]: ${json}`);
+      debug$d.flag && debug$d.log(`[JSON]: ${json}`);
       return json;
     }
   }
@@ -25537,7 +25621,7 @@
   /* baseResult.js */
 
   /* constants */
-  const debug$9 = new DebugLogging('baseResult', false);
+  const debug$c = new DebugLogging('baseResult', false);
 
   /**
    * @class baseResult
@@ -25568,9 +25652,9 @@
       this.result_type       = RESULT_TYPE.BASE;
       this.rule_result       = ruleResult;
       this.result_value      = resultValue;
-      debug$9.flag && debug$9.log(`[  msgId]: ${msgId}`);
-      debug$9.flag && debug$9.log(`[    msg]: ${msg}`);
-      debug$9.flag && debug$9.log(`[msgArgs]: ${msgArgs}`);
+      debug$c.flag && debug$c.log(`[  msgId]: ${msgId}`);
+      debug$c.flag && debug$c.log(`[    msg]: ${msg}`);
+      debug$c.flag && debug$c.log(`[msgArgs]: ${msgArgs}`);
       this.result_message    = getBaseResultMessage(msg, msgArgs);
       this.result_identifier = result_identifier;
 
@@ -25747,8 +25831,8 @@
 
   /* Constants */
 
-  const debug$8 = new DebugLogging('ElementResult', false);
-  debug$8.flag = false;
+  const debug$b = new DebugLogging('ElementResult', false);
+  debug$b.flag = false;
 
   /**
    * @class ElementResult
@@ -25787,8 +25871,8 @@
       this.domElement = domElement;
       this.result_type    = RESULT_TYPE.ELEMENT;
 
-      if (debug$8.flag) {
-        debug$8.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$b.flag) {
+        debug$b.log(`${this.result_value}: ${this.result_message}`);
       }
     }
     /**
@@ -26037,7 +26121,7 @@
 
   /* elementResultSummary.js */
 
-  const debug$7 = new DebugLogging('ElementResultSummary', false);
+  const debug$a = new DebugLogging('ElementResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             ResultSummary                        */
@@ -26068,7 +26152,7 @@
       this.mc  = 0;
       this.h   = 0;
 
-      debug$7.flag && debug$7.log(`[ElementResultsSummary]: ${this.toString()}`);
+      debug$a.flag && debug$a.log(`[ElementResultsSummary]: ${this.toString()}`);
     }
 
     get violations()     { return this.v;   }
@@ -26179,7 +26263,7 @@
 
   /* Constants */
 
-  const debug$6 = new DebugLogging('PageResult', false);
+  const debug$9 = new DebugLogging('PageResult', false);
 
   /**
    * @class PageResult
@@ -26214,8 +26298,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.PAGE;
 
-      if (debug$6.flag) {
-        debug$6.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$9.flag) {
+        debug$9.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -26225,7 +26309,7 @@
 
   /* Constants */
 
-  const debug$5 = new DebugLogging('PageResult', false);
+  const debug$8 = new DebugLogging('PageResult', false);
 
   /**
    * @class WebsiteResult
@@ -26260,8 +26344,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.WEBSITE;
 
-      if (debug$5.flag) {
-        debug$5.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$8.flag) {
+        debug$8.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -26271,8 +26355,8 @@
 
 
   /* constants */
-  const debug$4 = new DebugLogging('ruleResult', false);
-  debug$4.flag = false;
+  const debug$7 = new DebugLogging('ruleResult', false);
+  debug$7.flag = false;
 
    /**
    * @class RuleResult
@@ -26805,9 +26889,6 @@
         rule_scope_code_nls: this.rule.getScopeNLS(),
         rule_scope_code:     this.rule.getScope(),
 
-        ruleset_nls:  this.rule.getRulesetInfo(),
-        ruleset_code: this.rule.getRuleset(),
-
         result_value_nls: this.getResultValueNLS(),
         result_value:     this.getResultValue(),
         result_message:   this.getResultMessage(),
@@ -26869,8 +26950,8 @@
   /* evaluationResult.js */
 
   /* Constants */
-  const debug$3 = new DebugLogging('EvaluationResult', false);
-  debug$3.flag = false;
+  const debug$6 = new DebugLogging('EvaluationResult', false);
+  debug$6.flag = false;
 
   class EvaluationResult {
     constructor (allRules, domCache, title, url,  ruleset="AA", scopeFilter="ALL", ruleFilter=[]) {
@@ -26883,8 +26964,8 @@
       this.allRuleResults = [];
 
       const startTime = new Date();
-      debug$3.flag && debug$3.log(`[ruleset]: ${this.ruleset}`);
-      debug$3.flag && debug$3.log(`[scopeFilter]: ${this.scopeFilter}`);
+      debug$6.flag && debug$6.log(`[ruleset]: ${this.ruleset}`);
+      debug$6.flag && debug$6.log(`[scopeFilter]: ${this.scopeFilter}`);
 
       allRules.forEach (rule => {
         if (((ruleset === 'A')  && (rule.isLevelA)) ||
@@ -26896,7 +26977,7 @@
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
               ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
             const ruleResult = new RuleResult(rule);
-            debug$3.flag && debug$3.log(`[validate]: ${ruleResult.rule.getId()}`);
+            debug$6.flag && debug$6.log(`[validate]: ${ruleResult.rule.getId()}`);
             ruleResult.validate(domCache);
             this.allRuleResults.push(ruleResult);
           }
@@ -26904,10 +26985,10 @@
       });
 
       const json = this.toJSON(true);
-      debug$3.flag && debug$3.log(`[JSON]: ${json}`);
+      debug$6.flag && debug$6.log(`[JSON]: ${json}`);
 
       const endTime = new Date();
-      debug$3.flag && debug$3.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+      debug$6.flag && debug$6.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
 
 
     }
@@ -27128,9 +27209,9 @@
   /* evaluatationLibrary.js */
 
   /* Constants */
-  const debug$2   = new DebugLogging('EvaluationLibrary', false);
-  debug$2.flag = false;
-  debug$2.json = false;
+  const debug$5   = new DebugLogging('EvaluationLibrary', false);
+  debug$5.flag = false;
+  debug$5.json = false;
 
   /**
    * @class EvaluateLibrary
@@ -27162,15 +27243,15 @@
 
     evaluate (startingDoc, title='', url='', ruleset='AA', scopeFilter='ALL', ruleFilter = []) {
 
-      debug$2.log(`[    ruleset]: ${ruleset}`);
-      debug$2.log(`[scopeFilter]: ${scopeFilter}`);
-      debug$2.log(`[ ruleFilter]: ${ruleFilter}`);
+      debug$5.log(`[    ruleset]: ${ruleset}`);
+      debug$5.log(`[scopeFilter]: ${scopeFilter}`);
+      debug$5.log(`[ ruleFilter]: ${ruleFilter}`);
 
       let domCache = new DOMCache(startingDoc);
       let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, scopeFilter, ruleFilter);
 
       // Debug features
-      if (debug$2.flag) {
+      if (debug$5.flag) {
         domCache.showDomElementTree();
         domCache.controlInfo.showControlInfo();
         domCache.iframeInfo.showIFrameInfo();
@@ -27181,7 +27262,7 @@
         domCache.tableInfo.showTableInfo();
         domCache.structureInfo.showStructureInfo();
 
-        debug$2.json && debug$2.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+        debug$5.json && debug$5.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
       }
       return evaluationResult;
     }
@@ -27335,6 +27416,9 @@
 
   /* evaluate.js */
 
+  const debug$4 = new DebugLogging('getAllRuleInfo', false);
+  debug$4.flag = true;
+
   // ----------------------
   // All Rules Result functions
   // ----------------------
@@ -27424,9 +27508,9 @@
   */
   function getAllRulesInfo (ruleset, scopeFilter, firstStepRules) {
 
-    console.log(`[getAllRulesInfo][    ruleset]: ${ruleset}`);
-    console.log(`[getAllRulesInfo][scopeFilter]: ${scopeFilter}`);
-    console.log(`[getAllRulesInfo][ ruleFilter]: ${firstStepRules}`);
+    debug$4.flag && debug$4.log(`[    ruleset]: ${ruleset}`);
+    debug$4.flag && debug$4.log(`[scopeFilter]: ${scopeFilter}`);
+    debug$4.flag && debug$4.log(`[ ruleFilter]: ${firstStepRules}`);
 
     const info = {};
 
@@ -27458,16 +27542,20 @@
 
   /* getRuleResultInfo.js */
 
+  const debug$3 = new DebugLogging('getRuleGroupInfo', false);
+  debug$3.flag = false;
+
+
   /*
   *   getRuleResultsInfo
   *   (1) Run evlauation library;
   *   (2) return result objec for the group view in the sidebar;
   */
-  function getRuleGroupInfo (groupType, groupId) {
+  function getRuleGroupInfo (groupType, groupId, ruleset, scopeFilter, firstStepRules) {
 
     let info = {};
 
-    const evaluationResult  = evaluate();
+    const evaluationResult  = evaluate(ruleset, scopeFilter, firstStepRules);
     const ruleGroupResult = (groupType === 'gl') ?
                             evaluationResult.getRuleResultsByGuideline(groupId) :
                             (groupType === 'rc') ? evaluationResult.getRuleResultsByCategory(groupId) :
@@ -27499,6 +27587,9 @@
   /* getRuleResultInfo.js */
 
   /* Constants */
+  const debug$2 = new DebugLogging('getAllResultInfo', false);
+  debug$2.flag = true;
+
 
   /*
   *   getRuleResultInfo
@@ -28235,7 +28326,7 @@
 
       case viewId.ruleGroup:
         clearHighlights();
-        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId);
+        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
         ruleResult = false;
         break;
 
@@ -28248,7 +28339,7 @@
             info.infoHighlight = true;
           }
         } else {
-          const evaluationResult  = evaluate();
+          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
           highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
