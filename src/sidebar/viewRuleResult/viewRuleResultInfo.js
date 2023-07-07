@@ -20,6 +20,7 @@ const msg = {
   elementResultType            : getMessage('elementResultType'),
   elementResultValueHeader     : getMessage('elementResultValueHeader'),
   elementResultVisibility      : getMessage('elementResultVisibility'),
+  noRole                       : getMessage('noRole'),
   ruleActionLabel              : getMessage('ruleActionLabel'),
   ruleDefinitionLabel          : getMessage('ruleRuleDefinitionLabel')
 };
@@ -368,7 +369,10 @@ export default class ViewRuleResultInfo extends HTMLElement {
     this.tagNameInfoDiv.classList.remove('hide');
     let tagName = elementInfo.tagName + elementInfo.id + elementInfo.className;
     this.renderContent(this.tagNameDiv, tagName);
-    this.renderContent(this.roleDiv, elementInfo.role);
+    const role  = elementInfo.role ? elementInfo.role : msg.noRole;
+    this.renderContent(this.roleDiv, role);
+    const style = elementInfo.role ? '' : 'font-style: italic';
+    this.roleDiv.setAttribute('style', style);
   }
 
   updateAccessibleNameInfo(elementInfo) {

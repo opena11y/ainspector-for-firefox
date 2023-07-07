@@ -1157,6 +1157,11 @@
   "elementNumberDesc": {
     "message": "Number of target elements with corresponding result type",
     "description": "Provides information on the meaning of numbers in rule view"
+  },
+
+  "noRole": {
+    "message": "no role",
+    "description": "Identifies an element with no default role value"
   }
 
 }
