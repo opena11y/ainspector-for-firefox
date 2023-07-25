@@ -52,10 +52,13 @@ const promptForDelay = document.querySelector('input[id="options-prompt-for-dela
 // const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
-const rulesetRadioFilter = document.querySelector('#options-ruleset-filter');
-const rulesetRadioWCAG_A    = document.querySelector('#options-ruleset-wcag-a');
-const rulesetRadioWCAG_AA   = document.querySelector('#options-ruleset-wcag-aa');
-const rulesetRadioWCAG_AAA  = document.querySelector('#options-ruleset-wcag-aaa');
+const rulesetRadioFilter  = document.querySelector('#options-ruleset-filter');
+const rulesetRadioWCAG20  = document.querySelector('#options-ruleset-wcag20');
+const rulesetRadioWCAG21  = document.querySelector('#options-ruleset-wcag21');
+const rulesetRadioWCAG22  = document.querySelector('#options-ruleset-wcag22');
+
+const rulesetCheckboxLevelAOnly    = document.querySelector('#options-ruleset-level-a-only');
+const rulesetCheckboxColorEnhanced = document.querySelector('#options-ruleset-color-enhanced');
 
 const rulesetScopeAll     = document.querySelector('#options-scope-all');
 const rulesetScopePage    = document.querySelector('#options-scope-page');
@@ -152,17 +155,43 @@ function setFormLabels () {
 function saveFormOptions (e) {
   e.preventDefault();
 
-  let ruleset = 'AA';
+  let ruleset = 'WCAG21';
 
   if (rulesetRadioFilter.checked) {
     ruleset = rulesetRadioFilter.value;
   }
-  if (rulesetRadioWCAG_A.checked) {
-    ruleset = rulesetRadioWCAG_A.value;
+  if (rulesetRadioWCAG20.checked) {
+    ruleset = rulesetRadioWCAG20.value;
   }
-  if (rulesetRadioWCAG_AAA.checked) {
-    ruleset = rulesetRadioWCAG_AAA.value;
+  if (rulesetRadioWCAG21.checked) {
+    ruleset = rulesetRadioWCAG21.value;
   }
+  if (rulesetRadioWCAG22.checked) {
+    ruleset = rulesetRadioWCAG22.value;
+  }
+
+  let level = 'AA';
+  if (rulesetCheckboxLevelAOnly.checked) {
+    level = 'A';
+    rulesetCheckboxColorEnhanced.checked = false;
+    rulesetCheckboxColorEnhanced.disabled = true;
+  }
+  else {
+    rulesetCheckboxColorEnhanced.disabled = false;
+  }
+
+  if (rulesetCheckboxColorEnhanced.checked) {
+    level = 'AAA';
+    rulesetCheckboxLevelAOnly.checked = false;
+    rulesetCheckboxLevelAOnly.disabled = true;
+  }
+  else {
+    rulesetCheckboxLevelAOnly.disabled = false;
+  }
+
+  console.log(`[saveFormOptions][    levelAOnly]: ${rulesetCheckboxLevelAOnly.checked}`);
+  console.log(`[saveFormOptions][color enhanced]: ${rulesetCheckboxColorEnhanced.checked}`);
+  console.log(`[saveFormOptions][         level]: ${level}`);
 
   let scopeFilter = 'ALL';
 
@@ -185,6 +214,7 @@ function saveFormOptions (e) {
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
     ruleset: ruleset,
+    level: level,
     scopeFilter: scopeFilter,
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
     filenamePrefix: validatePrefix(exportPrefix.value),
@@ -215,14 +245,19 @@ function updateForm (options) {
 //  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
 
-  rulesetRadioFilter.checked = rulesetRadioFilter.value === options.ruleset;
-  rulesetRadioWCAG_A.checked    = rulesetRadioWCAG_A.value === options.ruleset;
-  rulesetRadioWCAG_AA.checked   = rulesetRadioWCAG_AA.value === options.ruleset;
-  rulesetRadioWCAG_AAA.checked  = rulesetRadioWCAG_AAA.value === options.ruleset;
+  rulesetRadioFilter.checked = options.ruleset === rulesetRadioFilter.value;
+  rulesetRadioWCAG20.checked = options.ruleset === rulesetRadioWCAG20.value;
+  rulesetRadioWCAG21.checked = options.ruleset === rulesetRadioWCAG21.value;
+  rulesetRadioWCAG22.checked = options.ruleset === rulesetRadioWCAG22.value;
 
-  rulesetScopeAll.checked     = rulesetScopeAll.value === options.scopeFilter;
-  rulesetScopePage.checked    = rulesetScopePage.value === options.scopeFilter;
-  rulesetScopeWebsite.checked = rulesetScopeWebsite.value === options.scopeFilter;
+  console.log(`[updateForm][level]: ${options.level}`);
+
+  rulesetCheckboxLevelAOnly.checked    = options.level === 'A';
+  rulesetCheckboxColorEnhanced.checked = options.level === 'AAA';
+
+  rulesetScopeAll.checked     = options.scopeFilter === rulesetScopeAll.value;
+  rulesetScopePage.checked    = options.scopeFilter === rulesetScopePage.value;
+  rulesetScopeWebsite.checked = options.scopeFilter === rulesetScopeWebsite.value;
 
   exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
@@ -350,9 +385,12 @@ promptForDelay.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
 
 rulesetRadioFilter.addEventListener('change', saveFormOptions);
-rulesetRadioWCAG_A.addEventListener('change', saveFormOptions);
-rulesetRadioWCAG_AA.addEventListener('change', saveFormOptions);
-rulesetRadioWCAG_AAA.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG20.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG21.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG22.addEventListener('change', saveFormOptions);
+
+rulesetCheckboxLevelAOnly.addEventListener('change', saveFormOptions);
+rulesetCheckboxColorEnhanced.addEventListener('change', saveFormOptions);
 
 rulesetScopeAll.addEventListener('change', saveFormOptions);
 rulesetScopePage.addEventListener('change', saveFormOptions);

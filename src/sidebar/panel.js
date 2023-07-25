@@ -106,6 +106,7 @@ var sidebarHighlightOnly   = false;
 
 var pageTitle = '';
 var pageLocation = '';
+var pageRuleset = '';
 
 function addSidebarLabels () {
   let elem;
@@ -122,6 +123,9 @@ function addSidebarLabels () {
 
   elem = document.querySelector('#info-title .label');
   elem.textContent = msg.infoTitleLabel;
+
+  elem = document.querySelector('#info-ruleset .label');
+  elem.textContent = msg.infoRulesetLabel;
 
   elem = document.getElementById('preferences-button');
   elem.textContent = msg.preferencesButtonLabel;
@@ -520,6 +524,7 @@ function updateSidebar (info) {
   let viewTitle    = document.querySelector('#view-title');
   let infoLocation = document.querySelector('#info-location .value');
   let infoTitle    = document.querySelector('#info-title .value');
+  let infoRuleset  = document.querySelector('#info-ruleset .value');
 
   // page-title and headings
   if (typeof info === 'object') {
@@ -531,12 +536,15 @@ function updateSidebar (info) {
     if (logInfo) console.log(`[updateSidebar][infoHighlight     ]: ${info.infoHighlight}`);
 
     // Update the page information footer
-    infoTitle.textContent    = info.title;
-    infoTitle.title          = info.title;
-    pageTitle = info.title;
+    infoTitle.textContent = info.title;
+    infoTitle.title       = info.title;
+    pageTitle             = info.title;
 
     infoLocation.textContent = info.location;
     pageLocation = info.location;
+
+    infoRuleset.textContent = info.ruleset + ' ' + info.level + ' ' + info.scopeFilter;
+    pageRuleset = info.ruleset;
 
     // Update the headings box
     if (typeof info.infoAllRules === 'object') {
@@ -638,6 +646,7 @@ function runContentScripts (callerfn) {
       contentCode += `  groupType: "${sidebarGroupType}",`;
       contentCode += `  ruleId: "${sidebarRuleId}",`;
       contentCode += `  ruleset: "${options.ruleset}",`;
+      contentCode += `  level: "${options.level}",`;
       contentCode += `  scopeFilter: "${options.scopeFilter}",`;
       contentCode += `  firstStepRules: ["${options.firstStepRules.join('","')}"],`;
       contentCode += `  highlight: "${options.highlight}",`;

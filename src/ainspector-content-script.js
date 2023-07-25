@@ -460,12 +460,17 @@
     SC_2_4_8          : 0x2408,
     SC_2_4_9          : 0x2409,
     SC_2_4_10         : 0x2410,
+    SC_2_4_11         : 0x2411,
+    SC_2_4_12         : 0x2412,
+    SC_2_4_13         : 0x2413,
     SC_2_5_1          : 0x2501,
     SC_2_5_2          : 0x2502,
     SC_2_5_3          : 0x2503,
     SC_2_5_4          : 0x2504,
     SC_2_5_5          : 0x2505,
     SC_2_5_6          : 0x2506,
+    SC_2_5_7          : 0x2507,
+    SC_2_5_8          : 0x2508,
     SC_3_1_1          : 0x3101,
     SC_3_1_2          : 0x3102,
     SC_3_1_3          : 0x3103,
@@ -477,12 +482,16 @@
     SC_3_2_3          : 0x3203,
     SC_3_2_4          : 0x3204,
     SC_3_2_5          : 0x3205,
+    SC_3_2_6          : 0x3206,
     SC_3_3_1          : 0x3301,
     SC_3_3_2          : 0x3302,
     SC_3_3_3          : 0x3303,
     SC_3_3_4          : 0x3304,
     SC_3_3_5          : 0x3305,
     SC_3_3_6          : 0x3306,
+    SC_3_3_7          : 0x3307,
+    SC_3_3_8          : 0x3308,
+    SC_3_3_9          : 0x3309,
     SC_4_1_1          : 0x4101,
     SC_4_1_2          : 0x4102,
     SC_4_1_3          : 0x4103
@@ -12431,6 +12440,28 @@
                 url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#section-headings',
                 references: {
                 }
+              },
+              '2.4.11': {
+                id: WCAG_SUCCESS_CRITERION.SC_2_4_11,
+                level: WCAG_LEVEL.AA,
+                title: 'Success Criterion 2.4.11 Focus Not Obscured (Minimum)',
+                description: 'When a user interface component receives keyboard focus, the component is not entirely hidden due to author-created content.',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#focus-not-obscured-minimum',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#focus-not-obscured-minimum',
+                references: {
+                }
+              },
+              '2.4.12': {
+                id: WCAG_SUCCESS_CRITERION.SC_2_4_12,
+                level: WCAG_LEVEL.AAA,
+                title: 'Success Criterion 2.4.12 Focus Not Obscured (Enhanced)',
+                description: 'When a user interface component receives keyboard focus, no part of the component is hidden by author-created content.',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#focus-not-obscured-enhanced',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#focus-appearance',
+                references: {
+                }
               }
             }
           },
@@ -14853,7 +14884,7 @@
   const keyboardRules$1 = {
     KEYBOARD_1: {
       ID:                    'Keyboard 1',
-      DEFINITION:            'Elements with ARIA widget roles must have event handlers that support the keyboard interactions required by those roles.',
+      DEFINITION:            'Elements with ARIA widget roles must support the keyboard interactions required by those roles.',
       SUMMARY:               'Widget roles require keyboard support',
       TARGET_RESOURCES_DESC: 'Elements with ARIA widget roles',
       RULE_RESULT_MESSAGES: {
@@ -14927,8 +14958,8 @@
         PAGE_PASS_1:       'The interactive element on the page does not have an explicit @tabindex@ value or added event handlers that might change its default functionality or ARIA role.',
         PAGE_PASS_2:       'The @%1@ interactive elements on the page do not have explicit @tabindex@ values or added event handlers that might change their default functionalities or ARIA roles.',
         ELEMENT_PASS_1:    'The @%1@ element does not have an explicit @tabindex@ value or added event handlers that might change its default functionality or ARIA role.',
-        PAGE_MC_1:         'Verify that the functionality provided by the added event handler or explicitly defined @tabindex@ value on the interactive element has the corresponding keyboard support.',
-        PAGE_MC_2:         'Verify that the functionality provided by the added event handlers or explicitly defined @tabindex@ values on the %1 interactive elements has the corresponding keyboard support.',
+        PAGE_MC_1:         'Verify that the functionality associated with the @tabindex@ value on the interactive element has the corresponding keyboard support.',
+        PAGE_MC_2:         'Verify that the functionality associated with the @tabindex@ values on the %1 interactive elements has the corresponding keyboard support.',
         ELEMENT_MC_1:      'Verify that the functionality provided by the added event handlers on the @%1@ element have the corresponding keyboard support.',
         ELEMENT_MC_2:      'Verify that the functionality that results from assigning @tabindex=%1@ on the @%2@ element has the corresponding keyboard support.',
         ELEMENT_MC_3:      'Verify that the functionality provided by the @%1@ element has the corresponding keyboard support.',
@@ -21886,7 +21917,6 @@
       last_updated        : '2023-06-10',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      ruleset             : RULESET.TRIAGE,
       wcag_primary_id     : '2.1.1',
       wcag_related_ids    : ['4.1.2'],
       target_resources    : ['widgets'],
@@ -21916,7 +21946,6 @@
       last_updated        : '2023-06-10',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      ruleset             : RULESET.TRIAGE,
       wcag_primary_id     : '2.1.1',
       wcag_related_ids    : ['2.1.2', '2.4.3',  '2.4.7', '3.2.1'],
       target_resources    : ['Page', 'object', 'widgets'],
@@ -21997,7 +22026,6 @@
       last_updated        : '2023-06-10',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      ruleset             : RULESET.TRIAGE,
       wcag_primary_id     : '2.1.2',
       wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
       target_resources    : ['object'],
@@ -23760,7 +23788,8 @@
       dom_cache.allDomElements.forEach(de => {
         const ai = de.ariaInfo;
         // There are other rules that check for accessible name for labelable controls, landmarks, headings and links
-        if (ai.isWidget && !de.isLabelable && !de.isLink) {
+        // Ignore option role, since web developers are very sloppy about giving them content before they are made visible
+        if (ai.isWidget && !de.isLabelable && !de.isLink && (de.role !== 'option')) {
           if (de.visibility.isVisibleToAT) {
             if (de.accName.name) {
               rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role, de.accName.name]);
@@ -24720,6 +24749,51 @@
   /* Constants */
   const debug$g = new DebugLogging('Rule', false);
 
+  const wcag21_SC = [
+    '1.3.4',
+    '1.3.5',
+    '1.3.6',
+    '1.4.10',
+    '1.4.11',
+    '1.4.12',
+    '1.4.13',
+    '2.1.4',
+    '2.2.6',
+    '2.3.3',
+    '2.5.1',
+    '2.5.2',
+    '2.5.3',
+    '2.5.4',
+    '2.5.5',
+    '2.5.6',
+    '4.1.3'
+  ];
+
+  const wcag22_SC = [
+    '2.4.11',
+    '2.4.12',
+    '2.4.13',
+    '2.5.7',
+    '2.5.8',
+    '3.2.6',
+    '3.3.7',
+    '3.3.8',
+    '3.3.9'
+    ];
+
+  /* helper functions */
+
+  function getWCAGVersion (primaryId) {
+    if (wcag21_SC.includes(primaryId)) {
+      return 'WCAG21';
+    }
+    if (wcag22_SC.includes(primaryId)) {
+      return 'WCAG22';
+    }
+    return 'WCAG20';
+  }
+
+
   /* ----------------------------------------------------------------   */
   /*                             Rule                                   */
   /* ----------------------------------------------------------------   */
@@ -24755,6 +24829,7 @@
       this.wcag_primary        = getSuccessCriterionInfo(this.wcag_primary_id);
       this.wcag_related        = getSuccessCriteriaInfo(this.wcag_related_ids);
       this.wcag_level          = getCommonMessage('level', this.wcag_primary.level);
+      this.wcag_version        = getWCAGVersion(this.wcag_primary_id);
 
       this.rule_nls_id           = getRuleId(this.rule_id); // String
       this.summary               = getRuleSummary(this.rule_id); // String
@@ -24770,6 +24845,18 @@
       this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
 
       debug$g.flag && this.toJSON();
+    }
+
+    get isWCAG20 () {
+      return this.wcag_version === 'WCAG20';
+    }
+
+    get isWCAG21 () {
+      return this.isWCAG20 || this.wcag_version === 'WCAG21';
+    }
+
+    get isWCAG22 () {
+      return this.isWCAG20 || this.isWCAG21 || this.wcag_version === 'WCAG22';
     }
 
     get isLevelA () {
@@ -26934,27 +27021,89 @@
 
   /* Constants */
   const debug$6 = new DebugLogging('EvaluationResult', false);
-  debug$6.flag = false;
+  debug$6.flag = true;
+
+  /* helper functions */
+
+  function isWCAG(ruleset, level, rule) {
+
+    switch (ruleset.toUpperCase()) {
+      case 'WCAG20':
+        if (!rule.isWCAG20) {
+          return false;
+        }
+        break;
+
+      case 'WCAG21':
+        if (!rule.isWCAG21) {
+          return false;
+        }
+        break;
+
+      case 'WCAG22':
+        if (!rule.isWCAG22) {
+          return false;
+        }
+        break;
+
+      default:
+        return false;
+
+
+    }
+
+    switch (level.toUpperCase()) {
+      case 'A':
+        if (!rule.isLevelA) {
+          return false;
+        }
+        break;
+
+      case 'AA':
+        if (!rule.isLevelA && !rule.isLevelAA) {
+          return false;
+        }
+        break;
+
+      case 'AAA':
+        return true;
+
+      default:
+        return false;
+    }
+
+    return true;
+
+  }
+
+  function isFilter(ruleset, ruleFilter, ruleId) {
+    return (ruleset.toUpperCase() === 'FILTER') && ruleFilter.includes(ruleId);
+  }
 
   class EvaluationResult {
-    constructor (allRules, domCache, title, url,  ruleset="AA", scopeFilter="ALL", ruleFilter=[]) {
+    constructor (allRules, domCache, title, url, ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter=[]) {
 
       this.title = title;
       this.url = url;
+      this.ruleset = ruleset;
+      this.level = level;
+      this.scopeFilter = scopeFilter;
+
       this.date = getFormattedDate();
       this.version = VERSION;
       this.allDomElements = domCache.allDomElements;
       this.allRuleResults = [];
 
       const startTime = new Date();
-      debug$6.flag && debug$6.log(`[ruleset]: ${this.ruleset}`);
-      debug$6.flag && debug$6.log(`[scopeFilter]: ${this.scopeFilter}`);
+      debug$6.flag && debug$6.log(`[    ruleset]: ${ruleset}`);
+      debug$6.flag && debug$6.log(`[      level]: ${level}`);
+      debug$6.flag && debug$6.log(`[scopeFilter]: ${scopeFilter}`);
 
       allRules.forEach (rule => {
-        if (((ruleset === 'A')  && (rule.isLevelA)) ||
-            ((ruleset === 'AA') && (rule.isLevelA || rule.isLevelAA)) ||
-             (ruleset === 'AAA') ||
-            ((ruleset === 'FILTER') && ruleFilter.includes(rule.getId()))) {
+        debug$6.flag && debug$6.log(`[version]: ${rule.wcag_primary_id} ${rule.wcag_version} ${rule.isWCAG20} ${rule.isWCAG21} ${rule.isWCAG22}`);
+
+        if (isFilter(ruleset, ruleFilter, rule.getId()) ||
+            isWCAG(ruleset, level, rule)) {
 
           if ((scopeFilter === 'ALL') ||
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
@@ -27224,14 +27373,15 @@
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
      */
 
-    evaluate (startingDoc, title='', url='', ruleset='AA', scopeFilter='ALL', ruleFilter = []) {
+    evaluate (startingDoc, title='', url='', ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter = []) {
 
       debug$5.log(`[    ruleset]: ${ruleset}`);
+      debug$5.log(`[      level]: ${level}`);
       debug$5.log(`[scopeFilter]: ${scopeFilter}`);
       debug$5.log(`[ ruleFilter]: ${ruleFilter}`);
 
       let domCache = new DOMCache(startingDoc);
-      let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, scopeFilter, ruleFilter);
+      let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, level, scopeFilter, ruleFilter);
 
       // Debug features
       if (debug$5.flag) {
@@ -27275,16 +27425,17 @@
 
   /* evaluate.js */
 
-  function evaluate (ruleset="AA", scopeFilter="ALL", ruleFilter=[]) {
+  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleFilter=[]) {
 
     console.log(`[eveluate][    ruleset]: ${ruleset}`);
+    console.log(`[eveluate][      level]: ${level}`);
     console.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
     console.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
 
     // evaluation script
     let doc = window.document;
     let evaluationLibrary = new EvaluationLibrary();
-    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href, ruleset, scopeFilter, ruleFilter);
+    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href, ruleset, level, scopeFilter, ruleFilter);
     return evaluationResult;
   }
 
@@ -27489,21 +27640,19 @@
   *   (1) Run evlauation library;
   *   (2) return result object for the all rules view in the sidebar;
   */
-  function getAllRulesInfo (ruleset, scopeFilter, firstStepRules) {
+  function getAllRulesInfo (ruleset, level, scopeFilter, firstStepRules) {
 
     debug$4.flag && debug$4.log(`[    ruleset]: ${ruleset}`);
+    debug$4.flag && debug$4.log(`[      level]: ${level}`);
     debug$4.flag && debug$4.log(`[scopeFilter]: ${scopeFilter}`);
     debug$4.flag && debug$4.log(`[ ruleFilter]: ${firstStepRules}`);
 
-    const info = {};
-
-    const evaluationResult  = evaluate(ruleset, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
     const ruleGroupResult   = evaluationResult.getRuleResultsAll();
     const ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
     const ruleResults       = ruleGroupResult.getRuleResultsArray();
 
-
-    info.ruleset  = 'ARIA_STRICT';
+    const info = {};
 
     info.violations    = ruleSummaryResult.violations;
     info.warnings      = ruleSummaryResult.warnings;
@@ -27534,11 +27683,11 @@
   *   (1) Run evlauation library;
   *   (2) return result objec for the group view in the sidebar;
   */
-  function getRuleGroupInfo (groupType, groupId, ruleset, scopeFilter, firstStepRules) {
+  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter, firstStepRules) {
 
     let info = {};
 
-    const evaluationResult  = evaluate(ruleset, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
     const ruleGroupResult = (groupType === 'gl') ?
                             evaluationResult.getRuleResultsByGuideline(groupId) :
                             (groupType === 'rc') ? evaluationResult.getRuleResultsByCategory(groupId) :
@@ -28284,6 +28433,7 @@
       debug.log(`[getEvaluationInfo][        groupId]: ${aiInfo.groupId}`);
       debug.log(`[getEvaluationInfo][         ruleId]: ${aiInfo.ruleId}`);
       debug.log(`[getEvaluationInfo][        ruleset]: ${aiInfo.ruleset}`);
+      debug.log(`[getEvaluationInfo][          level]: ${aiInfo.level}`);
       debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
       debug.log(`[getEvaluationInfo][ firstStepRules]: ${aiInfo.firstStepRules} (${aiInfo.firstStepRules.length})` );
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
@@ -28295,21 +28445,23 @@
     }
 
     let info = {};
-    info.id       = 'info';
-    info.title    = document.title;
-    info.location = document.location.href;
-    info.ruleset  = aiInfo.rulesetId;
+    info.id          = 'info';
+    info.title       = document.title;
+    info.location    = document.location.href;
+    info.ruleset     = aiInfo.ruleset;
+    info.level       = aiInfo.level;
+    info.scopeFilter = aiInfo.scopeFilter;
 
     switch(aiInfo.view) {
       case viewId.allRules:
         clearHighlights();
-        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
         ruleResult = false;
         break;
 
       case viewId.ruleGroup:
         clearHighlights();
-        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
         ruleResult = false;
         break;
 
@@ -28322,7 +28474,7 @@
             info.infoHighlight = true;
           }
         } else {
-          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.scopeFilter, aiInfo.firstStepRules);
+          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
           highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
