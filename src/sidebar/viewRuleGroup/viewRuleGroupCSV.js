@@ -30,8 +30,8 @@ export default class ViewRuleResultsCSV extends commonCSV {
     this.isAllRules  = (groupId === RULE_CATEGORIES.ALL_RULES) || (groupId === GUIDELINES.ALL_RULES);
   }
 
-  getCSV (options, title, url) {
-    let csv = super.getCSV(options, title, url);
+  getCSV (options, title, url, rulesetLabel) {
+    let csv = super.getCSV(options, title, url, rulesetLabel);
     let msgId = '';
 
     if (this.groupType === 'gl') {

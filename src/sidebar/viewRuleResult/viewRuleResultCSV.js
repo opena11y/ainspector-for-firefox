@@ -208,7 +208,7 @@ export default class ViewRuleResultCSV extends commonCSV{
     return null;
   }
 
-  getCSV (options, title, location) {
+  getCSV (options, title, location, rulesetLabel) {
 
     let accNameProps = this.getAccNameProps();
     let ccrProps     = this.getColorContrastProps();
@@ -216,7 +216,7 @@ export default class ViewRuleResultCSV extends commonCSV{
     let htmlAttrProps    = this.getHTMLAttributeProps();
     let ariaAttrProps    = this.getARIAAttributeProps();
 
-    let csv = super.getCSV(options, title, location);
+    let csv = super.getCSV(options, title, location, rulesetLabel);
 
     csv += this.getRuleTitle(this.detailsAction);
     csv += this.getBlankRow();

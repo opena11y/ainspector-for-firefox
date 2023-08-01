@@ -90,9 +90,9 @@ export default class ViewRuleResult {
 
   }
 
-  toCSV (options, title, location) {
+  toCSV (options, title, location, rulesetLabel) {
     let viewCSV = new ViewRuleResultCSV(this.detailsAction, this.elementResults, this.elementSummary);
-    return viewCSV.getCSV(options, title, location);
+    return viewCSV.getCSV(options, title, location, rulesetLabel);
   }
 
   toJSON () {

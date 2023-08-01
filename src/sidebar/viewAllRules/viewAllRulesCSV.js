@@ -52,10 +52,10 @@ export default class ViewAllRulesCSV extends commonCSV {
     this.ruleResults   = ruleResults;
   }
 
-  getCSV (options, title, location) {
+  getCSV (options, title, location, rulesetLabel) {
     let i, r;
 
-    let csv = super.getCSV(options, title, location);
+    let csv = super.getCSV(options, title, location, rulesetLabel);
 
     csv += this.getRuleSummary(this.ruleSummary, 'allRulesLabel');
 

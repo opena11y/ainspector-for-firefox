@@ -121,9 +121,9 @@ export default class ViewRuleGroup {
 
   }
 
-  toCSV (options, title, location) {
+  toCSV (options, title, location, rulesetLabel) {
     let viewCSV = new ViewRuleGroupCSV(this.groupType, this.groupTitle, this.ruleResults, this.ruleSummary, this.groupId);
-    return viewCSV.getCSV(options, title, location);
+    return viewCSV.getCSV(options, title, location, rulesetLabel);
   }
 
   toJSON () {

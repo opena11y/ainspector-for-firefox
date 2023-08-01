@@ -27,7 +27,7 @@ div[aria-selected].tab {
 }
 
 div.tabpanel {
-  min-height: 36em;
+  min-height: 28em;
 }
 
 div.tabpanel.hide {

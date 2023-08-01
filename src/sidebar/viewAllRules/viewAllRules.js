@@ -125,9 +125,9 @@ export default class ViewAllRules {
     this.initGrids();
   }
 
-  toCSV (options, title, location) {
+  toCSV (options, title, location, rulesetLabel) {
     let viewCSV = new ViewAllRulesCSV(this.ruleSummary, this.rcResults, this.glResults, this.allRuleResults);
-    return viewCSV.getCSV(options, title, location);
+    return viewCSV.getCSV(options, title, location, rulesetLabel);
   }
 
   toJSON () {

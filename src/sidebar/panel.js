@@ -337,17 +337,17 @@ function onExportClick () {
 
         case viewId.allRules:
           fname = options.filenameAllRules;
-          csv = vAllRules.toCSV(options, pageTitle, pageLocation);
+          csv = vAllRules.toCSV(options, pageTitle, pageLocation, pageRuleset);
           break;
 
         case viewId.ruleGroup:
           fname = options.filenameRuleGroup;
-          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation, sidebarGroupId);
+          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation, pageRuleset, sidebarGroupId);
           break;
 
         case viewId.ruleResult:
           fname = options.filenameRuleResult;
-          csv = vRuleResult.toCSV(options, pageTitle, pageLocation);
+          csv = vRuleResult.toCSV(options, pageTitle, pageLocation, pageRuleset);
           break;
 
         default:
@@ -544,7 +544,7 @@ function updateSidebar (info) {
     pageLocation = info.location;
 
     infoRuleset.textContent = info.evaluationLabel;
-    pageRuleset = info.ruleset;
+    pageRuleset = info.evaluationLabel;
 
     // Update the headings box
     if (typeof info.infoAllRules === 'object') {

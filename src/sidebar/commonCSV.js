@@ -112,10 +112,11 @@ export class commonCSV {
     return csv;
   }
 
-  getCSV (options, title, location) {
+  getCSV (options, title, location, rulesetLabel) {
     let csv = '';
     csv += this.arrayToCSV([msg.csvPageTitle, title]);
     csv += this.arrayToCSV([msg.csvPageURL, location]);
+    csv += this.arrayToCSV([msg.csvRuleset, rulesetLabel]);
     csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
     csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
     csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);

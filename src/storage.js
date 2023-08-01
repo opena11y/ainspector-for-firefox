@@ -10,7 +10,7 @@ export const defaultOptions = {
   isSidebarOpen: false,
   viewsMenuIncludeGuidelines: true,
   ruleset: 'WCAG21',
-  level: 'AA',
+  level : 'AA',
   scopeFilter: 'ALL',
   firstStepRules: ['COLOR_1', 'COLOR_2', 'CONTROL_1', 'CONTROL_2', 'CONTROL_10', 'HEADING_1', 'IMAGE_1', 'KEYBOARD_2', 'KEYBOARD_3', 'TABLE_1'],
   rerunDelayEnabled: true,
