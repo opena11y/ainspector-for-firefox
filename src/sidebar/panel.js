@@ -543,7 +543,7 @@ function updateSidebar (info) {
     infoLocation.textContent = info.location;
     pageLocation = info.location;
 
-    infoRuleset.textContent = info.ruleset + ' ' + info.level + ' ' + info.scopeFilter;
+    infoRuleset.textContent = info.evaluationLabel;
     pageRuleset = info.ruleset;
 
     // Update the headings box

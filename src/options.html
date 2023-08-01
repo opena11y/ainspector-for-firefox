@@ -16,13 +16,19 @@
              role="tab"
              id="tab-general-options"
              aria-controls="tabpanel-general-options">
-          General Options
+          General
+        </div>
+        <div class="tab"
+             role="tab"
+             id="tab-ruleset-options"
+             aria-controls="tabpanel-ruleset-options">
+          Ruleset
         </div>
         <div class="tab"
              role="tab"
              id="tab-export-options"
              aria-controls="tabpanel-export-options">
-          Export Options
+          Export
         </div>
         <div class="tab"
              role="tab"
@@ -63,9 +69,36 @@
             <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
           </label>
         </fieldset>
+      </div>
+
+      <div class="tabpanel"
+           role="tabpanel"
+           id="tabpanel-ruleset-options"
+           aria-labelledby="tab-ruleset-options">
 
         <fieldset>
-          <legend id="options-ruleset-legend">Ruleset Options</legend>
+          <legend id="options-ruleset-legend">WCAG Rule Levels</legend>
+
+          <label>
+            <input type="radio" name="wcag-level" value="A" id="options-ruleset-level-a"/>
+            <span id="options-ruleset-level-a-only-label">Level A only</span>
+          </label>
+
+          <label>
+            <input type="radio" name="wcag-level" value="AA" id="options-ruleset-level-aa"/>
+            <span id="options-ruleset-level-a-only-label">Level A and AA</span>
+          </label>
+
+          <label style="margin-left: 2rem">
+            <input type="checkbox" value="" id="options-ruleset-color-enhanced"/>
+            <span id="options-ruleset-color-enhanced-label">Include Enhanced Color Contrast rule (Level AAA)</span>
+          </label>
+
+        </fieldset>
+
+
+        <fieldset>
+          <legend id="options-ruleset-legend">Rulesets</legend>
 
           <label>
             <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
@@ -86,17 +119,6 @@
             <input type="radio" name="ruleset" value="WCAG22" id="options-ruleset-wcag22"/>
             <span id="options-ruleset-wcag22-label">WCAG 2.2 ruleset</span>
           </label>
-
-          <label style="margin-top: 1.5em">
-            <input type="checkbox" value="" id="options-ruleset-level-a-only"/>
-            <span id="options-ruleset-level-a-only-label">Include Level A rules only</span>
-          </label>
-
-          <label>
-            <input type="checkbox" value="" id="options-ruleset-color-enhanced"/>
-            <span id="options-ruleset-color-enhanced-label">Include SC 1.4.6 enhanced color contrast rule (Level AAA)</span>
-          </label>
-
         </fieldset>
 
         <fieldset>

@@ -631,7 +631,7 @@
   },
 
   "optionsTitle": {
-    "message": "General Options",
+    "message": "General",
     "description": "Title for the options page"
   },
 
@@ -701,7 +701,7 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export Options",
+    "message": "Export",
     "description": "Label for file name legend in the export section of the options page"
   },
 

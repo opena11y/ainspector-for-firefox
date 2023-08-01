@@ -1,8 +1,14 @@
 /* optionsTablist.css */
 
+div.tablist {
+  border-bottom: 1px solid #ccc;
+}
+
 div.tab {
   mnargin: 0;
   padding: 6px;
+  margin-left: 6px;
+  maring-right: 6px;
   display: inline-block;
   font-size: 1.25rem;
   cursor: pointer;
@@ -13,11 +19,11 @@ div.tab:hover {
   border-bottom: 2px solid #888;
 }
 
-
 div[aria-selected].tab {
   padding-bottom: 4px;
-  border-bottom: 2px solid #222;
+  border-bottom: 2px solid rgb(0, 97, 224);
   font-weight: bold;
+  color: rgb(0, 97, 224);
 }
 
 div.tabpanel {

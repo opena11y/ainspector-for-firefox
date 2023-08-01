@@ -57,7 +57,8 @@ const rulesetRadioWCAG20  = document.querySelector('#options-ruleset-wcag20');
 const rulesetRadioWCAG21  = document.querySelector('#options-ruleset-wcag21');
 const rulesetRadioWCAG22  = document.querySelector('#options-ruleset-wcag22');
 
-const rulesetCheckboxLevelAOnly    = document.querySelector('#options-ruleset-level-a-only');
+const rulesetRadioLevelA    = document.querySelector('#options-ruleset-level-a');
+const rulesetRadioLevelAA   = document.querySelector('#options-ruleset-level-aa');
 const rulesetCheckboxColorEnhanced = document.querySelector('#options-ruleset-color-enhanced');
 
 const rulesetScopeAll     = document.querySelector('#options-scope-all');
@@ -171,7 +172,7 @@ function saveFormOptions (e) {
   }
 
   let level = 'AA';
-  if (rulesetCheckboxLevelAOnly.checked) {
+  if (rulesetRadioLevelA.checked) {
     level = 'A';
     rulesetCheckboxColorEnhanced.checked = false;
     rulesetCheckboxColorEnhanced.disabled = true;
@@ -180,18 +181,13 @@ function saveFormOptions (e) {
     rulesetCheckboxColorEnhanced.disabled = false;
   }
 
-  if (rulesetCheckboxColorEnhanced.checked) {
-    level = 'AAA';
-    rulesetCheckboxLevelAOnly.checked = false;
-    rulesetCheckboxLevelAOnly.disabled = true;
-  }
-  else {
-    rulesetCheckboxLevelAOnly.disabled = false;
+  if (rulesetRadioLevelAA.checked) {
+    level = 'AA';
   }
 
-  console.log(`[saveFormOptions][    levelAOnly]: ${rulesetCheckboxLevelAOnly.checked}`);
-  console.log(`[saveFormOptions][color enhanced]: ${rulesetCheckboxColorEnhanced.checked}`);
-  console.log(`[saveFormOptions][         level]: ${level}`);
+  if (rulesetCheckboxColorEnhanced.checked) {
+    level = 'AAA';
+  }
 
   let scopeFilter = 'ALL';
 
@@ -252,8 +248,13 @@ function updateForm (options) {
 
   console.log(`[updateForm][level]: ${options.level}`);
 
-  rulesetCheckboxLevelAOnly.checked    = options.level === 'A';
+  rulesetRadioLevelA.checked    = options.level === 'A';
+  rulesetRadioLevelAA.checked    = (options.level === 'AA') || (options.level === 'AAA');
   rulesetCheckboxColorEnhanced.checked = options.level === 'AAA';
+
+  if (rulesetRadioLevelA.checked) {
+    rulesetCheckboxColorEnhanced.disabled = true;
+  }
 
   rulesetScopeAll.checked     = options.scopeFilter === rulesetScopeAll.value;
   rulesetScopePage.checked    = options.scopeFilter === rulesetScopePage.value;
@@ -389,7 +390,8 @@ rulesetRadioWCAG20.addEventListener('change', saveFormOptions);
 rulesetRadioWCAG21.addEventListener('change', saveFormOptions);
 rulesetRadioWCAG22.addEventListener('change', saveFormOptions);
 
-rulesetCheckboxLevelAOnly.addEventListener('change', saveFormOptions);
+rulesetRadioLevelA.addEventListener('change', saveFormOptions);
+rulesetRadioLevelAA.addEventListener('change', saveFormOptions);
 rulesetCheckboxColorEnhanced.addEventListener('change', saveFormOptions);
 
 rulesetScopeAll.addEventListener('change', saveFormOptions);
