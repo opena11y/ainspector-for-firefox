@@ -711,7 +711,7 @@
   },
 
   "optionsExportButtonLegend": {
-    "message": "'Export Data' Button",
+    "message": "Export Data button",
     "description": "Legend for prompt for export options button"
   },
 
