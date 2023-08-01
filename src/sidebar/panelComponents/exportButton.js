@@ -9,9 +9,9 @@ const getMessage = browser.i18n.getMessage;
 const msg = {
   cancelButtonLabel         : getMessage('cancelButtonLabel'),
   closeButtonLabel          : getMessage('closeButtonLabel'),
-  exportButtonLabel         : getMessage('exportButtonLabel'),
+  exportButtonLabel         : getMessage('exportDataButtonLabel'),
   exportDialogTitle         : getMessage('exportDialogTitle'),
-  okButtonLabel             : getMessage('okButtonLabel'),
+  okButtonLabel             : getMessage('exportButtonLabel'),
 
   optionsExportCSVLabel        : getMessage('optionsExportCSVLabel'),
   optionsExportFilenameLegend  : getMessage('optionsExportFilenameLegend'),

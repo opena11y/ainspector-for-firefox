@@ -10,7 +10,7 @@ const getMessage = browser.i18n.getMessage;
 const msg = {
   cancelButtonLabel    : getMessage('cancelButtonLabel'),
   closeButtonLabel     : getMessage('closeButtonLabel'),
-  okButtonLabel        : getMessage('okButtonLabel'),
+  okButtonLabel        : getMessage('rerunButtonLabel'),
   rerunEvalButtonLabel : getMessage('rerunEvalButtonLabel'),
   rerunEvalDialogTitle : getMessage('rerunEvalDialogTitle'),
   rerunEvalSelectLabel : getMessage('rerunEvalSelectLabel'),

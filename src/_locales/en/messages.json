@@ -580,14 +580,14 @@
     "description": "Label for button in views menu button"
   },
 
-  "exportButtonLabel": {
+  "exportDataButtonLabel": {
     "message": "Export Data",
-    "description": "Label for rerun export button in the footer of the main panel"
+    "description": "Label for export data button in the footer of the main panel"
   },
 
   "exportDialogTitle": {
-    "message": "Export Data Options",
-    "description": "Title for export evaluation options dialog box"
+    "message": "Data Export Options",
+    "description": "Title for data export options dialog box"
   },
 
   "rerunEvalButtonLabel": {
@@ -606,13 +606,13 @@
   },
 
   "rerunEvalPromptForDelayLabel": {
-    "message": "After this evaluation, stop prompting for delay setting.",
+    "message": "Do not prompt for delay setting",
     "description": "Label for checkbox input in rerun evaluation dialog box"
   },
 
   "cancelButtonLabel": {
     "message": "Cancel",
-    "description": "Label for cancel button in a dialog box"
+    "description": "Label for Cancel button in a dialog box"
   },
 
   "okButtonLabel": {
@@ -623,6 +623,16 @@
   "closeButtonLabel": {
     "message": "Close",
     "description": "Label for Close button in a dialog box"
+  },
+
+  "rerunButtonLabel": {
+    "message": "Rerun",
+    "description": "Label for Rerun button in a dialog box"
+  },
+
+  "exportButtonLabel": {
+    "message": "Export",
+    "description": "Label for Export button in a dialog box"
   },
 
   "moreButtonLabel": {
@@ -642,7 +652,7 @@
 
   "optionsInclWcagGlLabel": {
     "message": "Include WCAG Guidelines",
-    "description": "Label for checkbox to include WCAG Guidleines in views menu"
+    "description": "Label for checkbox to include WCAG Guidelines in views menu"
   },
 
   "optionsInclRuleScopeLabel": {
@@ -651,7 +661,7 @@
   },
 
   "optionsRerunEvaluationLegend": {
-    "message": "Rerun Evaluation behavior",
+    "message": "Rerun Evaluation button",
     "description": "Legend for rerun evaluation section in the options page"
   },
 
@@ -661,7 +671,7 @@
   },
 
   "optionsPromptForDelayLabel": {
-    "message": "Prompt for delay settings",
+    "message": "Prompt for delay setting",
     "description": "Label for rerun with prompted delay checkbox in the options page"
   },
 
@@ -701,12 +711,12 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export Data",
-    "description": "Label for file name legend in the export section of the options page"
+    "message": "Data Export",
+    "description": "Label for the data export section of the options page"
   },
 
   "optionsExportPrompt": {
-    "message": "Prompt for export options",
+    "message": "Prompt for data export options",
     "description": "Prompt for export options when the export button is pressed"
   },
 
@@ -766,7 +776,7 @@
   },
 
   "optionsExportPromptForOptions": {
-    "message": "Do not prompt for export options.",
+    "message": "Do not prompt for data export options",
     "description": "Label for disable prompting for export export file name options when activating the export button."
   },
 
