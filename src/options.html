@@ -9,20 +9,18 @@
 
   <body>
     <form>
-      <h2>AInpsector Preferences</h2>
-
       <div class="tablist" role="tablist">
+        <div class="tab"
+             role="tab"
+             id="tab-ruleset-options"
+             aria-controls="tabpanel-ruleset-options">
+          Ruleset Options
+        </div>
         <div class="tab"
              role="tab"
              id="tab-general-options"
              aria-controls="tabpanel-general-options">
           General
-        </div>
-        <div class="tab"
-             role="tab"
-             id="tab-ruleset-options"
-             aria-controls="tabpanel-ruleset-options">
-          Ruleset
         </div>
         <div class="tab"
              role="tab"
@@ -77,12 +75,31 @@
            aria-labelledby="tab-ruleset-options">
 
         <fieldset>
-          <legend id="options-ruleset-legend">WCAG Rule Levels</legend>
+          <legend id="options-ruleset-legend">Ruleset</legend>
 
           <label>
-            <input type="radio" name="wcag-level" value="A" id="options-ruleset-level-a"/>
-            <span id="options-ruleset-level-a-only-label">Level A only</span>
+            <input type="radio" name="ruleset" value="WCAG20" id="options-ruleset-wcag20"/>
+            <span id="options-ruleset-wcag20-label">WCAG 2.0</span>
           </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="WCAG21" checked id="options-ruleset-wcag21"/>
+            <span id="options-ruleset-wcag21-label">WCAG 2.1</span>
+          </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="WCAG22" id="options-ruleset-wcag22"/>
+            <span id="options-ruleset-wcag22-label">WCAG 2.2</span>
+          </label>
+
+          <label>
+            <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
+            <span id="options-ruleset-filter-label">First Step rules only</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-ruleset-legend">WCAG Rule Levels</legend>
 
           <label>
             <input type="radio" name="wcag-level" value="AA" id="options-ruleset-level-aa"/>
@@ -94,50 +111,30 @@
             <span id="options-ruleset-color-enhanced-label">Include Enhanced Color Contrast rule (Level AAA)</span>
           </label>
 
-        </fieldset>
-
-
-        <fieldset>
-          <legend id="options-ruleset-legend">Rulesets</legend>
-
           <label>
-            <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
-            <span id="options-ruleset-filter-label">First step rules</span>
+            <input type="radio" name="wcag-level" value="A" id="options-ruleset-level-a"/>
+            <span id="options-ruleset-level-a-only-label">Level A only</span>
           </label>
 
-          <label>
-            <input type="radio" name="ruleset" value="WCAG20" id="options-ruleset-wcag20"/>
-            <span id="options-ruleset-wcag20-label">WCAG 2.0 ruleset</span>
-          </label>
-
-          <label>
-            <input type="radio" name="ruleset" value="WCAG21" checked id="options-ruleset-wcag21"/>
-            <span id="options-ruleset-wcag21-label">WCAG 2.1 ruleset</span>
-          </label>
-
-          <label>
-            <input type="radio" name="ruleset" value="WCAG22" id="options-ruleset-wcag22"/>
-            <span id="options-ruleset-wcag22-label">WCAG 2.2 ruleset</span>
-          </label>
         </fieldset>
 
         <fieldset>
-            <legend id="options-scope-legend">Rule Scope Filter</legend>
+            <legend id="options-scope-legend">Rule Scope filter</legend>
 
           <label>
             <input type="radio" name="scope" value="ALL" checked id="options-scope-all"/>
-            <span id="options-scope-all-label">All rule results (default)</span>
+            <span id="options-scope-all-label">All rules (Element, Page, and Website scopes)</span>
           </label>
 
           <label>
             <input type="radio" name="scope" value="PAGE" id="options-scope-page"/>
-            <span id="options-scope-page-label">Page only rule results</span>
+            <span id="options-scope-page-label">Page scope rules only</span>
           </label>
 
 
           <label>
             <input type="radio" name="scope" value="WEBSITE" id="options-scope-website"/>
-            <span id="options-scope-website-label">Website only rule results</span>
+            <span id="options-scope-website-label">Website scope rules only</span>
           </label>
         </fieldset>
       </div>

@@ -636,7 +636,7 @@
   },
 
   "optionsViewsMenuLegend": {
-    "message": "'Views' Menu",
+    "message": "Views menu",
     "description": "Legend for view menu in the options page"
   },
 
@@ -651,7 +651,7 @@
   },
 
   "optionsRerunEvaluationLegend": {
-    "message": "'Rerun Evaluation' Button",
+    "message": "Rerun Evaluation behavior",
     "description": "Legend for rerun evaluation section in the options page"
   },
 
@@ -661,7 +661,7 @@
   },
 
   "optionsPromptForDelayLabel": {
-    "message": "Prompt with delay setting",
+    "message": "Prompt for delay settings",
     "description": "Label for rerun with prompted delay checkbox in the options page"
   },
 
@@ -686,12 +686,12 @@
   },
 
   "optionsRuleResultsLegend": {
-    "message": "'Rule Results' View",
+    "message": "Rule Result Types filter",
     "description": "Legend for the rule results section on the options page"
   },
 
   "optionsInclPassNaLabel": {
-    "message": "Include 'Pass' and 'N/A' results",
+    "message": "Include 'Passed' and 'Not Applicable' results",
     "description": "Label for checkbox to include pass and n/a results in the options page"
   },
 
