@@ -701,7 +701,7 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export",
+    "message": "Export Data",
     "description": "Label for file name legend in the export section of the options page"
   },
 
