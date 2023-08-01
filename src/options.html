@@ -38,39 +38,6 @@
 
       <div class="tabpanel"
            role="tabpanel"
-           id="tabpanel-general-options"
-           aria-labelledby="tab-general-options">
-        <fieldset>
-          <legend id="options-rule-results-legend">Rule Results</legend>
-          <label>
-            <input type="checkbox" checked id="options-incl-pass-na"/>
-            <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
-          </label>
-        </fieldset>
-
-        <fieldset>
-          <legend id="options-rerun-evaluation-legend">'Rerun Evaluation' Button</legend>
-          <label>
-            <input type="radio" name="delay" id="options-no-delay" checked/>
-            <span id="options-no-delay-label">Rerun with no delay</span>
-          </label>
-          <label>
-            <input type="radio" name="delay" id="options-prompt-for-delay"/>
-            <span id="options-prompt-for-delay-label">Prompt for delay setting</span>
-          </label>
-        </fieldset>
-
-        <fieldset>
-          <legend id="options-views-menu-legend">'Views' menu</legend>
-          <label>
-            <input type="Checkbox" checked id="options-incl-wcag-gl"/>
-            <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
-          </label>
-        </fieldset>
-      </div>
-
-      <div class="tabpanel"
-           role="tabpanel"
            id="tabpanel-ruleset-options"
            aria-labelledby="tab-ruleset-options">
 
@@ -94,7 +61,7 @@
 
           <label>
             <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
-            <span id="options-ruleset-filter-label">First Step Rules only</span>
+            <span id="options-ruleset-filter-label">First Step rules</span>
           </label>
         </fieldset>
 
@@ -135,6 +102,39 @@
           <label>
             <input type="radio" name="scope" value="WEBSITE" id="options-scope-website"/>
             <span id="options-scope-website-label">Website scope rules only</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <div class="tabpanel"
+           role="tabpanel"
+           id="tabpanel-general-options"
+           aria-labelledby="tab-general-options">
+        <fieldset>
+          <legend id="options-rule-results-legend">Rule Results</legend>
+          <label>
+            <input type="checkbox" checked id="options-incl-pass-na"/>
+            <span id="options-incl-pass-na-label">Include 'Pass' and 'N/A' results</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-rerun-evaluation-legend">'Rerun Evaluation' Button</legend>
+          <label>
+            <input type="radio" name="delay" id="options-no-delay" checked/>
+            <span id="options-no-delay-label">Rerun with no delay</span>
+          </label>
+          <label>
+            <input type="radio" name="delay" id="options-prompt-for-delay"/>
+            <span id="options-prompt-for-delay-label">Prompt for delay setting</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend id="options-views-menu-legend">'Views' menu</legend>
+          <label>
+            <input type="Checkbox" checked id="options-incl-wcag-gl"/>
+            <span id="options-incl-wcag-gl-label">Include WCAG Guidelines</span>
           </label>
         </fieldset>
       </div>
