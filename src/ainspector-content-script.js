@@ -18760,51 +18760,51 @@
 
   function getRulesetLabel(rulesetId, level, scopeFilter) {
 
-    function addLevel () {
-      switch (level) {
-        case 'A':
-          return 'Level A only';
+      function addLevel () {
+        switch (level) {
+          case 'A':
+            return 'Level A only';
 
-        case 'AA':
-          return 'Level A and AA';
+          case 'AA':
+            return 'Levels A and AA';
 
-        case 'AAA':
-          return 'Level A, AA and enhanced CCR';
+          case 'AAA':
+            return 'Levels A, AA and enhanced CCR';
+        }
+        return '';
       }
-      return '';
-    }
 
-    let label = '';
+      let label = '';
 
-    switch (rulesetId) {
+      switch (rulesetId) {
 
-      case 'FILTER':
-        label = 'First Step Rules';
-        break;
+        case 'FILTER':
+          label = 'First Step rules';
+          break;
 
-      case 'WCAG22':
-        label = 'WCAG 2.2, ' + addLevel();
-        break;
+        case 'WCAG22':
+          label = 'WCAG 2.2, ' + addLevel();
+          break;
 
-      case 'WCAG21':
-        label = 'WCAG 2.1, ' + addLevel();
-        break;
+        case 'WCAG21':
+          label = 'WCAG 2.1, ' + addLevel();
+          break;
 
-      default:
-        label = 'WCAG 2.0, ' + addLevel();
-        break;
-    }
+        default:
+          label = 'WCAG 2.0, ' + addLevel();
+          break;
+      }
 
-    switch (scopeFilter) {
-      case 'PAGE':
-        label += ', Page scope only';
-        break;
+      switch (scopeFilter) {
+        case 'PAGE':
+          label += ', Page scope only';
+          break;
 
-      case 'WEBSITE':
-        label += ', Website scope only';
-        break;
+        case 'WEBSITE':
+          label += ', Website scope only';
+          break;
 
-    }
+      }
 
     return label;
   }
