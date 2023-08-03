@@ -18746,19 +18746,19 @@
   }
 
   /**
-   * @function getEvaluationLabel
+   * @function getRulesetLabel
    *
    * @desc Retuns a localize string describing the options
    *       used in the evaluation
    *
-   * @param {String} rulesetId    - Used to idenitify the ruleset
-   * @param {String} level        - Used to idenitify the WCAG level
-   * @param {String} scopeFilter  - Used to idenitify rule scope filters
+   * @param {String} rulesetId    - Used to identify the ruleset
+   * @param {String} level        - Used to identify the WCAG level
+   * @param {String} scopeFilter  - Used to identify rule scope filters
    *
    * @return {String}  see @desc
    */
 
-  function getEvaluationLabel(rulesetId, level, scopeFilter) {
+  function getRulesetLabel(rulesetId, level, scopeFilter) {
 
     function addLevel () {
       switch (level) {
@@ -18797,11 +18797,11 @@
 
     switch (scopeFilter) {
       case 'PAGE':
-        label += ', Page only';
+        label += ', Page scope only';
         break;
 
       case 'WEBSITE':
-        label += ', Website only';
+        label += ', Website scope only';
         break;
 
     }
@@ -28577,7 +28577,7 @@
     info.ruleset     = aiInfo.ruleset;
     info.level       = aiInfo.level;
     info.scopeFilter = aiInfo.scopeFilter;
-    info.evaluationLabel = getEvaluationLabel(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
+    info.evaluationLabel = getRulesetLabel(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
 
     switch(aiInfo.view) {
       case viewId.allRules:
