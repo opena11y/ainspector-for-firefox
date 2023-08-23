@@ -148,7 +148,7 @@
   /* constants.js */
 
   /* Constants */
-  const debug$N = new DebugLogging('constants', false);
+  const debug$S = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta1';
 
@@ -603,13 +603,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$N.flag && debug$N.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$S.flag && debug$S.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$N.flag && debug$N.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$S.flag && debug$S.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -652,7 +652,7 @@
 
   /* utils.js */
   /* constants */
-  const labelableElements = ['input', 'meter', 'option', 'output', 'progress', 'select', 'textarea'];
+  const labelableElements = ['input', 'meter', 'output', 'progress', 'select', 'textarea'];
   const elementsWithInvalid = ['form', 'fieldset', 'input', 'legend'];
   const inputsWithChecked   = ['checkbox', 'radio'];
 
@@ -905,7 +905,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$M = new DebugLogging('ControlInfo', false);
+  const debug$R = new DebugLogging('ControlInfo', false);
 
   /**
    * @class ControlElement
@@ -1045,7 +1045,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$M.domElement(ce.domElement, prefix);
+        debug$R.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1266,15 +1266,15 @@
      */
 
     showControlInfo () {
-      if (debug$M.flag) {
-        debug$M.log('== Control Tree ==', 1);
+      if (debug$R.flag) {
+        debug$R.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$M.domElement(ce.domElement);
+          debug$R.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$M.log('== Forms ==', 1);
+        debug$R.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$M.domElement(ce.domElement);
+          debug$R.domElement(ce.domElement);
         });
       }
     }
@@ -6073,8 +6073,8 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$L = new DebugLogging('AriaInfo', false);
-  debug$L.flag = false;
+  const debug$Q = new DebugLogging('AriaInfo', false);
+  debug$Q.flag = false;
 
   /* Debug helper functions */
 
@@ -6297,15 +6297,15 @@
       }
 
 
-      if (debug$L.flag) {
-        node.attributes.length && debug$L.log(`${node.outerHTML}`, 1);
-        debug$L.log(`[         isWidget]: ${this.isWidget}`);
-        debug$L.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$L.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$L.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$L.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$L.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
-        debug$L.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$Q.flag) {
+        node.attributes.length && debug$Q.log(`${node.outerHTML}`, 1);
+        debug$Q.log(`[         isWidget]: ${this.isWidget}`);
+        debug$Q.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$Q.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$Q.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$Q.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$Q.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$Q.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6509,7 +6509,7 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$K = new DebugLogging('colorContrast', false);
+  const debug$P = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -6564,9 +6564,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$K.flag) {
-        debug$K.separator();
-        debug$K.tag(elementNode);
+      if (debug$P.flag) {
+        debug$P.separator();
+        debug$P.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -6588,11 +6588,11 @@
 
       this.colorContrastRatio = computeCCR(this.colorHex, this.backgroundColorHex);
 
-      if (debug$K.flag) {
-        debug$K.log(`[                    opacity]: ${this.opacity}`);
-        debug$K.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$K.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$K.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$P.flag) {
+        debug$P.log(`[                    opacity]: ${this.opacity}`);
+        debug$P.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$P.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$P.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -6679,10 +6679,10 @@
           (backgroundColor == 'transparent') ||
           (backgroundColor == 'inherit')) {
 
-        debug$K.flag && debug$K.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
+        debug$P.flag && debug$P.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
 
         if (parentColorContrast) {
-          debug$K.flag && debug$K.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
+          debug$P.flag && debug$P.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
           backgroundColor   = parentColorContrast.backgroundColor;
         }
         else {
@@ -6895,7 +6895,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$J = new DebugLogging('EventInfo', false);
+  const debug$O = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -6908,7 +6908,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$J.flag) {
+      if (debug$O.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -8508,7 +8508,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$I = new DebugLogging('ariaInHtml', false);
+  const debug$N = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8709,11 +8709,11 @@
       };
     }
 
-    if (debug$I.flag) {
+    if (debug$N.flag) {
       if (tagName === 'h2') {
-        debug$I.tag(node);
+        debug$N.tag(node);
       }
-      debug$I.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$N.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -8833,7 +8833,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$H = new DebugLogging('visibility', false);
+  const debug$M = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -8881,17 +8881,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$H.flag) {
-        debug$H.separator();
-        debug$H.tag(elementNode);
-        debug$H.log('[          isHidden]: ' + this.isHidden);
-        debug$H.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$H.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$H.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$H.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$H.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$H.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$H.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$M.flag) {
+        debug$M.separator();
+        debug$M.tag(elementNode);
+        debug$M.log('[          isHidden]: ' + this.isHidden);
+        debug$M.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$M.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$M.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$M.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$M.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$M.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$M.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -9204,8 +9204,8 @@
   /*
   *   namefrom.js
   */
-  const debug$G = new DebugLogging('nameFrom', false);
-  debug$G.flag = false;
+  const debug$L = new DebugLogging('nameFrom', false);
+  debug$L.flag = false;
 
   /*
   *   @function getElementContents
@@ -9351,7 +9351,7 @@
           if (name.length) return { name: normalize(name), source: 'label reference' };
         }
       } catch (error) {
-        debug$G.log(`[nameFromLabelElement][error]: ${error}`);
+        debug$L.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -9765,8 +9765,8 @@
   'h6',
   'summary'
   ];
-  const debug$F = new DebugLogging('getAccName', false);
-  debug$F.flag = false;
+  const debug$K = new DebugLogging('getAccName', false);
+  debug$K.flag = false;
 
   /*
   *   @function getAccessibleName
@@ -10056,8 +10056,8 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$E = new DebugLogging('DOMElement', false);
-  debug$E.flag = false;
+  const debug$J = new DebugLogging('DOMElement', false);
+  debug$J.flag = false;
 
   const elementsWithContent = [
     'area',
@@ -10379,12 +10379,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$E.flag) {
+      if (debug$J.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$E.domText(domItem, prefix);
+            debug$J.domText(domItem, prefix);
           } else {
-            debug$E.domElement(domItem, prefix);
+            debug$J.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -10464,7 +10464,7 @@
    *
    * @param  {Object}  node - DOM node
    *
-   * @return Returns value of tabindex if defined
+   * @return see @desc
    */
 
   function checkTabIndex (node) {
@@ -10477,7 +10477,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$D = new DebugLogging('domText', false);
+  const debug$I = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -10496,8 +10496,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$D.flag) {
-        debug$D.log(`[text]: ${this.text}`);
+      if (debug$I.flag) {
+        debug$I.log(`[text]: ${this.text}`);
       }
     }
 
@@ -10560,7 +10560,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$C = new DebugLogging('iframeInfo', false);
+  const debug$H = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -10578,9 +10578,9 @@
     }
 
     showInfo () {
-      if (debug$C.flag) {
-        debug$C.log(`[          src]: ${this.src}`);
-        debug$C.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$H.flag) {
+        debug$H.log(`[          src]: ${this.src}`);
+        debug$H.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -10616,8 +10616,8 @@
      */
 
     showIFrameInfo () {
-      if (debug$C.flag) {
-        debug$C.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$H.flag) {
+        debug$H.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
         });
@@ -10628,7 +10628,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$B = new DebugLogging('idInfo', false);
+  const debug$G = new DebugLogging('idInfo', false);
 
   /**
    * @class idInfo
@@ -10671,10 +10671,10 @@
      */
 
     showIdInfo () {
-      if (debug$B.flag) {
-        debug$B.log('== All Links ==', 1);
+      if (debug$G.flag) {
+        debug$G.log('== All Links ==', 1);
         this.idCounts.for( id => {
-          debug$B.log(`[${id}]: ${this.idCounts[id]}`);
+          debug$G.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -10683,7 +10683,7 @@
   /* imageInfo.js */
 
   /* Constants */
-  const debug$A = new DebugLogging('imageInfo', false);
+  const debug$F = new DebugLogging('imageInfo', false);
 
   /**
    * @class ImageElement
@@ -10742,7 +10742,7 @@
   /**
    * @class ImageInfo
    *
-   * @desc Collects information on the landmarks or headings on a web page for use in
+   * @desc Collects information on the image elements on a web page for use in
    *       rules
    */
 
@@ -10876,22 +10876,22 @@
      */
 
     showImageInfo () {
-      if (debug$A.flag) {
-        debug$A.log('== All Image elements ==', 1);
+      if (debug$F.flag) {
+        debug$F.log('== All Image elements ==', 1);
         this.allImageElements.forEach( ie => {
-          debug$A.log(`[fileName]: ${ie.fileName}`, true);
-          debug$A.log(`[    role]: ${ie.domElement.role}`);
-          debug$A.log(`[    name]: ${ie.domElement.accName.name}`);
-          debug$A.log(`[  source]: ${ie.domElement.accName.source}`);
-          debug$A.log(`[  length]: ${ie.domElement.accName.name.length}`);
+          debug$F.log(`[fileName]: ${ie.fileName}`, true);
+          debug$F.log(`[    role]: ${ie.domElement.role}`);
+          debug$F.log(`[    name]: ${ie.domElement.accName.name}`);
+          debug$F.log(`[  source]: ${ie.domElement.accName.source}`);
+          debug$F.log(`[  length]: ${ie.domElement.accName.name.length}`);
         });
-        debug$A.log('== All SVG domElements  ==', 1);
+        debug$F.log('== All SVG domElements  ==', 1);
         this.allSVGDomElements.forEach( de => {
-          debug$A.domElement(de);
+          debug$F.domElement(de);
         });
-        debug$A.log('== All MapElements ==', 1);
+        debug$F.log('== All MapElements ==', 1);
         this.allMapElements.forEach( me => {
-          debug$A.domElement(me.domElement);
+          debug$F.domElement(me.domElement);
         });
       }
     }
@@ -10900,7 +10900,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$z = new DebugLogging('linkInfo', false);
+  const debug$E = new DebugLogging('linkInfo', false);
 
   /**
    * @class LinkInfo
@@ -10946,10 +10946,10 @@
      */
 
     showLinkInfo () {
-      if (debug$z.flag) {
-        debug$z.log('== All Links ==', 1);
+      if (debug$E.flag) {
+        debug$E.log('== All Links ==', 1);
         this.allLinkDomElements.forEach( de => {
-          debug$z.domElement(de);
+          debug$E.domElement(de);
         });
       }
     }
@@ -10958,7 +10958,7 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$y = new DebugLogging('ListInfo', false);
+  const debug$D = new DebugLogging('ListInfo', false);
   const allListitemRoles = ['list', 'listitem', 'menu', 'menuitem', 'menuitemcheckbox', 'menuitemradio'];
   const listRoles = ['list', 'menu'];
 
@@ -10979,8 +10979,8 @@
       this.isListRole = this.isList(domElement);
       this.linkCount = 0;  // Used in determining if a list is for navigation
 
-      if (debug$y.flag) {
-        debug$y.log('');
+      if (debug$D.flag) {
+        debug$D.log('');
       }
     }
 
@@ -11005,9 +11005,9 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      debug$y.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
+      debug$D.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
       this.childListElements.forEach( le => {
-        debug$y.domElement(le.domElement, prefix);
+        debug$D.domElement(le.domElement, prefix);
         le.showListInfo(prefix + '  ');
       });
     }
@@ -11115,16 +11115,16 @@
      */
 
     showListInfo () {
-      if (debug$y.flag) {
-        debug$y.log('== All ListElements ==', 1);
-        debug$y.log(`[linkCount]: ${this.linkCount}`);
+      if (debug$D.flag) {
+        debug$D.log('== All ListElements ==', 1);
+        debug$D.log(`[linkCount]: ${this.linkCount}`);
         this.allListElements.forEach( le => {
-          debug$y.domElement(le.domElement);
+          debug$D.domElement(le.domElement);
         });
-        debug$y.log('== List Tree ==', 1);
-        debug$y.log(`[linkCount]: ${this.linkCount}`);
+        debug$D.log('== List Tree ==', 1);
+        debug$D.log(`[linkCount]: ${this.linkCount}`);
         this.childListElements.forEach( le => {
-          debug$y.domElement(le.domElement);
+          debug$D.domElement(le.domElement);
           le.showListInfo('  ');
         });
       }
@@ -11134,8 +11134,8 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$x = new DebugLogging('MediaInfo', false);
-  debug$x.flag = false;
+  const debug$C = new DebugLogging('MediaInfo', false);
+  debug$C.flag = false;
 
   /**
    * @class MediaElement
@@ -11315,6 +11315,7 @@
       this.embedElements  = [];
       this.objectElements = [];
       this.videoElements  = [];
+      this.allMediaElements = [];
     }
 
     update (mediaElement, domElement) {
@@ -11324,16 +11325,19 @@
         case 'audio':
           mediaElement = new MediaElement(domElement);
           this.audioElements.push(mediaElement);
+          this.allMediaElements.push(mediaElement);
           break;
 
         case 'embed':
           mediaElement = new EmbedElement(domElement);
           this.embedElements.push(mediaElement);
+          this.allMediaElements.push(mediaElement);
           break;
 
         case 'object':
           mediaElement = new ObjectElement(domElement);
           this.objectElements.push(mediaElement);
+          this.allMediaElements.push(mediaElement);
           break;
 
         case 'param':
@@ -11354,6 +11358,7 @@
         case 'video':
           mediaElement = new MediaElement(domElement);
           this.videoElements.push(mediaElement);
+          this.allMediaElements.push(mediaElement);
           break;
 
       }
@@ -11368,25 +11373,25 @@
      */
 
     showListInfo () {
-      if (debug$x.flag) {
-        debug$x.log('== Audio Elements ==', 1);
+      if (debug$C.flag) {
+        debug$C.log('== Audio Elements ==', 1);
         this.audioElements.forEach( ae => {
-          debug$x.log(ae);
+          debug$C.log(ae);
         });
 
-        debug$x.log('== Video Elements ==', 1);
+        debug$C.log('== Video Elements ==', 1);
         this.videoElements.forEach( ve => {
-          debug$x.log(ve);
+          debug$C.log(ve);
         });
 
-        debug$x.log('== Object Elements ==', 1);
+        debug$C.log('== Object Elements ==', 1);
         this.objectElements.forEach( oe => {
-          debug$x.log(oe);
+          debug$C.log(oe);
         });
 
-        debug$x.log('== Embed Elements ==', 1);
+        debug$C.log('== Embed Elements ==', 1);
         this.embedElements.forEach( ee => {
-          debug$x.log(ee);
+          debug$C.log(ee);
         });
 
 
@@ -11397,7 +11402,7 @@
   /* structureInfo.js */
 
   /* Constants */
-  const debug$w = new DebugLogging('structureInfo', false);
+  const debug$B = new DebugLogging('structureInfo', false);
 
   /**
    * @class LandmarkElement
@@ -11436,11 +11441,11 @@
         prefix = '';
       }
       this.childLandmarkElements.forEach( le => {
-        debug$w.domElement(le.domElement, prefix);
+        debug$B.domElement(le.domElement, prefix);
         le.showLandmarkInfo(prefix + '  ');
       });
       this.childHeadingDomElements.forEach( h => {
-        debug$w.domElement(h, prefix);
+        debug$B.domElement(h, prefix);
       });
     }
 
@@ -11564,27 +11569,27 @@
      */
 
     showStructureInfo () {
-      if (debug$w.flag) {
-        debug$w.log('== All Headings ==', 1);
+      if (debug$B.flag) {
+        debug$B.log('== All Headings ==', 1);
         this.allHeadingDomElements.forEach( h => {
-          debug$w.domElement(h);
+          debug$B.domElement(h);
         });
-        debug$w.log('== All Landmarks ==', 1);
+        debug$B.log('== All Landmarks ==', 1);
         this.allLandmarkElements.forEach( le => {
-          debug$w.domElement(le.domElement);
+          debug$B.domElement(le.domElement);
         });
-        debug$w.log('== Landmarks By Doc ==', 1);
+        debug$B.log('== Landmarks By Doc ==', 1);
         this.landmarkElementsByDoc.forEach( (les, index) => {
-          debug$w.log(`Document Index: ${index} (${Array.isArray(les)})`);
+          debug$B.log(`Document Index: ${index} (${Array.isArray(les)})`);
           if (Array.isArray(les)) {
             les.forEach(le => {
-              debug$w.domElement(le.domElement);
+              debug$B.domElement(le.domElement);
             });
           }
         });
-        debug$w.log('== Structure Tree ==', 1);
+        debug$B.log('== Structure Tree ==', 1);
         this.childLandmarkElements.forEach( le => {
-          debug$w.domElement(le.domElement);
+          debug$B.domElement(le.domElement);
           le.showLandmarkInfo('  ');
         });
       }
@@ -11634,7 +11639,20 @@
     websiteViolationLabel:   'Website Violation',
     websiteWarningLabel:     'Website Warning',
     websitePassLabel:        'Website Pass',
-    websiteManualCheckLabel: 'Website Manual Check'
+    websiteManualCheckLabel: 'Website Manual Check',
+
+    rulesetLevelA:   'Level A only',
+    rulesetLevelAA:  'Levels A and AA',
+    rulesetLevelAAA: 'Levels A, AA and enhanced CCR',
+
+    rulesetFilter: 'First Step rules',
+    rulesetWCAG22: 'WCAG 2.2, ',
+    rulesetWCAG21: 'WCAG 2.1, ',
+    rulesetWCAG20: 'WCAG 2.0, ',
+
+    scopeFilterElement: ', Element scope only',
+    scopeFilterPage:    ', Page scope only',
+    scopeFilterWebsite: ', Website scope only'
 
   };
 
@@ -13269,236 +13287,98 @@
     }
   };
 
-  /* focusRules.js */
+  /* frameRules.js */
 
   /* --------------------------------------------------------------------------- */
   /*       OpenA11y Rules Localized Language Support (NLS): English      */
   /* --------------------------------------------------------------------------- */
 
-  const focusRules$1 = {
-    FOCUS_1: {
-        ID:                    'Focus 1',
-        DEFINITION:            'The sequential focus order of links, form controls, embedded apps and widgets must be meaningful.',
-        SUMMARY:               'Focus order must be meaningful',
-        TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements and elements with widget roles with @tabindex@ values',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Check the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
-          MANUAL_CHECK_P:     'Check the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
-          HIDDEN_S: 'The link, form control, embedded app or widget element that is hidden does not need to be tested for focus order.',
-          HIDDEN_P: 'The %N_H links, form controls, embedded apps and/or widgets that are hidden do not need to be tested for focus order.',
-          NOT_APPLICABLE:  'No or only one focusable element on the page'
-        },
-        BASE_RESULT_MESSAGES: {
-          PAGE_MC_1:        'Use the "tab" key to check the focus order of the %1 interactive elements on the page (i.e. links, form controls, widgets ...).',
-          PAGE_MC_2:        'Use the "tab" key to check the focus order of the %1 interactive elements on the page (i.e. links, form controls, widgets ...); NOTE: %2 other interactive elements on the page have been removed from the tab order by setting the @tabindex@ value to less than 0.',
-          ELEMENT_MC_1:     'Verify the %1[@role@="%2"] element sense in the sequential focus order of the page.',
-          ELEMENT_MC_2:     'Verify the %1 element makes sense in the sequential focus order of the page.',
-          ELEMENT_MC_3:     '%1[@role@="%2"] element has a @tabindex="%3"@ removing it from the sequential focus order of the page.  Verify it makes sense for the %1 element to be removed from the focus order of the page.',
-          ELEMENT_HIDDEN_1: '%1[ element is hidden, so NOT a part of the sequential focus order of the page.',
-          ELEMENT_HIDDEN_2: '%1 element is hidden, so NOT a part of the sequential focus order of the page.'
-        },
-        PURPOSES: [
-          'The "tab" key is the primary key many browsers use to navigate the interactive elements on a web page.',
-          'The sequential order of the elements receiving focus can help a user understand the features on a web page.',
-          'The usability of frequently used or important interactive features of a web page can be improved by moving them to the beginning of the focus sequence.'
-        ],
-        TECHNIQUES: [
-          'Use document order to place related interactive items in a meaningful sequence.',
-          'The @tabindex@ atttribute value (i.e. values greater than 0) can be used to change the sequence of focusable elements in a web page or make non-interactive elements part of the "tab" order of the page.',
-          'A @tabindex@ values of less than 0 remove redundent interactive elements from the sequential focus order.'
-        ],
-        MANUAL_CHECKS: [
-          'Use the "tab" key to move focus through the links, form controls, embedded applications and widgets on the page.',
-          'Does the sequence of elements receiving focus make sense (i.e. related items on the page are navigated sequentially as a group).'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G59: Placing the interactive elements in an order that follows sequences and relationships within the content',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G59'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'H4: Creating a logical tab order through links, form controls, and objects',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H4'
-          }
-        ]
+  const frameRules$1 = {
+
+    FRAME_1: {
+      ID:                    'Frame 1',
+      DEFINITION:            '@frame@ element must have an accessible name to support screen reader navigation.',
+      SUMMARY:               '@frame@ must have accessible name',
+      TARGET_RESOURCES_DESC: '@frame@ elements',
+      RULE_RESULT_MESSAGES: {
+        FAIL_S:   'Add a @title@ attribute to the @frame@ element that describes the contents of the frame.',
+        FAIL_P:   'Add a @title@ attribute to the %N_F @frame@ elements that describes the contents of the frame.',
+        MANUAL_CHECK_S:  'Verify the @frame@ element with empty accessible name (e.g. @title=""@ attribute) does not contain visible content.',
+        MANUAL_CHECK_M:  'Verify the %N_MC @frame@ elements with empty accessible names (e.g. @title=""@ attribute) do not contain visible content.',
+        HIDDEN_S: 'The @frame@ element that is hidden was not evaluated.',
+        HIDDEN_P: 'The %N_H @frame@ elements that are hidden were not evaluated.',
+        NOT_APPLICABLE:  'No visible @frame@ elements on this page.'
+      },
+      BASE_RESULT_MESSAGES: {
+        ELEMENT_PASS_1:   '@frame@ element has the accessible name: %1.',
+        ELEMENT_FAIL_1:   'Add a @title@ attribute to the @frame@ element describing the contents of the frame.',
+        ELEMENT_MC_1:     'Verify the @frame@ element with empty accessible name (e.g. @title=""@) is not intended to be a frame navigation target.',
+        ELEMENT_HIDDEN_1: '@frame@ element was not evaluated because it is hidden from assistive technologies.'
+      },
+      PURPOSES:        [ 'Screen readers provide a means to navigate web page content using @frame@ elements.',
+                        'The accessible name of the @frame@ element (the @title@ attribute value) must describe the contents of the frame.',
+                        'The accessible name helps users decide whether they want to navigate to a frame.'
+                      ],
+      TECHNIQUES:     [ 'Use the @title@ attribute to provide an accessible name for a @frame@ element.',
+                        'Accessible names should be short and describe the contents of the @frame@ element to help users to decide whether to navigate to a @frame@.',
+                        'For @frame@s with no visible content, explicitly identify the @frame@ as having no information for the user (e.g. @title="No content"@).'
+                      ],
+      MANUAL_CHECKS:  [ 'View the accessible names of the frames in the document to verify that they help users identify the contents of each frame.'
+      ],
+      INFORMATIONAL_LINKS: [
+                       { type:  REFERENCES.SPECIFICATION,
+                         title: 'WCAG 2.0 Success Criterion 2.4.1 Bypass Blocks: A mechanism is available to bypass blocks of content that are repeated on multiple Web pages',
+                         url:   'https://www.w3.org/TR/WCAG20/#navigation-mechanisms-skip'
+                       },
+                       { type:  REFERENCES.WCAG_TECHNIQUE,
+                         title: 'H64: Using the title attribute of the frame and iframe elements',
+                         url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H64.html'
+                       }
+                      ]
     },
-    FOCUS_2: {
-        ID:                    'Focus 2',
-        DEFINITION:            'The element with keyboard focus must have a visible focus style that is different from the non-focus state.',
-        SUMMARY:               'Focus must be visible',
-        TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements and elements with widget roles with @tabindex@ values',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
-          MANUAL_CHECK_P:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
-          HIDDEN_S: 'The link, form control, embedded app or widget element that is hidden does not need to be tested for focus order.',
-          HIDDEN_P: 'The %N_H links, form controls, embedded apps and/or widgets that are hidden do not need to be tested for focus order.',
-          NOT_APPLICABLE:  'No focusable elements on the page'
-        },
-        BASE_RESULT_MESSAGES: {
-          PAGE_MC_1:        'Use keyboard commands to check the keyboard focus styling of the %1 interactive elements on the page (i.e. links, form controls, ...).',
-          PAGE_MC_2:        'Use keyboard commands to check the keyboard focus styling of the %1 interactive elements on the page (i.e. links, form controls, ...); NOTE: %2 interactive elements are hidden.',
-          ELEMENT_MC_1:     'Verify the visual focus styling of the @%1[role="%2"]@ element includes a solid discernable focus border at least 2 pixels in width.',
-          ELEMENT_MC_2:     'Verify the visual focus styling of the @%1@ element includes a solid discernable focus border at least 2 pixels in width.',
-          ELEMENT_HIDDEN_1: '%1[@role@="%2"] element is hidden, so is not visible for observing focus styling.',
-          ELEMENT_HIDDEN_2: '%1 element is hidden, so is not visible for observing the focus styling.'
-        },
-        PURPOSES: [
-          'Many browsers don\'t provide a prominent or consistent visible keyboard focus styling for interactive elements, making it difficult for users to identify and track the element with keyboard focus.',
-          'Author defined visible keyboard focus style makes it easier for users to know which interactive element has keyboard focus and provides more consistent user experience between browsers and operating systems.'
-        ],
-        TECHNIQUES: [
-          'Use CSS psuedo element selector @:focus@ to change the styling of elements with keyboard focus to include a 2 pixel border.',
-          'Use @focus@ and @blur@ event handlers on checkboxes and radio buttons to change the styling of not only the form control, but also its label text to make it easier to see.',
-          'Styling changes should include creating at least a 2 pixel border around the interactive element and its label, typically using the CSS @border@ or @outline@ properties.',
-          'For consistent look and feel to the website it is often useful for the focus and hover styles to be the same or similar.'
-        ],
-        MANUAL_CHECKS: [
-          'Use the the keyboard (i.e. typically he "tab" key, but in the case of widgets other keys) to move focus through the links, form controls, embedded applications and widgets on the page.',
-          'Check if the element with keyboard focus is clearly visible for all focusable elements on the page as you move focus between elements, and that it changes more than just color (i.e. border/outline around element with focus).',
-          'Test keyboard focus styling using more than one browser and operating system, since there is a wide varability of between operating systems and browsers for styling keyboard focus.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'C15: Using CSS to change the presentation of a user interface component when it receives focus ',
-            url:   'https://www.w3.org/TR/WCAG20-TECHS/C15'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G195: Using an author-supplied, highly visible focus indicator',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G195'
-          }
-        ]
-    },
-    FOCUS_3: {
-        ID:                    'Focus 3',
-        DEFINITION:            'The target of a link should result in focus the content the window if the target results in more than one window opening.',
-        SUMMARY:               'Target focus should be in content window',
-        TARGET_RESOURCES_DESC: '@a@, @area@ and @role="link"@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Check the link to make sure that if the link opens more than one window that the focus is in the content window.',
-          MANUAL_CHECK_P:     'Check the %N_MC links to make sure that if any of the links opens more than one window that the focus is in the content window.',
-          HIDDEN_S: 'The link element that is hidden does not need to be tested for content focus.',
-          HIDDEN_P: 'The %N_H link elements that are hidden do not need to be tested for content focus.',
-          NOT_APPLICABLE:  'No link elements on the page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'If the target of the link opens multiple windows (i.e. typically advertisements or other promotional information) make sure keyboard focus is on the content window.',
-          ELEMENT_HIDDEN_1: 'The link is hidden, so cannot open any new windows.'
-        },
-        PURPOSES: [
-          'User\'s can become disoriented if the focus causes unpredicatable actions, including new URLs and popup windows for advertisements or promotions.'
-        ],
-        TECHNIQUES: [
-          'Do not link to URLs that open multiple windows and do not manage the focus to be in the content windoow the user was expecting by following the link.'
-        ],
-        MANUAL_CHECKS: [
-          'After selecting a link and if it opens multiple windows, make sure the keyboard focus is in the content window.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G200: Opening new windows and tabs from a link only when necessary',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G200'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G201: Giving users advanced warning when opening a new window',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G201'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'F52: Failure of Success Criterion 3.2.1 and 3.2.5 due to opening a new window as soon as a new page is loaded',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
-          }
-        ]
-    },
-    FOCUS_4: {
-        ID:                    'Focus 4',
-        DEFINITION:            '@select@ elements with @onchange@ or other event handlers must not automatically change the user\'s context when keyboard focus moves between options.',
-        SUMMARY:               '@select@ must not change context',
-        TARGET_RESOURCES_DESC: '@a@, @area@ and @role="link"@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Check the @select@ element to make sure that when keyboard focus moves between options does not cause a change in context (e.g. moving to a new URL or focus being moved from the @select@ element).',
-          MANUAL_CHECK_P:     'Check the %N_MC @select@ elements to make sure that when keyboard focus moves between options in each control does not cause a change in context (e.g. moving to a new URL or focus being moved from the @select@ element).',
-          HIDDEN_S: 'The @select@ element that is hidden does not need to be tested for automatically changing user context.',
-          HIDDEN_P: 'The %N_H @select@ elements that are hidden do not need to be tested for automatically changing user context.',
-          NOT_APPLICABLE:  'No @select@ elements on the page'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Check to make sure moving keyboard focus between options in the @select@ box does not move focus from the list of options.',
-          ELEMENT_HIDDEN_1: '@select@ element is hidden and therefore not operable by any user.'
-        },
-        PURPOSES: [
-          'User\'s can become disoriented if the focus changes cause unpredicatable actions.',
-          'When the user is using the kyboard to explore @select@ box options, the focus must stay on the options, until the user selects one of the options.'
-        ],
-        TECHNIQUES: [
-          'Do not use @onchange@ event handlers on @select@ elements.',
-          'Use selections should be made using the enter key.'
-        ],
-        MANUAL_CHECKS: [
-          'Move focus to the @selection@ box and use the keyboard to move the focus between options, check to make sure the focus changes are not causing the context to change (i.e. focus movig to a new window or focus moving from the current option in the select box).'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G200: Opening new windows and tabs from a link only when necessary',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G200'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'G201: Giving users advanced warning when opening a new window',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G201'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'F52: Failure of Success Criterion 3.2.1 and 3.2.5 due to opening a new window as soon as a new page is loaded',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
-          }
-        ]
-    },
-    FOCUS_5: {
-        ID:         'Focus 5',
-        DEFINITION: 'Forms must use @input[type="submit"]@ or other form control buttons for submitting forms.',
-        SUMMARY:    'Forms submitted using buttons',
-        TARGET_RESOURCES_DESC: '@input[type="submit"]@, @input[type="button"]@, @input[type="image"]@, @button@, @[role="button"]@',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S: 'Verify that the form has uses a button to submit the form.',
-          MANUAL_CHECK_P: 'Verify that each of the %N_MC forms has a button used to submit the form.',
-          FAIL_S:    'No button elements found for submitting the form.',
-          FAIL_P:    'No button elements found for submitting %N_MC forms.',
-          HIDDEN_S:  'The form that is hidden was not evaluated.',
-          HIDDEN_P:  'The %N_H forms that are hidden were not evaluated.',
-          NOT_APPLICABLE: 'No form controls on this page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1: 'The form has an @input[type="submit"]@.',
-          ELEMENT_PASS_2: '@input[type="submit"]@ is used for form submission.',
-          ELEMENT_FAIL_1: 'The form has no button elements.',
-          ELEMENT_MC_1: 'Verify that the button element contained in the form can be used for form submission.',
-          ELEMENT_MC_2: 'Verify that at least one of the %1 button elements contained in the form can be used for form submission.',
-          ELEMENT_MC_3: 'Verify if the @input[type="%1"]@ element can be used to  submit the form.',
-          ELEMENT_MC_4: 'Verify if the @button@ element can be used to  submit the form.',
-          ELEMENT_MC_5: 'Verify if the @%1[role="button"]@ element can be used to  submit the form.',
-          ELEMENT_HIDDEN_1: '@form@ element was not evaluated because it is hidden from assistive technologies.',
-          ELEMENT_HIDDEN_2: '@input[type="submit"]@ element was not evaluated because it is hidden from assistive technologies.',
-          ELEMENT_HIDDEN_3: '@input[type="%1"]@ element was not evaluated because it is hidden from assistive technologies.',
-          ELEMENT_HIDDEN_4: '@button@ element was not evaluated because it is hidden from assistive technologies.',
-          ELEMENT_HIDDEN_5: '@%1[role="button"]@ element was not evaluated because it is hidden from assistive technologies.'
-        },
-        PURPOSES: [
-          'Using a submit button allows users to easily identify and control how to  submit form information to a server for processing.  Forms that are submitted through changes in focus or selection may result in users prematurely submitting the form or not being aware they submitted the form.'
-        ],
-        TECHNIQUES: [
-          'The preferred technique for submitting forms is with the use of the input[type="submit"] form control.',
-          'An alternative techniques include using other HTML form control elements, including @input[type="button"]@, @input[type="image"]@ or @button@ elements with an accessible name indicating that the button is for submitting form information.',
-          'In the case when a non-form control element (e.g. @a@ or @div@ element) is being used to submit the form, the element can use ARIA [role="button"] attribute with the accessible name indicating that the button is for submitting form information.'
-        ],
-        MANUAL_CHECKS: [
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @input[type="submit"]@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-INPUT'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'H32: Providing submit buttons',
-            url:   'https://www.w3.org/TR/2014/NOTE-WCAG20-TECHS-20140408/H32'
-          }
-        ]
+
+    FRAME_2: {
+      ID:                    'Frame 2',
+      DEFINITION:            '@iframe@ element must have an accessible name to support screen reader navigation.',
+      SUMMARY:               '@iframe@ must have accessible name',
+      TARGET_RESOURCES_DESC: '@iframe@ elements',
+      RULE_RESULT_MESSAGES: {
+        FAIL_S:   'Add an accessible name to @iframe@ element that describes the contents of the frame.',
+        FAIL_P:   'Add accessible names to %N_F @iframe@ elements that describe the contents of the frame.',
+        MANUAL_CHECK_S:  'Verify the @iframe@ elements with empty accessible name (e.g. @title=""@ attribute) does not contain visible content.',
+        MANUAL_CHECK_M:  'Verify the %N_MC @iframe@ elements with empty accessible names (e.g. @title=""@ attribute) do not contain visible content.',
+        HIDDEN_S: 'The @iframe@ element that is hidden was not evaluated.',
+        HIDDEN_P: 'The %N_H @iframe@ elements that are hidden were not evaluated.',
+        NOT_APPLICABLE:  'No visible @iframe@ elements on this page.'
+      },
+      BASE_RESULT_MESSAGES: {
+        ELEMENT_PASS_1:   '@iframe@ element has accessible name.',
+        ELEMENT_FAIL_1:   'Add an accessible name to the @iframe@ element describing the contents of the @iframe@.',
+        ELEMENT_MC_1:     'Verify the @iframe@ element with empty accessible name (e.g. @title=""@) does not contain visible content.',
+        ELEMENT_HIDDEN_1: '@iframe@ element was not evaluated because it is hidden from assistive technologies.'
+      },
+      PURPOSES:        [ 'Screen readers provide a means to navigate web page content using @iframe@ elements.',
+                        'The accessible name of the @iframe@ element must describe the contents of the @iframe@.',
+                        'The accessible name helps users to decide whether they want to navigate to a @iframe@.'
+      ],
+      TECHNIQUES:     [ 'Use the @title@ attribute to define an accessible name for an @iframe@ element.',
+                        'Use the @aria-label@ attribute to define an accessible name for an @iframe@ element.',
+                        'Use the @aria-labelledby@ attribute to define an accessible name for an @iframe@ element.',
+                        'Accessible names should be short and describe the contents of the @iframe@ element to help users to decide whether to navigate to the @iframe@.',
+                        'For @iframe@s with no visible content, explicitly identify the @iframe@ as having no information for the user (e.g. @title="No content"@).'
+      ],
+      MANUAL_CHECKS:  [ 'View the accessible names of the @iframe@s in the page to verify that they help users identify the contents of each frame.'
+      ],
+      INFORMATIONAL_LINKS: [
+                      { type:  REFERENCES.SPECIFICATION,
+                        title: 'WCAG 2.0 Success Criterion 2.4.1 Bypass Blocks: A mechanism is available to bypass blocks of content that are repeated on multiple Web pages',
+                        url:   'https://www.w3.org/TR/WCAG20/#navigation-mechanisms-skip'
+                      },
+                      { type:  REFERENCES.WCAG_TECHNIQUE,
+                        title: 'H64: Using the title attribute of the frame and iframe elements',
+                        url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H64.html'
+                      }
+      ]
     }
   };
 
@@ -14135,6 +14015,57 @@
             title: 'HTML Specification: The @form@ element',
             url:   'https://html.spec.whatwg.org/multipage/forms.html#the-form-element'
           },
+        ]
+    },
+
+    CONTROL_12: {
+        ID:         'Control 12',
+        DEFINITION: 'Forms must use @input[type="submit"]@ or other form control buttons for submitting forms.',
+        SUMMARY:    'Forms submitted using buttons',
+        TARGET_RESOURCES_DESC: '@input[type="submit"]@, @input[type="button"]@, @input[type="image"]@, @button@, @[role="button"]@',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that the form has uses a button to submit the form.',
+          MANUAL_CHECK_P: 'Verify that each of the %N_MC forms has a button used to submit the form.',
+          FAIL_S:    'No button elements found for submitting the form.',
+          FAIL_P:    'No button elements found for submitting %N_MC forms.',
+          HIDDEN_S:  'The form that is hidden was not evaluated.',
+          HIDDEN_P:  'The %N_H forms that are hidden were not evaluated.',
+          NOT_APPLICABLE: 'No form controls on this page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1: 'The form has an @input[type="submit"]@.',
+          ELEMENT_PASS_2: '@input[type="submit"]@ is used for form submission.',
+          ELEMENT_FAIL_1: 'The form has no button elements.',
+          ELEMENT_MC_1: 'Verify that the button element contained in the form can be used for form submission.',
+          ELEMENT_MC_2: 'Verify that at least one of the %1 button elements contained in the form can be used for form submission.',
+          ELEMENT_MC_3: 'Verify if the @input[type="%1"]@ element can be used to  submit the form.',
+          ELEMENT_MC_4: 'Verify if the @button@ element can be used to  submit the form.',
+          ELEMENT_MC_5: 'Verify if the @%1[role="button"]@ element can be used to  submit the form.',
+          ELEMENT_HIDDEN_1: '@form@ element was not evaluated because it is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_2: '@input[type="submit"]@ element was not evaluated because it is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_3: '@input[type="%1"]@ element was not evaluated because it is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_4: '@button@ element was not evaluated because it is hidden from assistive technologies.',
+          ELEMENT_HIDDEN_5: '@%1[role="button"]@ element was not evaluated because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'Using a submit button allows users to easily identify and control how to  submit form information to a server for processing.  Forms that are submitted through changes in focus or selection may result in users prematurely submitting the form or not being aware they submitted the form.'
+        ],
+        TECHNIQUES: [
+          'The preferred technique for submitting forms is with the use of the input[type="submit"] form control.',
+          'An alternative techniques include using other HTML form control elements, including @input[type="button"]@, @input[type="image"]@ or @button@ elements with an accessible name indicating that the button is for submitting form information.',
+          'In the case when a non-form control element (e.g. @a@ or @div@ element) is being used to submit the form, the element can use ARIA [role="button"] attribute with the accessible name indicating that the button is for submitting form information.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: The @input[type="submit"]@ element',
+            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-INPUT'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H32: Providing submit buttons',
+            url:   'https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20161007/H32'
+          }
         ]
     }
   };
@@ -14959,7 +14890,7 @@
     KEYBOARD_1: {
       ID:                    'Keyboard 1',
       DEFINITION:            'Elements with ARIA widget roles must support the keyboard interactions required by those roles.',
-      SUMMARY:               'Widget roles require keyboard support',
+      SUMMARY:               'Widget role requires specific keyboard support',
       TARGET_RESOURCES_DESC: 'Elements with ARIA widget roles',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:  'Verify the element with the widget role has the keyboard interactions required by its role.',
@@ -14975,8 +14906,9 @@
       PURPOSES: [
         'Keyboard support is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
         'Native HTML4 and HTML5 link and form control elements have default keyboard interactions that are built-in and standardized among browsers.',
-        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect.',
-        'The ARIA Authoring Practices Guide identifies the keyboard interaction patterns that users expect and can rely upon, based on each ARIA widget role.'
+        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and part of this support is understanding the keyboard interaction expected for the elements role.',
+        'The ARIA Authoring Practices Guide identifies the keyboard interaction patterns that users expect and can rely upon, based on each ARIA widget role.',
+        'NOTE: Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
       ],
       TECHNIQUES: [
         'Use the ARIA Authoring Practices guide to identify the keyboard interaction support needed for each ARIA Widget role being used.',
@@ -15018,42 +14950,48 @@
     },
     KEYBOARD_2: {
       ID:                    'Keyboard 2',
-      DEFINITION:            'All functionality provided by the interactive elements on the page must be operable through the keyboard interface.',
-      SUMMARY:               'Interactive functionality must be keyboard operable',
-      TARGET_RESOURCES_DESC: 'Links, form controls, widgets, @object@, @embed@ and @applet@ elements',
+      DEFINITION:            'The sequential tab order of links, form controls, and widgets must be meaningful.',
+      SUMMARY:               'Sequential tab order must be meaningful',
+      TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements, and elements with widget roles with @tabindex@ values',
       RULE_RESULT_MESSAGES: {
-        MANUAL_CHECK_S:   'Verify that the functionality provided by the link, form control, element with event handlers or embedded application is operable through the keyboard.',
-        MANUAL_CHECK_P:   'Verify that the functionality provided by the %N_MC links, form controls, elements with event handlers and/or embedded applications is operable through the keyboard.',
-        HIDDEN_S:         'The hidden link, form control, element with event handlers, @object@ or @applet@ element was not evaluated.',
-        HIDDEN_P:         '%N_H hidden links, form controls, elements with event handlers, @object@ and/or @applet@ elements were not evaluated.',
-        NOT_APPLICABLE:   'No interactive elements on the page.'
+        PASS_S:             'Only one link or form control element on the page and no other elements with @tabindex@ values, so no issues with sequential tab order.',
+        PASS_P:             '%N_P link and/or form control elements on the page and no other elements with @tabindex@ values, so no issues with sequential tab order.',
+        MANUAL_CHECK_S:     'Verify the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
+        MANUAL_CHECK_P:     'Verify the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
+        HIDDEN_S:           'The link, form control, or widget element that is hidden does not need to be tested for focus order.',
+        HIDDEN_P:           'The %N_H links, form controls and/or widgets that are hidden do not need to be tested for focus order.',
+        NOT_APPLICABLE:     'No or only one focusable element on the page'
       },
       BASE_RESULT_MESSAGES: {
-        PAGE_PASS_1:       'The interactive element on the page does not have an explicit @tabindex@ value or added event handlers that might change its default functionality or ARIA role.',
-        PAGE_PASS_2:       'The @%1@ interactive elements on the page do not have explicit @tabindex@ values or added event handlers that might change their default functionalities or ARIA roles.',
-        ELEMENT_PASS_1:    'The @%1@ element does not have an explicit @tabindex@ value or added event handlers that might change its default functionality or ARIA role.',
-        PAGE_MC_1:         'Verify that the functionality associated with the @tabindex@ value on the interactive element has the corresponding keyboard support.',
-        PAGE_MC_2:         'Verify that the functionality associated with the @tabindex@ values on the %1 interactive elements has the corresponding keyboard support.',
-        ELEMENT_MC_1:      'Verify that the functionality provided by the added event handlers on the @%1@ element have the corresponding keyboard support.',
-        ELEMENT_MC_2:      'Verify that the functionality that results from assigning @tabindex=%1@ on the @%2@ element has the corresponding keyboard support.',
-        ELEMENT_MC_3:      'Verify that the functionality provided by the @%1@ element has the corresponding keyboard support.',
-        ELEMENT_HIDDEN_1:  'The @%1@ element was not evaluated because it is hidden from assistive technologies.'
+        PAGE_PASS_1:       'No elements on the page using @tabindex@ attribute that might affect sequential tab navigation.',
+        PAGE_MC_1:         'Use the "tab" key to verify the sequential focus order of the %1 interactive elements on the page (i.e. links, form controls, widgets ...).',
+        ELEMENT_PASS_1:    'The @%1@ element does not have a @tabindex@ value, so no change in sequential tab navigation of the element.',
+        ELEMENT_MC_1:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: @tabindex@ value greater than 0 should be avoided to inconsistency of browser implementation.',
+        ELEMENT_MC_2:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: The element by default is part of the tab sequence of the page, there is no need to set @tabindex=0@.',
+        ELEMENT_MC_3:      'Verify the @%1@ element should be part of the sequential tab order of the page.',
+        ELEMENT_MC_4:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: It is unusual for a non-widget role to be part of the tab sequence of the page.',
+        ELEMENT_HIDDEN_1:  'The @%1@ element with the @tabindex=%2@ was not evaluated because it is hidden from assistive technologies.'
       },
       PURPOSES: [
-        'Many users are unable to use the mouse, either because of visual impairments, which make it difficult or impossible for them to see the pointer, or motor skill impairments, which prevent them from being able to accurately position the mouse pointer.',
-        'This requirement is not intended to discourage support for mouse behaviors, but rather to make sure there is an equivalent way of using the keyboard for all interactive tasks that can be performed using the mouse.',
-        'The recommended and most efficient way to include keyboard support for interactive elements is to follow computing platform conventions. This will make it it easier for all users to benefit from keyboard support, since the keystrokes and shortcuts will be easier to discover and familiar to the greatest number of users.',
-        'Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
+        'Keyboard support is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
+        'Native HTML4 and HTML5 link and form control elements have default keyboard interactions that are built-in and standardized among browsers.',
+        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and part of this support is understanding how the @tabindex@ attribute value in managing keyboard focus.',
+        'The ARIA Authoring Practices Guide identifies how to use @tabindex@ to help manage keyboard focus for widget roles.',
+        'NOTE: Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
       ],
       TECHNIQUES: [
-        'Use the WAI-ARIA 1.0 Authoring Practices to determine the keyboard support that is appropriate for common widget types.',
-        'Use keyboard event handers to implement keyboard support for interactive behaviors defined on the page.',
+        'HTML form controls and link elements do not need a @tabindex@ valuable to be part of the sequential tab order, assigning a @tabindex@ value to one of these elements means you intend to change their default behavior.',
+        'Setting @tabindex@ attribute to @0@ allows an element to become focusable and makes it part of the tab sequence of the page',
+        'Setting @tabindex@ attribute to @-1@ allows an element to become focusable through related keyboard event handlers through scripting',
+        'Use the ARIA Authoring Practices to define keyboard support that is appropriate for widget roles.',
+        'Use keyboard event handlers to implement keyboard support for interactive behaviors defined on the page.',
         'Avoid using @object@ and @embed@ elements due to the difficulty in providing the corresponding keyboard support for all of their inherent interactive behaviors.',
-        'Avoid using @tabindex@ values greater than 0 to change tabbing order, since tabbing behavior is inconsistent and therefore unpredictable across web browsers.'
+        'Avoid using @tabindex@ values greater than 0 to change tabbing order, since tab sequence for values greater than 0 is inconsistent and therefore can be unpredictable across web browsers.'
       ],
       MANUAL_CHECKS: [
+        'Use the tab key to verify the tab sequence of interactive elements of the page is in a logical.',
         'Make a list of the functional feature of a web site.',
-        'Using only the keyboard, perform all of the functions provided by all of the interactive components on the web page.'
+        'Using only the keyboard, perform all of the functional features provided the interactive components on the web page.'
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
@@ -15103,7 +15041,156 @@
           url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G108'
         }
       ]
+    },
+
+    KEYBOARD_4: {
+      ID:                    'Keyboard 4',
+      DEFINITION:            'Avoid @tabindex@ values greater than 0.',
+      SUMMARY:               'Avoid @tabindex@ > 0',
+      TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements, and elements with widget roles with @tabindex@ values',
+      RULE_RESULT_MESSAGES: {
+        MANUAL_CHECK_S:     'Verify the sequential "tab" focus order of the page for the element with @tabindex@ greater than 0 is consistent across browsers and operating systems.',
+        MANUAL_CHECK_P:     'Verify the sequential "tab" focus order of the page for the %N_MC elements with @tabindex@ greater than 0 is consistent across browsers and operating systems.',
+        HIDDEN_S:           'The link, form control, or widget element that is hidden does not need to be tested for focus order.',
+        HIDDEN_P:           'The %N_H links, form controls and/or widgets that are hidden do not need to be tested for focus order.',
+        NOT_APPLICABLE:     'No elements with @tabindex@ value greater than 0'
+      },
+      BASE_RESULT_MESSAGES: {
+        ELEMENT_MC_1:      'Verify the @%1@ element with the @tabindex@ value of %2 is consistently in he same sequential order across browsers and operating systemsx.',
+        ELEMENT_HIDDEN_1:  'The @%1@ element with the @tabindex=%2@ was not evaluated because it is hidden from assistive technologies.'
+      },
+      PURPOSES: [
+        'Keyboard support is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
+        'Native HTML4 and HTML5 link and form control elements have default keyboard interactions that are built-in and standardized among browsers.',
+        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and part of this support is understanding how the @tabindex@ attribute value in managing keyboard focus.',
+        'The ARIA Authoring Practices Guide identifies how to use @tabindex@ to help manage keyboard focus for widget roles.',
+        'NOTE: Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
+      ],
+      TECHNIQUES: [
+        'Avoid using @tabindex@ values greater than 0 to change tabbing order, since tab sequence for values greater than 0 is inconsistent and therefore can be unpredictable across web browsers.',
+        'HTML form controls and link elements do not need a @tabindex@ valuable to be part of the sequential tab order, assigning a @tabindex@ value to one of these elements means you intend to change their default behavior.',
+        'Setting @tabindex@ attribute to @0@ allows an element to become focusable and makes it part of the tab sequence of the page',
+        'Setting @tabindex@ attribute to @-1@ allows an element to become focusable through related keyboard event handlers through scripting',
+        'Use the ARIA Authoring Practices to define keyboard support that is appropriate for widget roles.',
+        'Use keyboard event handlers to implement keyboard support for interactive behaviors defined on the page.'
+      ],
+      MANUAL_CHECKS: [
+        'Use the tab key to verify the tab sequence of interactive elements of the page is in a logical.',
+        'Make sure the elements with @tabindex@ > 0 make sense in the tab sequence of the page.',
+        'Test on both Windows, macOS, Android and iOS using more than one browser to make sure there is consistent keyboard navigation support.'
+      ],
+      INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'HTML: Focus',
+          url:   'https://html.spec.whatwg.org/multipage/interaction.html#focus'
+        },
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Managing Focus and Supporting Keyboard Navigation',
+          url:   'https://www.w3.org/TR/wai-aria-1.2/#managingfocus'
+        },
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'W3C ARIA Authoring Practices: Design Patterns',
+          url:   'https://www.w3.org/WAI/ARIA/apg/patterns/'
+        }
+      ]
+    },
+
+    KEYBOARD_5: {
+        ID:                    'Keyboard 5',
+        DEFINITION:            'The element with keyboard focus must have a visible focus style that is different from the non-focus state.',
+        SUMMARY:               'Focus must be visible',
+        TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements and elements with widget roles with @tabindex@ values',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
+          MANUAL_CHECK_P:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
+          HIDDEN_S: 'The link, form control, embedded app or widget element that is hidden does not need to be tested for focus order.',
+          HIDDEN_P: 'The %N_H links, form controls, embedded apps and/or widgets that are hidden do not need to be tested for focus order.',
+          NOT_APPLICABLE:  'No focusable elements on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          PAGE_MC_1:        'Use keyboard commands to check the keyboard focus styling of the %1 interactive elements on the page (i.e. links, form controls, ...).',
+          PAGE_MC_2:        'Use keyboard commands to check the keyboard focus styling of the %1 interactive elements on the page (i.e. links, form controls, ...); NOTE: %2 interactive elements are hidden.',
+          ELEMENT_MC_1:     'Verify the visual focus styling of the @%1@ element includes a solid discernible focus border at least 2 pixels in width.',
+          ELEMENT_HIDDEN_1: '%1 element is hidden, so is not visible for observing the focus styling.'
+        },
+        PURPOSES: [
+          'Many browsers don\'t provide a prominent or consistent visible keyboard focus styling for interactive elements, making it difficult for users to identify and track the element with keyboard focus.',
+          'Author defined visible keyboard focus style makes it easier for users to know which interactive element has keyboard focus and provides more consistent user experience between browsers and operating systems.'
+        ],
+        TECHNIQUES: [
+          'Use CSS psuedo element selector @:focus@ to change the styling of elements with keyboard focus to include a 2 pixel border.',
+          'Use @focus@ and @blur@ event handlers on checkboxes and radio buttons to change the styling of not only the form control, but also its label text to make it easier to see.',
+          'Styling changes should include creating at least a 2 pixel border around the interactive element and its label, typically using the CSS @border@ or @outline@ properties.',
+          'For consistent look and feel to the website it is often useful for the focus and hover styles to be the same or similar.'
+        ],
+        MANUAL_CHECKS: [
+          'Use the the keyboard (i.e. typically he "tab" key, but in the case of widgets other keys) to move focus through the links, form controls, embedded applications and widgets on the page.',
+          'Check if the element with keyboard focus is clearly visible for all focusable elements on the page as you move focus between elements, and that it changes more than just color (i.e. border/outline around element with focus).',
+          'Test keyboard focus styling using more than one browser and operating system, since there is a wide variability of between operating systems and browsers for styling keyboard focus.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'C15: Using CSS to change the presentation of a user interface component when it receives focus ',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/css/C15.html'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G195: Using an author-supplied, highly visible focus indicator',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G195'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G149: Using user interface components that are highlighted by the user agent when they receive focus ',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G149.html'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G165: Using the default focus indicator for the platform so that high visibility default focus indicators will carry over ',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G165.html'
+          }
+        ]
+    },
+
+    KEYBOARD_6: {
+        ID:                    'Keyboard 6',
+        DEFINITION:            '@select@ elements with @onchange@ or other event handlers must not automatically change the user\'s context when keyboard focus moves between options.',
+        SUMMARY:               '@select@ must not change context',
+        TARGET_RESOURCES_DESC: '@a@, @area@ and @role="link"@ elements',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Check the @select@ element to make sure that when keyboard focus moves between options does not cause a change in context (e.g. moving to a new URL or focus being moved from the @select@ element).',
+          MANUAL_CHECK_P:     'Check the %N_MC @select@ elements to make sure that when keyboard focus moves between options in each control does not cause a change in context (e.g. moving to a new URL or focus being moved from the @select@ element).',
+          HIDDEN_S: 'The @select@ element that is hidden does not need to be tested for automatically changing user context.',
+          HIDDEN_P: 'The %N_H @select@ elements that are hidden do not need to be tested for automatically changing user context.',
+          NOT_APPLICABLE:  'No @select@ elements on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1: 'Check to make sure moving keyboard focus between options in the @select@ box does not move focus from the list of options.',
+          ELEMENT_HIDDEN_1: '@select@ element is hidden and therefore not operable by any user.'
+        },
+        PURPOSES: [
+          'User\'s can become disoriented if the focus changes cause unpredicatable actions.',
+          'When the user is using the kyboard to explore @select@ box options, the focus must stay on the options, until the user selects one of the options.'
+        ],
+        TECHNIQUES: [
+          'Do not use @onchange@ event handlers on @select@ elements.',
+          'Use selections should be made using the enter key.'
+        ],
+        MANUAL_CHECKS: [
+          'Move focus to the @selection@ box and use the keyboard to move the focus between options, check to make sure the focus changes are not causing the context to change (i.e. focus movig to a new window or focus moving from the current option in the select box).'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G200: Opening new windows and tabs from a link only when necessary',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G200'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G201: Giving users advanced warning when opening a new window',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G201'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'F52: Failure of Success Criterion 3.2.1 and 3.2.5 due to opening a new window as soon as a new page is loaded',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
+          }
+        ]
     }
+
   };
 
   /* landmarkRules.js */
@@ -16623,6 +16710,437 @@
           url:   'https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA8'
         }
       ]
+    },
+
+    LINK_3: {
+        ID:                    'Link 3',
+        DEFINITION:            'The target of a link should result in focus in the content the window if the target results in more than one window opening.',
+        SUMMARY:               'Target focus should be in content window',
+        TARGET_RESOURCES_DESC: '@a@, @area@ and @role="link"@ elements',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Check the link to make sure that if the link opens more than one window that the focus is in the content window.',
+          MANUAL_CHECK_P:     'Check the %N_MC links to make sure that if any of the links opens more than one window that the focus is in the content window.',
+          HIDDEN_S: 'The link element that is hidden does not need to be tested for content focus.',
+          HIDDEN_P: 'The %N_H link elements that are hidden do not need to be tested for content focus.',
+          NOT_APPLICABLE:  'No link elements on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1: 'If the target of the @%1@ element opens multiple windows (i.e. typically advertisements or other promotional information) make sure keyboard focus is on the content window.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden, so cannot open any new windows.'
+        },
+        PURPOSES: [
+          'User\'s can become disoriented if the focus causes unpredictable actions, including new URLs and popup windows for advertisements or promotions.'
+        ],
+        TECHNIQUES: [
+          'Do not link to URLs that open multiple windows and do not manage the focus to be in the content windoow the user was expecting by following the link.'
+        ],
+        MANUAL_CHECKS: [
+          'After selecting a link and if it opens multiple windows, make sure the keyboard focus is in the content window.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G200: Opening new windows and tabs from a link only when necessary',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G200'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G201: Giving users advanced warning when opening a new window',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G201'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'F52: Failure of Success Criterion 3.2.1 and 3.2.5 due to opening a new window as soon as a new page is loaded',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
+          }
+        ]
+    }
+  };
+
+  /* listRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /* --------------------------------------------------------------------------- */
+
+  const listRules$1 = {
+
+    LIST_1: {
+        ID:                    'List 1',
+        DEFINITION:            'Page must use semantic markup for lists: to identify the type of list container (ordered, unordered or description list) and to group its related list item elements.',
+        SUMMARY:               'Use semantic markup for lists',
+        TARGET_RESOURCES_DESC: '@ul@, @ol@, @li@, @dl@, @dt@ and @dd@ elements, @[role="list"]@, @[role="group"]@ and @[role="listitem"]@',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:   'Verify the list element is used semantically.',
+          MANUAL_CHECK_P:   'Verify the %N_MC list elements are used semantically.',
+          HIDDEN_S:         'The hidden list element was not evaluated.',
+          HIDDEN_P:         'The %N_H hidden list elements were not evaluated.',
+          NOT_APPLICABLE:   'No list elements found on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          PAGE_MC_1:         'Verify the %1 list elements are used semantically and that list markup was not omitted.',
+          ELEMENT_MC_1:      'Verify the @%1@ element identifies a container element for a related group of list items.',
+          ELEMENT_MC_2:      'Verify the @%1@ element identifies a list item element in a meaningfully grouped list of items.',
+          ELEMENT_HIDDEN_1:  'The hidden @%1@ element was not evaluated.'
+        },
+        PURPOSES: [
+          'When list markup is used semantically, assistive technologies are able to convey information to users as they navigate to and within lists, such as the total number of items and the relative position of each item in the list.',
+          'Assistive technologies also provide additional navigation commands for lists, such as "Go to next list item" and "Go to next list".',
+          'Concision of list item content is important for accessibility, since assistive technologies read the entire content of each list item when users navigate through lists.',
+          'When list markup is used in ways that violate the semantics of lists, it will be confusing to users of assistive technologies and diminish the accessibility of the page.'
+        ],
+        TECHNIQUES: [
+          'Ensure that list item content is concise.',
+          'You can use ARIA labeling techniques to give a list container element a descriptive label.',
+          'Use @ol@ as a container element for an ordered list of items.',
+          'Use @ul@ as a container element for an unordered list of items.',
+          'Use @li@ elements to identify items in ordered (@ol@) and unordered (@ul@) lists.',
+          'Use @dl@ as a container element for a description list (a.k.a. definition list) that contains contiguous groupings of terms and their associated descriptions or definitions.',
+          'Use @dt@ elements to identify terms being described or defined in a description list (@dl@).',
+          'Use @dd@ elements to identify descriptions or definitions for a term in a description list (@dl@).',
+          'For repairing existing content that does not use list elements, you can use the ARIA @role@ attributes with value @[role="list"]@ or @[role="group"]to identify list container elements and @[role="listitem"]@ to identify list item elements.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: ol element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-ol-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: ul element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-ul-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: li element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-li-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: dl element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-dl-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: dt element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-dt-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: dd element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-dd-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: group role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#group'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: list role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#list'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: listitem role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#listitem'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-posinset',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-posinset'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-setsize',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-setsize'
+          }
+        ]
+    },
+    LIST_2: {
+        ID:                    'List 2',
+        DEFINITION:            'When appropriate, a list container element (@ul@, @ol@, @dl@, @[role="list"]@, @[role="group"]@) must include a label that describes the purpose or contents of the list.',
+        SUMMARY:               'Provide list labels when appropriate',
+        TARGET_RESOURCES_DESC: '@ul@, @ol@ and @dl@ elements, container elements with @[role="list"]@, @[role="group"]@',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:   'Determine whether the container element benefits from a label and, if so, verify that it accurately describes the contents of the list.',
+          MANUAL_CHECK_P:   'Determine whether the %N_MC list container elements benefit from labels and, if so, verify that each accurately describes the contents of the list.',
+          HIDDEN_S:         'The hidden list element was not evaluated.',
+          HIDDEN_P:         'The %N_H hidden list elements were not evaluated.',
+          NOT_APPLICABLE:   'No list elements elements found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1:      'Verify the label "%1" accurately describes the contents of the list.',
+          ELEMENT_MC_2:      'Verify the @%1@ list container element does not benefit from a label, or add a label that describes the contents of the list.',
+          ELEMENT_HIDDEN_1:  'The hidden @%1@ element was not evaluated.'
+        },
+        PURPOSES: [
+          'Assistive technologies use labels on @ul@, @ol@ and @dl@ elements, and elements with @[role="list"]@ and @[role="group"]@ attributes to help screen reader users understand the purpose or contents of lists.'
+        ],
+        TECHNIQUES: [
+          'Use the @aria-labelledby@ attribute to add a label to a list container element to reference the @id@(s) of one or more elements on the page that describe its contents.',
+          'Use the @aria-label@ attribute to add a label to a list container element to provide an explicit text description of its contents.',
+          'The @title@ attribute can also be used to add a label to a list container element to provide an explicit text description of its contents.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: ol element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-ol-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: ul element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-ul-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML5: dl element',
+            url:   'https://www.w3.org/TR/html5/grouping-content.html#the-dl-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: group role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#group'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: list role',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#list'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-label'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-labelledby@ attribute',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML 4.01 Specification: The @title@ attribute',
+            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          }
+        ]
+    }
+  };
+
+  /* navigationRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /* --------------------------------------------------------------------------- */
+
+  const navigationRules$1 = {
+
+    NAVIGATION_1: {
+        ID:         'Navigation 1',
+        DEFINITION: 'At least two of the following features %s be provided for finding content in a website: a website search feature; a list of links on the home page to all pages in the website; a list of links on each page for navigation between pages; bread crumb links on each page for hierarchical navigation of the website and/or a dedicated page that serves as a site map of all the pages in the website.',
+        SUMMARY:    'At least two ways of finding content',
+        TARGET_RESOURCES_DESC: 'Website navigational links and search form controls',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that this page can be found from other pages in the website using at least two of the following features: a website search feature; a list of links for navigation from at least one other page in the website and/or from a page in the web site that serves as a site map.',
+          MANUAL_CHECK_P: 'Verify that this page can be found from other pages in the website using at least two of the following features: a website search feature; a list of links for navigation from at least one other page in the website and/or from a page in the web site that serves as a site map.',
+          NOT_APPLICABLE: 'Single page web resource: no other pages to link to or to search from.'
+        },
+        BASE_RESULT_MESSAGES: {
+          WEBSITE_MC_1: 'This page has both @navigation@ and @search@ landmarks. Verify that they provide links for navigating and the ability to search for content in this website.',
+          WEBSITE_MC_2: 'Verify that this page can be found from at least two of the following website features: a website search feature; a list of links for navigation from at least one other page in the website and/or from a page in the web site that serves as a site map.',
+          ELEMENT_MC_1: 'Verify that this @navigation@ landmark can be used for navigation of the content in this website.',
+          ELEMENT_MC_2: 'Verify that this @search@ landmark can be used to search for content in this website.'
+        },
+        PURPOSES: [
+          'One of the fundamental features of the web is the provision of easy access to useful information. By providing multiple ways to find information within a website, people with disabilities are able to locate content in a manner that best meets their needs.'
+        ],
+        TECHNIQUES: [
+          'Website search feature identified by the @search@ landmark.',
+          'A list of links for navigation between pages using the @navigation@ landmark.',
+          'Sandtrail/bread crumb links for hierarchical navigation of the website using the @navigation@ landmark.',
+          'A dedicated page that serves as a site map of all the pages in the website.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify that at least two of the techniques are implemented for finding content on this page.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Landmark Roles',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G63: Providing a site map',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G63'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G64: Providing a Table of Contents',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G64'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G125: Providing links to navigate to related Web pages',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G125'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G126: Providing a list of links to all other Web pages',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G126'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G161: Providing a search function to help users find content',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G161'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G185: Linking to all of the pages on the site from the home page',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G185'
+          }
+        ]
+    },
+    NAVIGATION_2: {
+        ID:         'Navigation 2',
+        DEFINITION: 'Consistent ordering of @main@, @navigation@, @search@, @banner@, @contentinfo@, @complementary@ and any other shared landmarks used across all pages in a website.',
+        SUMMARY:    'Consistent ordering of landmarks',
+        TARGET_RESOURCES_DESC: '@main@, @navigation@, @search@, @banner@ and @contentinfo@ landmarks',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that this page uses the same ordering of@main@, @navigation@, @search@, @banner@, @contentinfo@, @complementary@ and any other shared landmarks as other pages within the website.',
+          MANUAL_CHECK_P: 'Verify that this page uses the same ordering of @main@, @navigation@, @search@, @banner@, @contentinfo@, @complementary@ and any other shared landmarks as other pages within the website.',
+          NOT_APPLICABLE: 'No landmarks found on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          WEBSITE_MC_1:   'Verify that this page uses the same ordering of the following landmarks as other pages in the website: %1.',
+          ELEMENT_MC_1:   'Verify that the ordering of the @main@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.',
+          ELEMENT_MC_2:   'Verify that the ordering of the @navigation@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.',
+          ELEMENT_MC_3:   'Verify that the ordering of the @banner@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.',
+          ELEMENT_MC_4:   'Verify that the ordering of the @contentinfo@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.',
+          ELEMENT_MC_5:   'Verify that the ordering of the @search@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.',
+          ELEMENT_MC_6:   'Verify that the ordering of the @complementary@ landmark relative to other landmarks on this page is the same as the ordering used on the other pages in this website.'
+        },
+        PURPOSES: [
+          'One of the fundamental features of the web is the provision of easy access to useful information. Providing consistent ordering of landmarks across all pages of a website will make it easier for people to find the information they are seeking and to navigate between and within pages.'
+        ],
+        TECHNIQUES: [
+          'Include the basic @main@, @navigation@, @banner@ and @contentinfo@ landmarks in your page templates for the website.',
+          'If the page includes a website search form, use the @search@ landmark.',
+          'Use consistent ordering of the @main@, @navigation@, @search@, @banner@, @contentinfo@, @complementary@ and any other landmarks that are a part of each page within a website.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify that the ordering of the @main@, @navigation@, @search@, @banner@, @contentinfo@, @complementary@ and any other landmarks that are part of each page is consistent with the ordering of these landmarks on other pages.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Landmark Roles',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G61: Presenting repeated components in the same relative order each time they appear',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G61'
+          }
+        ]
+    },
+    NAVIGATION_3: {
+        ID:         'Navigation 3',
+        DEFINITION: 'Consistent ordering of @h1@ and @h2@ elements that label recurring page sections common across all pages in a website.',
+        SUMMARY:    'Consistent ordering of @h1@ and @h2@ labels',
+        TARGET_RESOURCES_DESC: '@h1@ and @h2@ elements used to identify recurring sections of pages within a website',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that this page uses the same ordering of @h1@ and @h2@ elements used to mark recurring page sections as the ordering used on the other pages within the website.',
+          MANUAL_CHECK_P: 'Verify that this page uses the same ordering of @h1@ and @h2@ elements used to mark recurring page sections as the ordering used on the other pages within the website.',
+          FAIL_S:         'No @h1@ or @h2@ elements found on the page.',
+          FAIL_P:         'No @h1@ or @h2@ elements found on the page.',
+          NOT_APPLICABLE: 'Single page web resource: consistent ordering of @h1@ and @h2@ does not apply.'
+        },
+        BASE_RESULT_MESSAGES: {
+          WEBSITE_FAIL_1: 'No @h1@ or @h2@ elements found on the page.',
+          WEBSITE_MC_1:   'Verify that the ordering of @h1@ and @h2@ elements used to mark recurring page sections on this page is the same as the ordering used on the other pages within the website.',
+          ELEMENT_MC_1:   'Verify that if this @h1@ heading is used to identify the main content of the page, it is in the same order relative to any @h2@ elements that identify recurring page sections as the ordering used on the other pages within the website.',
+          ELEMENT_MC_2:   'Verify that if this @h2@ heading is used to identify a recurring page section, it is in the same order relative to other comparable @h2@ elements as the ordering used on the other pages within the website.'
+        },
+        PURPOSES: [
+          'One of the fundamental features of the web is the provision of easy access to useful information. Consistent ordering of @h1@ and @h2@ elements used to identify recurring page sections common across all pages in the website will make it easier for people to find information they are seeking and to navigate between and within pages.'
+        ],
+        TECHNIQUES: [
+          'Use an @h1@ element to identify the main content within a page.',
+          'Use @h2@ elements to identify other recurring page sections such as navigation bars, web site search forms, footer information, etc.'
+        ],
+        MANUAL_CHECKS: [
+          'View the @h1@ and @h2@ heading structure of the page, and verify that it has the same or a similar structure as other pages within the website, especially with respect to recurring page sections.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Landmark Roles',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G61: Presenting repeated components in the same relative order each time they appear',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G61'
+          }
+        ]
+    },
+    NAVIGATION_4: {
+        ID:         'Navigation 4',
+        DEFINITION: 'Consistent labeling of landmarks across all pages in a website.',
+        SUMMARY:    'Consistent labeling of landmarks',
+        TARGET_RESOURCES_DESC: '@main@, @navigation@, @search@, @banner@, @complementary@ and @contentinfo@ landmarks',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that the labeling of the @main@, @navigation@, @search@, @banner@, @complementary@ and @contentinfo@ landmarks on this page is consistent with the labeling of all comparable landmarks on all other pages within the website.',
+          MANUAL_CHECK_P: 'Verify that the labeling of the @main@, @navigation@, @search@, @banner@, @complementary@ and @contentinfo@ landmarks on this page is consistent with the labeling of all comparable landmarks on all other pages within the website.',
+          NOT_APPLICABLE:  'No landmarks found on the page.'
+        },
+        BASE_RESULT_MESSAGES: {
+          WEBSITE_MC_1: 'Verify that the labeling of landmarks on this page is consistent with the labeling of comparable landmarks on all other pages within the website.',
+          ELEMENT_MC_1: 'Verify that the labeling of the @main@ landmark on this page is consistent with the labeling of comparable @main@ landmarks on all other pages within the website.',
+          ELEMENT_MC_2: 'Verify that the labeling of the @navigation@ landmark on this page is consistent with the labeling of comparable @navigation@ landmarks on all other pages within the website.',
+          ELEMENT_MC_3: 'Verify that the labeling of the @banner@ landmark on this page is consistent with the labeling of comparable @banner@ landmarks on all other pages within the website.',
+          ELEMENT_MC_4: 'Verify that the labeling of the @contentinfo@ landmark on this page is consistent with the labeling of comparable @contentinfo@ landmarks on all other pages within the website.',
+          ELEMENT_MC_5: 'Verify that the labeling of the @search@ landmark on this page is consistent with the labeling of comparable @search@ landmarks on all other pages within the website.',
+          ELEMENT_MC_6: 'Verify that the labeling of the @complementary@ landmark on this page is consistent with the labeling of comparable @complementary@ landmarks on all other pages within the website.'
+        },
+        PURPOSES: [
+          'One of the fundamental features of the web is the provision of easy access to useful information. Consistent labeling of comparable landmark-identified content across all pages of a website will make it easier for people to find information they are seeking and to navigate between and within pages.'
+        ],
+        TECHNIQUES: [
+          'Most pages have sections associated with the @main@, @navigation@, @banner@ and @contentinfo@ landmarks in your page templates for the website.',
+          'If the page includes a website search form, use the @search@ landmark.',
+          'Landmarks only need labels (using @aria-label@ or @aria-labelledby@) if there is more than one landmark of the same type on a page.',
+          'If landmarks have labels, use consistent labeling of the landmarks across all pages within the website.'
+        ],
+        MANUAL_CHECKS: [
+          'Verify that the main content of the page is contained within the @main@ landmark.',
+          'Verify that recurring content at the top of each page is contained within a @banner@ landmark.',
+          'Verify that website navigational links are contained within @navigation@ landmarks.',
+          'Verify that recurring content at the bottom of each page is contained within a @contentinfo@ landmark.',
+          'Verify that if a landmark has a label and there are comparable landmarks on other pages in the website, the labels are the same on each page.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Landmark Roles',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G61: Presenting repeated components in the same relative order each time they appear',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G61'
+          }
+        ]
+    },
+    NAVIGATION_5: {
+        ID:         'Navigation 5',
+        DEFINITION: 'Consistent accessible names for @h1@ and @h2@ elements that identify recurring page sections common across all pages in a website.',
+        SUMMARY:    'Consistent @h1@ and @h2@ page section labels',
+        TARGET_RESOURCES_DESC: '@h1@ and @h2@ elements used to identify recurring page sections within a website',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Verify that the accessible names of @h1@ and @h2@ elements used to identify recurring page sections are consistent with those on all other pages within the website.',
+          MANUAL_CHECK_P: 'Verify that the accessible names of @h1@ and @h2@ elements used to identify recurring page sections are consistent with those on all other pages within the website.',
+          FAIL_S: 'No @h1@ or @h2@ elements found on the page.',
+          FAIL_P: 'No @h1@ or @h2@ elements found on the page.',
+          NOT_APPLICABLE: 'Single page web resource: consistency of accessible names does not apply.'
+        },
+        BASE_RESULT_MESSAGES: {
+          WEBSITE_FAIL_1: 'No @h1@ or @h2@ elements found on the page',
+          WEBSITE_MC_1:   'Verify that the accessible names of @h1@ and @h2@ elements used to identify recurring page sections are the same as those of comparable @h1@ and @h2@ elements found on the other pages within the website.',
+          ELEMENT_MC_1:   'Verify that if this @h1@ heading is used to identify the main content of the page, it has the same accessible name as comparable @h1@ elements on the other pages within the website.',
+          ELEMENT_MC_2:   'Verify that if this @h2@ heading is used to identify a recurring page section, it has the same accessible name as comparable @h2@ elements on the other pages within the website.'
+        },
+        PURPOSES: [
+          'One of the fundamental features of the web is the provision of easy access to useful information. Consistent accessible names of @h1@ and @h2@ elements used to identify recurring page sections common across all pages in the website will make it easier for people to find information they are seeking and to navigate between and within pages.'
+        ],
+        TECHNIQUES: [
+          'Use @h1@ elements to identify the main content within a page.',
+          'Use @h2@ elements to identify other major sections within pages, e.g. navigation bars, web site search forms, footer information, etc.'
+        ],
+        MANUAL_CHECKS: [
+          'View the @h1@ and @h2@ heading structure of the page, and verify that it has the same relative order as other pages within the website'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: Landmark Roles',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G61: Presenting repeated components in the same relative order each time they appear',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G61'
+          }
+        ]
     }
   };
 
@@ -17117,6 +17635,111 @@
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
             url:   'https://www.w3.org/WAI/tutorials/tables/'
+          }
+        ]
+    }
+  };
+
+  /* timingRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English              */
+  /* --------------------------------------------------------------------------- */
+
+  const timingRules$1 = {
+    TIMING_1: {
+        ID:                    'Timing 1',
+        DEFINITION:            'A page that contains time limits for user interaction or viewing content must provide a way to turn off, adjust or extend the time limits.',
+        SUMMARY:               'Control time limits',
+        TARGET_RESOURCES_DESC: 'Pages with scripting or other embedded technologies to control the response time for input or the amount of time to view content',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:  'If the page contains time limits, verify that there is a way to turn off, adjust or extend the time limits; or that one of the three exceptions applies.'
+        },
+        BASE_RESULT_MESSAGES: {
+          PAGE_MC_1:      'If the page contains time limits, verify that there is a way to turn off, adjust or extend the time limits; or that one of the three exceptions applies.'
+        },
+        PURPOSES: [
+          'People with physical disabilities may need more time to respond to web sites with time limits for selecting an option.',
+          'People with visual impairments and visual processing learning disabilities may need more time to read material if the rendering of the material is automatically removed or obscured after a time period.',
+          'Providing adjustable time periods in line with the persons capabilities makes it possible for people to complete the tasks associated with the website.'
+        ],
+        TECHNIQUES: [
+          'Turn off: The user is allowed to turn off the time limit before encountering it.',
+          'Adjust: The user is allowed to adjust the time limit before encountering it over a wide range that is at least ten times the length of the default setting.',
+          'Extend: The user is warned before time expires and given at least 20 seconds to extend the time limit with a simple action (for example, "press the space bar"), and the user is allowed to extend the time limit at least ten time.',
+          'Real-time Exception: The time limit is a required part of a real-time event (for example, an auction), and no alternative to the time limit is possible.',
+          'Essential Exception: The time limit is essential and extending it would invalidate the activity.',
+          '20 Hour Exception: The time limit is longer than 20 hours.'
+        ],
+        MANUAL_CHECKS: [
+          'If the page contains time limits, verify that there is a way to turn off, adjust or extend the time limits; or that one of the three exceptions applies.'
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'Understanding 2.2.1 Timing Adjustable',
+            url:   'https://www.w3.org/WAI/WCAG21/Understanding/timing-adjustable.html'
+          }
+        ]
+    },
+    TIMING_2: {
+        ID:                    'Timing 2',
+        DEFINITION:            'A page that includes moving, blinking, scrolling or auto-updating content that starts automatically and lasts more than 5 seconds must have a mechanism to pause, stop, or hide such content.',
+        SUMMARY:               'Control moving, blinking or auto-updating content',
+        TARGET_RESOURCES_DESC: 'Canvas, SVG and image animations; moving, blinking, scrolling or auto-updating text content; and embedded applications',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'If the page includes moving, blinking, scrolling or auto-updating content, verify there has a mechanism to pause, stop, or hide the information.',
+          MANUAL_CHECK_P:     'If the page includes moving, blinking, scrolling or auto-updating content, verify there has a mechanism to pause, stop, or hide the information.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1:     'If the %1 element includes moving, blinking, scrolling or auto-updating content, verify there has a mechanism to pause, stop, or hide the information.',
+          ELEMENT_HIDDEN_1: 'The %1 element has not evaluated for moving, blinking, scrolling or auto-updating content',
+          PAGE_MC_1:        'If the page includes moving, blinking, scrolling or auto-updating content, verify there has a mechanism to pause, stop, or hide the information.'
+        },
+        PURPOSES: [
+          'People with visual impairments and visual processing learning disabilities may not be able to read or understand content that is blinking, scrolling or auto updating'
+        ],
+        TECHNIQUES: [
+          'Pause/Resume: Through configuration or controls on the page, enable the user to pause and resume the moving, blinking, scrolling or auto-updating content.',
+          'Stop: Through configuration or controls on the page, enable the user to stop the moving, blinking, scrolling or auto-updating content and see all of the content at one time.',
+          'Hide: Through configuration or controls on the page, enable the user to hide the moving, blinking, scrolling or auto-updating content if it is not essential for the activity.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'Understanding 2.2.2 Pause, Stop, Hide',
+            url:   'https://www.w3.org/WAI/WCAG21/Understanding/pause-stop-hide.html'
+          }
+        ]
+    },
+    TIMING_3: {
+        ID:                    'Timing 3',
+        DEFINITION:            'A page must not include content that flashes more than three times in one second, unless below general flash and red flash thresholds.',
+        SUMMARY:               'Flashing limits',
+        TARGET_RESOURCES_DESC: 'Canvas, SVG and image animations; flashing text content; video; and embedded applications',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Verify the page does not include content that flashes more than three times in one second, unless below general flash and red flash thresholds.',
+          MANUAL_CHECK_P:     'Verify the page does not include content that flashes more than three times in one second, unless below general flash and red flash thresholds.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1:     'Verify the %1 element does not include content that flashes more than three times in one second, unless below general flash and red flash thresholds.',
+          ELEMENT_HIDDEN_1: 'The %1 element has not evaluated for moving, blinking, scrolling or auto-updating content',
+          PAGE_MC_1:        'Verify the page does not include any content that flashes more than three times in one second, unless below general flash and red flash thresholds.'
+        },
+        PURPOSES: [
+          'People who have photosensitive seizure disorders can have a seizure triggered by content that flashes at certain frequencies for more than a few flashes.',
+          'People are even more sensitive to red flashing than to other colors.',
+          'NOTE: This flashing requirements was adapted from the broadcasting industry standards (e.g. content is viewed from a closer distance and using a larger angle of vision).'
+        ],
+        TECHNIQUES: [
+          'There is no remedication technique, the content must be removed or disabled from flashing.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'Understanding 2.3.1 Three Flashes or Below Threshold',
+            url:   'https://www.w3.org/WAI/WCAG20/Understanding/three-flashes-or-below-threshold'
           }
         ]
     }
@@ -18585,8 +19208,7 @@
   // messages.rules = Object.assign(messages.rules, bypassRules);
   messages$1.rules = Object.assign(messages$1.rules, colorRules$1);
   // messages.rules = Object.assign(messages.rules, errorRules);
-  // messages.rules = Object.assign(messages.rules, frameRules);
-  messages$1.rules = Object.assign(messages$1.rules, focusRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, frameRules$1);
   messages$1.rules = Object.assign(messages$1.rules, controlRules$1);
   messages$1.rules = Object.assign(messages$1.rules, headingRules$1);
   // messages.rules = Object.assign(messages.rules, htmlRules);
@@ -18595,20 +19217,20 @@
   messages$1.rules = Object.assign(messages$1.rules, landmarkRules$1);
   // messages.rules = Object.assign(messages.rules, layoutRules);
   messages$1.rules = Object.assign(messages$1.rules, linkRules$1);
-  // messages.rules = Object.assign(messages.rules, listsRules);
-  // messages.rules = Object.assign(messages.rules, navigationRules);
+  messages$1.rules = Object.assign(messages$1.rules, listRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, navigationRules$1);
   // messages.rules = Object.assign(messages.rules, readingOrderRules);
   // messages.rules = Object.assign(messages.rules, resizeRules);
   // messages.rules = Object.assign(messages.rules, sensoryRules);
   messages$1.rules = Object.assign(messages$1.rules, tableRules$1);
-  // messages.rules = Object.assign(messages.rules, timingRules);
+  messages$1.rules = Object.assign(messages$1.rules, timingRules$1);
   messages$1.rules = Object.assign(messages$1.rules, videoRules$1);
   messages$1.rules = Object.assign(messages$1.rules, widgetRules$1);
 
   /* locale.js */
 
   /* Constants */
-  const debug$v = new DebugLogging('locale', false);
+  const debug$A = new DebugLogging('locale', false);
 
   var globalUseCodeTags = false;
 
@@ -18664,7 +19286,7 @@
     if (!message) {
       message = `[common][error]: id="${id}"`;
     }
-    debug$v.flag && debug$v.log(`[${id}][${value}]: ${message}`);
+    debug$A.flag && debug$A.log(`[${id}][${value}]: ${message}`);
     return message;
   }
 
@@ -18763,13 +19385,13 @@
       function addLevel () {
         switch (level) {
           case 'A':
-            return 'Level A only';
+            return messages[locale].common.rulesetLevelA;
 
           case 'AA':
-            return 'Levels A and AA';
+            return messages[locale].common.rulesetLevelAA;
 
           case 'AAA':
-            return 'Levels A, AA and enhanced CCR';
+            return messages[locale].common.rulesetLevelAAA;
         }
         return '';
       }
@@ -18779,29 +19401,33 @@
       switch (rulesetId) {
 
         case 'FILTER':
-          label = 'First Step rules';
+          label = messages[locale].common.rulesetFilter;
           break;
 
         case 'WCAG22':
-          label = 'WCAG 2.2, ' + addLevel();
+          label = messages[locale].common.rulesetWCAG22 + addLevel();
           break;
 
         case 'WCAG21':
-          label = 'WCAG 2.1, ' + addLevel();
+          label = messages[locale].common.rulesetWCAG21 + addLevel();
           break;
 
         default:
-          label = 'WCAG 2.0, ' + addLevel();
+          label = messages[locale].common.rulesetWCAG20 + addLevel();
           break;
       }
 
       switch (scopeFilter) {
+        case 'ELEMENT':
+          label += messages[locale].common.scopeFilterElement;
+          break;
+
         case 'PAGE':
-          label += ', Page scope only';
+          label += messages[locale].common.scopeFilterPage;
           break;
 
         case 'WEBSITE':
-          label += ', Website scope only';
+          label += messages[locale].common.scopeFilterWebsite;
           break;
 
       }
@@ -18828,7 +19454,7 @@
       for (const g in principle.guidelines) {
         const guideline = principle.guidelines[g];
         if (guideline.id === guidelineId) {
-          debug$v.flag && debug$v.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
+          debug$A.flag && debug$A.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
           return {
             num: g,
             title: guideline.title,
@@ -18838,7 +19464,7 @@
         }
       }
     }
-    debug$v.flag && debug$v.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
+    debug$A.flag && debug$A.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
     // Assume all rules
     return {
       title: messages[locale].common.allRules,
@@ -18871,7 +19497,7 @@
         for (const sc in guideline.success_criteria) {
           const success_criterion = guideline.success_criteria[sc];
           if (sc === successCriterionId) {
-            debug$v.flag && debug$v.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
+            debug$A.flag && debug$A.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
             return {
               id: successCriterionId,
               level: success_criterion.level,
@@ -18883,7 +19509,7 @@
         }
       }
     }
-    debug$v.flag && debug$v.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
+    debug$A.flag && debug$A.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
     return null;
   }
 
@@ -18903,7 +19529,7 @@
    */
 
   function getSuccessCriteriaInfo(successCriteriaIds) {
-    debug$v.flag && debug$v.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
+    debug$A.flag && debug$A.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
     const scInfoArray = [];
     successCriteriaIds.forEach( sc => {
       scInfoArray.push(getSuccessCriterionInfo(sc));
@@ -18950,7 +19576,7 @@
    */
 
   function getRuleDefinition (ruleId) {
-    debug$v.flag && debug$v.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
+    debug$A.flag && debug$A.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
     return transformElementMarkup(messages[locale].rules[ruleId].DEFINITION);
   }
 
@@ -18965,7 +19591,7 @@
    */
 
   function getRuleSummary (ruleId) {
-    debug$v.flag && debug$v.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
+    debug$A.flag && debug$A.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
     return transformElementMarkup(messages[locale].rules[ruleId].SUMMARY);
   }
 
@@ -18980,7 +19606,7 @@
    */
 
   function getTargetResourcesDesc (ruleId) {
-    debug$v.flag && debug$v.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
+    debug$A.flag && debug$A.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
     return transformElementMarkup(messages[locale].rules[ruleId].TARGET_RESOURCES_DESC);
   }
 
@@ -18999,7 +19625,7 @@
     messages[locale].rules[ruleId].PURPOSES.forEach ( p => {
       purposes.push(transformElementMarkup(p));
     });
-    debug$v.flag && debug$v.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
+    debug$A.flag && debug$A.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
     return purposes;
   }
 
@@ -19018,7 +19644,7 @@
     messages[locale].rules[ruleId].TECHNIQUES.forEach ( t => {
       techniques.push(transformElementMarkup(t));
     });
-    debug$v.flag && debug$v.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
+    debug$A.flag && debug$A.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
     return techniques;
   }
 
@@ -19046,8 +19672,8 @@
           url: infoLink.url
         }
       );
-      debug$v.flag && debug$v.log(`[infoLink][title]: ${infoLink.title}`);
-      debug$v.flag && debug$v.log(`[infoLink][  url]: ${infoLink.url}`);
+      debug$A.flag && debug$A.log(`[infoLink][title]: ${infoLink.title}`);
+      debug$A.flag && debug$A.log(`[infoLink][  url]: ${infoLink.url}`);
     });
     return infoLinks;
   }
@@ -19067,7 +19693,7 @@
     messages[locale].rules[ruleId].MANUAL_CHECKS.forEach ( mc => {
       manualChecks.push(transformElementMarkup(mc));
     });
-    debug$v.flag && debug$v.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
+    debug$A.flag && debug$A.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
     return manualChecks;
   }
 
@@ -19086,7 +19712,7 @@
     const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$v.flag && debug$v.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$A.flag && debug$A.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -19106,7 +19732,7 @@
     const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$v.flag && debug$v.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$A.flag && debug$A.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -19174,12 +19800,12 @@
   /* tableInfo.js */
 
   /* Constants */
-  const debug$u = new DebugLogging('tableInfo', false);
-  debug$u.flag = false;
-  debug$u.rows = false;
-  debug$u.cells = false;
-  debug$u.tableTree = false;
-  debug$u.headerCalc = false;
+  const debug$z = new DebugLogging('tableInfo', false);
+  debug$z.flag = false;
+  debug$z.rows = false;
+  debug$z.cells = false;
+  debug$z.tableTree = false;
+  debug$z.headerCalc = false;
 
   /**
    * @class TableElement
@@ -19311,13 +19937,13 @@
       const tableElement = this;
       this.rows.forEach( row => {
         row.cells.forEach( cell => {
-          debug$u.headerCalc && debug$u.log(`${cell}`, 1);
+          debug$z.headerCalc && debug$z.log(`${cell}`, 1);
           if (cell.headerSource === HEADER_SOURCE.HEADER_NONE) {
             if (!cell.isHeader) {
               const node = cell.domElement.node;
               if (node.hasAttribute('headers')) {
                 const ids = node.getAttribute('headers').split(' ');
-                debug$u.headesCalc && debug$u.log(`[headers]: ${ids.join(' ')}`);
+                debug$z.headesCalc && debug$z.log(`[headers]: ${ids.join(' ')}`);
                 for (let i = 0; i < ids.length; i += 1) {
                   const de = domCache.getDomElementById(ids[i]);
                   if (de && de.accName.name) {
@@ -19332,7 +19958,7 @@
                 // get Column Headers
                 for (let i = 1; i < row.rowNumber; i += 1) {
                   const hc = tableElement.getCell(i, cell.startColumn);
-                  debug$u.headerCalc && debug$u.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
+                  debug$z.headerCalc && debug$z.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeColumn) &&
                       hc.domElement.accName.name) {
@@ -19343,7 +19969,7 @@
                 // get Row Headers
                 for (let i = 1; i < cell.startColumn; i += 1) {
                   const hc = tableElement.getCell(row.rowNumber, i);
-                  debug$u.headerCalc && debug$u.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
+                  debug$z.headerCalc && debug$z.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeRow) &&
                       hc.domElement.accName.name) {
@@ -19355,7 +19981,7 @@
                   cell.headerSource = HEADER_SOURCE.ROW_COLUMN;
                 }
               }
-              debug$u.headerCalc && debug$u.log(`${cell}`);
+              debug$z.headerCalc && debug$z.log(`${cell}`);
             }
           }
         });
@@ -19402,7 +20028,7 @@
     }
 
     debugRowGroup (prefix, item) {
-      debug$u.log(`${prefix}${item}`);
+      debug$z.log(`${prefix}${item}`);
       if (item.isGroup) {
         item.children.forEach( child => {
           if (child) {
@@ -19413,14 +20039,14 @@
     }
 
     debug () {
-      if (debug$u.flag) {
-        debug$u.log(`${this}`);
-        if (debug$u.tableTree) {
+      if (debug$z.flag) {
+        debug$z.log(`${this}`);
+        if (debug$z.tableTree) {
           this.children.forEach( child => {
             this.debugRowGroup('  ', child);
           });
         }
-        debug$u.separator();
+        debug$z.separator();
         for (let i = 0; i < this.rows.length; i += 1) {
           this.rows[i].debug('  ');
         }
@@ -19535,15 +20161,15 @@
     }
 
     debug (prefix='') {
-      if (debug$u.flag && debug$u.rows) {
-        debug$u.log(`${prefix}${this}`);
+      if (debug$z.flag && debug$z.rows) {
+        debug$z.log(`${prefix}${this}`);
         for (let i = 0; i < this.cells.length; i += 1) {
           const cell = this.cells[i];
           if (cell) {
             cell.debug(prefix + '  ');
           }
           else {
-            debug$u.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
+            debug$z.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
           }
         }
       }
@@ -19624,8 +20250,8 @@
     }
 
     debug (prefix='') {
-      if (debug$u.flag) {
-        debug$u.log(`${prefix}${this}`);
+      if (debug$z.flag) {
+        debug$z.log(`${prefix}${this}`);
       }
     }
 
@@ -19746,8 +20372,8 @@
      */
 
     showTableInfo () {
-      if (debug$u.flag) {
-        debug$u.log('== All Tables ==', 1);
+      if (debug$z.flag) {
+        debug$z.log('== All Tables ==', 1);
           this.allTableElements.forEach( te => {
             te.debug();
           });
@@ -19755,14 +20381,77 @@
     }
   }
 
+  /* timingInfo.js */
+
+  /* Constants */
+  const debug$y = new DebugLogging('TimingInfo', false);
+
+  /**
+   * @class TimingInfo
+   *
+   * @desc Collects information on the elements with possible animations on a web page
+   *       for use in rules
+   */
+
+  class TimingInfo {
+    constructor () {
+      this.allTimingElements  = [];
+    }
+
+    /**
+     * @method isTimingElement
+     *
+     * @desc Tests if a domElement for being a possible element with visual animations
+     *
+     * @param  {Object}  domElement - DOMElement object representing an element in the DOM
+     */
+
+    isTimingElement (domElement) {
+      return (domElement.tagName === 'canvas') ||
+             (domElement.tagName === 'embed') ||
+             (domElement.tagName === 'img') ||
+             (domElement.tagName === 'object') ||
+             (domElement.tagName === 'svg');
+    }
+
+    /**
+     * @method update
+     *
+     * @desc Checks to see if the domElement could be an animation, if so save reference
+     *
+     * @param  {Object}  domElement        - DOMElement object representing an element in the DOM
+     */
+
+    update (domElement) {
+      if (this.isTimingElement(domElement)) {
+        this.allTimingElements.push(domElement);
+      }
+    }
+
+    /**
+     * @method showImageInfo
+     *
+     * @desc showImageInfo is used for debugging the ImageInfo, ImageElement and MapElement objects
+     */
+
+    showTimingInfo () {
+      if (debug$y.flag) {
+        debug$y.log('== All Timing elements ==', 1);
+        this.allTimingElements.forEach( de => {
+          debug$y.log(`[fileName]: ${de.tagName}`, true);
+        });
+      }
+    }
+  }
+
   /* domCache.js */
 
   /* Constants */
-  const debug$t = new DebugLogging('domCache', false);
-  debug$t.flag = false;
-  debug$t.showDomTexts = false;
-  debug$t.showDomElems = false;
-  debug$t.showTree = false;
+  const debug$x = new DebugLogging('domCache', false);
+  debug$x.flag = false;
+  debug$x.showDomTexts = false;
+  debug$x.showDomElems = false;
+  debug$x.showTree = false;
 
   const skipableElements = [
     'base',
@@ -19855,6 +20544,7 @@
       this.mediaInfo      = new MediaInfo();
       this.structureInfo = new StructureInfo();
       this.tableInfo     = new TableInfo();
+      this.timingInfo    = new TimingInfo();
       this.iframeInfo    = new IframeInfo();
 
       this.startingDomElement = new DOMElement(parentInfo, startingElement, 1);
@@ -20056,6 +20746,9 @@
       newParentInfo.mediaElement    = this.mediaInfo.update(mediaElement, domElement);
       newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
       [newParentInfo.tableElement, newParentInfo.tableRowGroup] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
+
+      this.timingInfo.update(domElement);
+
       return newParentInfo;
     }
 
@@ -20101,24 +20794,24 @@
      */
 
     showDomElementTree () {
-      if (debug$t.flag) {
-        if (debug$t.showDomElems) {
-          debug$t.log(' === AllDomElements ===', true);
+      if (debug$x.flag) {
+        if (debug$x.showDomElems) {
+          debug$x.log(' === AllDomElements ===', true);
           this.allDomElements.forEach( de => {
-            debug$t.domElement(de);
+            debug$x.domElement(de);
           });
         }
 
-        if (debug$t.showDomTexts) {
-          debug$t.log(' === AllDomTexts ===', true);
+        if (debug$x.showDomTexts) {
+          debug$x.log(' === AllDomTexts ===', true);
           this.allDomTexts.forEach( dt => {
-            debug$t.domText(dt);
+            debug$x.domText(dt);
           });
         }
 
-        if (debug$t.showTree) {
-          debug$t.log(' === DOMCache Tree ===', true);
-          debug$t.domElement(this.startingDomElement);
+        if (debug$x.showTree) {
+          debug$x.log(' === DOMCache Tree ===', true);
+          debug$x.domElement(this.startingDomElement);
           this.startingDomElement.showDomElementTree(' ');
         }
       }
@@ -20128,8 +20821,8 @@
   /* audioRules.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('Audio Rules', false);
-  debug$s.flag = false;
+  const debug$w = new DebugLogging('Audio Rules', false);
+  debug$w.flag = false;
 
 
   /*
@@ -20149,7 +20842,7 @@
       last_updated        : '2014-11-21',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
       target_resources    : ['audio', 'track'],
@@ -20188,7 +20881,7 @@
       last_updated        : '2014-11-21',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
       target_resources    : ['object', 'param'],
@@ -20227,7 +20920,7 @@
       last_updated        : '2014-11-21',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
       target_resources    : ['embed'],
@@ -20266,6 +20959,7 @@
       last_updated        : '2014-11-21',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
       wcag_primary_id     : '1.4.2',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -20281,8 +20975,8 @@
   /* colorRules.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('Color Rules', false);
-  debug$r.flag = false;
+  const debug$v = new DebugLogging('Color Rules', false);
+  debug$v.flag = false;
 
 
   /*
@@ -20314,14 +21008,14 @@
           const id      = node.id ? `[id=${node.id}]` : '';
           const cc      = domElement.colorContrast;
           const crr     = cc.colorContrastRatio;
-          debug$r.flag && debug$r.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+          debug$v.flag && debug$v.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
         }
 
 
         const MIN_CCR_NORMAL_FONT = 4.5;
         const MIN_CCR_LARGE_FONT  = 3.1;
 
-        debug$r.flag && debug$r.log(`===== COLOR 1 ====`);
+        debug$v.flag && debug$v.log(`===== COLOR 1 ====`);
 
         dom_cache.allDomTexts.forEach( domText => {
           const de  = domText.parentDomElement;
@@ -20395,6 +21089,7 @@
       last_updated        : '2022-04-21',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required       : true,
       wcag_primary_id     : '1.4.1',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -20428,14 +21123,14 @@
           const id      = node.id ? `[id=${node.id}]` : '';
           const cc      = domElement.colorContrast;
           const crr     = cc.colorContrastRatio;
-          debug$r.flag && debug$r.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+          debug$v.flag && debug$v.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
         }
 
 
         const MIN_CCR_NORMAL_FONT = 7.1;
         const MIN_CCR_LARGE_FONT  = 4.5;
 
-        debug$r.flag && debug$r.log(`===== COLOR 3 ====`);
+        debug$v.flag && debug$v.log(`===== COLOR 3 ====`);
 
         dom_cache.allDomTexts.forEach( domText => {
           const de  = domText.parentDomElement;
@@ -20501,210 +21196,750 @@
 
   ];
 
-  /* focusRules.js */
+  /* frameRules.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('Focus Rules', false);
-  debug$q.flag = false;
+  const debug$u = new DebugLogging('Frame Rules', false);
+  debug$u.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Frame Rules
+   */
+
+  const frameRules = [
+
+    /**
+     * @object FRAME_1
+     *
+     * @desc  Evaluate frame elements for a title attribute
+     */
+
+    { rule_id             : 'FRAME_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : [],
+      target_resources    : ['frame'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.tagName === 'frame' && de.node.src) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+  /*
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var frame_elements     = dom_cache.frames_cache.frame_elements;
+        var frame_elements_len = frame_elements.length;
+
+        // Check to see if valid cache reference
+        if (frame_elements && frame_elements_len) {
+
+          for (var i = 0; i < frame_elements_len; i++) {
+            var fe = frame_elements[i];
+            var de = fe.dom_element;
+            var cs = de.computed_style;
+
+            // if no content in frame ignore
+            if (fe.src.length === 0) continue;
+
+            if ((cs.is_visible_to_at === VISIBILITY.VISIBLE) &&
+                (cs.is_visible_onscreen === VISIBILITY.VISIBLE)){
+
+              if (de.has_title && de.title.length) {
+                rule_result.addResult(TEST_RESULT.PASS, fe, 'ELEMENT_PASS_1', [de.title]);
+              }
+              else {
+                rule_result.addResult(TEST_RESULT.FAIL, fe, 'ELEMENT_FAIL_1', []);
+              }
+
+            }
+            else {
+              rule_result.addResult(TEST_RESULT.HIDDEN, fe, 'ELEMENT_HIDDEN_1', []);
+            }
+          } // end loop
+        }
+  */
+
+      } // end validate function
+    },
+
+    /**
+     * @object FRAME_2
+     *
+     * @desc  Evaluate iframe elements for an accessible name
+     */
+
+    { rule_id             : 'FRAME_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : [],
+      target_resources    : ['iframe'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.tagName === 'iframe' && de.node.src) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+  /*
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var iframe_elements     = dom_cache.frames_cache.iframe_elements;
+        var iframe_elements_len = iframe_elements.length;
+
+        // Check to see if valid cache reference
+        if (iframe_elements && iframe_elements_len) {
+
+          for (var i = 0; i < iframe_elements_len; i++) {
+            var fe = iframe_elements[i];
+
+            // if no content in frame ignore
+            if (fe.src.length === 0) continue;
+
+            if ((fe.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) &&
+                (fe.dom_element.computed_style.is_visible_onscreen === VISIBILITY.VISIBLE)){
+
+              if (fe.computed_label.length) {
+                rule_result.addResult(TEST_RESULT.PASS, fe, 'ELEMENT_PASS_1', [fe.computed_label]);
+              }
+              else {
+                rule_result.addResult(TEST_RESULT.FAIL, fe, 'ELEMENT_FAIL_1', []);
+              }
+
+            }
+            else {
+              rule_result.addResult(TEST_RESULT.HIDDEN, fe, 'ELEMENT_HIDDEN_1', []);
+            }
+          } // end loop
+        }
+
+  */
+      } // end validate function
+    }
+
+  ];
+
+  /* controlRules.js */
+
+  /* Constants */
+  const debug$t = new DebugLogging('Control Rules', false);
+  debug$t.flag = false;
+
 
   /*
    * OpenA11y Alliance Rules
-   * Rule Category: Focus Rules
+   * Rule Category: Form Control Rules
    */
 
-  const focusRules = [
+  const controlRules = [
 
   /**
-   * @object FOCUS_1
+   * @object CONTROL_1
    *
-   * @desc Focus order
+   * @desc textarea, select and input elements of type text,
+   *       password, checkbox, radio and file must have an
+   *       accessible name using label elements
+   *
    */
 
-  { rule_id             : 'FOCUS_1',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.3',
-    wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
-    target_resources    : ['Page', 'a', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
-    validate            : function (dom_cache, rule_result) {
-
-      let controlCount = 0;
-      let removedCount = 0;
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (de.isInteractiveElement ||
-            (de.ariaInfo.isWidget && !de.ariaInfo.hasRequiredParents)) {
-          if (de.visibility.isVisibleOnScreen) {
-            controlCount += 1;
-            if (de.isInteractiveElement && (de.tabIndex < 0)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName, de.role, de.tabIndex]);
-              removedCount += 1;
-            }
-            else {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-              }
-            }
-          }
-          else {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-
-      if (controlCount > 1) {
-        if (removedCount == 0) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, removedCount]);
-        }
-      }
-    } // end validation function
-  },
-
-  /**
-   * @object FOCUS_2
-   *
-   * @desc Focus style
-   */
-
-  { rule_id             : 'FOCUS_2',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.7',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
-    target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
-    validate            : function (dom_cache, rule_result) {
-
-      let controlCount = 0;
-      let hiddenCount = 0;
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (de.isInteractiveElement ||
-            de.ariaInfo.isWidget) {
-          if (de.visibility.isVisibleOnScreen) {
-            controlCount += 1;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-            }
-          }
-          else {
-            hiddenCount += 1;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-
-      if (controlCount > 1) {
-        if (hiddenCount == 0) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
-        }
-      }
-    } // end validation function
-
-  },
-
-  /**
-   * @object FOCUS_3
-   *
-   * @desc Target of a link does not go to a page with popup windows
-   */
-
-  { rule_id             : 'FOCUS_3',
-    last_updated        : '2022-05-24',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.LINKS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.2.1',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-    target_resources    : ['a', 'area', 'select'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.linkInfo.allLinkDomElements.forEach( de => {
-        if (de.visibility.isVisibleOnScreen) {
-          rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object FOCUS_4
-   *
-   * @desc Select elements with onchange events
-   */
-
-  { rule_id             : 'FOCUS_4',
-    last_updated        : '2022-05-24',
+  { rule_id             : 'CONTROL_1',
+    last_updated        : '2022-06-10',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
-    wcag_primary_id     : '3.2.2',
-    wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-    target_resources    : ['select'],
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
     validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
         const de = ce.domElement;
-        if (de.tagName === 'select') {
-          if (de.visibility.isVisibleOnScreen) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+        if (!ce.isInputTypeImage) {
+          if (de.isLabelable) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_2
+   *
+   * @desc Every input type image must have an accessible name attribute with content
+   */
+
+  { rule_id             : 'CONTROL_2',
+    last_updated        : '2022-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="image"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeImage) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.source !== 'none') {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
           }
           else {
             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         }
       });
-     } // end validation function
+    } // end validation function
+   },
+
+  /**
+   * @object CONTROL_3
+   *
+   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
+   */
+  { rule_id             : 'CONTROL_3',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="radio"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeRadio) {
+          if (de.visibility.isVisibleToAT) {
+            const gce = ce.getGroupControlElement(); 
+            if (gce) {
+              const gde = gce.domElement;
+              if (gde.tagName === 'fieldset') {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
+                }
+              }
+              else {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
   },
 
   /**
-   * @object FOCUS_5
+   * @object CONTROL_4
+   *
+   * @desc Button elements must have text content and input type button must have a value attribute with content
+   */
+  { rule_id             : 'CONTROL_4',
+    last_updated        : '2022-07-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['button'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.role === 'button') {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
+            }
+              else {
+              if (de.tagName === 'input') {
+                if (de.accName.source === 'value') {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
+                }            
+              }
+              else {
+                if (de.tagName === 'button') {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                    }
+                  }            
+                }
+                else {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
+                    }
+                  }                          
+                }
+              }
+            }
+          }
+          else {
+            if (de.tagName === 'input' || ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
+            }
+            else {
+              if (de.tagName === 'button') {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
+              }
+            }
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_5
+   *
+   * @desc Ids on form controls must be unique
+   *
+   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
+   */
+  { rule_id             : 'CONTROL_5',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.1',
+    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.id) {
+          const docIndex = de.parentInfo.documentIndex;
+          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_6
+   *
+   * @desc Label element with a for attribute reference does not reference a form control
+   */
+  { rule_id             : 'CONTROL_6',
+    last_updated        : '2022-07-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel && ce.labelForAttr) {
+          if (de.visibility.isVisibleToAT) {
+            if (ce.isLabelForAttrValid) {
+              if (ce.labelforTargetUsesAriaLabeling) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_7
+   *
+   * @desc Label or legend element must contain text content
+   */
+
+  { rule_id             : 'CONTROL_7',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label', 'legend'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel || ce.isLegend) {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.hasTextContent) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              if (ce.hasSVGContent) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              }
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL 8
+   *
+   * @desc Fieldset must contain exactly one legend element
+   */
+
+  { rule_id             : 'CONTROL_8',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
+    target_resources    : ['fieldset'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        let le;
+        if (ce.isFieldset) {
+          if (de.visibility.isVisibleToAT) {
+
+            const legendCount = ce.legendElements.length;
+
+            switch (legendCount) {
+              case 0:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                break;
+
+              case 1:
+                le = ce.legendElements[0];
+                if (le.domElement.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                }
+                break;
+              
+              default:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
+                break;  
+            }
+
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_9
+   *
+   * @desc Check form controls labeled using the TITLE attribute for accessible name
+   */
+
+  { rule_id             : 'CONTROL_9',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['4.1.1'],
+    target_resources    : ['input', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.accName.source === 'title') {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+          }
+          else {      
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_10
+   *
+   * @desc Accessible labels must be unique for every textarea,
+   *       select and input element of type text, password, radio,
+   *       and checkbox on a page
+   */
+
+  { rule_id             : 'CONTROL_10',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
+        const de1 = ce1.domElement;
+        if (de1.role === 'option') {
+          return;
+        }
+        let count;
+        if (de1.ariaInfo.isNameRequired) {
+          if (de1.visibility.isVisibleToAT) {
+            count = 0;
+            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
+              const de2 = ce2.domElement;
+              if ((ce1 !== ce2) && 
+                  ((de1.ariaInfo.requiredParents.length === 0) || 
+                   (ce1.parentControlElement === ce2.parentControlElement)) &&
+                  de2.ariaInfo.isNameRequired && 
+                  de2.visibility.isVisibleToAT) {
+                if ((de1.role === de2.role) && 
+                    (ce1.nameForComparision === ce2.nameForComparision)) {
+                  count += 1;
+                }
+              }
+            });
+            if (count === 0){
+              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
+            } 
+            else {
+              // Since their ar often duplicate button on pages, when two or more buttons share the same
+              // name it should be a manual check
+              if (de1.role === 'button') {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
+                }
+              }
+              else {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
+                }
+              }
+            }
+          }
+          else {
+            if (de1.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
+            }
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_11
+   *
+   * @desc If there is more than one form on page, input element of type
+   *       submit and reset must have unique labels in each form using the value attribute
+   *
+   */
+
+  { rule_id             : 'CONTROL_11',
+    last_updated        : '2022-08-08',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      let de1, de2, count;
+
+      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
+        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
+          const sb1 = fe1.getButtonControl('submit');
+          if (sb1) {
+            de1 = sb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const sb2 = fe2.getButtonControl('submit');
+                  if (sb1 && sb2) {
+                    de2 = sb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (sb1.nameForComparision === sb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+
+          const rb1 = fe1.getButtonControl('reset');
+          if (rb1) {
+            de1 = rb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const rb2 = fe2.getButtonControl('reset');
+                  if (rb1 && rb2) {
+                    de2 = rb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (rb1.nameForComparision === rb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+        });
+      }
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_12
    *
    * @desc Form include a submit button
    *
    */
 
-  { rule_id             : 'FOCUS_5',
-    last_updated        : '2022-05-24',
+  { rule_id             : 'CONTROL_12',
+    last_updated        : '2023-08-22',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '3.2.2',
     wcag_related_ids    : [],
     target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
     validate            : function (dom_cache, rule_result) {
+
+      debug$t.log(`[Control 12]: ${dom_cache} ${rule_result}`);
 
       function getChildButtonDomElements (ce) {
         let buttonDomElements = [];
@@ -20795,588 +22030,8 @@
           rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
         }
       });
+
     } // end validation function
-  }
-
-  ];
-
-  /* controlRules.js */
-
-  /* Constants */
-  const debug$p = new DebugLogging('Control Rules', false);
-  debug$p.flag = false;
-
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule Category: Form Control Rules
-   */
-
-  const controlRules = [
-
-  /**
-   * @object CONTROL_1
-   *
-   * @desc textarea, select and input elements of type text,
-   *       password, checkbox, radio and file must have an
-   *       accessible name using label elements
-   *
-   */
-
-  { rule_id             : 'CONTROL_1',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (!ce.isInputTypeImage) {
-          if (de.isLabelable) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_2
-   *
-   * @desc Every input type image must have an accessible name attribute with content
-   */
-
-  { rule_id             : 'CONTROL_2',
-    last_updated        : '2022-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="image"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeImage) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.source !== 'none') {
-              if (de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object CONTROL_3
-   *
-   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
-   */
-  { rule_id             : 'CONTROL_3',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="radio"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeRadio) {
-          if (de.visibility.isVisibleToAT) {
-            const gce = ce.getGroupControlElement(); 
-            if (gce) {
-              const gde = gce.domElement;
-              if (gde.tagName === 'fieldset') {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
-                }
-              }
-              else {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_4
-   *
-   * @desc Button elements must have text content and input type button must have a value attribute with content
-   */
-  { rule_id             : 'CONTROL_4',
-    last_updated        : '2022-07-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : false,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['button'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.role === 'button') {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
-            }
-              else {
-              if (de.tagName === 'input') {
-                if (de.accName.source === 'value') {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
-                }            
-              }
-              else {
-                if (de.tagName === 'button') {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                    }
-                  }            
-                }
-                else {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
-                    }
-                  }                          
-                }
-              }
-            }
-          }
-          else {
-            if (de.tagName === 'input' || ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
-            }
-            else {
-              if (de.tagName === 'button') {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
-              }
-            }
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_5
-   *
-   * @desc Ids on form controls must be unique
-   *
-   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
-   */
-  { rule_id             : 'CONTROL_5',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.1',
-    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.id) {
-          const docIndex = de.parentInfo.documentIndex;
-          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_6
-   *
-   * @desc Label element with a for attribute reference does not reference a form control
-   */
-  { rule_id             : 'CONTROL_6',
-    last_updated        : '2022-07-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel && ce.labelForAttr) {
-          if (de.visibility.isVisibleToAT) {
-            if (ce.isLabelForAttrValid) {
-              if (ce.labelforTargetUsesAriaLabeling) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_7
-   *
-   * @desc Label or legend element must contain text content
-   */
-
-  { rule_id             : 'CONTROL_7',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label', 'legend'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel || ce.isLegend) {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.hasTextContent) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              if (ce.hasSVGContent) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL 8
-   *
-   * @desc Fieldset must contain exactly one legend element
-   */
-
-  { rule_id             : 'CONTROL_8',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
-    target_resources    : ['fieldset'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        let le;
-        if (ce.isFieldset) {
-          if (de.visibility.isVisibleToAT) {
-
-            const legendCount = ce.legendElements.length;
-
-            switch (legendCount) {
-              case 0:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                break;
-
-              case 1:
-                le = ce.legendElements[0];
-                if (le.domElement.visibility.isVisibleToAT) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                }
-                break;
-              
-              default:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
-                break;  
-            }
-
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_9
-   *
-   * @desc Check form controls labeled using the TITLE attribute for accessible name
-   */
-
-  { rule_id             : 'CONTROL_9',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['4.1.1'],
-    target_resources    : ['input', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.accName.source === 'title') {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-          }
-          else {      
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_10
-   *
-   * @desc Accessible labels must be unique for every textarea,
-   *       select and input element of type text, password, radio,
-   *       and checkbox on a page
-   */
-
-  { rule_id             : 'CONTROL_10',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.TRIAGE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
-        const de1 = ce1.domElement;
-        let count;
-        if (de1.ariaInfo.isNameRequired) {
-          if (de1.visibility.isVisibleToAT) {
-            count = 0;
-            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
-              const de2 = ce2.domElement;
-              if ((ce1 !== ce2) && 
-                  ((de1.ariaInfo.requiredParents.length === 0) || 
-                   (ce1.parentControlElement === ce2.parentControlElement)) &&
-                  de2.ariaInfo.isNameRequired && 
-                  de2.visibility.isVisibleToAT) {
-                if ((de1.role === de2.role) && 
-                    (ce1.nameForComparision === ce2.nameForComparision)) {
-                  count += 1;
-                }
-              }
-            });
-            if (count === 0){
-              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
-            } 
-            else {
-              // Since their ar often duplicate button on pages, when two or more buttons share the same
-              // name it should be a manual check
-              if (de1.role === 'button') {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
-                }
-              }
-              else {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
-                }
-              }
-            }
-          }
-          else {
-            if (de1.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
-            }
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_11
-   *
-   * @desc If there is more than one form on page, input element of type
-   *       submit and reset must have unique labels in each form using the value attribute
-   *
-   */
-
-  { rule_id             : 'CONTROL_11',
-    last_updated        : '2022-08-08',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    ruleset             : RULESET.MORE,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      let de1, de2, count;
-
-      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
-        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
-          const sb1 = fe1.getButtonControl('submit');
-          if (sb1) {
-            de1 = sb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const sb2 = fe2.getButtonControl('submit');
-                  if (sb1 && sb2) {
-                    de2 = sb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (sb1.nameForComparision === sb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-
-          const rb1 = fe1.getButtonControl('reset');
-          if (rb1) {
-            de1 = rb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const rb2 = fe2.getButtonControl('reset');
-                  if (rb1 && rb2) {
-                    de2 = rb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (rb1.nameForComparision === rb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-        });
-      }
-    } // end validate function
   }
 
   ];
@@ -21384,8 +22039,8 @@
   /* headingRules.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('Heading Rules', false);
-  debug$o.flag = false;
+  const debug$s = new DebugLogging('Heading Rules', false);
+  debug$s.flag = false;
 
   /*
    * OpenA11y Rules
@@ -21403,7 +22058,6 @@
       last_updated        : '2022-05-19',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.HEADINGS,
-      ruleset             : RULESET.TRIAGE,
       rule_required       : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
@@ -21448,7 +22102,6 @@
       last_updated        : '2022-05-19',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.HEADINGS,
-      ruleset             : RULESET.MORE,
       rule_required       : false,
       wcag_primary_id     : '2.4.6',
       wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
@@ -21499,8 +22152,7 @@
     last_updated        : '2014-11-25',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.MORE,
-    required            : false,
+    rule_required       : false,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '2.4.10'],
     target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -21608,8 +22260,7 @@
     last_updated        : '2022-05-20',
     rule_scope          : RULE_SCOPE.PAGE,
     rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.MORE,
-    required            : false,
+    rule_required       : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6', '2.4.10'],
     target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -21672,8 +22323,7 @@
     last_updated        : '2022-05-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.ALL,
-    required            : false,
+    rule_required       : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6', '2.4.10'],
     target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -21708,8 +22358,7 @@
     last_updated        : '2022-05-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.HEADINGS,
-    ruleset             : RULESET.ALL,
-    required            : false,
+    rule_required        : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
     target_resources    : ['h2', '[role="contentinfo"]', '[role="complementary"]', '[role="form"]', '[role="navigation"]', '[role="search"]'],
@@ -21781,8 +22430,8 @@
   /* imageRules.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('Image Rules', false);
-  debug$n.flag = false;
+  const debug$r = new DebugLogging('Image Rules', false);
+  debug$r.flag = false;
 
   /*
    * OpenA11y Alliance Rules
@@ -21801,7 +22450,6 @@
     last_updated        : '2014-11-28',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.TRIAGE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -21843,7 +22491,6 @@
     last_updated        : '2015-09-11',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -21881,7 +22528,6 @@
     last_updated        : '2014-11-28',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -21913,7 +22559,6 @@
     last_updated        : '2014-11-28',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -21947,7 +22592,6 @@
     last_updated        : '2015-09-11',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -21985,7 +22629,6 @@
     last_updated        : '2014-11-28',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -22024,7 +22667,6 @@
     last_updated        : '2015-09-15',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
@@ -22058,9 +22700,20 @@
   /* keyboardRules.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('Keyboard Rules', false);
-  debug$m.flag = false;
+  const debug$q = new DebugLogging('Keyboard Rules', false);
+  debug$q.flag = true;
 
+  /* helper functions */
+
+
+  function isNativeTabStop (domElement) {
+    return domElement.isLabelable || ['a', 'area', 'button'].includes(domElement.tagName);
+  }
+
+  function isTabStop (domElement) {
+    return isNativeTabStop(domElement) ||
+           ((typeof domElement.tabIndex === 'number') && (domElement.tabIndex >= 0));
+  }
 
   /*
    * OpenA11y Rules
@@ -22080,13 +22733,14 @@
       last_updated        : '2023-06-10',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
       wcag_primary_id     : '2.1.1',
       wcag_related_ids    : ['4.1.2'],
       target_resources    : ['widgets'],
       validate            : function (dom_cache, rule_result) {
 
         dom_cache.allDomElements.forEach( de => {
-          if (de.ariaInfo.isWidget) {
+          if (de.hasRole && de.ariaInfo.isWidget) {
             if (de.visibility.isVisibleToAT) {
               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
             }
@@ -22102,81 +22756,72 @@
     /**
      * @object KEYBOARD_2
      *
-     * @desc All operations available through the keyboard
+     * @desc Sequential keyboard navigation
      */
 
     { rule_id             : 'KEYBOARD_2',
-      last_updated        : '2023-06-10',
+      last_updated        : '2023-08-17',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
       wcag_primary_id     : '2.1.1',
       wcag_related_ids    : ['2.1.2', '2.4.3',  '2.4.7', '3.2.1'],
-      target_resources    : ['Page', 'object', 'widgets'],
+      target_resources    : ['links', 'controls', 'widgets'],
       validate            : function (dom_cache, rule_result) {
 
-        debug$m.log(`[KEYBOARD 2]: ${dom_cache} ${rule_result}`);
+        let mcCount = 0;
+        let passCount = 0;
 
-    /*
-         var VISIBILITY  = VISIBILITY;
-         var TEST_RESULT = TEST_RESULT;
+        dom_cache.allDomElements.forEach( de => {
+          if (isTabStop(de)) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.tabIndex > 0 ) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+                mcCount += 1;
+              }
+              else {
+                if (de.tabIndex === 0) {
+                  if (isNativeTabStop(de)) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                    passCount += 1;
+                  }
+                  else {
+                    if (de.hasRole && de.isWidget) {
+                      // widget roles with tabindex=0
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                      mcCount += 1;
+                    }
+                    else {
+                      // non-interactive elements with tabindex=0
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.elemName]);
+                      mcCount += 1;
+                    }
+                  }
+                }
+                else {
+                  if (isNativeTabStop(de) && (de.tabindex === 0)) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                    passCount += 1;
+                  }
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
 
-         var page_element = dom_cache.keyboard_focus_cache.page_element;
+        if (mcCount) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+        else {
+          if (passCount) {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+          }
+        }
 
-    //     logger.debug(" Page Element: " + page_element + "  " + page_element.dom_element);
-
-         var interactive_elements      = dom_cache.controls_cache.interactive_elements;
-         var interactive_elements_len  = interactive_elements.length;
-
-         var interactive_count = 0;
-
-         for (var i = 0; i < interactive_elements_len; i++) {
-
-
-           var ie =interactive_elements[i];
-           var de = ie.dom_element;
-           var cs = de.computed_style;
-
-           if ((cs.is_visible_to_at    === VISIBILITY.VISIBLE) ||
-               (cs.is_visible_onscreen === VISIBILITY.VISIBLE)) {
-
-             if (de.hasEvents() || de.has_tabindex || ie.is_embedded_app) {
-               interactive_count++;
-               if (de.hasEvents()) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, ie, 'ELEMENT_MC_1', [de.tag_name]);
-               else if (de.has_tabindex) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, ie, 'ELEMENT_MC_2', [de.tab_index, de.tag_name]);
-               else rule_result.addResult(TEST_RESULT.MANUAL_CHECK, ie, 'ELEMENT_MC_3', [de.tag_name]);
-             }
-             else {
-               rule_result.addResult(TEST_RESULT.PASS, ie, 'ELEMENT_PASS_1', [de.tag_name]);
-             }
-           }
-           else {
-             rule_result.addResult(TEST_RESULT.HIDDEN, ie, 'ELEMENT_HIDDEN_1', [de.tag_name]);
-           }
-         }  // endfor
-
-         if (interactive_count > 1) {
-           if (interactive_count === 1) {
-             rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', []);
-           }
-           else {
-             if (interactive_count >1) {
-               rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_2', [interactive_count]);
-             }
-             else {
-               if (interactive_elements_len > 0) {
-                 if (interactive_elements_len === 1) {
-                   rule_result.addResult(TEST_RESULT.PASS, page_element, 'PAGE_PASS_1', []);
-                 }
-                 else {
-                   rule_result.addResult(TEST_RESULT.PASS, page_element, 'PAGE_PASS_2', [interactive_elements_len]);
-                 }
-               }
-             }
-           }
-         }
-         */
-
-       } // end validation function
+      } // end validation function
     },
 
     /**
@@ -22186,55 +22831,138 @@
      */
 
     { rule_id             : 'KEYBOARD_3',
-      last_updated        : '2023-06-10',
+      last_updated        : '2023-08-17',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
       wcag_primary_id     : '2.1.2',
       wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
       target_resources    : ['object'],
       validate            : function (dom_cache, rule_result) {
 
-        debug$m.log(`[KEYBOARD 3]: ${dom_cache} ${rule_result}`);
-
-    /*
-         var VISIBILITY  = VISIBILITY;
-         var TEST_RESULT = TEST_RESULT;
-
-    //     logger.debug(" Page Element: " + page_element + "  " + page_element.dom_element);
-
-         var media_elements      = dom_cache.media_cache.media_elements;
-         var media_elements_len  = media_elements.length;
-
-
-         for (var i = 0; i < media_elements_len; i++) {
-
-           var me = media_elements[i];
-
-           var de = me.dom_element;
-           if (!de) de =me;
-
-           var cs = de.computed_style;
-
-           if ((cs.is_visible_to_at    === VISIBILITY.VISIBLE) ||
-               (cs.is_visible_onscreen === VISIBILITY.VISIBLE)) {
-             rule_result.addResult(TEST_RESULT.MANUAL_CHECK, me, 'ELEMENT_MC_1', [me.tag_name]);
-           }
-           else {
-             rule_result.addResult(TEST_RESULT.HIDDEN, me, 'ELEMENT_HIDDEN_1', [me.tag_name]);
-           }
-         }  // endfor
-
-         */
-
+        dom_cache.mediaInfo.allMediaElements.forEach( mediaElement => {
+          const de = mediaElement.domElement;
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
        } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_4
+     *
+     * @desc Check elements with tabindex > 0
+     */
+
+    { rule_id             : 'KEYBOARD_4',
+      last_updated        : '2023-08-21',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      wcag_primary_id     : '2.1.2',
+      wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
+      target_resources    : ['object'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (isTabStop(de) && de.tabIndex > 0) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.tabIndex]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.tabIndex]);
+            }
+          }
+        });
+       } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_5
+     *
+     * @desc Focus style
+     */
+
+    { rule_id             : 'KEYBOARD_5',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.7',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
+      target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        let controlCount = 0;
+        let hiddenCount = 0;
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.ariaInfo.isWidget) {
+            if (de.visibility.isVisibleToAT) {
+              controlCount += 1;
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              hiddenCount += 1;
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        if (controlCount > 1) {
+          if (hiddenCount == 0) {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
+          }
+          else {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
+          }
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_6
+     *
+     * @desc Select elements with onchange events
+     */
+
+    { rule_id             : 'KEYBOARD_6',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.2',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+      target_resources    : ['select'],
+      validate            : function (dom_cache, rule_result) {
+
+       dom_cache.controlInfo.allControlElements.forEach(ce => {
+          const de = ce.domElement;
+          if (de.tagName === 'select') {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+      } // end validation function
     }
+
   ];
 
   /* landmarkRules.js */
 
   /* Constants */
-  const debug$l = new DebugLogging('Landmark Rules', false);
-  debug$l.flag = false;
+  const debug$p = new DebugLogging('Landmark Rules', false);
+  debug$p.flag = false;
 
   /*
    * OpenA11y Rules
@@ -22253,7 +22981,6 @@
       last_updated        : '2022-05-03',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22272,7 +22999,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22314,7 +23040,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22379,7 +23104,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22400,7 +23124,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22420,7 +23143,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22440,7 +23162,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
@@ -22459,7 +23180,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       required            : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22478,7 +23198,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22497,7 +23216,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22516,7 +23234,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22535,7 +23252,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22554,7 +23270,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22573,7 +23288,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22592,7 +23306,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22611,7 +23324,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22645,7 +23357,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22668,7 +23379,6 @@
       last_updated        : '2015-08-07',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.NORE,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -22696,7 +23406,6 @@
       last_updated        : '2022-05-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
-      ruleset             : RULESET.MORE,
       rule_required       : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
@@ -23033,8 +23742,8 @@
   /* linkRules.js */
 
   /* Constants */
-  const debug$k = new DebugLogging('Link Rules', false);
-  debug$k.flag = false;
+  const debug$o = new DebugLogging('Link Rules', false);
+  debug$o.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23053,7 +23762,6 @@
       last_updated        : '2022-05-23',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
-      ruleset             : RULESET.MORE,
       rule_required       : true,
       wcag_primary_id     : '2.4.4',
       wcag_related_ids    : ['2.4.9'],
@@ -23092,7 +23800,6 @@
       last_updated        : '2022-05-23',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
-      ruleset             : RULESET.MORE,
       rule_required       : false,
       wcag_primary_id     : '2.4.4',
       wcag_related_ids    : ['2.4.9'],
@@ -23154,14 +23861,572 @@
         });
 
       } // end validate function
+    },
+
+    /**
+     * @object LINK_3
+     *
+     * @desc Target of a link does not go to a page with popup windows
+     */
+
+    { rule_id             : 'LINK_3',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.1',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+      target_resources    : ['a', 'area', 'select'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+      } // end validation function
+    },
+  ];
+
+  /* listRules.js */
+
+  /* Constants */
+  const debug$n = new DebugLogging('List Rules', false);
+  debug$n.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: List Rules
+   */
+
+  const listRules = [
+
+    /**
+     * @object LIST_1
+     *
+     * @desc Verify list elements are used semantically
+    */
+
+    { rule_id             : 'LIST_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : [],
+      target_resources    : ['ul', 'ol', 'li', 'dl', 'dt', 'dd', '[role="list"]', '[role="listitem"]', '[role="group"]'],
+      validate            : function (dom_cache, rule_result) {
+
+       debug$n.log(`[LIST 1]: ${dom_cache} ${rule_result} ${TEST_RESULT}`);
+
+  /*
+
+          var TEST_RESULT = TEST_RESULT;
+          var VISIBILITY  = VISIBILITY;
+
+          var page_element = dom_cache.keyboard_focus_cache.page_element;
+
+          var list_elements     = dom_cache.lists_cache.list_elements;
+          var list_elements_len = list_elements.length; // loop control
+
+          for (var i = 0; i < list_elements_len; i++) {
+            var le = list_elements[i];
+            var de = le.dom_element;
+            var cs = de.computed_style;
+
+            var tag_name = de.tag_name;
+            if (de.has_role) tag_name += '[role=' + de.role + ']';
+
+            if (cs.is_visible_to_at  === VISIBILITY.VISIBLE) {
+              if (le.list_type === LIST.CONTAINER) {
+                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', [tag_name]);
+              }
+              else  {
+                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', [tag_name]);
+              }
+            }
+            else {
+              rule_result.addResult(TEST_RESULT.HIDDEN, le, 'ELEMENT_HIDDEN_1', [tag_name]);
+            }
+
+          } // end loop
+
+          if (list_elements_len > 0) {
+            rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', [list_elements_len]);
+          }
+
+  */
+
+        } // end validate function
+      },
+    /**
+     * @object LIST_2
+     *
+     * @desc Verify list benefits from an accessible name
+    */
+
+    { rule_id             : 'LIST_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.6',
+      wcag_related_ids    : ['1.3.1'],
+      target_resources    : ['ul', 'ol', '[role="list"]', '[role="group"]'],
+      validate            : function (dom_cache, rule_result) {
+
+       debug$n.log(`[LIST 2]: ${dom_cache} ${rule_result}`);
+
+  /*
+
+          var TEST_RESULT = TEST_RESULT;
+          var VISIBILITY  = VISIBILITY;
+
+          var container_elements     = dom_cache.lists_cache.container_elements;
+          var container_elements_len = container_elements.length; // loop control
+
+          for (var i = 0; i < container_elements_len; i++) {
+            var le = container_elements[i];
+            var de = le.dom_element;
+            var cs = de.computed_style;
+
+            var tag_name = de.tag_name;
+            if (de.has_role) tag_name += '[role=' + de.role + ']';
+
+            if (cs.is_visible_to_at  === VISIBILITY.VISIBLE) {
+              if (le.accessible_name.length) {
+                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', [le.accessible_name]);
+              }
+              else {
+                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', [tag_name]);
+              }
+            }
+            else {
+              rule_result.addResult(TEST_RESULT.HIDDEN, le, 'ELEMENT_HIDDEN_1', [tag_name]);
+            }
+
+          } // end loop
+
+          */
+
+        } // end validate function
+      }
+  ];
+
+  /* navigationRules.js */
+
+  /* Constants */
+  const debug$m = new DebugLogging('Navigation Rules', false);
+  debug$m.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: List Rules
+   */
+
+  const navigationRules = [
+
+    /**
+     * @object NAVIGATION_1
+     *
+     * @desc Page has at least two of the following resources: table of contents, site map,
+     *       search, navigation links, sand trail
+     */
+
+    { rule_id             : 'NAVIGATION_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      wcag_primary_id     : '2.4.5',
+      wcag_related_ids    : [],
+      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\''],
+      validate            : function (dom_cache, rule_result) {
+
+        debug$m.log(`[NAVIGATION 1]: ${dom_cache} ${rule_result}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var landmark_elements     = dom_cache.headings_landmarks_cache.landmark_elements;
+        var landmark_elements_len = landmark_elements.length;
+
+        var page_element = dom_cache.headings_landmarks_cache.page_element;
+
+        var navigation_count = 0;
+        var search_count     = 0;
+
+        for (var i = 0; i < landmark_elements_len; i++ ) {
+          var le = landmark_elements[i];
+
+          if (le.role === 'navigation') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', []);
+              navigation_count++;
+            }
+          }
+
+          if (le.role === 'search') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', []);
+              search_count++;
+            }
+          }
+
+        }
+
+        if (page_element) {
+          if ((navigation_count > 0) && (search_count > 0)) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_1', []);
+          else rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_2', []);
+        }
+
+  */
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_2
+     *
+     * @desc  Landmarks are in the same relative order when used to identify sections of web pages within the same website
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.3',
+      wcag_related_ids    : ['3.2.4'],
+      target_resources    : ['Website', 'role=\'main\'', 'role=\'navigation\'', 'role=\'banner\'', 'role=\'contentinfo\'','role=\'search\''],
+      validate            : function (dom_cache, rule_result) {
+
+        debug$m.log(`[NAVIGATION 2]: ${dom_cache} ${rule_result}  ${TEST_RESULT}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var landmark_elements     = dom_cache.headings_landmarks_cache.landmark_elements;
+        var landmark_elements_len = landmark_elements.length;
+
+        var page_element = dom_cache.headings_landmarks_cache.page_element;
+
+        var main_count          = 0;
+        var navigation_count    = 0;
+        var banner_count        = 0;
+        var contentinfo_count   = 0;
+        var search_count        = 0;
+        var complementary_count = 0;
+
+        var landmark_count    = 0;
+
+        var les = [];
+
+        for (var i = 0; i < landmark_elements_len; i++ ) {
+          var le = landmark_elements[i];
+
+          if (le.role === 'main') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', []);
+
+              if (main_count === 0) les.push('main');
+
+              main_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'navigation') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', []);
+
+              if (navigation_count === 0) les.push('navigation');
+
+              navigation_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'banner') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_3', []);
+
+              if (banner_count === 0) les.push('banner');
+
+              banner_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'contentinfo') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_4', []);
+
+              if (contentinfo_count === 0) les.push('contentinfo');
+
+              contentinfo_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'search') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_5', []);
+
+              if (search_count === 0) les.push('search');
+
+              search_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'complementary') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_6', []);
+
+              if (complementary_count === 0) les.push('complementary');
+
+              complementary_count += 1;
+              landmark_count += 1;
+            }
+          }
+
+
+        }
+
+        if (page_element) {
+          if (landmark_count > 0) {
+
+            var last = les.length - 1;
+            var landmark_list = les[0];
+
+            for (i = 1; i < les.length; i++) {
+              if (i === last) landmark_list += " and " + les[i];
+              else landmark_list += ", " + les[i];
+            }
+            rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_1', [landmark_list]);
+          }
+        }
+        */
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_3
+     *
+     * @desc  h2 elements are in the same relative order when used to identify sections of web pages within the same website
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_3',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.3',
+      wcag_related_ids    : ['3.2.4'],
+      target_resources    : ['Website', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        debug$m.log(`[NAVIGATION 3]: ${dom_cache} ${rule_result}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var heading_elements     = dom_cache.headings_landmarks_cache.heading_elements;
+        var heading_elements_len = heading_elements.length;
+
+        var page_element = dom_cache.headings_landmarks_cache.page_element;
+
+        var heading_count = 0;
+
+        for (var i = 0; i < heading_elements_len; i++ ) {
+          var he = heading_elements[i];
+
+          if ((he.level === 1) &&
+             (he.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE)) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, he, 'ELEMENT_MC_1', []);
+              heading_count += 1;
+          }
+
+          if ((he.level === 2) &&
+             (he.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE)) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, he, 'ELEMENT_MC_2', []);
+              heading_count += 1;
+          }
+        }
+
+        if (page_element) {
+           if (heading_count) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_1', []);
+           else rule_result.addResult(TEST_RESULT.FAIL, page_element, 'WEBSITE_FAIL_1', []);
+        }
+
+  */
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_4
+     *
+     * @desc  landmarks identifying the same sections in a website have the same accessible name
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_4',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.4',
+      wcag_related_ids    : ['3.2.3'],
+      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\'', 'role=\'main\'', 'role=\'banner\'', 'role=\'contentinfo\'', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        debug$m.log(`[NAVIGATION 4]: ${dom_cache} ${rule_result}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var landmark_elements     = dom_cache.headings_landmarks_cache.landmark_elements;
+        var landmark_elements_len = landmark_elements.length;
+
+        var page_element = dom_cache.headings_landmarks_cache.page_element;
+
+        var landmark_count = 0;
+
+        for (var i = 0; i < landmark_elements_len; i++ ) {
+          var le = landmark_elements[i];
+
+          if (le.role === 'main') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', []);
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'navigation') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', []);
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'search') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_3', []);
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'banner') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_4', []);
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'contentinfo') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_5', []);
+              landmark_count += 1;
+            }
+          }
+
+          if (le.role === 'complementary') {
+            if (le.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_6', []);
+              landmark_count += 1;
+            }
+          }
+
+        }
+
+        if (page_element  && landmark_count) {
+          rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_1', []);
+        }
+
+  */
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_5
+     *
+     * @desc  h2 elements used to identify sections of web pages within the same accessible name
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_5',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      wcag_primary_id     : '3.2.4',
+      wcag_related_ids    : ['3.2.3'],
+      target_resources    : ['Website', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        debug$m.log(`[NAVIGATION 5]: ${dom_cache} ${rule_result}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var heading_elements     = dom_cache.headings_landmarks_cache.heading_elements;
+        var heading_elements_len = heading_elements.length;
+
+        var page_element = dom_cache.headings_landmarks_cache.page_element;
+
+        var heading_count = 0;
+
+        for (var i = 0; i < heading_elements_len; i++ ) {
+          var he = heading_elements[i];
+
+          if ((he.level === 1) &&
+             (he.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE)) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, he, 'ELEMENT_MC_1', []);
+              heading_count += 1;
+          }
+
+          if ((he.level === 2) &&
+             (he.dom_element.computed_style.is_visible_to_at === VISIBILITY.VISIBLE)) {
+              rule_result.addResult(TEST_RESULT.MANUAL_CHECK, he, 'ELEMENT_MC_2', []);
+              heading_count += 1;
+          }
+        }
+
+        if (page_element) {
+           if (heading_count) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'WEBSITE_MC_1', []);
+           else rule_result.addResult(TEST_RESULT.FAIL, page_element, 'WEBSITE_FAIL_1', []);
+        }
+  */
+
+      } // end validation function
     }
   ];
 
   /* tableRules.js */
 
   /* Constants */
-  const debug$j = new DebugLogging('Table Rules', false);
-  debug$j.flag = false;
+  const debug$l = new DebugLogging('Table Rules', false);
+  debug$l.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23179,7 +24444,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.TRIAGE,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23243,7 +24507,6 @@
     last_updated        : '2023-05-03',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1'],
@@ -23279,7 +24542,6 @@
     last_updated        : '2023-05-03',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23325,7 +24587,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.ALL,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23382,7 +24643,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23450,7 +24710,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.ALL,
     rule_required       : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23494,7 +24753,6 @@
     last_updated        : '2023-05-08',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23545,7 +24803,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES,
-    ruleset             : RULESET.ALL,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -23583,11 +24840,137 @@
   }
   ];
 
+  /* timingRules.js */
+
+  /* Constants */
+  const debug$k = new DebugLogging('Timing Rules', false);
+  debug$k.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Timing Rules
+   */
+
+  const timingRules = [
+
+    /**
+     * @object TIMING_1
+     *
+     * @desc Timing adjustable for pages with interactive elements
+     */
+
+    { rule_id             : 'TIMING_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TIMING,
+      rule_required       : true,
+      wcag_primary_id     : '2.2.1',
+      wcag_related_ids    : [],
+      target_resources    : ['a', 'input', 'button', 'wdiget'],
+      validate          : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    },
+
+    /**
+     * @object TIMING_2
+     *
+     * @desc Stop, pause or hide content that is moving, scrolling, flashing or auto updating
+     */
+
+    { rule_id             : 'TIMING_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TIMING,
+      rule_required       : true,
+      wcag_primary_id     : '2.2.2',
+      wcag_related_ids    : [],
+      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
+      validate          : function (dom_cache, rule_result) {
+
+       debug$k.log(`[TIMING 2]: ${dom_cache} ${rule_result} ${TEST_RESULT}`);
+
+  /*
+
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var timing_elements     = dom_cache.timing_cache.timing_elements;
+        var timing_elements_len = timing_elements.length;
+
+        var page_element = dom_cache.timing_cache.page_element;
+
+        for (var i = 0; i < timing_elements_len; i++) {
+          var mbe = timing_elements[i];
+          var de = mbe.dom_element;
+          var cs = de.computed_style;
+
+          if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
+            rule_result.addResult(TEST_RESULT.MANUAL_CHECK, mbe, 'ELEMENT_MC_1', [de.tag_name]);
+          }
+          else {
+           rule_result.addResult(TEST_RESULT.HIDDEN, mbe, 'ELEMENT_HIDDEN_1', [de.tag_name]);
+          }
+        }
+
+        rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', []);
+  */
+      } // end validate function
+    },
+
+    /**
+     * @object TIMING_3
+     *
+     * @desc Web pages do not contain anything that flashes more than three times in any one second period
+     */
+
+    { rule_id             : 'TIMING_3',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.TIMING,
+      rule_required       : true,
+      wcag_primary_id     : '2.3.1',
+      wcag_related_ids    : [],
+      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
+      validate          : function (dom_cache, rule_result) {
+
+       debug$k.log(`[TIMING 3]: ${dom_cache} ${rule_result} ${TEST_RESULT}`);
+
+  /*
+        var TEST_RESULT = TEST_RESULT;
+        var VISIBILITY  = VISIBILITY;
+
+        var timing_elements     = dom_cache.timing_cache.timing_elements;
+        var timing_elements_len = timing_elements.length;
+
+        var page_element = dom_cache.timing_cache.page_element;
+
+        for (var i = 0; i < timing_elements_len; i++) {
+          var mbe = timing_elements[i];
+          var de = mbe.dom_element;
+          var cs = de.computed_style;
+
+          if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
+            rule_result.addResult(TEST_RESULT.MANUAL_CHECK, mbe, 'ELEMENT_MC_1', [de.tag_name]);
+          }
+          else {
+           rule_result.addResult(TEST_RESULT.HIDDEN, mbe, 'ELEMENT_HIDDEN_1', [de.tag_name]);
+          }
+        }
+
+        rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', []);
+  */
+      } // end validate function
+    }
+  ];
+
   /* videoRules.js */
 
   /* Constants */
-  const debug$i = new DebugLogging('Audio Rules', false);
-  debug$i.flag = false;
+  const debug$j = new DebugLogging('Audio Rules', false);
+  debug$j.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23606,7 +24989,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4'],
       target_resources    : ['video', 'track'],
@@ -23645,7 +25028,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4'],
       target_resources    : ['object', 'param'],
@@ -23689,7 +25072,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4'],
       target_resources    : ['embed'],
@@ -23723,7 +25106,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.2',
       wcag_related_ids    : ['1.2.4'],
       target_resources    : ['video', 'track'],
@@ -23757,7 +25140,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.2',
       wcag_related_ids    : ['1.2.4'],
       target_resources    : ['object', 'param'],
@@ -23791,7 +25174,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.2',
       wcag_related_ids    : ['1.2.1', '1.2.4'],
       target_resources    : ['embed'],
@@ -23825,7 +25208,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.3',
       wcag_related_ids    : ['1.2.5'],
       target_resources    : ['video', 'track'],
@@ -23859,7 +25242,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.3',
       wcag_related_ids    : ['1.2.1', '1.2.5'],
       target_resources    : ['object', 'param'],
@@ -23894,7 +25277,7 @@
       last_updated        : '2014-11-28',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      ruleset             : RULESET.MORE,
+      rule_required       : true,
       wcag_primary_id     : '1.2.3',
       wcag_related_ids    : ['1.2.1', '1.2.5'],
       target_resources    : ['embed'],
@@ -23922,8 +25305,8 @@
   /* widgetRules.js */
 
   /* Constants */
-  const debug$h = new DebugLogging('Widget Rules', false);
-  debug$h.flag = false;
+  const debug$i = new DebugLogging('Widget Rules', false);
+  debug$i.flag = false;
 
   /*
    * OpenA11y Rules
@@ -23941,7 +25324,6 @@
     last_updated        : '2021-07-07',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -23985,7 +25367,6 @@
     last_updated        : '2022-08-15',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24045,7 +25426,6 @@
     last_updated        : '2021-07-07',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24104,7 +25484,6 @@
     last_updated        : '2021-07-07',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24218,7 +25597,6 @@
     last_updated        : '2022-08-15',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24287,7 +25665,6 @@
     last_updated        : '2021-07-07',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24332,7 +25709,6 @@
     last_updated        : '2023-03-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24412,7 +25788,6 @@
     last_updated        : '2023-03-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24495,7 +25870,6 @@
     last_updated        : '2023-04-05',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24526,7 +25900,6 @@
     last_updated        : '2023-04-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24596,7 +25969,6 @@
     last_updated        : '2023-04-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24638,7 +26010,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
@@ -24678,7 +26049,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['2.4.6'],
@@ -24719,7 +26089,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : [],
@@ -24769,7 +26138,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '4.1.1',
     wcag_related_ids    : ['4.1.2'],
@@ -24886,7 +26254,6 @@
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    ruleset             : RULESET.MORE,
     rule_required       : true,
     wcag_primary_id     : '2.1.1',
     wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
@@ -24910,7 +26277,7 @@
   /* rule.js */
 
   /* Constants */
-  const debug$g = new DebugLogging('Rule', false);
+  const debug$h = new DebugLogging('Rule', false);
 
   const wcag21_SC = [
     '1.3.4',
@@ -25007,7 +26374,7 @@
       this.rule_result_msgs = getRuleResultMessages(this.rule_id); // Object with keys to strings
       this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
 
-      debug$g.flag && this.toJSON();
+      debug$h.flag && this.toJSON();
     }
 
     get isWCAG20 () {
@@ -25357,7 +26724,7 @@
       };
 
       const json = JSON.stringify(ruleInfo, null, '  ');
-      debug$g.flag && debug$g.log(`[JSON]: ${json}`);
+      debug$h.flag && debug$h.log(`[JSON]: ${json}`);
       return json;
 
     }
@@ -25366,7 +26733,7 @@
   /* allRules.js */
 
   /* Constants */
-  const debug$f = new DebugLogging('All Rules', false);
+  const debug$g = new DebugLogging('All Rules', false);
 
   const allRules = [];
 
@@ -25380,8 +26747,7 @@
   // addToArray(bypassRules);
   addToArray(colorRules);
   // addToArray(errorRules);
-  // addToArray(frameRules);
-  addToArray(focusRules);
+  addToArray(frameRules);
   addToArray(controlRules);
   addToArray(headingRules);
   // addToArray(htmlRules);
@@ -25390,24 +26756,24 @@
   addToArray(landmarkRules);
   // addToArray(layoutRules);
   addToArray(linkRules);
-  // addToArray(listRules);
-  // addToArray(navigationRules);
+  addToArray(listRules);
+  addToArray(navigationRules);
   // addToArray(readingOrderRules);
   // addToArray(resizeRules);
   // addToArray(sensoryRules);
   addToArray(tableRules);
-  // addToArray(timingRules);
+  addToArray(timingRules);
   addToArray(videoRules);
   addToArray(widgetRules);
 
 
-  if (debug$f.flag) {
+  if (debug$g.flag) {
     console.log('All rules loaded');
   }
 
   /* resultSummary.js */
 
-  const debug$e = new DebugLogging('ruleResultSummary', false);
+  const debug$f = new DebugLogging('ruleResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             RuleResultsSummary                        */
@@ -25449,7 +26815,7 @@
       this.is  = -1;  // implementation score for group
       this.iv  = IMPLEMENTATION_VALUE.UNDEFINED; // implementation value for the group
 
-      debug$e.flag && debug$e.log(`[RuleResultsSummary]: ${this.toString()}`);
+      debug$f.flag && debug$f.log(`[RuleResultsSummary]: ${this.toString()}`);
     }
 
      get violations()     { return this.v;  }
@@ -25543,7 +26909,7 @@
   /* ruleGroupResult.js */
 
   /* Constants */
-  const debug$d = new DebugLogging('ruleGroupResult', false);
+  const debug$e = new DebugLogging('ruleGroupResult', false);
 
   /**
    * @class RuleGroupResult
@@ -25587,7 +26953,7 @@
       this.rule_results = [];
       this.rule_results_summary = new RuleResultsSummary();
 
-      debug$d.flag && debug$d.log(`[title]: ${this.title} (${ruleset})`);
+      debug$e.flag && debug$e.log(`[title]: ${this.title} (${ruleset})`);
     }
 
     /**
@@ -25755,7 +27121,7 @@
       };
 
       const json = JSON.stringify(ruleGroupResultInfo);
-      debug$d.flag && debug$d.log(`[JSON]: ${json}`);
+      debug$e.flag && debug$e.log(`[JSON]: ${json}`);
       return json;
     }
   }
@@ -25763,7 +27129,7 @@
   /* baseResult.js */
 
   /* constants */
-  const debug$c = new DebugLogging('baseResult', false);
+  const debug$d = new DebugLogging('baseResult', false);
 
   /**
    * @class baseResult
@@ -25794,9 +27160,9 @@
       this.result_type       = RESULT_TYPE.BASE;
       this.rule_result       = ruleResult;
       this.result_value      = resultValue;
-      debug$c.flag && debug$c.log(`[  msgId]: ${msgId}`);
-      debug$c.flag && debug$c.log(`[    msg]: ${msg}`);
-      debug$c.flag && debug$c.log(`[msgArgs]: ${msgArgs}`);
+      debug$d.flag && debug$d.log(`[  msgId]: ${msgId}`);
+      debug$d.flag && debug$d.log(`[    msg]: ${msg}`);
+      debug$d.flag && debug$d.log(`[msgArgs]: ${msgArgs}`);
       this.result_message    = getBaseResultMessage(msg, msgArgs);
       this.result_identifier = result_identifier;
 
@@ -25973,8 +27339,8 @@
 
   /* Constants */
 
-  const debug$b = new DebugLogging('ElementResult', false);
-  debug$b.flag = false;
+  const debug$c = new DebugLogging('ElementResult', false);
+  debug$c.flag = false;
 
   /**
    * @class ElementResult
@@ -26013,8 +27379,8 @@
       this.domElement = domElement;
       this.result_type    = RESULT_TYPE.ELEMENT;
 
-      if (debug$b.flag) {
-        debug$b.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$c.flag) {
+        debug$c.log(`${this.result_value}: ${this.result_message}`);
       }
     }
     /**
@@ -26263,7 +27629,7 @@
 
   /* elementResultSummary.js */
 
-  const debug$a = new DebugLogging('ElementResultSummary', false);
+  const debug$b = new DebugLogging('ElementResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             ResultSummary                        */
@@ -26294,7 +27660,7 @@
       this.mc  = 0;
       this.h   = 0;
 
-      debug$a.flag && debug$a.log(`[ElementResultsSummary]: ${this.toString()}`);
+      debug$b.flag && debug$b.log(`[ElementResultsSummary]: ${this.toString()}`);
     }
 
     get violations()     { return this.v;   }
@@ -26405,7 +27771,7 @@
 
   /* Constants */
 
-  const debug$9 = new DebugLogging('PageResult', false);
+  const debug$a = new DebugLogging('PageResult', false);
 
   /**
    * @class PageResult
@@ -26440,8 +27806,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.PAGE;
 
-      if (debug$9.flag) {
-        debug$9.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$a.flag) {
+        debug$a.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -26451,7 +27817,7 @@
 
   /* Constants */
 
-  const debug$8 = new DebugLogging('PageResult', false);
+  const debug$9 = new DebugLogging('PageResult', false);
 
   /**
    * @class WebsiteResult
@@ -26486,8 +27852,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.WEBSITE;
 
-      if (debug$8.flag) {
-        debug$8.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$9.flag) {
+        debug$9.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -26497,8 +27863,8 @@
 
 
   /* constants */
-  const debug$7 = new DebugLogging('ruleResult', false);
-  debug$7.flag = false;
+  const debug$8 = new DebugLogging('ruleResult', false);
+  debug$8.flag = false;
 
    /**
    * @class RuleResult
@@ -26758,8 +28124,8 @@
       else {
         if (failures > 0) {
           prefix =  this.isRuleRequired() ?
-                    getCommonMessage('ruleResult', RESULT_VALUE.VIOLATION) :
-                    getCommonMessage('ruleResult', RESULT_VALUE.WARNING);
+                    getCommonMessage('baseResult', RESULT_VALUE.VIOLATION) :
+                    getCommonMessage('baseResult', RESULT_VALUE.WARNING);
 
           message = (failures === 1) ?
                     this.getMessage('FAIL_S') :
@@ -26768,7 +28134,7 @@
         }
 
         if (summary.manual_checks > 0) {
-          prefix = getCommonMessage('ruleResult', RESULT_VALUE.MANUAL_CHECK);
+          prefix = getCommonMessage('baseResult', RESULT_VALUE.MANUAL_CHECK);
           message = (summary.manual_checks === 1) ?
                     this.getMessage('MANUAL_CHECK_S') :
                     this.getMessage('MANUAL_CHECK_P');
@@ -26777,7 +28143,7 @@
       }
 
       if (summary.hidden > 0) {
-          prefix = getCommonMessage('ruleResult', RESULT_VALUE.HIDDEN);
+          prefix = getCommonMessage('baseResult', RESULT_VALUE.HIDDEN);
         message = (summary.hidden === 1) ?
                   this.getMessage('HIDDEN_S') :
                   this.getMessage('HIDDEN_P');
@@ -27092,8 +28458,8 @@
   /* evaluationResult.js */
 
   /* Constants */
-  const debug$6 = new DebugLogging('EvaluationResult', false);
-  debug$6.flag = true;
+  const debug$7 = new DebugLogging('EvaluationResult', false);
+  debug$7.flag = false;
 
   /* helper functions */
 
@@ -27167,12 +28533,12 @@
       this.allRuleResults = [];
 
       const startTime = new Date();
-      debug$6.flag && debug$6.log(`[    ruleset]: ${ruleset}`);
-      debug$6.flag && debug$6.log(`[      level]: ${level}`);
-      debug$6.flag && debug$6.log(`[scopeFilter]: ${scopeFilter}`);
+      debug$7.flag && debug$7.log(`[    ruleset]: ${ruleset}`);
+      debug$7.flag && debug$7.log(`[      level]: ${level}`);
+      debug$7.flag && debug$7.log(`[scopeFilter]: ${scopeFilter}`);
 
       allRules.forEach (rule => {
-        debug$6.flag && debug$6.log(`[version]: ${rule.wcag_primary_id} ${rule.wcag_version} ${rule.isWCAG20} ${rule.isWCAG21} ${rule.isWCAG22}`);
+        debug$7.flag && debug$7.log(`[version]: ${rule.wcag_primary_id} ${rule.wcag_version} ${rule.isWCAG20} ${rule.isWCAG21} ${rule.isWCAG22}`);
 
         if (isFilter(ruleset, ruleFilter, rule.getId()) ||
             isWCAG(ruleset, level, rule)) {
@@ -27181,7 +28547,7 @@
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
               ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
             const ruleResult = new RuleResult(rule);
-            debug$6.flag && debug$6.log(`[validate]: ${ruleResult.rule.getId()}`);
+            debug$7.flag && debug$7.log(`[validate]: ${ruleResult.rule.getId()}`);
             ruleResult.validate(domCache);
             this.allRuleResults.push(ruleResult);
           }
@@ -27189,10 +28555,10 @@
       });
 
       const json = this.toJSON(true);
-      debug$6.flag && debug$6.log(`[JSON]: ${json}`);
+      debug$7.flag && debug$7.log(`[JSON]: ${json}`);
 
       const endTime = new Date();
-      debug$6.flag && debug$6.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+      debug$7.flag && debug$7.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
 
 
     }
@@ -27413,9 +28779,9 @@
   /* evaluatationLibrary.js */
 
   /* Constants */
-  const debug$5   = new DebugLogging('EvaluationLibrary', false);
-  debug$5.flag = false;
-  debug$5.json = false;
+  const debug$6   = new DebugLogging('EvaluationLibrary', false);
+  debug$6.flag = false;
+  debug$6.json = false;
 
   /**
    * @class EvaluateLibrary
@@ -27446,16 +28812,11 @@
 
     evaluate (startingDoc, title='', url='', ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter = []) {
 
-      debug$5.log(`[    ruleset]: ${ruleset}`);
-      debug$5.log(`[      level]: ${level}`);
-      debug$5.log(`[scopeFilter]: ${scopeFilter}`);
-      debug$5.log(`[ ruleFilter]: ${ruleFilter}`);
-
       let domCache = new DOMCache(startingDoc);
       let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, level, scopeFilter, ruleFilter);
 
       // Debug features
-      if (debug$5.flag) {
+      if (debug$6.flag) {
         domCache.showDomElementTree();
         domCache.controlInfo.showControlInfo();
         domCache.iframeInfo.showIFrameInfo();
@@ -27466,7 +28827,7 @@
         domCache.tableInfo.showTableInfo();
         domCache.structureInfo.showStructureInfo();
 
-        debug$5.json && debug$5.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+        debug$6.json && debug$6.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
       }
       return evaluationResult;
     }
@@ -27551,12 +28912,18 @@
 
   /* evaluate.js */
 
+  const debug$5 = new DebugLogging('ContentEvalaute', false);
+  debug$5.flag = false;
+
+
   function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleFilter=[]) {
 
-    console.log(`[eveluate][    ruleset]: ${ruleset}`);
-    console.log(`[eveluate][      level]: ${level}`);
-    console.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
-    console.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
+    if (debug$5.flag) {
+      debug$5.log(`[eveluate][    ruleset]: ${ruleset}`);
+      debug$5.log(`[eveluate][      level]: ${level}`);
+      debug$5.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
+      debug$5.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
+    }
 
     // evaluation script
     let doc = window.document;
@@ -27677,7 +29044,7 @@
   /* evaluate.js */
 
   const debug$4 = new DebugLogging('getAllRuleInfo', false);
-  debug$4.flag = true;
+  debug$4.flag = false;
 
   // ----------------------
   // All Rules Result functions
@@ -28525,7 +29892,7 @@
 
 
   const debug = new DebugLogging('Content', false);
-  debug.flag = true;
+  debug.flag = false;
 
   /*
   **  Connect to panel.js script and set up listener/handler
