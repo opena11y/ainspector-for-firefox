@@ -263,7 +263,7 @@ export default class ViewRuleGroup {
     })
   }
 
-  clear (message1, message2) {
+  clear (message1 = '', message2 = '') {
     this.ruleResults = [];
     this.detailsActions = {};
     this.groupTitle = '';

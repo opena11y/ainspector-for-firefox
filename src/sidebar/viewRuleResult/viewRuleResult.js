@@ -288,7 +288,7 @@ export default class ViewRuleResult {
     });
   }
 
-  clear (message1, message2) {
+  clear (message1 = '', message2 = '') {
     this.elementResultGrid.disable();
     this.elementResultGrid.deleteDataRows(message1, message2);
     this.ruleResultInfo.clear(message1, message2);

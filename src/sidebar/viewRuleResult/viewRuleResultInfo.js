@@ -45,11 +45,6 @@ template.innerHTML = `
           <div><span id="message-result"></span><span id="message-value"></span></div>
         </div>
 
-        <div id="tagname-info">
-          <h3  id="tagname-label">Tag Name</h3>
-          <div id="tagname"></div>
-        </div>
-
         <div id="role-info">
           <h3  id="role-label">Role</h3>
           <div id="role"></div>
@@ -95,6 +90,11 @@ template.innerHTML = `
             <tbody id="visibility-content">
             </tbody>
           </table>
+        </div>
+
+        <div id="tagname-info">
+          <h3  id="tagname-label">Tag Name</h3>
+          <div id="tagname"></div>
         </div>
 
         <table id="attrs-info" aria-label="Attribute Information" class="attrs-info">
@@ -367,12 +367,16 @@ export default class ViewRuleResultInfo extends HTMLElement {
 
   updateTagName(elementInfo) {
     this.tagNameInfoDiv.classList.remove('hide');
-    let tagName = elementInfo.tagName + elementInfo.id + elementInfo.className;
+    let tagName = elementInfo.tagName;
     this.renderContent(this.tagNameDiv, tagName);
-    const role  = elementInfo.role ? elementInfo.role : msg.noRole;
-    this.renderContent(this.roleDiv, role);
-    const style = elementInfo.role ? '' : 'font-style: italic';
-    this.roleDiv.setAttribute('style', style);
+
+    if (elementInfo.role) {
+      this.roleInfoDiv.classList.remove('hide');
+      this.renderContent(this.roleDiv, elementInfo.role);
+    }
+    else {
+      this.roleInfoDiv.classList.add('hide');
+    }
   }
 
   updateAccessibleNameInfo(elementInfo) {
@@ -497,6 +501,7 @@ export default class ViewRuleResultInfo extends HTMLElement {
       this.updateAttributeInformation(elementInfo);
     }
     else {
+      this.roleInfoDiv.classList.add('hide');
       this.tagNameInfoDiv.classList.add('hide');
       this.accNameInfoDiv.classList.add('hide');
       this.accDescInfoDiv.classList.add('hide');
