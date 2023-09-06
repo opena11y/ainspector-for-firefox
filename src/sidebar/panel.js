@@ -1,6 +1,6 @@
 /* panel.js  */
 
-import { getOptions }        from '../storage.js';
+import { getOptions, saveOptions, setScopeFilterToAll } from '../storage.js';
 import { getExportFileName } from './commonCSV.js';
 
 // Classes for manipulating views
@@ -51,12 +51,16 @@ const msg = {
   guidelineLabel         : getMessage("guidelineLabel"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
+  infoScopeLabel         : getMessage('infoScopeLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
   protocolNotSupported   : getMessage("protocolNotSupported"),
   ruleCategoryLabel      : getMessage("ruleCategoryLabel"),
   ruleScopeLabel         : getMessage("ruleScopeLabel"),
   ruleLabel              : getMessage("ruleLabel"),
+  scopeAllRulesLabel     : getMessage("scopeAllRulesLabel"),
+  scopePageRulesLabel    : getMessage("scopePageRulesLabel"),
+  scopeWebsiteRulesLabel : getMessage("scopeWebsiteRulesLabel"),
   tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
@@ -107,6 +111,7 @@ var sidebarHighlightOnly   = false;
 var pageTitle = '';
 var pageLocation = '';
 var pageRuleset = '';
+var pageScopeFilter = '';
 
 function addSidebarLabels () {
   let elem;
@@ -126,6 +131,10 @@ function addSidebarLabels () {
 
   elem = document.querySelector('#info-ruleset .label');
   elem.textContent = msg.infoRulesetLabel;
+
+  elem = document.querySelector('#info-scope .label');
+  elem.textContent = msg.infoScopeLabel;
+
 
   elem = document.getElementById('preferences-button');
   elem.textContent = msg.preferencesButtonLabel;
@@ -215,12 +224,20 @@ function portMessageHandler (message) {
 *   5. Run content scripts to establish connection and populate views
 */
 browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
-  myWindowId = windowInfo.id;
-  addSidebarLabels();
-  window.addEventListener('resize', resizeView);
-  document.body.addEventListener('keydown', onShortcutsKeydown);
-  showView(sidebarView);
-  runContentScripts('windows.getCurrent');
+
+  // reset scope filter when sidebar opens
+  getOptions().then( (options) => {
+    options.scopeFilter = 'ALL';
+    saveOptions(options).then( () => {
+      myWindowId = windowInfo.id;
+      addSidebarLabels();
+      window.addEventListener('resize', resizeView);
+      document.body.addEventListener('keydown', onShortcutsKeydown);
+      showView(sidebarView);
+      runContentScripts('windows.getCurrent');
+    });
+  });
+
 });
 
 //--------------------------------------------------------------
@@ -525,6 +542,7 @@ function updateSidebar (info) {
   let infoLocation = document.querySelector('#info-location .value');
   let infoTitle    = document.querySelector('#info-title .value');
   let infoRuleset  = document.querySelector('#info-ruleset .value');
+  let infoScope    = document.querySelector('#info-scope .value');
 
   // page-title and headings
   if (typeof info === 'object') {
@@ -545,6 +563,23 @@ function updateSidebar (info) {
 
     infoRuleset.textContent = info.evaluationLabel;
     pageRuleset = info.evaluationLabel;
+
+    switch (info.scopeFilter) {
+
+      case 'PAGE':
+         infoScope.textContent = msg.scopePageRulesLabel;
+         break;
+
+      case 'WEBSITE':
+         infoScope.textContent = msg.scopeWebsiteRulesLabel;
+         break;
+
+      default:
+         infoScope.textContent = msg.scopeAllRulesLabel;
+         break;
+
+    }
+    pageScopeFilter = infoScope.textContent;
 
     // Update the headings box
     if (typeof info.infoAllRules === 'object') {
@@ -592,6 +627,8 @@ function updateSidebar (info) {
   }
   else {
     let parts = info.split(';');
+    infoRuleset.textContent = '';
+    infoScope.textContent = '';
     if (parts.length == 1) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;

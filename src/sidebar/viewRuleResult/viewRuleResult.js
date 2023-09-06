@@ -1,4 +1,4 @@
-/* viewElementResults.js */
+/* viewRuleResult.js */
 
 import { getOptions }      from '../../storage.js';
 import { getResultStyle }  from '../utils.js';

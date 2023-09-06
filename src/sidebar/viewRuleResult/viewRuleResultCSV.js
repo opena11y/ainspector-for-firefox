@@ -1,4 +1,4 @@
-/* viewElementResultsCSV.js */
+/* viewRuleResultCSV.js */
 
 import {
   cleanCSVItem,

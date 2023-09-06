@@ -1,4 +1,4 @@
-/* viewSummaryCSV.js */
+/* viewAllRulesCSV.js */
 
 import { commonCSV } from '../commonCSV.js';
 import { getOptions } from '../../storage.js';

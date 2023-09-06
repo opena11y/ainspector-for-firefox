@@ -1,10 +1,4 @@
-/*
-*  Shared constants for use in both panel.js, content.js and evaluate.js to
-*  identify rule category and guideline constants for filtering evaluation
-*  results and providing localized human readable labels in the sidebar
-*
-*   File: constants.js
-*/
+/* constants.js */
 
 /*
 *  GUIDELINES constant is a copy of the constants from the OpenA11y library

@@ -73,6 +73,17 @@ export function saveOptions (options) {
 }
 
 /*
+**  setScopeFilterToAll
+*/
+export function setScopeFilterToAll (options) {
+  return new Promise (function (resolve, reject) {
+    options.scopeFilter = 'ALL';
+    () => { resolve(options); },
+    message => { reject(new Error(`resetScopeFilterToAll: ${message}`)) }
+  });
+}
+
+/*
 *   Helper functions
 */
 function hasAllProperties (refObj, srcObj) {

@@ -59,6 +59,11 @@
     "description": "Label for rulset value"
   },
 
+  "infoScopeLabel": {
+    "message": "Scope",
+    "description": "Label for scope filter value"
+  },
+
   "preferencesButtonLabel": {
     "message": "Preferences",
     "description": "Label for preferences button"
@@ -1172,6 +1177,21 @@
   "noRole": {
     "message": "no role",
     "description": "Identifies an element with no default role value"
+  },
+
+  "scopeAllRulesLabel": {
+    "message": "All rules",
+    "description": "Element, Page and Website rules included in evaluation"
+  },
+
+  "scopePageRulesLabel": {
+    "message": "Page rules",
+    "description": "Only Page rules included in evaluation"
+  },
+
+  "scopeWebsiteRulesLabel": {
+    "message": "Website rules",
+    "description": "Only Website rules included in evaluation"
   }
 
 }

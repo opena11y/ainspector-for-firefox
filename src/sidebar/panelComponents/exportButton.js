@@ -1,4 +1,4 @@
-/* rerunEvaluationButton.js */
+/* exportButton.js */
 
 import { getOptions, saveOptions } from '../../storage.js';
 import { isCharacterAllowed, validatePrefix } from '../../validate.js';

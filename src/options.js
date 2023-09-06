@@ -246,8 +246,6 @@ function updateForm (options) {
   rulesetRadioWCAG21.checked = options.ruleset === rulesetRadioWCAG21.value;
   rulesetRadioWCAG22.checked = options.ruleset === rulesetRadioWCAG22.value;
 
-  console.log(`[updateForm][level]: ${options.level}`);
-
   rulesetRadioLevelA.checked    = options.level === 'A';
   rulesetRadioLevelAA.checked    = (options.level === 'AA') || (options.level === 'AAA');
   rulesetCheckboxColorEnhanced.checked = options.level === 'AAA';

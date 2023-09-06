@@ -1,4 +1,4 @@
-/* viewRuleResultsCSV.js */
+/* viewRuleGroupCSV.js */
 
 import {
   GUIDELINES,

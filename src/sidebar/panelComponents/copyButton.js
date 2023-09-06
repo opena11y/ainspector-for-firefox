@@ -1,4 +1,4 @@
-/* rerunEvaluationButton.js */
+/* copyButton.js */
 
 const getMessage = browser.i18n.getMessage;
 

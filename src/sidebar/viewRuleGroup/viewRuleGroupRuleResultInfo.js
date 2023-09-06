@@ -1,4 +1,4 @@
-/* ruleResultInfo.js */
+/* viewRuleGroupRuleResultInfo.js */
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;

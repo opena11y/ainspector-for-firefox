@@ -1,4 +1,4 @@
-/* viewMenuButton.js */
+/* viewsMenuButton.js */
 
 import { getOptions } from '../../storage.js';
 

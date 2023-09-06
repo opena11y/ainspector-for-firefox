@@ -1,4 +1,4 @@
-/* viewRuleResults.js */
+/* viewRuleGroup.js */
 import { 
   getResultSortingValue, 
   getSCSortingValue, 
