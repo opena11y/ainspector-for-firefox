@@ -55,9 +55,7 @@ export default class ViewRuleResultCSV extends commonCSV{
     return props;
   }
 
-  // If one element information object has
-  // CCR information all element information
-  // objects will also include them
+  // Get properties
   getVisibilityProps () {
     let props = [];
     if (this.elementResults) {
@@ -78,6 +76,23 @@ export default class ViewRuleResultCSV extends commonCSV{
   // visibility information all
   // element information objects will
   getColorContrastProps () {
+    let props = [];
+    if (this.elementResults) {
+      let id = Object.keys(this.elementResults)[0]
+      if (id) {
+        let info = this.elementResults[id];
+        if (info) {
+          for (let item in info.ccrInfo) {
+            props.push(item);
+          }
+        }
+      }
+    }
+    return props;
+  }
+
+  // table properties
+  getTableProps () {
     let props = [];
     if (this.elementResults) {
       let id = Object.keys(this.elementResults)[0]
@@ -210,11 +225,12 @@ export default class ViewRuleResultCSV extends commonCSV{
 
   getCSV (options, title, location, rulesetLabel) {
 
-    let accNameProps = this.getAccNameProps();
-    let ccrProps     = this.getColorContrastProps();
-    let visProps     = this.getVisibilityProps();
-    let htmlAttrProps    = this.getHTMLAttributeProps();
-    let ariaAttrProps    = this.getARIAAttributeProps();
+    let accNameProps   = this.getAccNameProps();
+    let ccrProps       = this.getColorContrastProps();
+    let tableProps     = this.tableProps();
+    let visProps       = this.getVisibilityProps();
+    let htmlAttrProps  = this.getHTMLAttributeProps();
+    let ariaAttrProps  = this.getARIAAttributeProps();
 
     let csv = super.getCSV(options, title, location, rulesetLabel);
 
