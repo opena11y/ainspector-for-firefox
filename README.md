@@ -28,6 +28,11 @@
 
 ## Version History
 
+### 3.0.0
+* Updated to OpenA11y Evaluation Library 2.0
+* New ruleset and rule scope filtering options
+* Improved element result level information
+
 ### 2.2.1
 * Updated info icon and dialog labeling
 * Added information icon activation animation
