@@ -36,6 +36,8 @@ export default class ScopeFilter extends HTMLElement {
     this.scopeFilterDiv    = this.shadowRoot.querySelector('#scope-filter');
     this.scopeFilterButton = this.shadowRoot.querySelector('#scope-filter button');
 
+    // TODO: internationalization of title content
+    this.scopeFilterButton.title = 'Remove scope filter';
     this.scopeFilterButton.addEventListener('click', this.onClick.bind(this));
     this.callBackFunction = false;
   }

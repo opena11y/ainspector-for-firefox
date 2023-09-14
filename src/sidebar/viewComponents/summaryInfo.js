@@ -143,6 +143,8 @@ export default class summaryInfo extends HTMLElement {
     this.summaryInfoDiv  = this.shadowRoot.querySelector('.summary-info');
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
+    // TODO: internationalization of title content
+    this.summaryInfoButton.title = 'Get more info: Results Legend';
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
