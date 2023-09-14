@@ -543,6 +543,20 @@ function resizeView () {
   const minContainerHeight = 650;
   const containerDiv = document.querySelector('#container');
   containerDiv.style.height = Math.max(minContainerHeight, window.innerHeight) + 'px';
+
+  const containerRect = containerDiv.getBoundingClientRect();
+  const headerRect = document.querySelector('header').getBoundingClientRect();
+  const footerRect = document.querySelector('footer').getBoundingClientRect();
+
+  const height = containerRect.height - headerRect.height - footerRect.height;
+
+//  console.log(`[PANEL]    header: ${headerRect.height}`);
+//  console.log(`[PANEL] container: ${containerRect.height};`);
+//  console.log(`[PANEL]    footer: ${footerRect.height}`);
+//  console.log(`[PANEL]    height: ${height}`);
+
+  vRuleGroup.resizeView(height);
+  vRuleResult.resizeView(height);
 }
 
 /*
@@ -633,6 +647,7 @@ function updateSidebar (info) {
         }
       }
     }
+    resizeView();
   }
   else {
     let parts = info.split(';');

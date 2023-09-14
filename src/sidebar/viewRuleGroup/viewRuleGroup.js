@@ -72,9 +72,9 @@ export default class ViewRuleGroup {
     div.className = 'rule-info';
     this.containerDiv.appendChild(div);
 
-    const middleSectionDiv = document.createElement('div');
-    middleSectionDiv.className = 'middle-section';
-    div.appendChild(middleSectionDiv);
+    this.middleSectionDiv = document.createElement('div');
+    this.middleSectionDiv.className = 'middle-section';
+    div.appendChild(this.middleSectionDiv);
 
     const detailsButton = document.createElement('button');
     detailsButton.id = 'rule-group-details';
@@ -82,12 +82,12 @@ export default class ViewRuleGroup {
     detailsButton.textContent = msg.detailsLabel;
     detailsButton.addEventListener('click', this.onDetailsButtonClick.bind(this));
     this.ruleResultGrid.setDetailsButton(detailsButton);
-    middleSectionDiv.appendChild(detailsButton);
+    this.middleSectionDiv.appendChild(detailsButton);
 
     // Create container DIV with header and copy button
     const ruleInfoHeaderDiv = document.createElement('div');
     ruleInfoHeaderDiv.className = 'info-header';
-    middleSectionDiv.appendChild(ruleInfoHeaderDiv);
+    this.middleSectionDiv.appendChild(ruleInfoHeaderDiv);
 
     const h2 = document.createElement('h2');
     h2.className = 'selected';
@@ -293,21 +293,28 @@ export default class ViewRuleGroup {
     }
   }
 
-  resize () {
-    console.log(`[     WindowHeight]: ${window.innerHeight}`);
+  resizeView (height) {
 
-    const containerRect = this.containerDiv.getBoundingClientRect();
-    console.log(`[ container height]: ${containerRect.height} ${typeof containerRect.height}`);
+    const ruleSummaryRect = this.ruleSummary.getBoundingClientRect();
+    const scopeFilterRect = this.scopeFilter.getBoundingClientRect();
+    const gridH2Rect      = this.gridLabelH2.getBoundingClientRect();
+    const midSectDivRect  = this.middleSectionDiv.getBoundingClientRect();
 
-    const gridRect = this.ruleResultGrid.getBoundingClientRect();
-    console.log(`[      grid height]: ${gridRect.height} ${typeof gridRect.height}`);
+//    console.log(`[RuleGroup]         summary: ${ruleSummaryRect.height}`);
+//    console.log(`[RuleGroup]          filter: ${scopeFilterRect.height};`);
+//    console.log(`[RuleGroup]              h2: ${gridH2Rect.height}`);
+//    console.log(`[RuleGroup]          middle: ${midSectDivRect.height}`);
 
-    const infoRect = this.ruleResultInfo.getBoundingClientRect();
-    console.log(`[      info height]: ${infoRect.height} ${typeof infoRect.height}`);
+    const availableHeight = height -
+                            ruleSummaryRect.height -
+                            (2.5 * scopeFilterRect.height) -
+                            (2 * gridH2Rect.height) -
+                            midSectDivRect.height;
 
-    const n = containerRect.height - gridRect.height;
+//    console.log(`[RuleGroup] availableHeight: ${availableHeight}`);
 
-    this.ruleResultInfo.setHeight(n);
+    this.ruleResultGrid.setHeight(availableHeight * 0.4)
+    this.ruleResultInfo.setHeight(availableHeight * 0.6);
 
   }
 }

@@ -1,4 +1,4 @@
-/* resultRuleInfo.css */
+/* viewRuleGroupRuleResultInfo.css */
 
 .hide {
   display: none;
@@ -16,7 +16,6 @@
   left:  2px;
   right:  2px;
   overflow: auto;
-  height: 25vh;
   min-height: 150px;
   user-select:  text;
 }

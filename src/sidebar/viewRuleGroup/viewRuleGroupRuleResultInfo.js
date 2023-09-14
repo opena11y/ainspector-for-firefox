@@ -65,7 +65,7 @@ export default class ViewRuleGroupRuleResultInfo extends HTMLElement {
     // Use external CSS stylesheet
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/resultRuleInfo.css');
+    link.setAttribute('href', './css/viewRuleGroupRuleResultInfo.css');
     this.shadowRoot.appendChild(link);
 
     // Add DOM tree from template
@@ -252,10 +252,8 @@ export default class ViewRuleGroupRuleResultInfo extends HTMLElement {
     return this.copyText;
   }
 
-  setHeight(number) {
-    console.log(`[            space]: ${number}`);
-    const sectionRect = this.resultRuleInfoSect.getBoundingClientRect();
-    console.log(`[   section height]: ${sectionRect.height}`);
+  setHeight(height) {
+    this.resultRuleInfoSect.style.height = height + 'px';
   }
 
 }

@@ -41,40 +41,39 @@ export default class ViewRuleResult {
     this.containerDiv.appendChild(this.scopeFilter);
 
     // Add heading for the element result details
-    let h2 = document.createElement('h2');
-    h2.className = 'grid';
-    h2.id = "grid-label"; // referenced by element result-grid custom element
-    h2.textContent = msg.ruleResultsLabel;
-    this.containerDiv.appendChild(h2);
+    this.gridH2 = document.createElement('h2');
+    this.gridH2.className = 'grid';
+    this.gridH2.id = "grid-label"; // referenced by element result-grid custom element
+    this.gridH2.textContent = msg.ruleResultsLabel;
+    this.containerDiv.appendChild(this.gridH2);
 
     this.elementResultGrid = document.createElement('result-grid');
-    console.log(`[A]: ${this.elementResultGrid}`);
 
     this.elementResultGrid.addClassNameToTable('rule');
     this.elementResultGrid.setRowSelectionEventHandler(this.onRowSelectionCallback.bind(this));
     this.containerDiv.appendChild(this.elementResultGrid);
 
     // Create container DIV with heading for element information
-    const middleSectionDiv = document.createElement('div');
-    middleSectionDiv.className = 'middle-section';
-    this.containerDiv.appendChild(middleSectionDiv);
+    this.middleSectionDiv = document.createElement('div');
+    this.middleSectionDiv.className = 'middle-section';
+    this.containerDiv.appendChild(this.middleSectionDiv);
 
     // Add highlight select box
     this.highlightSelect = document.createElement('highlight-select');
     this.highlightSelect.setChangeEventCallback(this.onSelectChangeCallback.bind(this));
-    middleSectionDiv.appendChild(this.highlightSelect);
+    this.middleSectionDiv.appendChild(this.highlightSelect);
 
     // Create container DIV with header and copy button
     const elemInfoHeaderDiv = document.createElement('div');
     elemInfoHeaderDiv.className = 'info-header';
-    middleSectionDiv.appendChild(elemInfoHeaderDiv);
+    this.middleSectionDiv.appendChild(elemInfoHeaderDiv);
 
     // Add heading for the element result details
-    h2 = document.createElement('h2');
-    h2.className = 'selected';
-    h2.id = "elem-info-label";  // referenced by result-element-info custom element
-    h2.textContent = msg.elementSelectedLabel;
-    elemInfoHeaderDiv.appendChild(h2);
+    this.infoH2 = document.createElement('h2');
+    this.infoH2.className = 'selected';
+    this.infoH2.id = "elem-info-label";  // referenced by result-element-info custom element
+    this.infoH2.textContent = msg.elementSelectedLabel;
+    elemInfoHeaderDiv.appendChild(this.infoH2);
 
     this.ruleResultInfo = document.createElement('rule-result-info');
     this.containerDiv.appendChild(this.ruleResultInfo);
@@ -319,5 +318,30 @@ export default class ViewRuleResult {
     if (id) {
       this.onRowSelectionCallback(id);
     }
+  }
+
+  resizeView (height) {
+
+    const elementSummaryRect = this.elementSummary.getBoundingClientRect();
+    const scopeFilterRect = this.scopeFilter.getBoundingClientRect();
+    const gridH2Rect      = this.gridH2.getBoundingClientRect();
+    const midSectDivRect  = this.middleSectionDiv.getBoundingClientRect();
+
+//    console.log(`[RuleResult]         summary: ${elementSummaryRect.height}`);
+//    console.log(`[RuleResult]          filter: ${scopeFilterRect.height};`);
+//    console.log(`[RuleResult]              h2: ${gridH2Rect.height}`);
+//    console.log(`[RuleResult]          middle: ${midSectDivRect.height}`);
+
+    const availableHeight = height -
+                            elementSummaryRect.height -
+                            (2.5 * scopeFilterRect.height) -
+                            (2 * gridH2Rect.height) -
+                            midSectDivRect.height;
+
+//    console.log(`[RuleResult] availableHeight: ${availableHeight}`);
+
+    this.elementResultGrid.setHeight(availableHeight * 0.4)
+    this.ruleResultInfo.setHeight(availableHeight * 0.6);
+
   }
 }

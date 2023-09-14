@@ -619,4 +619,8 @@ export default class ResultGrid extends HTMLElement {
     }
   }
 
+  setHeight (height) {
+    this.table.style.height = height + 'px';
+  }
+
 }
