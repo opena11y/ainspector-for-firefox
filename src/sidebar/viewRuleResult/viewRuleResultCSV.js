@@ -92,21 +92,59 @@ export default class ViewRuleResultCSV extends commonCSV{
   }
 
   // table properties
+  // All elements in elements array must have the properties
   getTableProps () {
     let props = [];
-    if (this.elementResults) {
-      let id = Object.keys(this.elementResults)[0]
+    for (const id in this.elementResults) {
+      console.log(`[getTableProps][A][        id]: ${id}`);
       if (id) {
         let info = this.elementResults[id];
+        console.log(`[getTableProps][B][     info]: ${info}`);
         if (info) {
-          for (let item in info.ccrInfo) {
-            props.push(item);
+          console.log(`[getTableProps][C][tableInfo]: ${info.tableInfo}`);
+          if (info.tableInfo.type) {
+            if (props.length == 0) {
+              for (let item in info.tableInfo) {
+                props.push(item);
+              }
+            }
+          }
+          else {
+            console.log(`[getTableProps][D]`);
+            // if any element doesn't have table properties, return empty array
+            return [];
           }
         }
       }
     }
     return props;
   }
+
+  // tablecell properties
+  // All elements in elements array must have the properties
+  getTableCellProps () {
+    let props = [];
+    for (const id in this.elementResults) {
+      if (id) {
+        let info = this.elementResults[id];
+        if (info) {
+          if (typeof info.tableCellInfo.headers === 'string') {
+            if (props.length == 0) {
+              for (let item in info.tableCellInfo) {
+                props.push(item);
+              }
+            }
+          }
+          else {
+            // if any element doesn't have header properties, return empty array
+            return [];
+          }
+        }
+      }
+    }
+    return props;
+  }
+
 
   // Check all element information objects,
   // since not all elements use the same
@@ -183,13 +221,15 @@ export default class ViewRuleResultCSV extends commonCSV{
     return this.arrayToCSV(values);
   }
 
-  elementResultToCSV (elementInfo, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps) {
+  elementResultToCSV (elementInfo, basicProps, accNameProps, ccrProps, tableProps, tableCellProps, visProps, htmlAttrProps, ariaAttrProps) {
     let values = this.getValuesFromObject(elementInfo, basicProps);
-    values = values.concat(this.getValuesFromObject(elementInfo.accNameInfo, accNameProps));
-    values = values.concat(this.getValuesFromObject(elementInfo.ccrInfo, ccrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.accNameInfo,    accNameProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.ccrInfo,        ccrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.tableInfo,      tableProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.tableCellInfo,  tableCellProps));
     values = values.concat(this.getValuesFromObject(elementInfo.visibilityInfo, visProps));
-    values = values.concat(this.getValuesFromObject(elementInfo.htmlAttrInfo, htmlAttrProps));
-    values = values.concat(this.getValuesFromObject(elementInfo.ariaAttrInfo, ariaAttrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.htmlAttrInfo,   htmlAttrProps));
+    values = values.concat(this.getValuesFromObject(elementInfo.ariaAttrInfo,   ariaAttrProps));
     return this.arrayToCSV(values);
   }
 
@@ -227,7 +267,8 @@ export default class ViewRuleResultCSV extends commonCSV{
 
     let accNameProps   = this.getAccNameProps();
     let ccrProps       = this.getColorContrastProps();
-    let tableProps     = this.tableProps();
+    let tableProps     = this.getTableProps();
+    let tableCellProps = this.getTableCellProps();
     let visProps       = this.getVisibilityProps();
     let htmlAttrProps  = this.getHTMLAttributeProps();
     let ariaAttrProps  = this.getARIAAttributeProps();
@@ -249,6 +290,8 @@ export default class ViewRuleResultCSV extends commonCSV{
     let cols = this.getColumnHeaders(basicProps);
     cols = cols.concat(this.getColumnHeaders(accNameProps));
     cols = cols.concat(this.getColumnHeaders(ccrProps));
+    cols = cols.concat(this.getColumnHeaders(tableProps));
+    cols = cols.concat(this.getColumnHeaders(tableCellProps));
     cols = cols.concat(this.getColumnHeaders(visProps));
     cols = cols.concat(this.getColumnHeaders(htmlAttrProps));
     cols = cols.concat(this.getColumnHeaders(ariaAttrProps));
@@ -260,7 +303,7 @@ export default class ViewRuleResultCSV extends commonCSV{
     for (const info of elemResults) {
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(info.result) > 0)) {
-        csv += this.elementResultToCSV(info, basicProps, accNameProps, ccrProps, visProps, htmlAttrProps, ariaAttrProps);
+        csv += this.elementResultToCSV(info, basicProps, accNameProps, ccrProps, tableProps, tableCellProps, visProps, htmlAttrProps, ariaAttrProps);
       }
     }
     return csv

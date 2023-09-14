@@ -28,13 +28,17 @@ const msg = {
 export default class ViewRuleResult {
   // The id is a reference to a DIV element used as the container
   // for the element results view content
-  constructor(id, handleRowSelection) {
+  constructor(id, handleRowSelection, rerunEvaluationScopeAll) {
 
     this.handleRowSelection = handleRowSelection;
 
     this.containerDiv = document.getElementById(id);
     this.elementSummary = document.createElement('rule-result-summary');
     this.containerDiv.appendChild(this.elementSummary);
+
+    this.scopeFilter = document.createElement('scope-filter');
+    this.scopeFilter.setCallBack(rerunEvaluationScopeAll);
+    this.containerDiv.appendChild(this.scopeFilter);
 
     // Add heading for the element result details
     let h2 = document.createElement('h2');
@@ -137,7 +141,7 @@ export default class ViewRuleResult {
     return accName;
   }
 
-  update (infoRuleResult) {
+  update (infoRuleResult, scopeFilter) {
     let i, id, pos, row, er, rowId, style, sortValue, label, rowAccName, cellAccName = '', elemName;
     let count = 0;
 
@@ -150,6 +154,8 @@ export default class ViewRuleResult {
     this.elementSummary.manualChecks = infoRuleResult.manual_checks;
     this.elementSummary.passed       = infoRuleResult.passed;
     this.elementSummary.hidden       = infoRuleResult.hidden;
+
+    this.scopeFilter.value  = scopeFilter;
 
     this.ruleResult = infoRuleResult.ruleResult;
 
@@ -216,8 +222,8 @@ export default class ViewRuleResult {
             er.ccrInfo = JSON.parse(er.ccrInfo);
           }
 
-          if (er.headerInfo) {
-            er.headerInfo = JSON.parse(er.headerInfo);
+          if (er.tableCellInfo) {
+            er.tableCellInfo = JSON.parse(er.tableCellInfo);
           }
 
           if (er.tableInfo) {

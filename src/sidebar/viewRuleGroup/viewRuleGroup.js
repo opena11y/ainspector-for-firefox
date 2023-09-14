@@ -42,13 +42,17 @@ const msg = {
 export default class ViewRuleGroup {
   // The id is a reference to a DIV element used as the contaner
   // for the rule results view content
-  constructor(id, handleRowActivation) {
+  constructor(id, handleRowActivation, rerunEvaluationScopeAll) {
 
     this.handleRowActivation = handleRowActivation;
 
     this.containerDiv = document.getElementById(id);
     this.ruleSummary = document.createElement('rule-group-summary');
     this.containerDiv.appendChild(this.ruleSummary);
+
+    this.scopeFilter = document.createElement('scope-filter');
+    this.scopeFilter.setCallBack(rerunEvaluationScopeAll);
+    this.containerDiv.appendChild(this.scopeFilter);
 
     // Add heading for the rule result details
     this.gridLabelH2 = document.createElement('h2');
@@ -156,7 +160,7 @@ export default class ViewRuleGroup {
     return accName;
   }
 
-  update (infoRuleResults, groupId) {
+  update (infoRuleResults, groupId, scopeFilter) {
     let i, rr, row, style, value, sortValue, rowAccName, cellAccName, label;
     let count = 0;
 
@@ -167,6 +171,8 @@ export default class ViewRuleGroup {
     this.ruleSummary.warnings     = infoRuleResults.warnings;
     this.ruleSummary.manualChecks = infoRuleResults.manual_checks;
     this.ruleSummary.passed       = infoRuleResults.passed;
+
+    this.scopeFilter.value  = scopeFilter;
 
     this.json = infoRuleResults.json;
 
@@ -285,5 +291,23 @@ export default class ViewRuleGroup {
     if (this.handleRowActivation && rowId) {
       this.handleRowActivation(rowId);
     }
+  }
+
+  resize () {
+    console.log(`[     WindowHeight]: ${window.innerHeight}`);
+
+    const containerRect = this.containerDiv.getBoundingClientRect();
+    console.log(`[ container height]: ${containerRect.height} ${typeof containerRect.height}`);
+
+    const gridRect = this.ruleResultGrid.getBoundingClientRect();
+    console.log(`[      grid height]: ${gridRect.height} ${typeof gridRect.height}`);
+
+    const infoRect = this.ruleResultInfo.getBoundingClientRect();
+    console.log(`[      info height]: ${infoRect.height} ${typeof infoRect.height}`);
+
+    const n = containerRect.height - gridRect.height;
+
+    this.ruleResultInfo.setHeight(n);
+
   }
 }

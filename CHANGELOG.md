@@ -4,7 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 3.0.0        |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and UI features
+| 3.0.0        |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and some UI features
 | 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
@@ -17,7 +17,7 @@
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
 ### 3.0.0
-* Updated to OpenA11y Evaluation Library 2.0
+* Updated to use OpenA11y Evaluation Library 2.0 to support WCAG 2.1 requirements
 * New ruleset and rule scope filtering options
 * Improved element result level information
 

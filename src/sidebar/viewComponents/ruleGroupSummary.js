@@ -84,6 +84,7 @@ export default class RuleGroupSummary extends HTMLElement {
     this.warningsTd     = this.shadowRoot.querySelector('#warnings-value');
     this.manualChecksTd = this.shadowRoot.querySelector('#manual-checks-value');
     this.passedTd       = this.shadowRoot.querySelector('#passed-value');
+
   }
 
   set violations (value) {
@@ -117,6 +118,7 @@ export default class RuleGroupSummary extends HTMLElement {
   get passed () {
     return this.passedTd.textContent;
   }
+
 
   clear () {
     this.violationsTd.textContent   = '-';

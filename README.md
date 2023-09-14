@@ -29,7 +29,7 @@
 ## Version History
 
 ### 3.0.0
-* Updated to OpenA11y Evaluation Library 2.0
+* Updated to use OpenA11y Evaluation Library 2.0 to support WCAG 2.1 requirements
 * New ruleset and rule scope filtering options
 * Improved element result level information
 

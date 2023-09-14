@@ -18,6 +18,7 @@ import RuleResultSummary     from './viewComponents/ruleResultSummary.js';
 import RuleGroupSummary      from './viewComponents/ruleGroupSummary.js';
 import ResultGrid            from './viewComponents/resultGrid.js';
 import SummaryInfo           from './viewComponents/summaryInfo.js';
+import ScopeFilter           from './viewComponents/scopeFilter.js';
 
 
 // Custom elements for controls
@@ -34,6 +35,8 @@ customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
 customElements.define('rule-group-rule-result-info', ViewRuleGroupRuleResultInfo);
 customElements.define('summary-info',        SummaryInfo);
+customElements.define('scope-filter',  ScopeFilter);
+
 
 customElements.define('copy-button',         CopyButton);
 customElements.define('export-button',       ExportButton);
@@ -97,9 +100,9 @@ const viewId = {
 };
 
 // Instantiate view classes with corresponding callbacks
-var vAllRules   = new ViewAllRules(viewId.allRules, onAllRulesRowActivation);
-var vRuleGroup  = new ViewRuleGroup(viewId.ruleGroup, onRuleGroupRowActivation);
-var vRuleResult = new ViewRuleResult(viewId.ruleResult, onUpdateHighlight);
+var vAllRules   = new ViewAllRules(viewId.allRules, onAllRulesRowActivation, rerunEvaluationScopeAll);
+var vRuleGroup  = new ViewRuleGroup(viewId.ruleGroup, onRuleGroupRowActivation, rerunEvaluationScopeAll);
+var vRuleResult = new ViewRuleResult(viewId.ruleResult, onUpdateHighlight, rerunEvaluationScopeAll);
 
 var sidebarView      = viewId.allRules;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
@@ -132,15 +135,23 @@ function addSidebarLabels () {
   elem = document.querySelector('#info-ruleset .label');
   elem.textContent = msg.infoRulesetLabel;
 
-  elem = document.querySelector('#info-scope .label');
-  elem.textContent = msg.infoScopeLabel;
-
-
   elem = document.getElementById('preferences-button');
   elem.textContent = msg.preferencesButtonLabel;
 }
 
 // Callback functions used by views for activation or selection of rows
+
+function rerunEvaluationScopeAll () {
+  console.log(`[rerunEvaluationScopeAll]`);
+
+  getOptions().then( (options) => {
+    options.scopeFilter = 'ALL';
+    saveOptions(options).then( () => {
+      runContentScripts('rerunEvaluation');
+    });
+  });
+
+}
 
 function onAllRulesRowActivation (id) {
   sidebarView      = viewId.ruleGroup;
@@ -542,8 +553,6 @@ function updateSidebar (info) {
   let infoLocation   = document.querySelector('#info-location .value');
   let infoTitle      = document.querySelector('#info-title .value');
   let infoRuleset    = document.querySelector('#info-ruleset .value');
-  let infoScope      = document.querySelector('#info-scope');
-  let infoScopeValue = document.querySelector('#info-scope .value');
 
   let viewSummaryLabel = msg.viewTitleSummaryLabel;
 
@@ -570,32 +579,27 @@ function updateSidebar (info) {
     switch (info.scopeFilter) {
 
       case 'PAGE':
-         infoScope.style.display = 'grid';
-         infoScopeValue.textContent = msg.scopePageRulesLabel;
          viewSummaryLabel += msg.scopePageRulesLabel;
          break;
 
       case 'WEBSITE':
-         infoScope.style.display = 'grid';
-         infoScopeValue.textContent = msg.scopeWebsiteRulesLabel;
          viewSummaryLabel += msg.scopeWebsiteRulesLabel;
          break;
 
       default:
-         infoScope.style.display = 'none';
-         infoScopeValue.textContent = '';
          viewSummaryLabel += msg.scopeAllRulesLabel;
          break;
 
     }
-    console.log(`[infoScope][hidden]: ${infoScope.hasAttribute('hidden')}`);
-    pageScopeFilter = infoScopeValue.textContent;
+
+    pageScopeFilter = viewSummaryLabel;
+
 
     // Update the headings box
     if (typeof info.infoAllRules === 'object') {
       viewTitle.textContent = viewSummaryLabel;
       viewTitle.title = '';
-      vAllRules.update(info.infoAllRules);
+      vAllRules.update(info.infoAllRules, info.scopeFilter);
       enableButtons();
     }
     else {
@@ -607,14 +611,14 @@ function updateSidebar (info) {
           viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleGroup.groupLabel;
         }
         viewTitle.title = '';
-        vRuleGroup.update(info.infoRuleGroup, sidebarGroupId);
+        vRuleGroup.update(info.infoRuleGroup, sidebarGroupId, info.scopeFilter);
         enableButtons();
       }
       else {
         if (info.infoRuleResult) {
           viewTitle.textContent = msg.ruleLabel + ': ' + info.infoRuleResult.title;
           viewTitle.title = info.infoRuleResult.title;
-          vRuleResult.update(info.infoRuleResult);
+          vRuleResult.update(info.infoRuleResult, info.scopeFilter);
           enableButtons();
         }
         else {
@@ -633,7 +637,6 @@ function updateSidebar (info) {
   else {
     let parts = info.split(';');
     infoRuleset.textContent = '';
-    infoScope.style.display = 'none';
     if (parts.length == 1) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;
@@ -785,5 +788,5 @@ function download(filename, content, format) {
     conflictAction : 'uniquify'
   });
   downloading.then(onStartedDownload, onFailed);
-
 }
+

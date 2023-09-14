@@ -69,7 +69,7 @@ const msg = {
 export default class ViewAllRules {
   // The id is a reference to a DIV element used as the contaner
   // for the summary view content
-  constructor (id, handleRowActivation) {
+  constructor (id, handleRowActivation, rerunEvaluationScopeAll) {
 
     this.handleRowActivation = handleRowActivation;
 
@@ -77,6 +77,10 @@ export default class ViewAllRules {
 
     this.ruleSummary = document.createElement('rule-group-summary');
     this.containerDiv.appendChild(this.ruleSummary);
+
+    this.scopeFilter = document.createElement('scope-filter');
+    this.scopeFilter.setCallBack(rerunEvaluationScopeAll);
+    this.containerDiv.appendChild(this.scopeFilter);
 
     this.allRulesTablist = document.createElement('all-rules-tablist');
     this.containerDiv.appendChild(this.allRulesTablist);
@@ -249,7 +253,7 @@ export default class ViewAllRules {
     row.setAttribute('aria-label', rowAccName);
   }
 
-  update (infoAllRules) {
+  update (infoAllRules, scopeFilter) {
     let row, rowAccName, cell, celAcclName;
 
     this.rcResultGrid.enable();
@@ -259,6 +263,8 @@ export default class ViewAllRules {
     this.ruleSummary.warnings     = infoAllRules.warnings;
     this.ruleSummary.manualChecks = infoAllRules.manual_checks;
     this.ruleSummary.passed       = infoAllRules.passed;
+
+    this.scopeFilter.value  = scopeFilter;
 
     this.json = infoAllRules.json;
 

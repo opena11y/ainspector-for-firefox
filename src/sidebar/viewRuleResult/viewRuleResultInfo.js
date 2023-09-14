@@ -494,7 +494,7 @@ export default class ViewRuleResultInfo extends HTMLElement {
       // Table information
       this.updateOtherInfo(elementInfo.tableInfo, 'Table Information');
       // Table header information
-      this.updateOtherInfo(elementInfo.headerInfo, 'Table Cell Headers');
+      this.updateOtherInfo(elementInfo.tableCellInfo, 'Table Cell Information');
       // Visibility information
       this.updateVisibilityInfo(elementInfo);
       // Attribute information
@@ -621,4 +621,11 @@ export default class ViewRuleResultInfo extends HTMLElement {
   getText () {
     return this.copyText;
   }
+
+  setHeight(number) {
+    console.log(`[            space]: ${number}`);
+//    const sectionRect = this.ruleResultInfoSect.getBoundingClientRect();
+//    console.log(`[   section height]: ${sectionRect.height}`);
+  }
+
 }

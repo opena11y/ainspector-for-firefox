@@ -1,0 +1,15 @@
+#scope-filter {
+  padding-top: 1em;
+}
+
+#scope-filter .container {
+  display: grid;
+}
+
+#scope-filter button {
+  margin: auto;
+  padding: 4px 2px;
+  background-color: black;
+  color: white;
+}
+

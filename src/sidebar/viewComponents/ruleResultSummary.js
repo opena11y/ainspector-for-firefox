@@ -98,6 +98,7 @@ export default class RuleResultSummary extends HTMLElement {
     this.manualChecksTd = this.shadowRoot.querySelector('#manual-checks-value');
     this.passedTd       = this.shadowRoot.querySelector('#passed-value');
     this.hiddenTd       = this.shadowRoot.querySelector('#hidden-value');
+
   }
 
   set violations (value) {
@@ -119,7 +120,6 @@ export default class RuleResultSummary extends HTMLElement {
   set hidden (value) {
     this.hiddenTd.textContent = value;
   }
-
 
   get violations () {
     return this.violationsTd.textContent;

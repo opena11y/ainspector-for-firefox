@@ -57,7 +57,7 @@ template.innerHTML = `
     </section>
 `;
 
-export default class ResultRuleInfo extends HTMLElement {
+export default class ViewRuleGroupRuleResultInfo extends HTMLElement {
   constructor () {
     super();
     this.attachShadow({ mode: 'open' });
@@ -251,4 +251,11 @@ export default class ResultRuleInfo extends HTMLElement {
   getText () {
     return this.copyText;
   }
+
+  setHeight(number) {
+    console.log(`[            space]: ${number}`);
+    const sectionRect = this.resultRuleInfoSect.getBoundingClientRect();
+    console.log(`[   section height]: ${sectionRect.height}`);
+  }
+
 }
