@@ -44,12 +44,12 @@ export default class ScopeFilter extends HTMLElement {
     switch (value) {
       case 'PAGE':
          this.scopeFilterDiv.style.display = 'block';
-         this.scopeFilterButton.textContent = '✕ ' + msg.ruleScopeLabel + ': ' + msg.scopePageRulesLabel;
+         this.scopeFilterButton.textContent = '✕  ' + msg.ruleScopeLabel + ': ' + msg.scopePageRulesLabel;
          break;
 
       case 'WEBSITE':
          this.scopeFilterDiv.style.display = 'block';
-         this.scopeFilterButton.textContent = '✕ ' + msg.ruleScopeLabel + ': ' + msg.scopeWebsiteRulesLabel;
+         this.scopeFilterButton.textContent = '✕  ' + msg.ruleScopeLabel + ': ' + msg.scopeWebsiteRulesLabel;
          break;
 
       default:
