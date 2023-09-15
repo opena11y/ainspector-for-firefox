@@ -1192,6 +1192,16 @@
   "scopeWebsiteRulesLabel": {
     "message": "Website rules",
     "description": "Only Website rules included in evaluation"
+  },
+
+  "getMoreInfo": {
+    "message": "Get More Info",
+    "description": "Accessible name for get more information icon"
+  },
+
+  "resultsLegend": {
+    "message": "Results Legend",
+    "description": "Accessible description for get more information icon"
   }
 
 }

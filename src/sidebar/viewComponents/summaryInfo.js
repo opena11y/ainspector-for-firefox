@@ -39,12 +39,18 @@ const msg = {
   closeButtonLabel   : getMessage('closeButtonLabel'),
   moreButtonLabel    : getMessage('moreButtonLabel'),
   moreButtonDisabled : getMessage('moreButtonDisabled'),
+
+  getMoreInfo   : getMessage('getMoreInfo'),
+  resultsLegend : getMessage('resultsLegend')
 };
 
 const template = document.createElement('template');
 template.innerHTML = `
   <div class="summary-info">
-    <button id="summary-info-button">
+    <button id="summary-info-button"
+            aria-label="Get more info"
+            title="Results Legend"
+            aria-haspop="dialog">
       <svg role="none"
            height="20px"
            width="20px"
@@ -144,7 +150,8 @@ export default class summaryInfo extends HTMLElement {
 
     this.summaryInfoButton  = this.shadowRoot.querySelector('#summary-info-button');
     // TODO: internationalization of title content
-    this.summaryInfoButton.title = 'Get more info: Results Legend';
+    this.summaryInfoButton.setAttribute('aria-label', msg.getMoreInfo);
+    this.summaryInfoButton.title = msg.resultsLegend;
     this.summaryInfoButton.addEventListener('click', this.onSummaryInfoButtonClick.bind(this));
 
     this.dialogDiv = this.shadowRoot.querySelector('[role="dialog"]');
