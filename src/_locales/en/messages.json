@@ -115,8 +115,8 @@
   },
 
   "tablesLabel": {
-    "message": "Tables",
-    "description": "Label for Tables rule category view"
+    "message": "Tables/Layout",
+    "description": "Label for Tables/Layout rule category view"
   },
 
   "widgetsScriptsLabel": {

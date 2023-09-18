@@ -11759,9 +11759,9 @@
     },
     {
       id           : RULE_CATEGORIES.TABLES,
-      title        : 'Tables',
+      title        : 'Tables/Layout',
       url          : '',
-      description  : 'Provide table captions or other meta-information as needed. Provide row and column header references for data cells of data tables. Ensure that tables used for layout properly linearize text content.'
+      description  : 'Provide table captions or other meta-information as needed. Provide row and column header references for data cells of data tables. Ensure that tables used for layout properly linearize text content and other layout related rules'
     },
     {
       id           : RULE_CATEGORIES.FORMS,
@@ -20085,6 +20085,8 @@
 
   /* messages.js for English messages */
 
+  // import {wcag21Rules}        from './wcag21Rules.js';
+
   const messages$1 = {
     common: common,
     ruleCategories: ruleCategories,
@@ -20118,6 +20120,8 @@
   messages$1.rules = Object.assign(messages$1.rules, titleRules$1);
   messages$1.rules = Object.assign(messages$1.rules, videoRules$1);
   messages$1.rules = Object.assign(messages$1.rules, widgetRules$1);
+
+  // messages.rules = Object.assign(messages.rules, wcag21Rules);
 
   /* locale.js */
 
@@ -21731,7 +21735,7 @@
      */
 
     { rule_id             : 'AUDIO_1',
-      last_updated        : '2014-11-21',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -21770,7 +21774,7 @@
      */
 
     { rule_id             : 'AUDIO_2',
-      last_updated        : '2014-11-21',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -21809,7 +21813,7 @@
      */
 
     { rule_id             : 'AUDIO_3',
-      last_updated        : '2014-11-21',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -21848,7 +21852,7 @@
        */
 
     { rule_id             : 'AUDIO_4',
-      last_updated        : '2014-11-21',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26748,7 +26752,7 @@
      */
 
     { rule_id             : 'VIDEO_1',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26787,7 +26791,7 @@
      */
 
     { rule_id             : 'VIDEO_2',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26831,7 +26835,7 @@
      */
 
     { rule_id             : 'VIDEO_3',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26865,7 +26869,7 @@
      */
 
     { rule_id             : 'VIDEO_4',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26899,7 +26903,7 @@
      */
 
     { rule_id             : 'VIDEO_5',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26933,7 +26937,7 @@
      */
 
     { rule_id             : 'VIDEO_6',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -26967,7 +26971,7 @@
      */
 
     { rule_id             : 'VIDEO_7',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -27001,7 +27005,7 @@
      */
 
     { rule_id             : 'VIDEO_8',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -27036,7 +27040,7 @@
      */
 
     { rule_id             : 'VIDEO_9',
-      last_updated        : '2014-11-28',
+      last_updated        : '2023-08-11',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -28529,6 +28533,8 @@
   addToArray(timingRules);
   addToArray(videoRules);
   addToArray(widgetRules);
+
+  // addToArray(wcag21Rules);
 
 
   if (debug$g.flag) {

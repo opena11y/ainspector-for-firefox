@@ -35,7 +35,7 @@ customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
 customElements.define('rule-group-rule-result-info', ViewRuleGroupRuleResultInfo);
 customElements.define('summary-info',        SummaryInfo);
-customElements.define('scope-filter',  ScopeFilter);
+customElements.define('scope-filter',        ScopeFilter);
 
 
 customElements.define('copy-button',         CopyButton);
