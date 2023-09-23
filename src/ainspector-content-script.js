@@ -183,8 +183,8 @@
    * RULE_CATEGORIES.LINKS
    * RULE_CATEGORIES.LANDMARKS
    * RULE_CATEGORIES.SITE_NAVIGATION
-   * RULE_CATEGORIES.STYLES_READABILITY
-   * RULE_CATEGORIES.TABLES
+   * RULE_CATEGORIES.COLOR_CONTENT
+   * RULE_CATEGORIES.TABLES_LAYOUT
    * RULE_CATEGORIES.TIMING
    * RULE_CATEGORIES.WIDGETS_SCRIPTS
    */
@@ -193,10 +193,10 @@
     UNDEFINED              : 0x0000,
     LANDMARKS              : 0x0001,
     HEADINGS               : 0x0002,
-    STYLES_READABILITY     : 0x0004,
+    COLOR_CONTENT          : 0x0004,
     IMAGES                 : 0x0008,
     LINKS                  : 0x0010,
-    TABLES                 : 0x0020,
+    TABLES_LAYOUT          : 0x0020,
     FORMS                  : 0x0040,
     WIDGETS_SCRIPTS        : 0x0080,
     AUDIO_VIDEO            : 0x0100,
@@ -923,8 +923,21 @@
       this.parentControlElement = parentControlElement;
       this.domElement = domElement;
       this.isGroup = domElement.role === 'group';
+      this.isInputTypeText   = this.isInputType(node, 'date') ||
+                               this.isInputType(node, 'number') ||
+                               this.isInputType(node, 'tel') ||
+                               this.isInputType(node, 'time') ||
+                               this.isInputType(node, 'text') ||
+                               this.isInputType(node, 'url');
+
+      this.nameAttr = node.hasAttribute('name') ?
+                      node.getAttribute('name') :
+                      '';
+
       this.isInputTypeImage  = this.isInputType(node, 'image');
+
       this.isInputTypeRadio  = this.isInputType(node, 'radio');
+
       this.typeAttr = node.type ? node.type : '';
       this.childControlElements = [];
       this.nameForComparision = this.getNameForComparison(domElement, parentControlElement);
@@ -938,6 +951,11 @@
       this.ariaInvalid = this.hasAriaInvalid ?
                          (node.getAttribute('aria-invalid').toLowerCase() === 'true') :
                          false;
+
+      this.isDisabled = node.disabled ||
+                        (node.hasAttribute('aria-disabled') ?
+                        (node.getAttribute('aria-invalid').toLowerCase() === 'true') :
+                        false);
 
       this.hasRequired = typeof node.required === 'boolean' ? node.required : false;
       this.hasAriaRequired = node.hasAttribute('aria-required');
@@ -11740,7 +11758,7 @@
       description  : 'Use heading elements (H1-H6) to provide appropriate labels for landmarks, and to identify subsections of content within landmarks.'
     },
     {
-      id           : RULE_CATEGORIES.STYLES_READABILITY,
+      id           : RULE_CATEGORIES.COLOR_CONTENT,
       title        : 'Color/Content',
       url          : '',
       description  : 'Use proper HTML markup to identify the semantics and language of text content. Ensure that text is readable by adhering to color contrast guidelines, and that information is not conveyed solely by the use of color, shape, location or sound.'
@@ -11758,7 +11776,7 @@
       description  : 'Use link text that properly describes the target of each link. Ensure consistency and uniqueness for links that are usable, predictable and understandable.'
     },
     {
-      id           : RULE_CATEGORIES.TABLES,
+      id           : RULE_CATEGORIES.TABLES_LAYOUT,
       title        : 'Tables/Layout',
       url          : '',
       description  : 'Provide table captions or other meta-information as needed. Provide row and column header references for data cells of data tables. Ensure that tables used for layout properly linearize text content and other layout related rules'
@@ -13267,8 +13285,8 @@
     COLOR_1: {
         ID:                    'Color 1',
         DEFINITION:            'Text content must exceed minimum Color Contrast Ratio (CCR) of 3.1 for large and/or bolded text and 4.5 for any other size or style of text.',
-        SUMMARY:               'Text must exceed minimum CCR threshold',
-        TARGET_RESOURCES_DESC: 'All elements with text content',
+        SUMMARY:               'Color contrast of text: Minimum',
+        TARGET_RESOURCES_DESC: 'Text content',
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Change the foreground and background colors of the text element to meet the CCR threshold.',
           FAIL_P:   'Change the foreground and background colors of the %N_F text elements to meet the CCR threshold.',
@@ -13360,7 +13378,7 @@
     COLOR_3: {
         ID:                    'Color 3',
         DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 4.5 for large and/or bolded text and 7.1 for any other size or style of text.',
-        SUMMARY:               'Text must exceed enhanced CCR threshold',
+        SUMMARY:               'Color contrast of text: Enhanced',
         TARGET_RESOURCES_DESC: 'All elements with text content',
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Change the foreground and background colors of the text element to meet the CCR threshold.',
@@ -13415,6 +13433,79 @@
                           title: 'G174: Providing a control with a sufficient contrast ratio that allows users to switch to a presentation that uses sufficient contrast',
                           url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G174'
                         }
+                        ]
+    },
+    COLOR_4: {
+        ID:                    'Color 4',
+        DEFINITION:            'Color contrast of non-text content in user interface controls.',
+        SUMMARY:               'Color contrast of user interface controls',
+        TARGET_RESOURCES_DESC: 'User interface controls',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Verify the non-text content of an interactive element (e.g. icons for indicating state) has a contrast ratio of at least 3:1 against adjacent color(s).',
+          MANUAL_CHECK_P:     'Verify the non-text content of an interactive element (e.g. icons for indicating state) have a contrast ratio of at least 3:1 against adjacent color(s).'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1: 'Verify color of non-text content (e.g. icons for indicating state) of the @%1@ element has a contrast ratio of at least 3:1 against adjacent color(s).',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not tested since it is not visible in the graphical rendering.'
+
+        },
+        PURPOSES:       [ 'For people with color blindness and other forms of visual impairments will not be able to see colors or color differences.'
+                        ],
+        TECHNIQUES:     [ 'Identify each user-interface component (link, button, form control) on the page',
+                          'Identify the visual (non-text) indicators of the component that are required to identify that a control exists, and indicate the current state.',
+                          'Test the visual indicator contrast in each state.'
+                        ],
+        MANUAL_CHECKS:  [
+                        ],
+        INFORMATIONAL_LINKS: [
+                        { type:  REFERENCES.SPECIFICATION,
+                          title: 'Understanding SC 1.4.11: Non-text Contrast',
+                          url:   'https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html'
+                         },
+                         { type:  REFERENCES.WCAG_TECHNIQUE,
+                           title: 'G195: Using an author-supplied, visible focus indicator',
+                           url: 'https://www.w3.org/WAI/WCAG21/Techniques/general/G195'
+                         },
+                         { type:  REFERENCES.WCAG_TECHNIQUE,
+                           title: 'G174: Providing a control with a sufficient contrast ratio that allows users to switch to a presentation that uses sufficient contrast',
+                           url: 'https://www.w3.org/WAI/WCAG21/Techniques/general/G174'
+                         }
+                        ]
+    },
+    COLOR_5: {
+        ID:                    'Color 5',
+        DEFINITION:            'Color contrast of non-text content in graphical objects.',
+        SUMMARY:               'Color contrast of graphics',
+        TARGET_RESOURCES_DESC: 'Graphical objects',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:     'Verify the colors used in the graphic have a color contrast ratio of at least 3:1 against adjacent color(s).',
+          MANUAL_CHECK_P:     'Verify the non-text content of the %N_MC graphics have a contrast ratio of at least 3:1 against adjacent color(s).'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1:     'Verify the colors used in the @%1@ image have sufficient contrast for the meaning of the image to be conveyed to users.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element was not tested since it is not visible in the graphical rendering.'
+        },
+        PURPOSES:       [ 'For people with color blindness and other forms of visual impairments will not be able to see colors or color differences in the grphic.'
+                        ],
+        TECHNIQUES:     [ 'Identify each graphic on the page that includes information required for understanding the content (i.e. excluding graphics which have visible text for the same information, or are decorative).',
+                          'Check the contrast of the graphical object against its adjacent colors',
+                          'If there are multiple colors and/or a gradient, choose the least contrasting area to test',
+                          'If the least-contrasting area is less than 3:1, assume that area is invisible, and determine if the graphical object still understandable.',
+                        ],
+        MANUAL_CHECKS:  [
+                        ],
+        INFORMATIONAL_LINKS: [{ type:  REFERENCES.SPECIFICATION,
+                           title: 'Understanding SC 1.4.11: Non-text Contrast',
+                           url:   'https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html'
+                         },
+                         { type:  REFERENCES.WCAG_TECHNIQUE,
+                           title: 'G207: Ensuring that a contrast ratio of 3:1 is provided for icons',
+                           url: 'https://www.w3.org/WAI/WCAG21/Techniques/general/G207'
+                         },
+                         { type:  REFERENCES.WCAG_TECHNIQUE,
+                           title: 'G209: Provide sufficient contrast at the boundaries between adjoining colors',
+                           url: 'https://www.w3.org/WAI/WCAG21/Techniques/general/G209'
+                         }
                         ]
     }
   };
@@ -14237,7 +14328,7 @@
         ID:         'Control 10',
         DEFINITION: 'Each standard HTML form control and ARIA widget role must have an accessible name that is unique on the page.',
         SUMMARY:    'Accessible name must be unique',
-        TARGET_RESOURCES_DESC: '@select@, @textarea@ and @input@ elements of type @text@, @password@, @checkbox@, @radio@, @file@ and aria widget roles',
+        TARGET_RESOURCES_DESC: '@select@, @textarea@ and @input@ elements of type @text@, @password@, @checkbox@, @radio@, @file@ and ARIA widget roles',
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Update the accessible name for the %N_F form controls and ARIA widgets with duplicate names to uniquely identify the purpose of each control on the page.',
           FAIL_P:   'Update the accessible names for the %N_F form controls and ARIA widgets with duplicate names to uniquely identify the purpose of each control on the page.',
@@ -14423,6 +14514,62 @@
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'H32: Providing submit buttons',
             url:   'https://www.w3.org/TR/2016/NOTE-WCAG20-TECHS-20161007/H32'
+          }
+        ]
+    },
+   CONTROL_13: {
+        ID:         'Control 13',
+        DEFINITION: 'For @input@ elements use the @name@ attribute to define inputs that support auto fill.',
+        SUMMARY:    '@name@ attribute supports auto fill',
+        TARGET_RESOURCES_DESC: '@input@ elements',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S:   'Determine if users would benefit if the @input@ element could be auto filled, if the would use the @name@ attribute.',
+          MANUAL_CHECK_P:   'Determine if users would benefit if any of the %N_MC @input@ elements could be auto filled, if the would use the @name@ attribute.',
+          NOT_APPLICABLE: 'No @input@ elements on the page.',
+          HIDDEN_S: 'The @input@ element that is hidden was not evaluated.',
+          HIDDEN_P: '%N_H @input@ elements that are hidden were not evaluated.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_MC_1:   'Determine if users would benefit if the @%1@ element would benefit from ',
+          ELEMENT_PASS_1:   'The @%1@ element has the @name@ attribute value of @%2@.x',
+          ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'People with language and memory related disabilities or disabilities that affects executive function and decision-making benefit from the browser auto-filling personal information (such as name or address) when the autocomplete attribute is used to meet this Success Criterion, which means information does not need to be remembered by the user.',
+          'People with cerebral palsy, stroke, head injury, motor neuron disease or learning disability sometimes prefer images for communication. They can employ assistive technology which adds icons to input fields to communicate the purpose of the fields visually.',
+          'People with motor impairments also benefit from reducing the need for manual input when filling out forms.'
+        ],
+        TECHNIQUES: [
+          'Use the @name@ attribute to support auto-fill for @input@ elements.'
+        ],
+        MANUAL_CHECKS: [
+          'Determine of the user would benefit from supporting auto-fill',
+          'If the user could benefit, use the @name@ attribute and one of the predefined auto-fill values to support auto-fill for the control.',
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_SPECIFICATION,
+            title: 'Understanding SC 1.3.5: Identify Input Purpose',
+            url:   'https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html'
+          },
+          { type:  REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG 2.1 Section 7. Input Purposes for User Interface Componentse',
+            url:   'https://www.w3.org/TR/WCAG21/#input-purposes'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'How to Create Autofill Forms',
+            url:   'https://www.mightyforms.com/blog/how-to-create-autofill-forms'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev: Autofill',
+            url:   'https://web.dev/learn/forms/autofill/'
+          },
+          {type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'Technique H98:Using HTML 5.2 autocomplete attributes',
+            url: 'https://www.w3.org/WAI/WCAG21/Techniques/html/H98'
+          },
+          {type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'Technique F107: Failure of Success Criterion 1.3.5 due to incorrect autocomplete attribute values',
+            url: 'https://www.w3.org/WAI/WCAG21/Techniques/failures/F107'
           }
         ]
     }
@@ -15298,31 +15445,31 @@
     KEYBOARD_1: {
       ID:                    'Keyboard 1',
       DEFINITION:            'Elements with ARIA widget roles must support the keyboard interactions required by those roles.',
-      SUMMARY:               'Widget role requires specific keyboard support',
+      SUMMARY:               'ARIA widget role requires specific keyboard support',
       TARGET_RESOURCES_DESC: 'Elements with ARIA widget roles',
       RULE_RESULT_MESSAGES: {
-        MANUAL_CHECK_S:  'Verify the element with the widget role has the keyboard interactions required by its role.',
-        MANUAL_CHECK_P:  'Verify the %N_MC elements with widget roles have the keyboard interactions required by their roles.',
-        HIDDEN_S:        'One hidden element with a widget role was not evaluated.',
-        HIDDEN_P:        '%N_H hidden elements with widget roles were not evaluated.',
-        NOT_APPLICABLE:  'No elements with widget roles on the page'
+        MANUAL_CHECK_S:  'Verify the element with the ARIA widget role implements the keyboard interactions required by its role.',
+        MANUAL_CHECK_P:  'Verify the %N_MC elements with ARIA widget roles implement the keyboard interactions required by their roles.',
+        HIDDEN_S:        'One hidden element with an ARIA widget role was not evaluated.',
+        HIDDEN_P:        '%N_H hidden elements with ARIA widget roles were not evaluated.',
+        NOT_APPLICABLE:  'No elements with ARIA widget roles on the page'
       },
       BASE_RESULT_MESSAGES: {
-        ELEMENT_MC_1:     'Verify the keyboard interaction required by the @%1@ role.',
-        ELEMENT_HIDDEN_1: 'Element with @%1@ widget role was not evaluated because it is hidden.'
+        ELEMENT_MC_1:     'Verify that the keyboard interactions required by the ARIA @%1@ role are properly implemented.',
+        ELEMENT_HIDDEN_1: 'Element with ARIA @%1@ widget role was not evaluated because it is hidden.'
       },
       PURPOSES: [
         'Keyboard support is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
         'Native HTML4 and HTML5 link and form control elements have default keyboard interactions that are built-in and standardized among browsers.',
-        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and part of this support is understanding the keyboard interaction expected for the elements role.',
+        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and a key part of implementing this support is understanding the specific keyboard interactions required by the element\'s ARIA role.',
         'The ARIA Authoring Practices Guide identifies the keyboard interaction patterns that users expect and can rely upon, based on each ARIA widget role.',
         'NOTE: Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
       ],
       TECHNIQUES: [
-        'Use the ARIA Authoring Practices guide to identify the keyboard interaction support needed for each ARIA Widget role being used.',
+        'Use the ARIA Authoring Practices guide to identify the keyboard interaction support needed for each ARIA widget role being used.',
         'Add custom @keydown@, @keypress@ and/or @keyup@ event handlers to support the keyboard interactions required by the ARIA widget role.',
         'Verify that keyboard interactions are consistent among browsers and devices (e.g., desktop computers and mobile devices using Bluetooth keyboards).'
-      ],
+        ],
       MANUAL_CHECKS: [
       ],
       INFORMATIONAL_LINKS: [
@@ -15358,43 +15505,43 @@
     },
     KEYBOARD_2: {
       ID:                    'Keyboard 2',
-      DEFINITION:            'The sequential tab order of links, form controls, and widgets must be meaningful.',
-      SUMMARY:               'Sequential tab order must be meaningful',
-      TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements, and elements with widget roles with @tabindex@ values',
+      DEFINITION:            'The sequential tab order of all links, form controls, and ARIA widgets on the page must be meaningful.',
+      SUMMARY:               'Sequential tab order of focusable elements must be meaningful',
+      TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@, and @select@ elements, and elements with a @tabindex@ value greater than or equal to 0',
       RULE_RESULT_MESSAGES: {
-        PASS_S:             'Only one link or form control element on the page and no other elements with @tabindex@ values, so no issues with sequential tab order.',
-        PASS_P:             '%N_P link and/or form control elements on the page and no other elements with @tabindex@ values, so no issues with sequential tab order.',
-        MANUAL_CHECK_S:     'Verify the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
-        MANUAL_CHECK_P:     'Verify the sequential "tab" focus order of the page to make sure the sequence of focusable elements is meaningful.',
+        PASS_S:             'Only one link or form control element on the page and no other elements with @tabindex@ values greater than or equal to 0, so no issues with sequential tab order.',
+        PASS_P:             '%N_P link and/or form control elements on the page and no other elements with @tabindex@ values greater than or equal to 0, so no issues with sequential tab order.',
+        MANUAL_CHECK_S:     'Verify that the sequential order of traversing all focusable elements on the page using only the tab key is meaningful.',
+        MANUAL_CHECK_P:     'Verify that the sequential order of traversing all focusable elements on the page using only the tab key is meaningful.',
         HIDDEN_S:           'The link, form control, or widget element that is hidden does not need to be tested for focus order.',
         HIDDEN_P:           'The %N_H links, form controls and/or widgets that are hidden do not need to be tested for focus order.',
-        NOT_APPLICABLE:     'No or only one focusable element on the page'
+        NOT_APPLICABLE:     'Only one or no focusable elements on the page'
       },
       BASE_RESULT_MESSAGES: {
-        PAGE_PASS_1:       'No elements on the page using @tabindex@ attribute that might affect sequential tab navigation.',
+        PAGE_PASS_1:       'No elements on the page are using @tabindex@ attribute that might affect sequential tab traversal.',
         PAGE_MC_1:         'Use the "tab" key to verify the sequential focus order of the %1 interactive elements on the page (i.e. links, form controls, widgets ...).',
-        ELEMENT_PASS_1:    'The @%1@ element does not have a @tabindex@ value, so no change in sequential tab navigation of the element.',
-        ELEMENT_MC_1:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: @tabindex@ value greater than 0 should be avoided to inconsistency of browser implementation.',
+        ELEMENT_PASS_1:    'The @%1@ element does not have a @tabindex@ value, so it effects no change in sequential tab traveral on the page.',
+        ELEMENT_MC_1:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: @tabindex@ values greater than 0 should be avoided due to inconsistencies with browser implementations.',
         ELEMENT_MC_2:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: The element by default is part of the tab sequence of the page, there is no need to set @tabindex=0@.',
         ELEMENT_MC_3:      'Verify the @%1@ element should be part of the sequential tab order of the page.',
         ELEMENT_MC_4:      'Verify the @%1@ element should be part of the sequential tab order of the page. NOTE: It is unusual for a non-widget role to be part of the tab sequence of the page.',
         ELEMENT_HIDDEN_1:  'The @%1@ element with the @tabindex=%2@ was not evaluated because it is hidden from assistive technologies.'
       },
       PURPOSES: [
-        'Keyboard support is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
-        'Native HTML4 and HTML5 link and form control elements have default keyboard interactions that are built-in and standardized among browsers.',
-        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and part of this support is understanding how the @tabindex@ attribute value in managing keyboard focus.',
+        'Support for tab key traversal of focusable elements is required by people who cannot use the mouse and/or gestures to select the options and perform the actions made available to them by interactive elements.',
+        'Native HTML links and form control elements have default keyboard support for tab key traversal that are built-in and standardized among browsers.',
+        'When authors create custom interactive elements they need to support the keyboard interaction patterns that users have come to expect, and a key part of implementing this support is understanding how the @tabindex@ attribute can be used for managing keyboard focus.',
         'The ARIA Authoring Practices Guide identifies how to use @tabindex@ to help manage keyboard focus for widget roles.',
         'NOTE: Touch typists often prefer keyboard commands over mouse actions, especially for frequently performed operations, since they are much more efficient from a hand motion perspective.'
       ],
       TECHNIQUES: [
-        'HTML form controls and link elements do not need a @tabindex@ valuable to be part of the sequential tab order, assigning a @tabindex@ value to one of these elements means you intend to change their default behavior.',
+        'HTML form controls and link elements do not need an explicit @tabindex@ value to be part of the sequential tab order; assigning a @tabindex@ value to one of these elements means you intend to change its default behavior.',
         'Setting @tabindex@ attribute to @0@ allows an element to become focusable and makes it part of the tab sequence of the page',
-        'Setting @tabindex@ attribute to @-1@ allows an element to become focusable through related keyboard event handlers through scripting',
-        'Use the ARIA Authoring Practices to define keyboard support that is appropriate for widget roles.',
+        'Setting @tabindex@ attribute to @-1@ allows an element to become focusable through related keyboard event handlers / scripting',
+        'Use the ARIA Authoring Practices Guide to define keyboard support that is appropriate for particular ARIA widget roles.',
         'Use keyboard event handlers to implement keyboard support for interactive behaviors defined on the page.',
         'Avoid using @object@ and @embed@ elements due to the difficulty in providing the corresponding keyboard support for all of their inherent interactive behaviors.',
-        'Avoid using @tabindex@ values greater than 0 to change tabbing order, since tab sequence for values greater than 0 is inconsistent and therefore can be unpredictable across web browsers.'
+        'Avoid using @tabindex@ values greater than 0 to change the tabbing order, since tab sequence implementations for values greater than 0 are inconsistent and their associated behaviors can be unpredictable across web browsers.'
       ],
       MANUAL_CHECKS: [
         'Use the tab key to verify the tab sequence of interactive elements of the page is in a logical.',
@@ -17241,6 +17388,33 @@
             url:   'https://www.w3.org/TR/wai-aria/states_and_properties#aria-flowto'
           }
         ]
+    },
+    LAYOUT_4: {
+      ID:                    'Layout 4',
+      DEFINITION:            'Do not restrict view or operation to a single display orientation, such as portrait or landscape.',
+      SUMMARY:               'Do not restrict view or operation.',
+      TARGET_RESOURCES_DESC: 'page',
+      RULE_RESULT_MESSAGES: {
+        MANUAL_CHECK_S: 'Verify the page can be viewed or operated in either portrait or landscape orientations.',
+      },
+      BASE_RESULT_MESSAGES: {
+        PAGE_MC_1:      'Verify the page can be viewed or operated in either portrait or landscape orientations.',
+      },
+      PURPOSES: [
+        'Users with dexterity impairments, who have a mounted device will be able to use the content in their fixed orientation.',
+        'Users with low-vision will be able to view content in the orientation that works best for them, for example to increase the text size by viewing content in landscape.'
+      ],
+      TECHNIQUES: [
+        'Create views and user experiences that can adapt to either portrait or landscape operation.'
+      ],
+      MANUAL_CHECKS: [
+      ],
+      INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'Understanding Success Criteria 1.3.4: Orientation',
+          url:   'https://www.w3.org/WAI/WCAG21/Understanding/orientation.html'
+        }
+      ]
     }
   };
 
@@ -17584,7 +17758,7 @@
 
     NAVIGATION_1: {
         ID:         'Navigation 1',
-        DEFINITION: 'At least two of the following features %s be provided for finding content in a website: a website search feature; a list of links on the home page to all pages in the website; a list of links on each page for navigation between pages; bread crumb links on each page for hierarchical navigation of the website and/or a dedicated page that serves as a site map of all the pages in the website.',
+        DEFINITION: 'At least two of the following features must be provided for finding content in a website: a website search feature; a list of links on the home page to all pages in the website; a list of links on each page for navigation between pages; bread crumb links on each page for hierarchical navigation of the website and/or a dedicated page that serves as a site map of all the pages in the website.',
         SUMMARY:    'At least two ways of finding content',
         TARGET_RESOURCES_DESC: 'Website navigational links and search form controls',
         RULE_RESULT_MESSAGES: {
@@ -17857,11 +18031,11 @@
 
   const resizeRules$1 = {
 
-    RESIZE_1: {
+   RESIZE_1: {
         ID:                    'Resize 1',
         DEFINITION:            'When the text of a page is resized the text content must reflow to fill available view and all text content should remain visible (e.g. text is not clipped by iframe sizes or CSS overflow limits).',
         SUMMARY:               'Resize text content',
-        TARGET_RESOURCES_DESC: 'All pages',
+        TARGET_RESOURCES_DESC: 'Page',
         RULE_RESULT_MESSAGES: {
           MANUAL_CHECK_S:  'Resize the text using the zoom feature of the browser to check to make sure text content is visible (e.g. text is not clipped by iframe sizes or CSS overflow limits).'
         },
@@ -17874,11 +18048,11 @@
         ],
         TECHNIQUES: [
           'Use relative CSS sized like @em@ and @percentage@ rather than pixels and point sizes.',
-          'If using the CSS overflow property, @iframe@ or @frame@ check to make sure content reflows and is not clipped by changes in zoom levels.'
-        ],
-        MANUAL_CHECKS: [
+          'If using the CSS overflow property, @iframe@ or @frame@ check to make sure content reflows and is not clipped by changes in zoom levels.',
           'Verify when font sizes are increased to at least 400% (4 times the original size of the font), the content reflows and does not require horizontal scrolling.',
           'Verify that font sizes are descreases content reflows to fill the width of the screen.'
+        ],
+        MANUAL_CHECKS: [
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.WCAG_TECHNIQUE,
@@ -17886,7 +18060,61 @@
             url:   'https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-scale'
           }
         ]
+    },
+
+    RESIZE_2: {
+        ID:                    'Resize 2',
+        DEFINITION:            'Content is viewable without scrolling for window dimensions as small as 320 x 256 pixels.',
+        SUMMARY:               'Support small screen dimensions',
+        TARGET_RESOURCES_DESC: 'Page',
+        RULE_RESULT_MESSAGES: {
+          MANUAL_CHECK_S: 'Resize the screen to 320 x 256 CSS pixels and check to make sure content is viewable without using horizontal or vertical scrolling.'
+        },
+        BASE_RESULT_MESSAGES: {
+          PAGE_MC_1:  'Resize the screen to the equivalent of 320 x 256 CSS pixels by either adjusting the window size or using the browser\'s zoom features and check to make sure content is viewable without using horizontal or vertical scrolling.'
+        },
+        PURPOSES: [
+          'People with visual impairments using the browser zoom features benefit when content on the site reflows to fit the screen without scrolling.'
+        ],
+        TECHNIQUES: [
+          'Use CSS media queries or flexbox code to reflow content based on screen width and height.',
+          'No vertical scrolling required when the window width is the equivalent to 320 CSS pixels.',
+          'No horizontal scrolling required when the window width is the equivalent to 256 CSS pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.WCAG_SPECIFICATION,
+            title: 'How to meet 1.4.10 Reflow',
+            url:   'https://www.w3.org/TR/WCAG21/#reflow'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'C32: Using media queries and grid CSS to reflow columns',
+            url:   'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'C31: Using CSS Flexbox to reflow content',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/css/C31'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'C33: Allowing for Reflow with Long URLs and Strings of Text',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/css/C33'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'C38: Using CSS width, max-width and flexbox to fit labels and inputs',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/css/C38'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'SCR34: Calculating size and position in a way that scales with text size',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/client-side-script/SCR34'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'G206: Providing options within the content to switch to a layout that does not require the user to scroll horizontally to read a line of text',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G206'
+          }
+        ]
     }
+
   };
 
   /* sensoryRules.js */
@@ -17944,10 +18172,10 @@
         SUMMARY:               'Data cells must have row/column headers',
         TARGET_RESOURCES_DESC: '@td@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute.',
-          FAIL_P:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute.',
+          FAIL_S:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute to provide headers to the data cell without headers.',
+          FAIL_P:         'Add @th@ elements to the first row and/or column of the data table or use the @header@ attribute to provide headers to the %N_F data cells in the table without headers.',
           MANUAL_CHECK_S: 'The @td@ element does not have any text content. Verify that this cell is being used for formatting and does not need row or column headers.',
-          MANUAL_CHECK_P: '%N_F @td@ elements do not have any text content. Verify that these cells are being used for formatting and do not need row or column headers.',
+          MANUAL_CHECK_P: '%N_MC @td@ elements do not have any text content. Verify that these cells are being used for formatting and do not need row or column headers.',
           HIDDEN_S:       'One @td@ element that is hidden was not evaluated.',
           HIDDEN_P:       '%N_H @td@ elements that are hidden were not evaluated.',
           NOT_APPLICABLE: 'No data tables and/or @td@ cells on the page.'
@@ -19119,17 +19347,17 @@
   const widgetRules$1 = {
       WIDGET_1: {
           ID:                    'Widget 1',
-          DEFINITION:            'Widget roles must have an accessible name.',
-          SUMMARY:               'Widget roles must have an accessible name',
+          DEFINITION:            'ARIA Widget roles must have an accessible name.',
+          SUMMARY:               'ARIA Widget roles must have an accessible name',
           TARGET_RESOURCES_DESC: 'Elements with widget roles that allow accessible names',
           RULE_RESULT_MESSAGES: {
             FAIL_S:         'Add an accessible name to the element with a widget role that requires an accessible name.',
             FAIL_P:         'Add accessible names to the %N_F elements with widget roles that require an accessible name.',
             MANUAL_CHECK_S: 'Check the element with a role that may need an accessible name.',
             MANUAL_CHECK_P: 'Check the %N_MC elements with widget roles that may need an accessible name.',
-            HIDDEN_S:       'An element with a widget role that allows an accessible name is hidden and was not evaluated.',
-            HIDDEN_P:       '%N_H elements with widget roles that allow an accessible name are hidden and were not evaluated.',
-            NOT_APPLICABLE: 'No elements with widget roles that allow an accessible name'
+            HIDDEN_S:       'An element with a ARIA widget role that allows an accessible name is hidden and was not evaluated.',
+            HIDDEN_P:       '%N_H elements with ARIA widget roles that allow an accessible name are hidden and were not evaluated.',
+            NOT_APPLICABLE: 'No elements with ARIA widget roles that allow an accessible name'
           },
           BASE_RESULT_MESSAGES: {
             ELEMENT_PASS_1: '@%1[role=%2]@ element has the accessible name: %3.',
@@ -19139,18 +19367,18 @@
           },
           PURPOSES: [
             'An accessible name identifies the purpose or action of a widget on the page.',
-            'For example when a widget role receives keyboard focus, both the role and the accessible name is spoken by screen readers.',
+            'For example when a ARIA widget role receives keyboard focus, both the role and the accessible name is spoken by screen readers.',
             'This rule does not test HTML form controls and links, since the accessible name requirement for them is covered in other rules.'
           ],
           TECHNIQUES: [
             'Some ARIA roles allow child text content and @alt@ attribute content from descendant image elements to be used for the accessible name.',
             'Use the @aria-labelledby@ attribute to reference the id(s) of visible content on the page to define an accessible name.',
             'Use the @aria-label@ attribute to provide an explicit accessible name for an element.',
-            'Elements with grouping widget roles may not receive keyboard focus, but giving them a label provides users of assistive technologies a more accurate description of the purpose of the element'
+            'Elements with ARIA grouping widget roles may not receive keyboard focus, but giving them a label provides users of assistive technologies a more accurate description of the purpose of the element'
           ],
           MANUAL_CHECKS: [
             'Good labels are both concise and descriptive of the element with widget role purpose.',
-            'If element with widget roles are arranged in groups, make sure labels include grouping information.',
+            'If element with ARIA widget roles are arranged in groups, make sure labels include grouping information.',
             'Consider using @aria-describedby@ to provide references to instructions or error information.',
             'When there is more than one widget of the same type on a page, they need an label for users to uniquely identify the form control.'
           ],
@@ -19199,8 +19427,8 @@
           SUMMARY:               '@onClick@ event handlers must have widget role',
           TARGET_RESOURCES_DESC: 'Elements with @onClick@ event handler values that are defined as widgets',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Add widget role name to element.',
-            FAIL_P:   'Add widget roles to each of the %N_F elements.',
+            FAIL_S:   'Add ARIA widget role name to element.',
+            FAIL_P:   'Add ARIA widget roles to each of the %N_F elements.',
             MANUAL_CHECK_S:     'Verify that any child elements that can respond to element with an @onclick@ event handler are a link, form control or has a widget role, and can be accessed with the keyboard alone.',
             MANUAL_CHECK_P:     'Verify that any child elements that can respond to %N_MC elements with an @onclick@ event handler are a link, form control or has a widget role, and can be accessed with the keyboard alone.',
             HIDDEN_S: 'The element with an @onClick@ event handler that is hidden and was not evaluated.',
@@ -19802,13 +20030,13 @@
           SUMMARY:    'Widget accessible names must be descriptive',
           TARGET_RESOURCES_DESC: 'Elements with widget roles',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'To the element with widget role missing a accessible name, add an accessible name that describes its purpose.',
-            FAIL_P:   'To each of the %N_F element with widget roles missing accessible name, add an accessible name that uniquely describes its purpose.',
+            FAIL_S:   'To the element with ARIA widget role missing a accessible name, add an accessible name that describes its purpose.',
+            FAIL_P:   'To each of the %N_F element with ARIA widget roles missing accessible name, add an accessible name that uniquely describes its purpose.',
             MANUAL_CHECK_S: 'Verify that the label uniquely describes the purpose of the element with widget role.',
             MANUAL_CHECK_P: 'Verify that the label for each of the %N_MC element with widget roles uniquely describes its purpose.',
             HIDDEN_S: 'The control element that is hidden was not evaluated.',
             HIDDEN_P: 'The %N_H control elements that are hidden were not evaluated.',
-            NOT_APPLICABLE: 'No element with widget roles on this page.'
+            NOT_APPLICABLE: 'No element with ARIA widget roles on this page.'
           },
           BASE_RESULT_MESSAGES: {
             ELEMENT_MC_1:     'Verify the accessible name "%1" for the @%2@ element describes its purpose.',
@@ -19821,8 +20049,8 @@
           ],
           TECHNIQUES: [
             'In some cases the child text nodes and @alt@ from descendant image elements will be used as the label for elements with widget roles.',
-            'Use @aria-labelledby@ attribute to reference the id(s) of the elements on the page to label elements with widget roles.',
-            'Use @aria-label@ attribute to provide a explicit label for an element with a widget role.',
+            'Use @aria-labelledby@ attribute to reference the id(s) of the elements on the page to label elements with ARIA widget roles.',
+            'Use @aria-label@ attribute to provide a explicit label for an element with a ARIA widget role.',
             'Elements with grouping widget roles may not receive keyboard focus, but giving them a label provides users of assistive technologies a more accurate description of the purpose of the widget'
           ],
           MANUAL_CHECKS: [
@@ -19882,7 +20110,7 @@
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Remove @aria-label@ or @aria-labelledby@ from the element with a role that prohibits the use of naming techniques.',
             FAIL_P:   'Remove @aria-label@ or @aria-labelledby@ from the %N_F elements with roles that prohibit the use of naming techniques.',
-            HIDDEN_S: 'The element with an widget role that is hidden and was not evaluated.',
+            HIDDEN_S: 'The element with an ARIA widget role that is hidden and was not evaluated.',
             HIDDEN_P: '%N_H elements with @aria-label@ or @aria-labelledby@ that are on elements and/or have roles that prohibit the use of naming techniques.',
             NOT_APPLICABLE:  'No elements with @aria-label@ or @aria-labelledby@ that are on elements and/or have roles that prohibit the use of naming techniques where found.'
           },
@@ -20030,7 +20258,7 @@
       },
       WIDGET_16: {
           ID:                    'Widget 16',
-          DEFINITION:            'Custom elements (HTML elements created using the Web Components APIs) with closed Shadow DOMs %s be manually checked for accessibility requirements.',
+          DEFINITION:            'Custom elements (HTML elements created using the Web Components APIs) with closed Shadow DOMs must be manually checked for accessibility requirements.',
           SUMMARY:               'Closed shadow DOM requires manual check.',
           TARGET_RESOURCES_DESC: 'Custom elements created using web components API with closed shadow DOM.',
           RULE_RESULT_MESSAGES: {
@@ -20085,8 +20313,6 @@
 
   /* messages.js for English messages */
 
-  // import {wcag21Rules}        from './wcag21Rules.js';
-
   const messages$1 = {
     common: common,
     ruleCategories: ruleCategories,
@@ -20120,8 +20346,6 @@
   messages$1.rules = Object.assign(messages$1.rules, titleRules$1);
   messages$1.rules = Object.assign(messages$1.rules, videoRules$1);
   messages$1.rules = Object.assign(messages$1.rules, widgetRules$1);
-
-  // messages.rules = Object.assign(messages.rules, wcag21Rules);
 
   /* locale.js */
 
@@ -21999,7 +22223,7 @@
     { rule_id             : 'COLOR_1',
       last_updated        : '2022-04-21',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '1.4.3',
       wcag_related_ids    : ['1.4.1','1.4.6'],
@@ -22093,7 +22317,7 @@
     { rule_id             : 'COLOR_2',
       last_updated        : '2022-04-21',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '1.4.1',
       wcag_related_ids    : [],
@@ -22114,7 +22338,7 @@
     { rule_id             : 'COLOR_3',
       last_updated        : '2022-07-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required        : true,
       wcag_primary_id     : '1.4.6',
       wcag_related_ids    : ['1.4.1','1.4.3'],
@@ -22199,6 +22423,80 @@
       } // end validate function
     },
 
+    /**
+     * @object COLOR_4
+     *
+     * @desc  Non-text Contrast for user interface controls
+     */
+
+    { rule_id             : 'COLOR_4',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      wcag_primary_id     : '1.4.11',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        console.log(`[COLOR 4]: ${dom_cache} ${rule_result}`);
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+          if (!ce.isDisabled && de.ariaInfo.isWidget) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_5
+     *
+     * @desc  Non-text Contrast for graphical object
+     */
+
+    { rule_id             : 'COLOR_5',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      wcag_primary_id     : '1.4.11',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.imageInfo.allImageElements.forEach( ie => {
+          const de = ie.domElement;
+          // check if image is decorative
+          if (de.accName.name) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        dom_cache.imageInfo.allSVGDomElements.forEach( de => {
+          if (de.visibility.isVisibleOnScreen) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+
+      } // end validate function
+    }
   ];
 
   /* errorRules.js */
@@ -22448,7 +22746,7 @@
     { rule_id             : 'FRAME_1',
       last_updated        : '2023-08-24',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : [],
@@ -22481,7 +22779,7 @@
     { rule_id             : 'FRAME_2',
       last_updated        : '2023-08-24',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : [],
@@ -22513,6 +22811,62 @@
   /* Constants */
   const debug$A = new DebugLogging('Control Rules', false);
   debug$A.flag = false;
+
+  const autoFillValues = [
+    'name',
+    'honorific-prefix',
+    'given-name',
+    'additional-name',
+    'family-name',
+    'honorific-suffix',
+    'nickname',
+    'organization-title',
+    'username',
+    'new-password',
+    'current-password',
+    'organization',
+    'street-address',
+    'address-line1',
+    'address-line2',
+    'address-line3',
+    'address-level4',
+    'address-level3',
+    'address-level2',
+    'address-level1',
+    'country',
+    'country-name',
+    'postal-code',
+    'cc-name',
+    'cc-given-name',
+    'cc-additional-name',
+    'cc-family-name',
+    'cc-number',
+    'cc-exp',
+    'cc-exp-month',
+    'cc-exp-year',
+    'cc-csc',
+    'cc-type',
+    'transaction-currency',
+    'transaction-amount',
+    'language',
+    'bday',
+    'bday-day',
+    'bday-month',
+    'bday-year',
+    'sex',
+    'url',
+    'photo',
+    'tel',
+    'tel-country-code',
+    'tel-national',
+    'tel-area-code',
+    'tel-local',
+    'tel-local-prefix',
+    'tel-local-suffix',
+    'tel-extension',
+    'email',
+    'impp',
+  ];
 
 
   /*
@@ -23187,6 +23541,40 @@
       });
 
     } // end validation function
+  },
+
+  /**
+   * @object CONTROL_13
+   *
+   * @desc Use names that support autocomplete
+   *
+   */
+
+  { rule_id             : 'CONTROL_13',
+    last_updated        : '2023-09-18',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '1.3.5',
+    wcag_related_ids    : ['3.3.2', '2.4.6'],
+    target_resources    : ['input[type="text"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeText) {
+          if (de.visibility.isVisibleToAT) {
+            if (autoFillValues.includes(ce.nameAttr)) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, ce.nameAttr]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    } // end validation function
   }
 
   ];
@@ -23604,7 +23992,7 @@
     { rule_id             : 'HTML_1',
       last_updated        : '2023-09-01',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '2.3.1',
       wcag_related_ids    : ['2.2.2', '4.1.1'],
@@ -25023,7 +25411,7 @@
     { rule_id             : 'LANGUAGE_1',
       last_updated        : '2023-09-06',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '3.1.1',
       wcag_related_ids    : [],
@@ -25052,7 +25440,7 @@
     { rule_id             : 'LANGUAGE_2',
       last_updated        : '2023-09-06',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '3.1.2',
       wcag_related_ids    : ['3.1.1'],
@@ -25116,7 +25504,7 @@
     { rule_id             : 'LAYOUT_1',
       last_updated        : '2023-09-06',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TABLES,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : ['1.3.1'],
@@ -25172,7 +25560,7 @@
     { rule_id             : 'LAYOUT_2',
       last_updated        : '2023-09-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
@@ -25203,44 +25591,6 @@
           }
         });
 
-  /*
-         var TEST_RESULT   = TEST_RESULT;
-         var VISIBILITY    = VISIBILITY;
-
-         var i;
-         var te;
-
-         var table_elements     = dom_cache.tables_cache.table_elements;
-         var table_elements_len = table_elements.length;
-
-
-         // Check to see if valid cache reference
-         if (table_elements && table_elements_len) {
-
-           for (i=0; i < table_elements_len; i++) {
-
-             te = table_elements[i];
-
-             if (te.table_role === TABLE_ROLE.LAYOUT) {
-
-               if (te.dom_element.computed_style.is_visible_to_at == VISIBILITY.VISIBLE) {
-
-                 if (te.max_column > 1) {
-
-                   if (te.nesting_level > 0) rule_result.addResult(TEST_RESULT.FAIL, te, 'ELEMENT_FAIL_1', [te.max_row, te.max_column, te.nesting_level]);
-                   else rule_result.addResult(TEST_RESULT.PASS, te, 'ELEMENT_PASS_1', []);
-                 }
-                 else {
-                   rule_result.addResult(TEST_RESULT.PASS, te, 'ELEMENT_PASS_2', []);
-                 }
-               }
-               else {
-                 rule_result.addResult(TEST_RESULT.HIDDEN, te, 'ELEMENT_HIDDEN_1', []);
-               }
-             }
-           } // end loop
-         }
-         */
       } // end validation function
     },
 
@@ -25252,7 +25602,7 @@
     { rule_id             : 'LAYOUT_3',
       last_updated        : '2023-09-06',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
@@ -25272,6 +25622,26 @@
 
         });
       } // end validation function
+    },
+
+    /**
+     * @object LAYOUT_4
+     *
+     * @desc    Verify if the page support both port
+     */
+    { rule_id             : 'LAYOUT_4',
+      last_updated        : '2023-09-14',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      wcag_primary_id     : '1.3.4',
+      wcag_related_ids    : [],
+      target_resources    : ['page'],
+      validate          : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
     }
   ];
 
@@ -25450,7 +25820,7 @@
     { rule_id             : 'LIST_1',
       last_updated        : '2023-08-24',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : [],
@@ -25538,7 +25908,7 @@
     { rule_id             : 'LIST_2',
       last_updated        : '2023-08-24',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '2.4.6',
       wcag_related_ids    : ['1.3.1'],
@@ -25872,7 +26242,7 @@
     { rule_id             : 'ORDER_1',
       last_updated        : '2023-08-25',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
@@ -25919,8 +26289,8 @@
 
     { rule_id             : 'RESIZE_1',
       last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
       wcag_primary_id     : '1.4.4',
       wcag_related_ids    : [],
@@ -25928,7 +26298,27 @@
       validate          : function (dom_cache, rule_result) {
         rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
       } // end validate function
+    },
+
+   /**
+     * @object RESIZE_1
+     *
+     * @desc Resize content
+     */
+
+    { rule_id             : 'RESIZE_2',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      wcag_primary_id     : '1.4.10',
+      wcag_related_ids    : [],
+      target_resources    : ['content'],
+      validate          : function (dom_cache, rule_result) {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      } // end validate function
     }
+
   ];
 
   /* sensoryRules.js */
@@ -25953,7 +26343,7 @@
     { rule_id             : 'SENSORY_1',
       last_updated        : '2023-08-25',
       rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.STYLES_READABILITY,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
       wcag_primary_id     : '1.3.3',
       wcag_related_ids    : [],
@@ -25986,7 +26376,7 @@
   { rule_id             : 'TABLE_1',
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26049,7 +26439,7 @@
   { rule_id             : 'TABLE_2',
     last_updated        : '2023-05-03',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1'],
@@ -26084,7 +26474,7 @@
   { rule_id             : 'TABLE_3',
     last_updated        : '2023-05-03',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26129,7 +26519,7 @@
   { rule_id             : 'TABLE_4',
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26185,7 +26575,7 @@
    { rule_id             : 'TABLE_5',
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26252,7 +26642,7 @@
   { rule_id             : 'TABLE_6',
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26295,7 +26685,7 @@
   { rule_id             : 'TABLE_7',
     last_updated        : '2023-05-08',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26345,7 +26735,7 @@
   { rule_id             : 'TABLE_8',
     last_updated        : '2023-04-21',
     rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
@@ -26578,7 +26968,6 @@
           const visibleH1Count = visibleH1Elements.length;
 
           visibleH1Elements.forEach( de => {
-
             if (de.accName.name) {
               if (similiarContent(dom_cache.title, de.accName.name)) {
                 rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
@@ -26594,7 +26983,7 @@
               }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, dom_cache, 'ELEMENT_FAIL_2', []);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
             }
           });
 
@@ -26624,113 +27013,9 @@
           rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
         }
 
-
-
-  /*
-
-          function compareTextContent(s1, s2) {
-
-            var words = s2.split(' ');
-            var words_len = words.length;
-            var words_match = 0;
-            var words_not_matched = 0;
-            var characters_match = 0;
-            var characters_not_matched = 0;
-
-    //        logger.debug("Comparison: " + s1 + "/" + s2);
-
-            for (var i = 0; i < words_len; i++) {
-              var w = words[i];
-              if (s1.indexOf(w) >= 0) {
-                characters_match += w.length;
-                words_match++;
-              }
-              else {
-                characters_not_matched += w.length;
-                words_not_matched++;
-              }
-            }
-
-    //        logger.debug("Match Information: " + (characters_match * words_match) + "/" + (characters_not_matched * words_not_matched));
-
-            if (characters_not_matched === 0) return true;
-
-            var p = (100 * characters_match * words_match) / ((characters_match  * words_match) + (characters_not_matched * words_not_matched ));
-
-    //        logger.debug("Match Percentage: " + p);
-
-            if (p > 80) return true;
-
-            return false;
-          }
-
-          var TEST_RESULT = TEST_RESULT;
-          var VISIBILITY  = VISIBILITY;
-
-          var title_element  = dom_cache.headings_landmarks_cache.title_element;
-          var page_element   = dom_cache.headings_landmarks_cache.page_element;
-          var h1_elements    = dom_cache.headings_landmarks_cache.h1_elements;
-          var visible_h1_element_count = 0;
-          var passed_h1_element_count  = 0;
-          var i, h1, de, cs;
-
-    //      logger.debug('[RULE][TITLE 2] Title: ' + title_element.name_for_comparison + '(' + title_element.name_for_comparison.length + ')');
-
-          if (title_element.name_for_comparison.length === 0) {
-            rule_result.addResult(TEST_RESULT.FAIL, page_element, 'PAGE_FAIL_1', []);
-          }
-          else {
-
-            var h1_count = h1_elements.length;
-
-            for(i = 0; i < h1_count; i++) {
-              h1 = h1_elements[i];
-              de = h1.dom_element;
-              cs = de.computed_style;
-              if (cs.is_visible_to_at === VISIBILITY.VISIBLE) visible_h1_element_count += 1;
-            }
-
-            for(i = 0; i < h1_count; i++) {
-              h1 = h1_elements[i];
-              de = h1.dom_element;
-              cs = de.computed_style;
-
-    //          logger.debug('[RULE][TITLE 2] H1: ' + h1.name_for_comparison + '(' + h1.name_for_comparison.length + ')');
-
-              if (cs.is_visible_to_at === VISIBILITY.VISIBLE) {
-                if (h1.name_for_comparison.length) {
-                  if (compareTextContent(title_element.name_for_comparison, h1.name_for_comparison)) {
-                    rule_result.addResult(TEST_RESULT.PASS, h1, 'ELEMENT_PASS_1', []);
-                    passed_h1_element_count++;
-                  }
-                  else {
-                    if (visible_h1_element_count > 2) {
-                      rule_result.addResult(TEST_RESULT.MANUAL_CHECK, h1, 'ELEMENT_MC_1', []);
-                    }
-                    else {
-                      rule_result.addResult(TEST_RESULT.FAIL, h1, 'ELEMENT_FAIL_1', []);
-                    }
-                  }
-                }
-                else {
-                  rule_result.addResult(TEST_RESULT.FAIL, h1, 'ELEMENT_FAIL_2', []);
-                }
-              }
-              else {
-                rule_result.addResult(TEST_RESULT.HIDDEN, h1, 'ELEMENT_HIDDEN_1', []);
-              }
-            }
-
-            if (visible_h1_element_count === 0) rule_result.addResult(TEST_RESULT.FAIL, page_element, 'PAGE_FAIL_2', []);
-            else if (visible_h1_element_count > 2) rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', []);
-            else if (visible_h1_element_count !== passed_h1_element_count) rule_result.addResult(TEST_RESULT.FAIL, page_element, 'PAGE_FAIL_4', []);
-            else if (visible_h1_element_count === 1) rule_result.addResult(TEST_RESULT.PASS, page_element, 'PAGE_PASS_1', []);
-            else rule_result.addResult(TEST_RESULT.PASS, page_element, 'PAGE_PASS_2', []);
-          }
-          */
-        } // end validate function
-      }
-   ];
+      } // end validate function
+    }
+  ];
 
   /* videoRules.js */
 
@@ -27779,7 +28064,7 @@
     rule_required       : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[Widget roles'],
+    target_resources    : ['[ARIA widget roles'],
     validate            : function (dom_cache, rule_result) {
       dom_cache.allDomElements.forEach( de => {
         if (de.ariaInfo.isWidget) {
@@ -28533,8 +28818,6 @@
   addToArray(timingRules);
   addToArray(videoRules);
   addToArray(widgetRules);
-
-  // addToArray(wcag21Rules);
 
 
   if (debug$g.flag) {
@@ -30838,11 +31121,11 @@
     const rcIds = [
       RULE_CATEGORIES.LANDMARKS,
       RULE_CATEGORIES.HEADINGS,
-      RULE_CATEGORIES.STYLES_READABILITY,
+      RULE_CATEGORIES.COLOR_CONTENT,
       RULE_CATEGORIES.IMAGES,
       RULE_CATEGORIES.LINKS,
       RULE_CATEGORIES.FORMS,
-      RULE_CATEGORIES.TABLES,
+      RULE_CATEGORIES.TABLES_LAYOUT,
       RULE_CATEGORIES.WIDGETS_SCRIPTS,
       RULE_CATEGORIES.AUDIO_VIDEO,
       RULE_CATEGORIES.KEYBOARD_SUPPORT,
