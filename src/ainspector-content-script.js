@@ -11789,9 +11789,9 @@
     },
     {
       id           : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-      title        : 'Widgets/Scripts',
+      title        : 'ARIA Widgets',
       url          : '',
-      description  : 'Use appropriate event handlers on elements to support native interactivity using JavaScript. Ensure that custom widgets created using JavaScript support keyboard interaction and include ARIA markup to describe their roles, properties and states.'
+      description  : 'Use appropriate ARIA markup to describe their roles, properties and states.'
     },
     {
       id           : RULE_CATEGORIES.AUDIO_VIDEO,
@@ -19347,8 +19347,8 @@
   const widgetRules$1 = {
       WIDGET_1: {
           ID:                    'Widget 1',
-          DEFINITION:            'ARIA Widget roles must have an accessible name.',
-          SUMMARY:               'ARIA Widget roles must have an accessible name',
+          DEFINITION:            'Elements with ARIA widget roles must have an accessible name that describes the purpose of the control.',
+          SUMMARY:               'Accessible name is required',
           TARGET_RESOURCES_DESC: 'Elements with widget roles that allow accessible names',
           RULE_RESULT_MESSAGES: {
             FAIL_S:         'Add an accessible name to the element with a widget role that requires an accessible name.',
@@ -19551,7 +19551,7 @@
       WIDGET_4: {
           ID:                    'Widget 4',
           DEFINITION:            'ARIA property and state values must be valid types.',
-          SUMMARY:               'ARIA values must be valid',
+          SUMMARY:               'Values must be valid',
           TARGET_RESOURCES_DESC: 'Elements with aria attributes',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Change ARIA attribute to a valid type.',
@@ -19665,12 +19665,12 @@
     },
     WIDGET_6: {
           ID:                    'Widget 6',
-          DEFINITION:            'Widgets must set required properties and states.',
+          DEFINITION:            'Elements with ARIA widget roles must set required properties and states.',
           SUMMARY:               'Widgets must set properties',
           TARGET_RESOURCES_DESC: 'Widgets with required properties and states',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Add required properties and states to widget.',
-            FAIL_P:   'Add required properties and states to the %N_F of the %N_T widgets with required properties and/or states on the page.',
+            FAIL_S:   'Add required properties and states to ARIA widget.',
+            FAIL_P:   'Add required properties and states to the %N_F of the %N_T ARIA widgets with required properties and/or states on the page.',
             HIDDEN_S: 'The widget with required properties and states that is hidden and was not evaluated.',
             HIDDEN_P: '%N_H widgets that have required properties and states that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No widgets with required properties and states on this page.'
@@ -20026,8 +20026,8 @@
       },
       WIDGET_12: {
           ID:         'Widget 12',
-          DEFINITION: 'The accessible name for elements with a widget roles on a page must sufficiently describe its purpose.',
-          SUMMARY:    'Widget accessible names must be descriptive',
+          DEFINITION: 'The accessible name for elements with ARIA widget roles on a page must sufficiently describe its purpose.',
+          SUMMARY:    'Accessible name is descriptive',
           TARGET_RESOURCES_DESC: 'Elements with widget roles',
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'To the element with ARIA widget role missing a accessible name, add an accessible name that describes its purpose.',

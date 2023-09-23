@@ -120,8 +120,8 @@
   },
 
   "widgetsScriptsLabel": {
-    "message": "Widgets/Scripts",
-    "description": "Label for Widgets/Scripts rule category view"
+    "message": "ARIA Widgets",
+    "description": "Label for ARIA Widgets rule category view"
   },
 
   "audioVideoLabel": {
