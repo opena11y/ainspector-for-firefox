@@ -24143,17 +24143,19 @@
     target_resources    : ['img', '[role="img"]'],
     validate            : function (dom_cache, rule_result) {
       dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          const name = de.accName.name.toLowerCase();
-          if (name.indexOf(ie.fileName) < 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+        if (ie.fileName) {
+          const de = ie.domElement;
+          if (de.visibility.isVisibleToAT) {
+            const name = de.accName.name.toLowerCase();
+            if (name.indexOf(ie.fileName) < 0) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
           }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);          
-          }
-        } else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
         }
       });
     } // end validation function
