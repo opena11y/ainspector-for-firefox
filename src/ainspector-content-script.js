@@ -954,7 +954,7 @@
 
       this.isDisabled = node.disabled ||
                         (node.hasAttribute('aria-disabled') ?
-                        (node.getAttribute('aria-invalid').toLowerCase() === 'true') :
+                        (node.getAttribute('aria-disabled').toLowerCase() === 'true') :
                         false);
 
       this.hasRequired = typeof node.required === 'boolean' ? node.required : false;
