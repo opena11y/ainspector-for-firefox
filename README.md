@@ -28,10 +28,19 @@
 
 ## Version History
 
-### 3.0.0
-* Updated to use OpenA11y Evaluation Library 2.0 to support WCAG 2.1 requirements
+### 3.0.b1
+* Updated to use OpenA11y Evaluation Library 2.0 to support;
+  * WCAG 2.1
+  * ARIA 1.2
+  * ARIA in HTML
+  * Improved accessible name computation
+  * Improved table rules
+  * Updated keyboard rules
+  * Fixed minor bugs
 * New ruleset and rule scope filtering options
+  * New First Step Rules option
 * Improved element result level information
+* Improved element highlighting
 
 ### 2.2.1
 * Updated info icon and dialog labeling
