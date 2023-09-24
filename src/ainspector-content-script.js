@@ -20146,7 +20146,7 @@
       WIDGET_14: {
           ID:                    'Widget 14',
           DEFINITION:            'Verify the live region has the appropriate ARIA markup to indicate whether or how the screen reader will interrupt the user with a change notification.',
-          SUMMARY:               'Verify appropriate use of live region',
+          SUMMARY:               'Live regions',
           TARGET_RESOURCES_DESC: 'Elements with @alert@, @log@ or @status@ roles or the @aria-live@ attribute',
           RULE_RESULT_MESSAGES: {
             HIDDEN_S:        'One element identified as a live region is hidden and was not evaluated.',
