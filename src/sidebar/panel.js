@@ -1,37 +1,42 @@
 /* panel.js  */
 
-import { getOptions }        from '../storage.js';
+import { getOptions, saveOptions, setScopeFilterToAll } from '../storage.js';
 import { getExportFileName } from './commonCSV.js';
 
 // Classes for manipulating views
-import ViewSummary           from './viewSummary.js';
-import ViewRuleResults       from './viewRuleResults.js';
-import ViewElementResults    from './viewElementResults.js';
+import ViewAllRules          from './viewAllRules/viewAllRules.js';
+import ViewAllRulesTablist   from './viewAllRules/viewAllRulesTablist.js';
+
+import ViewRuleGroup                from './viewRuleGroup/viewRuleGroup.js';
+import ViewRuleGroupRuleResultInfo  from './viewRuleGroup/viewRuleGroupRuleResultInfo.js';
+
+import ViewRuleResult        from './viewRuleResult/viewRuleResult.js';
+import ViewRuleResultInfo    from './viewRuleResult/viewRuleResultInfo.js';
 
 // Custom elements for views
-import ElementSummary        from './elementSummary.js';
-import RuleSummary           from './ruleSummary.js';
-import ResultElementInfo     from './resultElementInfo.js';
-import ResultGrid            from './resultGrid.js';
-import ResultRuleInfo        from './resultRuleInfo.js';
-import ResultTablist         from './resultTablist.js';
-import SummaryInfo           from './summaryInfo.js';
+import RuleResultSummary     from './viewComponents/ruleResultSummary.js';
+import RuleGroupSummary      from './viewComponents/ruleGroupSummary.js';
+import ResultGrid            from './viewComponents/resultGrid.js';
+import SummaryInfo           from './viewComponents/summaryInfo.js';
+import ScopeFilter           from './viewComponents/scopeFilter.js';
 
 
 // Custom elements for controls
-import CopyButton            from './copyButton.js';
-import ExportButton          from './exportButton.js';
-import HighlightSelect       from './highlightSelect.js';
-import RerunEvaluationButton from './rerunEvaluationButton.js';
-import ViewsMenuButton       from './viewsMenuButton.js';
+import CopyButton            from './panelComponents/copyButton.js';
+import ExportButton          from './panelComponents/exportButton.js';
+import HighlightSelect       from './panelComponents/highlightSelect.js';
+import RerunEvaluationButton from './panelComponents/rerunEvaluationButton.js';
+import ViewsMenuButton       from './panelComponents/viewsMenuButton.js';
 
-customElements.define('element-summary',     ElementSummary);
-customElements.define('rule-summary',        RuleSummary);
-customElements.define('result-element-info', ResultElementInfo);
+customElements.define('all-rules-tablist',   ViewAllRulesTablist);
+customElements.define('rule-result-summary', RuleResultSummary);
+customElements.define('rule-group-summary',  RuleGroupSummary);
+customElements.define('rule-result-info',    ViewRuleResultInfo);
 customElements.define('result-grid',         ResultGrid);
-customElements.define('result-rule-info',    ResultRuleInfo);
-customElements.define('result-tablist',      ResultTablist);
+customElements.define('rule-group-rule-result-info', ViewRuleGroupRuleResultInfo);
 customElements.define('summary-info',        SummaryInfo);
+customElements.define('scope-filter',        ScopeFilter);
+
 
 customElements.define('copy-button',         CopyButton);
 customElements.define('export-button',       ExportButton);
@@ -49,11 +54,16 @@ const msg = {
   guidelineLabel         : getMessage("guidelineLabel"),
   infoLocationLabel      : getMessage('infoLocationLabel'),
   infoRulesetLabel       : getMessage('infoRulesetLabel'),
+  infoScopeLabel         : getMessage('infoScopeLabel'),
   infoTitleLabel         : getMessage('infoTitleLabel'),
   preferencesButtonLabel : getMessage('preferencesButtonLabel'),
   protocolNotSupported   : getMessage("protocolNotSupported"),
   ruleCategoryLabel      : getMessage("ruleCategoryLabel"),
+  ruleScopeLabel         : getMessage("ruleScopeLabel"),
   ruleLabel              : getMessage("ruleLabel"),
+  scopeAllRulesLabel     : getMessage("scopeAllRulesLabel"),
+  scopePageRulesLabel    : getMessage("scopePageRulesLabel"),
+  scopeWebsiteRulesLabel : getMessage("scopeWebsiteRulesLabel"),
   tabIsLoading           : getMessage("tabIsLoading"),
   viewTitleSummaryLabel  : getMessage('viewTitleSummaryLabel')
 };
@@ -77,24 +87,24 @@ preferencesButton.addEventListener('click', onPreferencesClick);
 
 var contentPort;
 var myWindowId;
-var logInfo = true;
+var logInfo = false;
 var debug = false;
 
 // The viewId object is used to both identify a view and
 // the ID of the associated DIV element that contains the rendered
 // content of the view
 const viewId = {
-  summary : 'summary',
-  ruleResults: 'rule-results',
-  elementResults: 'element-results'
+  allRules : 'all-rules',
+  ruleGroup: 'rule-group',
+  ruleResult: 'rule-result'
 };
 
 // Instantiate view classes with corresponding callbacks
-var vSummary = new ViewSummary(viewId.summary, onSummaryRowActivation);
-var vRuleResults = new ViewRuleResults(viewId.ruleResults, onRuleResultsRowActivation);
-var vElementResults = new ViewElementResults(viewId.elementResults, onUpdateHighlight);
+var vAllRules   = new ViewAllRules(viewId.allRules, onAllRulesRowActivation, rerunEvaluationScopeAll);
+var vRuleGroup  = new ViewRuleGroup(viewId.ruleGroup, onRuleGroupRowActivation, rerunEvaluationScopeAll);
+var vRuleResult = new ViewRuleResult(viewId.ruleResult, onUpdateHighlight, rerunEvaluationScopeAll);
 
-var sidebarView      = viewId.summary;  // default view when sidebar loads
+var sidebarView      = viewId.allRules;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
@@ -103,12 +113,14 @@ var sidebarHighlightOnly   = false;
 
 var pageTitle = '';
 var pageLocation = '';
+var pageRuleset = '';
+var pageScopeFilter = '';
 
 function addSidebarLabels () {
   let elem;
   // Header titles and labels
   elem = document.getElementById('view-title');
-  elem.textContent = msg.viewTitleSummaryLabel;
+  elem.textContent = msg.viewTitleSummaryLabel + msg.scopeAllRulesLabel;
 
   elem = document.getElementById('back-button');
   elem.textContent = msg.backButtonLabel;
@@ -120,44 +132,63 @@ function addSidebarLabels () {
   elem = document.querySelector('#info-title .label');
   elem.textContent = msg.infoTitleLabel;
 
+  elem = document.querySelector('#info-ruleset .label');
+  elem.textContent = msg.infoRulesetLabel;
+
   elem = document.getElementById('preferences-button');
   elem.textContent = msg.preferencesButtonLabel;
 }
 
 // Callback functions used by views for activation or selection of rows
 
-function onSummaryRowActivation (id) {
-  sidebarView      = viewId.ruleResults;
-  sidebarGroupType = id.substring(0,2);
-  sidebarGroupId   = parseInt(id.substring(2));
-  runContentScripts('onSummaryRowActivation');
+function rerunEvaluationScopeAll () {
+  console.log(`[rerunEvaluationScopeAll]`);
+
+  getOptions().then( (options) => {
+    options.scopeFilter = 'ALL';
+    saveOptions(options).then( () => {
+      runContentScripts('rerunEvaluation');
+    });
+  });
+
 }
 
-function onRuleResultsRowActivation (id) {
-  sidebarView   = viewId.elementResults;
+function onAllRulesRowActivation (id) {
+  sidebarView      = viewId.ruleGroup;
+  sidebarGroupType = id.substring(0,2);
+  sidebarGroupId   = parseInt(id.substring(2));
+  runContentScripts('onAllRulesRowActivation');
+}
+
+function onRuleGroupRowActivation (id) {
+  sidebarView   = viewId.ruleResult;
   sidebarRuleId = id;
-  runContentScripts('onRuleResultsRowActivation');
+  runContentScripts('onRuleGroupRowActivation');
 }
 
 function onViewsMenuActivation(id) {
   if (id && id.length) {
     if (id === 'summary') {
-      sidebarView = viewId.summary;
+      sidebarView = viewId.allRules;
     }
 
     if (id === 'all-rules') {
-      sidebarView = viewId.ruleResults;
-      if (sidebarGroupType === 'rc') {
-        sidebarGroupId = 0x0FFF;  // All rules id for rule categories
-      } else {
+      sidebarView = viewId.ruleGroup;
+      if (sidebarGroupType === 'gl') {
         sidebarGroupId = 0x01FFF0; // All rules id for guidelines
+      } else {
+        if (sidebarGroupType === 'rc') {
+          sidebarGroupId = 0x0FFF;  // All rules id for rule categories
+        } else {
+          sidebarGroupId = 0x0007; // All rules id for rule scope
+        }
       }
     }
 
-    if (id.indexOf('rc') >= 0 || id.indexOf('gl') >= 0) {
+    if (id.includes('rc') || id.includes('gl') || id.includes('sc')) {
       const groupType = id.substring(0, 2);
       const groupId = parseInt(id.substring(2));
-      sidebarView = viewId.ruleResults;
+      sidebarView = viewId.ruleGroup;
       sidebarGroupType = groupType;
       sidebarGroupId   = groupId;
     }
@@ -204,12 +235,20 @@ function portMessageHandler (message) {
 *   5. Run content scripts to establish connection and populate views
 */
 browser.windows.getCurrent({ populate: true }).then( (windowInfo) => {
-  myWindowId = windowInfo.id;
-  addSidebarLabels();
-  window.addEventListener('resize', resizeView);
-  document.body.addEventListener('keydown', onShortcutsKeydown);
-  showView(sidebarView);
-  runContentScripts('windows.getCurrent');
+
+  // reset scope filter when sidebar opens
+  getOptions().then( (options) => {
+    options.scopeFilter = 'ALL';
+    saveOptions(options).then( () => {
+      myWindowId = windowInfo.id;
+      addSidebarLabels();
+      window.addEventListener('resize', resizeView);
+      document.body.addEventListener('keydown', onShortcutsKeydown);
+      showView(sidebarView);
+      runContentScripts('windows.getCurrent');
+    });
+  });
+
 });
 
 //--------------------------------------------------------------
@@ -226,12 +265,12 @@ function onError (error) {
 
 function shortcutCopy () {
   switch (sidebarView) {
-    case viewId.ruleResults:
-      vRuleResults.copyButton.click();
+    case viewId.ruleGroup:
+      vRuleGroup.copyButton.click();
       break;
 
-    case viewId.elementResults:
-      vElementResults.elemCopyButton.click();
+    case viewId.ruleResult:
+      vRuleResult.elemCopyButton.click();
       break;
 
     default:
@@ -298,12 +337,12 @@ function onShortcutsKeydown (event) {
 function onBackButton() {
 
   switch (sidebarView) {
-    case viewId.ruleResults:
-      sidebarView = viewId.summary;
+    case viewId.ruleGroup:
+      sidebarView = viewId.allRules;
       break;
 
-    case viewId.elementResults:
-      sidebarView = viewId.ruleResults;
+    case viewId.ruleResult:
+      sidebarView = viewId.ruleGroup;
       break;
 
     default:
@@ -324,19 +363,19 @@ function onExportClick () {
     if (options.exportFormat === 'CSV') {
       switch (sidebarView) {
 
-        case viewId.summary:
-          fname = options.filenameSummary;
-          csv = vSummary.toCSV(options, pageTitle, pageLocation);
+        case viewId.allRules:
+          fname = options.filenameAllRules;
+          csv = vAllRules.toCSV(options, pageTitle, pageLocation, pageRuleset);
           break;
 
-        case viewId.ruleResults:
-          fname = options.filenameRuleResults;
-          csv = vRuleResults.toCSV(options, pageTitle, pageLocation, sidebarGroupId);
+        case viewId.ruleGroup:
+          fname = options.filenameRuleGroup;
+          csv = vRuleGroup.toCSV(options, pageTitle, pageLocation, pageRuleset, sidebarGroupId);
           break;
 
-        case viewId.elementResults:
-          fname = options.filenameElementResults;
-          csv = vElementResults.toCSV(options, pageTitle, pageLocation);
+        case viewId.ruleResult:
+          fname = options.filenameRuleResult;
+          csv = vRuleResult.toCSV(options, pageTitle, pageLocation, pageRuleset);
           break;
 
         default:
@@ -350,19 +389,19 @@ function onExportClick () {
 
       switch (sidebarView) {
 
-        case viewId.summary:
-          fname = options.filenameSummary;
-          json = vSummary.toJSON();
+        case viewId.allRules:
+          fname = options.filenameAllRules;
+          json = vAllRules.toJSON();
           break;
 
-        case viewId.ruleResults:
-          fname = options.filenameRuleResults;
-          json = vRuleResults.toJSON();
+        case viewId.ruleGroup:
+          fname = options.filenameRuleGroup;
+          json = vRuleGroup.toJSON();
           break;
 
-        case viewId.elementResults:
-          fname = options.filenameElementResults;
-          json = vElementResults.toJSON();
+        case viewId.ruleResult:
+          fname = options.filenameRuleResult;
+          json = vRuleResult.toJSON();
           break;
 
         default:
@@ -471,7 +510,7 @@ function showView (id) {
 
 function updateBackButton () {
 
-  if (sidebarView === viewId.summary) {
+  if (sidebarView === viewId.allRules) {
     backButton.disabled = true;
   } else {
     backButton.disabled = false;
@@ -482,7 +521,7 @@ function disableButtons() {
   viewsMenuButton.disabled = true;
   exportButton.disabled = true;
   rerunEvaluationButton.disabled = true;
-  vSummary.disabled = true;
+  vAllRules.disabled = true;
 
   updateBackButton();
 }
@@ -491,7 +530,7 @@ function enableButtons() {
   viewsMenuButton.disabled = false;
   exportButton.disabled = false;
   rerunEvaluationButton.disabled = false;
-  vSummary.disabled = false;
+  vAllRules.disabled = false;
 
   updateBackButton();
 }
@@ -504,87 +543,132 @@ function resizeView () {
   const minContainerHeight = 650;
   const containerDiv = document.querySelector('#container');
   containerDiv.style.height = Math.max(minContainerHeight, window.innerHeight) + 'px';
+
+  const containerRect = containerDiv.getBoundingClientRect();
+  const headerRect = document.querySelector('header').getBoundingClientRect();
+  const footerRect = document.querySelector('footer').getBoundingClientRect();
+
+  const height = containerRect.height - headerRect.height - footerRect.height;
+
+//  console.log(`[PANEL]    header: ${headerRect.height}`);
+//  console.log(`[PANEL] container: ${containerRect.height};`);
+//  console.log(`[PANEL]    footer: ${footerRect.height}`);
+//  console.log(`[PANEL]    height: ${height}`);
+
+  vRuleGroup.resizeView(height);
+  vRuleResult.resizeView(height);
 }
 
 /*
 **  Display the content generated by the content script.
 */
 function updateSidebar (info) {
-  let viewTitle    = document.querySelector('#view-title');
-  let infoLocation = document.querySelector('#info-location .value');
-  let infoTitle    = document.querySelector('#info-title .value');
+  let viewTitle      = document.querySelector('#view-title');
+  let infoLocation   = document.querySelector('#info-location .value');
+  let infoTitle      = document.querySelector('#info-title .value');
+  let infoRuleset    = document.querySelector('#info-ruleset .value');
+
+  let viewSummaryLabel = msg.viewTitleSummaryLabel;
 
   // page-title and headings
   if (typeof info === 'object') {
 
-    if (logInfo) console.log(`updateSidebar: info object received for ${info.location}`);
+    if (logInfo) console.log(`\n[updateSidebar][location        ]: ${info.location}`);
+    if (logInfo) console.log(`[updateSidebar][infoAllRules      ]: ${info.infoAllRules}`);
+    if (logInfo) console.log(`[updateSidebar][infoRuleGroup     ]: ${info.infoRuleGroup}`);
+    if (logInfo) console.log(`[updateSidebar][infoRuleResul t   ]: ${info.infoRuleResult}`);
+    if (logInfo) console.log(`[updateSidebar][infoHighlight     ]: ${info.infoHighlight}`);
 
     // Update the page information footer
-    infoTitle.textContent    = info.title;
-    infoTitle.title          = info.title;
-    pageTitle = info.title;
+    infoTitle.textContent = info.title;
+    infoTitle.title       = info.title;
+    pageTitle             = info.title;
 
     infoLocation.textContent = info.location;
     pageLocation = info.location;
 
+    infoRuleset.textContent = info.evaluationLabel;
+    pageRuleset = info.evaluationLabel;
+
+    switch (info.scopeFilter) {
+
+      case 'PAGE':
+         viewSummaryLabel += msg.scopePageRulesLabel;
+         break;
+
+      case 'WEBSITE':
+         viewSummaryLabel += msg.scopeWebsiteRulesLabel;
+         break;
+
+      default:
+         viewSummaryLabel += msg.scopeAllRulesLabel;
+         break;
+
+    }
+
+    pageScopeFilter = viewSummaryLabel;
+
+
     // Update the headings box
-    if (typeof info.infoSummary === 'object') {
-      viewTitle.textContent = msg.viewTitleSummaryLabel;
-        viewTitle.title = '';
-      vSummary.update(info.infoSummary);
+    if (typeof info.infoAllRules === 'object') {
+      viewTitle.textContent = viewSummaryLabel;
+      viewTitle.title = '';
+      vAllRules.update(info.infoAllRules, info.scopeFilter);
       enableButtons();
     }
     else {
-      if (typeof info.infoRuleResults === 'object') {
-        if (info.infoRuleResults.groupType === 'rc') {
-          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleResults.groupLabel;
+      if (typeof info.infoRuleGroup === 'object') {
+        if (info.infoRuleGroup.groupType === 'gl') {
+          viewTitle.textContent = msg.guidelineLabel + ': ' + info.infoRuleGroup.groupLabel;
         }
         else {
-          viewTitle.textContent = msg.guidelineLabel + ' ' + info.infoRuleResults.groupLabel;
+          viewTitle.textContent = msg.ruleCategoryLabel + ': ' + info.infoRuleGroup.groupLabel;
         }
         viewTitle.title = '';
-        vRuleResults.update(info.infoRuleResults, sidebarGroupId);
+        vRuleGroup.update(info.infoRuleGroup, sidebarGroupId, info.scopeFilter);
         enableButtons();
       }
       else {
-        if (info.infoElementResults) {
-          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoElementResults.title;
-          viewTitle.title = info.infoElementResults.title;
-          vElementResults.update(info.infoElementResults);
+        if (info.infoRuleResult) {
+          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoRuleResult.title;
+          viewTitle.title = info.infoRuleResult.title;
+          vRuleResult.update(info.infoRuleResult, info.scopeFilter);
           enableButtons();
         }
         else {
           if (info.infoHighlight) {
             enableButtons();
           } else {
-            vSummary.clear();
-            vRuleResults.clear();
-            vElementResults.clear();
+            vAllRules.clear();
+            vRuleGroup.clear();
+            vRuleResult.clear();
             disableButtons();
           }
         }
       }
     }
+    resizeView();
   }
   else {
     let parts = info.split(';');
+    infoRuleset.textContent = '';
     if (parts.length == 1) {
       infoLocation.textContent = '';
       infoTitle.textContent = info;
-      vSummary.clear(info);
-      vRuleResults.clear(info);
-      vElementResults.clear(info);
+      vAllRules.clear(info);
+      vRuleGroup.clear(info);
+      vRuleResult.clear(info);
     } else {
       if (parts.length == 2) {
         infoLocation.textContent = parts[0];
         infoTitle.textContent = parts[1];
-        vSummary.clear(parts[0], parts[1]);
-        vRuleResults.clear(parts[0], parts[1]);
-        vElementResults.clear(parts[0], parts[1]);
+        vAllRules.clear(parts[0], parts[1]);
+        vRuleGroup.clear(parts[0], parts[1]);
+        vRuleResult.clear(parts[0], parts[1]);
       } else {
-        vSummary.clear();
-        vRuleResults.clear();
-        vElementResults.clear();
+        vAllRules.clear();
+        vRuleGroup.clear();
+        vRuleResult.clear();
       }
     }
     disableButtons();
@@ -603,25 +687,38 @@ function updateSidebar (info) {
 *   the handler calls the updateSidebar function with the structure info.
 */
 function runContentScripts (callerfn) {
+
+  console.log(`[runContentScripts]: ${callerfn}`);
+
   if (!sidebarHighlightOnly) {
     updateSidebar (msg.tabIsLoading);
     showView(sidebarView);
   }
 
+
   getOptions().then( (options) => {
     getActiveTabFor(myWindowId).then(tab => {
+
+      let contentCode = '';
+      contentCode += `var ainspectorSidebarRuleResult = ainspectorSidebarRuleResult || {};`;
+      contentCode += `var infoAInspectorEvaluation = {`;
+      contentCode += `  view: "${sidebarView}",`;
+      contentCode += `  groupType: "${sidebarGroupType}",`;
+      contentCode += `  ruleId: "${sidebarRuleId}",`;
+      contentCode += `  ruleset: "${options.ruleset}",`;
+      contentCode += `  level: "${options.level}",`;
+      contentCode += `  scopeFilter: "${options.scopeFilter}",`;
+      contentCode += `  firstStepRules: ["${options.firstStepRules.join('","')}"],`;
+      contentCode += `  highlight: "${options.highlight}",`;
+      // note the following properties are number and boolean values
+      contentCode += `  groupId: ${sidebarGroupId},`;
+      contentCode += `  position: ${sidebarElementPosition},`;
+      contentCode += `  highlightOnly: ${sidebarHighlightOnly}`;
+      contentCode += `};`;
+
       if (tab.url.indexOf('http:') === 0 || tab.url.indexOf('https:') === 0) {
-        browser.tabs.executeScript({ code: `var infoAInspectorEvaluation = {};`});
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.view      = "${sidebarView}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupType = "${sidebarGroupType}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.ruleId          = "${sidebarRuleId}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.rulesetId       = "${options.rulesetId}";` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlight       = "${options.highlight}";` });
-        // note the following properties are number and boolean values
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.groupId         = ${sidebarGroupId};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.position        = ${sidebarElementPosition};` });
-        browser.tabs.executeScript({ code: `infoAInspectorEvaluation.highlightOnly   = ${sidebarHighlightOnly};` });
-        browser.tabs.executeScript({ file: '../content-script.js' })
+        browser.tabs.executeScript({ code: contentCode })
+        .then(() => browser.tabs.executeScript({ file: '../ainspector-content-script.js' }))
         .then(() => {
           if (logInfo) console.log(`Content script invoked by ${callerfn}`);
         },
@@ -706,5 +803,5 @@ function download(filename, content, format) {
     conflictAction : 'uniquify'
   });
   downloading.then(onStartedDownload, onFailed);
-
 }
+

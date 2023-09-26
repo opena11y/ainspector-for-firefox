@@ -8,8 +8,46 @@ const getMessage = browser.i18n.getMessage;
 
 export const defaultOptions = {
   isSidebarOpen: false,
-  rulesetId: 'ARIA_STRICT',
   viewsMenuIncludeGuidelines: true,
+  ruleset: 'WCAG21',
+  level : 'AA',
+  scopeFilter: 'ALL',
+  firstStepRules: [
+    'AUDIO_1',
+    'AUDIO_2',
+    'AUDIO_3',
+    'BYPASS_1',
+    'COLOR_1',
+    'COLOR_2',
+    'CONTROL_1',
+    'CONTROL_2',
+    'CONTROL_3',
+    'CONTROL_10',
+    'COOTROL_12',
+    'HEADING_1',
+    'IMAGE_1',
+    'KEYBOARD_1',
+    'KEYBOARD_2',
+    'KEYBOARD_3',
+    'LANDMARK_1',
+    'LINK_1',
+    'NAVIGATION_1',
+    'TABLE_1',
+    'TABLE_2',
+    'TABLE_5',
+    'TIMING_1',
+    'VIDEO_1',
+    'VIDEO_2',
+    'VIDEO_3',
+    'VIDEO_4,',
+    'VIDEO_5,',
+    'VIDEO_6,',
+    'WIDGET_1',
+    'WIDGET_3',
+    'WIDGET_4',
+    'WIDGET_5',
+    'WIDGET_12'
+  ],
   rerunDelayEnabled: true,
   rerunDelayValue: '5',
   resultsIncludePassNa: true,
@@ -19,9 +57,9 @@ export const defaultOptions = {
   evaluatorName: '',
   exportFormat: 'CSV',  // other option is JSON
   filenamePrefix: 'ainspector',
-  filenameSummary: 'summary{date}{time}',
-  filenameRuleResults: 'rule-results-{group}{date}{time}',
-  filenameElementResults: 'element-results-{rule}{date}{time}',
+  filenameAllRules: 'all-rules{date}{time}',
+  filenameRuleGroup: 'rule-group-{group}{date}{time}',
+  filenameRuleResult: 'rule-result-{rule}{date}{time}',
   includeDate: true,
   includeTime: true,
   promptForExportOptions: true,
@@ -66,6 +104,17 @@ export function saveOptions (options) {
       () => { resolve() },
       message => { reject(new Error(`saveOptions: ${message}`)) }
     );
+  });
+}
+
+/*
+**  setScopeFilterToAll
+*/
+export function setScopeFilterToAll (options) {
+  return new Promise (function (resolve, reject) {
+    options.scopeFilter = 'ALL';
+    () => { resolve(options); },
+    message => { reject(new Error(`resetScopeFilterToAll: ${message}`)) }
   });
 }
 

@@ -1,11 +1,11 @@
 {
   "extensionVersion": {
-    "message": "2.0.0",
+    "message": "3.0.0",
     "description": "Version of the extension"
   },
 
   "extensionVersionName": {
-    "message": "2.0.0-beta.1",
+    "message": "3.0.0-beta",
     "description": "Version of the extension"
   },
 
@@ -15,7 +15,7 @@
   },
 
   "extensionDescription": {
-    "message": "Analyze web pages for WCAG 2.0 level A and AA requirements using the OpenA11y evaluation library.",
+    "message": "Analyze web pages for WCAG 2.1 level A and AA requirements using the OpenA11y evaluation library.",
     "description": "Description of the extension"
   },
 
@@ -25,7 +25,7 @@
   },
 
   "viewTitleSummaryLabel": {
-    "message": "Summary: All Rules",
+    "message": "Summary: ",
     "description": "Label for summary view"
   },
 
@@ -59,6 +59,11 @@
     "description": "Label for rulset value"
   },
 
+  "infoScopeLabel": {
+    "message": "Scope",
+    "description": "Label for scope filter value"
+  },
+
   "preferencesButtonLabel": {
     "message": "Preferences",
     "description": "Label for preferences button"
@@ -90,8 +95,8 @@
   },
 
   "stylesContentLabel": {
-    "message": "Styles/Content",
-    "description": "Label for Styles/Content rule category view"
+    "message": "Color/Content",
+    "description": "Label for Color/Content rule category view"
   },
 
   "imagesLabel": {
@@ -110,13 +115,13 @@
   },
 
   "tablesLabel": {
-    "message": "Tables",
-    "description": "Label for Tables rule category view"
+    "message": "Tables/Layout",
+    "description": "Label for Tables/Layout rule category view"
   },
 
   "widgetsScriptsLabel": {
-    "message": "Widgets/Scripts",
-    "description": "Label for Widgets/Scripts rule category view"
+    "message": "ARIA Widgets",
+    "description": "Label for ARIA Widgets rule category view"
   },
 
   "audioVideoLabel": {
@@ -207,6 +212,21 @@
   "g4.1": {
     "message": "4.1 Compatible",
     "description": "Label for WCAG Guideline 4.1 view"
+  },
+
+  "scopeLabel": {
+    "message": "Scope",
+    "description": "Label for rule scope"
+  },
+
+  "pageLabel": {
+    "message": "Page",
+    "description": "Label for page scope"
+  },
+
+  "websiteLabel": {
+    "message": "Website",
+    "description": "Label for website scope"
   },
 
   "violationsAbbrev": {
@@ -389,6 +409,11 @@
     "description": "Label for rule results grid"
   },
 
+  "ruleScopeGridLabel": {
+    "message": "Scope Results",
+    "description": "Label for rule results grid"
+  },
+
   "ruleSelectedLabel": {
     "message": "Selected Rule",
     "description": "Selected rule label for rule information"
@@ -439,6 +464,12 @@
     "description": "Definition section label for rule information"
   },
 
+  "ruleRuleDefinitionLabel": {
+    "message": "Rule Definition",
+    "description": "Rule definition label "
+  },
+
+
   "ruleActionLabel": {
     "message": "Action",
     "description": "Action section label for rule information"
@@ -479,9 +510,19 @@
     "description": "Details/action tab label in rule results view"
   },
 
+  "websiteResultLabel": {
+    "message": "Website Result",
+    "description": "Website result label in rule results CSV"
+  },
+
+  "pageResultLabel": {
+    "message": "Page Result",
+    "description": "Page result label in rule results CSV"
+  },
+
   "elementResultsLabel": {
     "message": "Element Results",
-    "description": "Element results tab label in rule results view"
+    "description": "Element results label in rule results CSV"
   },
 
   "elementLabel": {
@@ -530,13 +571,13 @@
   },
 
   "elementGridLabel": {
-    "message": "Element Results",
+    "message": "Results",
     "description": "Label for Rule/Element results grid"
   },
 
   "elementSelectedLabel": {
-    "message": "Selected Element",
-    "description": "Selected element details label for rule information"
+    "message": "Selected Result",
+    "description": "Selected element, page or website details label for rule information"
   },
 
   "viewsMenuButtonLabel": {
@@ -544,14 +585,14 @@
     "description": "Label for button in views menu button"
   },
 
-  "exportButtonLabel": {
+  "exportDataButtonLabel": {
     "message": "Export Data",
-    "description": "Label for rerun export button in the footer of the main panel"
+    "description": "Label for export data button in the footer of the main panel"
   },
 
   "exportDialogTitle": {
-    "message": "Export Data Options",
-    "description": "Title for export evaluation options dialog box"
+    "message": "Data Export Options",
+    "description": "Title for data export options dialog box"
   },
 
   "rerunEvalButtonLabel": {
@@ -570,13 +611,13 @@
   },
 
   "rerunEvalPromptForDelayLabel": {
-    "message": "After this evaluation, stop prompting for delay setting.",
+    "message": "Do not prompt for delay setting",
     "description": "Label for checkbox input in rerun evaluation dialog box"
   },
 
   "cancelButtonLabel": {
     "message": "Cancel",
-    "description": "Label for cancel button in a dialog box"
+    "description": "Label for Cancel button in a dialog box"
   },
 
   "okButtonLabel": {
@@ -589,28 +630,43 @@
     "description": "Label for Close button in a dialog box"
   },
 
+  "rerunButtonLabel": {
+    "message": "Rerun",
+    "description": "Label for Rerun button in a dialog box"
+  },
+
+  "exportButtonLabel": {
+    "message": "Export",
+    "description": "Label for Export button in a dialog box"
+  },
+
   "moreButtonLabel": {
     "message": "Concepts and Terms",
     "description": "Label for Concepts and Terms button in a dialog box"
   },
 
   "optionsTitle": {
-    "message": "General Options",
+    "message": "General",
     "description": "Title for the options page"
   },
 
   "optionsViewsMenuLegend": {
-    "message": "'Views' Menu",
+    "message": "Views menu",
     "description": "Legend for view menu in the options page"
   },
 
   "optionsInclWcagGlLabel": {
     "message": "Include WCAG Guidelines",
-    "description": "Label for checkbox to include WCAG Guidleines in views menu"
+    "description": "Label for checkbox to include WCAG Guidelines in views menu"
+  },
+
+  "optionsInclRuleScopeLabel": {
+    "message": "Include Rule Scope",
+    "description": "Label for checkbox to include Rule Scope options in views menu"
   },
 
   "optionsRerunEvaluationLegend": {
-    "message": "'Rerun Evaluation' Button",
+    "message": "Rerun Evaluation button",
     "description": "Legend for rerun evaluation section in the options page"
   },
 
@@ -620,7 +676,7 @@
   },
 
   "optionsPromptForDelayLabel": {
-    "message": "Prompt with delay setting",
+    "message": "Prompt for delay setting",
     "description": "Label for rerun with prompted delay checkbox in the options page"
   },
 
@@ -645,12 +701,12 @@
   },
 
   "optionsRuleResultsLegend": {
-    "message": "'Rule Results' View",
+    "message": "Rule Result Types filter",
     "description": "Legend for the rule results section on the options page"
   },
 
   "optionsInclPassNaLabel": {
-    "message": "Include 'Pass' and 'N/A' results",
+    "message": "Include 'Passed' and 'Not Applicable' results",
     "description": "Label for checkbox to include pass and n/a results in the options page"
   },
 
@@ -660,17 +716,17 @@
   },
 
   "optionsExportHeading": {
-    "message": "Export Options",
-    "description": "Label for file name legend in the export section of the options page"
+    "message": "Data Export",
+    "description": "Label for the data export section of the options page"
   },
 
   "optionsExportPrompt": {
-    "message": "Prompt for export options",
+    "message": "Prompt for data export options",
     "description": "Prompt for export options when the export button is pressed"
   },
 
   "optionsExportButtonLegend": {
-    "message": "'Export Data' Button",
+    "message": "Export Data button",
     "description": "Legend for prompt for export options button"
   },
 
@@ -725,13 +781,29 @@
   },
 
   "optionsExportPromptForOptions": {
-    "message": "Do not prompt for export options.",
+    "message": "Do not prompt for data export options",
     "description": "Label for disable prompting for export export file name options when activating the export button."
   },
 
+  "elementResultType": {
+    "message": "Result Type",
+    "description": "Result type heading in element, page or website results view."
+  },
+
+
   "elementResultAction": {
     "message": "Action",
-    "description": "Action heading in element results view."
+    "description": "Action heading in element, page or website results view."
+  },
+
+  "elementResultMessage": {
+    "message": "Message",
+    "description": "Message heading in element, page or website results view."
+  },
+
+  "elementResultRole": {
+    "message": "Role",
+    "description": "Role heading in element results view."
   },
 
   "elementResultTagName": {
@@ -830,8 +902,8 @@
   },
 
   "csvNumberOfElementsWith": {
-    "message": "Number of elements with",
-    "description": "Used in element results for CSV export for labeling summary results."
+    "message": "Number of results with",
+    "description": "Used in element, page and website results for CSV export for labeling summary results."
   },
 
   "csvRuleset": {
@@ -890,8 +962,8 @@
   },
 
   "csvSummary-stylesContentLabel": {
-    "message": "Number of Styles/Content rules with",
-    "description": "CSV label for Styles/Content rule category for number of rules with"
+    "message": "Number of Color/Content rules with",
+    "description": "CSV label for Color/Content rule category for number of rules with"
   },
 
   "csvSummary-imagesLabel": {
@@ -1100,6 +1172,36 @@
   "elementNumberDesc": {
     "message": "Number of target elements with corresponding result type",
     "description": "Provides information on the meaning of numbers in rule view"
+  },
+
+  "noRole": {
+    "message": "no role",
+    "description": "Identifies an element with no default role value"
+  },
+
+  "scopeAllRulesLabel": {
+    "message": "All rules",
+    "description": "Element, Page and Website rules included in evaluation"
+  },
+
+  "scopePageRulesLabel": {
+    "message": "Page rules",
+    "description": "Only Page rules included in evaluation"
+  },
+
+  "scopeWebsiteRulesLabel": {
+    "message": "Website rules",
+    "description": "Only Website rules included in evaluation"
+  },
+
+  "getMoreInfo": {
+    "message": "Get More Info",
+    "description": "Accessible name for get more information icon"
+  },
+
+  "resultsLegend": {
+    "message": "Results Legend",
+    "description": "Accessible description for get more information icon"
   }
 
 }

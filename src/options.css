@@ -6,11 +6,9 @@ body {
 }
 
 h2 {
-  font-size: 1.2rem;
-  font-weight: 550;
+  font-size: 2.25 rem;
+  font-weight: normal;
   margin: 1.5rem 0 0.75rem;
-  width: 100%;
-  border-bottom: 1px solid #ddd;
 }
 
 .checkbox {
@@ -77,6 +75,10 @@ p.note {
 
 button[type=reset] {
   margin-top:  2em;
+}
+
+select {
+  display: block;
 }
 
 table.shortcuts  {

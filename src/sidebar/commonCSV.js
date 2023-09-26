@@ -1,6 +1,10 @@
 /* commonCSV.js */
 
-import { getRuleCategoryFilenameId, getGuidelineFilenameId } from './constants.js';
+import {
+  getGuidelineFilenameId,
+  getRuleCategoryFilenameId,
+  getScopeFilenameId
+} from './constants.js';
 
 import { sortRuleResults } from './sortUtils.js';
 
@@ -39,6 +43,7 @@ const msg = {
   ruleActionLabel           : getMessage('ruleActionLabel'),
   ruleAdditionalLabel       : getMessage('ruleAdditionalLabel'),
   ruleCategoryLabel         : getMessage('ruleCategoryLabel'),
+  ruleScopeLabel            : getMessage('ruleScopeLabel'),
   ruleComplianceLabel       : getMessage('ruleComplianceLabel'),
   ruleDefinitionLabel       : getMessage('ruleDefinitionLabel'),
   rulePurposeLabel          : getMessage('rulePurposeLabel'),
@@ -107,10 +112,11 @@ export class commonCSV {
     return csv;
   }
 
-  getCSV (options, title, location) {
+  getCSV (options, title, location, rulesetLabel) {
     let csv = '';
     csv += this.arrayToCSV([msg.csvPageTitle, title]);
     csv += this.arrayToCSV([msg.csvPageURL, location]);
+    csv += this.arrayToCSV([msg.csvRuleset, rulesetLabel]);
     csv += this.arrayToCSV([msg.csvDate, getTodaysDate()]);
     csv += this.arrayToCSV([msg.csvTime, getTimeOfDay()]);
     csv += this.arrayToCSV([msg.csvSource, getName + ' ' + getVersion], 2);
@@ -172,7 +178,7 @@ export class commonCSV {
     return this.arrayToCSV(summ);
   }
 
-  getRuleResultsCSV (options, ruleResults, incRC=false, incGL=false) {
+  getRuleResultsCSV (options, ruleResults, incRC=false, incGL=false, incSC=false) {
     const props = [];
     let csv = '\n';
 
@@ -188,6 +194,9 @@ export class commonCSV {
     }
     if (incGL) {
       props.push(msg.guidelineLabel);
+    }
+    if (incSC) {
+      props.push(msg.ruleScopeLabel);
     }
     props.push(msg.csvSuccessCriteria);
     props.push(msg.levelLabel);
@@ -330,10 +339,14 @@ export function getExportFileName (fname, options, groupType, groupId, ruleId) {
 
   // get group ID
   let date = '', time = '', dd, mm, yyyy, hh, ss, parts, ruleNum;
-  if (groupType === 'rc') {
-    groupId = getRuleCategoryFilenameId(groupId);
-  } else {
+  if (groupType === 'gl') {
     groupId = getGuidelineFilenameId(groupId);
+  } else {
+    if (groupType === 'rc') {
+      groupId = getRuleCategoryFilenameId(groupId);
+    } else {
+      groupId = getScopeFilenameId(groupId);
+    }
   }
 
   // get today's date

@@ -1,0 +1,143 @@
+/* viewRuleResultInfo.css */
+
+.hide {
+  display: none;
+}
+
+.message {
+  font-style: italic;
+}
+
+.rule-result-info {
+  margin: 0;
+  border: 1px solid #aaa;
+  padding: 2px;
+  padding-left:  4px;
+  display: block;
+  left:  2px;
+  right:  2px;
+  overflow: auto;
+  height: 25vh;
+  min-height: 150px;
+  user-select: text;
+}
+
+.rule-result-info h3 {
+  margin: 0;
+  padding: 0;
+  margin-top: 1em;
+  font-size: 100%;
+  font-weight: bold;
+}
+
+.rule-result-info h3.first {
+  margin-top: 0;
+}
+
+.rule-result-info ul {
+  margin: 0;
+  padding: 0;
+}
+
+.rule-result-info li {
+  margin:  0;
+  padding: 0;
+  margin-left:  1em;
+  line-spacing: 1.25em;
+}
+
+.rule-result-info .source {
+  margin-bottom:  0.25em;
+}
+
+.rule-result-info .source span:first-child {
+  font-style: italic;
+}
+
+
+.rule-result-info table.ccr-info,
+.rule-result-info table.visibility-info {
+  margin: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.rule-result-info table.ccr-info tr:nth-child(odd) {
+  background-color: #ddd;
+}
+
+.rule-result-info table.ccr-info th,
+.rule-result-info table.visibility-info th {
+  font-weight: normal;
+  padding-right: 4px;
+  text-align: left;
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-result-info tableccr-info td,
+.rule-result-info table.visibility-info td {
+  font-weight:  normal;
+  text-align: left;
+}
+
+.rule-result-info table.attrs-info {
+  margin-top: 1em;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.rule-result-info table.attrs-info tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+.rule-result-info table.attrs-info thead th {
+  text-align: left;
+}
+
+.rule-result-info table.attrs-info tbody th {
+  padding-right: 0.25em;
+  font-weight:  normal;
+  text-align: left;
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-result-info table.attrs-info tbody td.value {
+  font-weight:  normal;
+  text-align: left;
+}
+
+#message-result,
+#message-value {
+  padding-left: 0.25em;
+}
+
+#message-result:after {
+  content: ': ';
+}
+
+span.hidden {
+  background-color: #ddd;
+}
+
+span.manual-check {
+  background-color: hsl(198, 52%, 81%);
+}
+
+span.passed {
+  background-color: hsl(90, 67%, 69%);
+}
+
+span.violation {
+  background-color: hsl(0, 100%, 84%);
+}
+
+span.warning {
+  background-color: hsl(49, 100%, 79%);
+}
+

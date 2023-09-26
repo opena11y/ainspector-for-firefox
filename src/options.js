@@ -52,6 +52,19 @@ const promptForDelay = document.querySelector('input[id="options-prompt-for-dela
 // const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
+const rulesetRadioFilter  = document.querySelector('#options-ruleset-filter');
+const rulesetRadioWCAG20  = document.querySelector('#options-ruleset-wcag20');
+const rulesetRadioWCAG21  = document.querySelector('#options-ruleset-wcag21');
+const rulesetRadioWCAG22  = document.querySelector('#options-ruleset-wcag22');
+
+const rulesetRadioLevelA    = document.querySelector('#options-ruleset-level-a');
+const rulesetRadioLevelAA   = document.querySelector('#options-ruleset-level-aa');
+const rulesetCheckboxColorEnhanced = document.querySelector('#options-ruleset-color-enhanced');
+
+const rulesetScopeAll     = document.querySelector('#options-scope-all');
+const rulesetScopePage    = document.querySelector('#options-scope-page');
+const rulesetScopeWebsite = document.querySelector('#options-scope-website');
+
 const exportPrompt     = document.querySelector('#options-export-prompt');
 const exportCSV        = document.querySelector('#options-export-csv');
 const exportJSON       = document.querySelector('#options-export-json');
@@ -69,7 +82,7 @@ const shortcutCopyTextbox       = document.querySelector('#shortcut-copy');
 const resetDefaults  = document.querySelector('button[id="options-reset-defaults"]');
 
 function setFormLabels () {
-  const optionsTitle            = document.querySelector('#options-title');
+  const optionsTitle            = document.querySelector('#tab-general-options');
   const optionsViewsMenuLegend  = document.querySelector('#options-views-menu-legend');
   const optionsInclWcagGlLabel  = document.querySelector('#options-incl-wcag-gl-label');
 
@@ -80,7 +93,7 @@ function setFormLabels () {
   const optionsRuleResultsLegend     = document.querySelector('#options-rule-results-legend');
   const optionsInclPassNaLabel       = document.querySelector('#options-incl-pass-na-label');
 
-  const optionsExportHeading         = document.querySelector('#options-export-heading');
+  const optionsExportHeading         = document.querySelector('#tab-export-options');
   const optionsExportPromptLabel     = document.querySelector('#options-export-prompt-label');
   const optionsExportButtonLegend    = document.querySelector('#options-export-button-legend');
   const optionsExportFormatLegend    = document.querySelector('#options-export-format-legend');
@@ -90,7 +103,7 @@ function setFormLabels () {
   const optionsExportPrefixLabel     = document.querySelector('#options-export-prefix-label');
   const optionsExportDateLabel       = document.querySelector('#options-export-date-label');
 
-  const shortcutsHeading       = document.querySelector('#shortcuts-heading');
+  const shortcutsHeading       = document.querySelector('#tab-shortcut-keys');
   const shortcutsEnabledLabel  = document.querySelector('#shortcuts-enabled-label');
   const shortcutsTableShortcut = document.querySelector('#shortcut-table-shortcut');
   const shortcutsTableAction   = document.querySelector('#shortcut-table-action');
@@ -143,13 +156,62 @@ function setFormLabels () {
 function saveFormOptions (e) {
   e.preventDefault();
 
+  let ruleset = 'WCAG21';
+
+  if (rulesetRadioFilter.checked) {
+    ruleset = rulesetRadioFilter.value;
+  }
+  if (rulesetRadioWCAG20.checked) {
+    ruleset = rulesetRadioWCAG20.value;
+  }
+  if (rulesetRadioWCAG21.checked) {
+    ruleset = rulesetRadioWCAG21.value;
+  }
+  if (rulesetRadioWCAG22.checked) {
+    ruleset = rulesetRadioWCAG22.value;
+  }
+
+  let level = 'AA';
+  if (rulesetRadioLevelA.checked) {
+    level = 'A';
+    rulesetCheckboxColorEnhanced.checked = false;
+    rulesetCheckboxColorEnhanced.disabled = true;
+  }
+  else {
+    rulesetCheckboxColorEnhanced.disabled = false;
+  }
+
+  if (rulesetRadioLevelAA.checked) {
+    level = 'AA';
+  }
+
+  if (rulesetCheckboxColorEnhanced.checked) {
+    level = 'AAA';
+  }
+
+  let scopeFilter = 'ALL';
+
+  if (rulesetScopeAll.checked) {
+    scopeFilter = rulesetScopeAll.value;
+  }
+
+  if (rulesetScopePage.checked) {
+    scopeFilter = rulesetScopePage.value;
+  }
+
+  if (rulesetScopeWebsite.checked) {
+    scopeFilter = rulesetScopeWebsite.value;
+  }
+
   const options = {
   //  rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
 
     rerunDelayEnabled: promptForDelay.checked,
     resultsIncludePassNa: inclPassNa.checked,
-
+    ruleset: ruleset,
+    level: level,
+    scopeFilter: scopeFilter,
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
     filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
@@ -178,6 +240,23 @@ function updateForm (options) {
 //  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
 //  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
+
+  rulesetRadioFilter.checked = options.ruleset === rulesetRadioFilter.value;
+  rulesetRadioWCAG20.checked = options.ruleset === rulesetRadioWCAG20.value;
+  rulesetRadioWCAG21.checked = options.ruleset === rulesetRadioWCAG21.value;
+  rulesetRadioWCAG22.checked = options.ruleset === rulesetRadioWCAG22.value;
+
+  rulesetRadioLevelA.checked    = options.level === 'A';
+  rulesetRadioLevelAA.checked    = (options.level === 'AA') || (options.level === 'AAA');
+  rulesetCheckboxColorEnhanced.checked = options.level === 'AAA';
+
+  if (rulesetRadioLevelA.checked) {
+    rulesetCheckboxColorEnhanced.disabled = true;
+  }
+
+  rulesetScopeAll.checked     = options.scopeFilter === rulesetScopeAll.value;
+  rulesetScopePage.checked    = options.scopeFilter === rulesetScopePage.value;
+  rulesetScopeWebsite.checked = options.scopeFilter === rulesetScopeWebsite.value;
 
   exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
@@ -303,6 +382,19 @@ promptForDelay.addEventListener('change', saveFormOptions);
 // rulesetStrict.addEventListener('change', saveFormOptions);
 // rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
+
+rulesetRadioFilter.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG20.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG21.addEventListener('change', saveFormOptions);
+rulesetRadioWCAG22.addEventListener('change', saveFormOptions);
+
+rulesetRadioLevelA.addEventListener('change', saveFormOptions);
+rulesetRadioLevelAA.addEventListener('change', saveFormOptions);
+rulesetCheckboxColorEnhanced.addEventListener('change', saveFormOptions);
+
+rulesetScopeAll.addEventListener('change', saveFormOptions);
+rulesetScopePage.addEventListener('change', saveFormOptions);
+rulesetScopeWebsite.addEventListener('change', saveFormOptions);
 
 exportPrompt.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);

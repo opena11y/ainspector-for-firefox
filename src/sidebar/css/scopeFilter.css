@@ -1,0 +1,26 @@
+#scope-filter {
+  padding-top: 0.5em;
+}
+
+#scope-filter .container {
+  display: grid;
+}
+
+#scope-filter button {
+  margin: auto;
+  padding: 3px 6px 4px;
+  border: none;
+  background-color: black;
+  color: white;
+}
+
+#scope-filter button:hover {
+  cursor: pointer;
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+
+#scope-filter button:focus {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}

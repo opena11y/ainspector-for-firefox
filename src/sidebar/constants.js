@@ -1,14 +1,8 @@
-/*
-*  Shared constants for use in both panel.js, content.js and evaluate.js to
-*  identify rule category and guideline constants for filtering evaluation
-*  results and provding localized human readible labels in the sidebar
-*
-*   File: constants.js
-*/
+/* constants.js */
 
 /*
-*  GUIDELINES constant is a copy of the constants from the OpenAjax library
-*  and is used so the entire OpenAjax library does not need to be in the
+*  GUIDELINES constant is a copy of the constants from the OpenA11y library
+*  and is used so the entire OpenA11y library does not need to be in the
 *  sidebar.
 */
 
@@ -30,8 +24,8 @@ export const GUIDELINES =  {
 };
 
 /*
-*  RULE_CATEGORY constant is a copy of the constants from the OpenAjax
-*  library and is used so the entire OpenAjax library does not need to
+*  RULE_CATEGORY constant is a copy of the constants from the OpenA11y
+*  library and is used so the entire OpenA11y library does not need to
 *  be in the sidebar.
 */
 
@@ -39,11 +33,11 @@ export const RULE_CATEGORIES = {
   UNDEFINED              : 0x0000,
   LANDMARKS              : 0x0001,
   HEADINGS               : 0x0002,
-  STYLES_READABILITY     : 0x0004,
+  COLOR_CONTENT          : 0x0004,
   IMAGES                 : 0x0008,
   LINKS                  : 0x0010,
   FORMS                  : 0x0020,
-  TABLES                 : 0x0040,
+  TABLES_LAYOUT          : 0x0040,
   WIDGETS_SCRIPTS        : 0x0080,
   AUDIO_VIDEO            : 0x0100,
   KEYBOARD_SUPPORT       : 0x0200,
@@ -53,14 +47,31 @@ export const RULE_CATEGORIES = {
   ALL                    : 0x0FFF
 };
 
+/*
+*  RULE_SCOPE constant is a copy of the constants from the Open11y
+*  library and is used so the entire OpenA11y library does not need to
+*  be in the sidebar.
+*/
+
+export const RULE_SCOPE = {
+  UNDEFINED  : 0x0000,
+  ELEMENT    : 0x0001,
+  PAGE       : 0x0002,
+  WEBSITE    : 0x0004,
+  // Composite scopes
+  ALL        : 0x0007
+};
+
+
+
 export const ruleCategoryIds = [
   RULE_CATEGORIES.LANDMARKS,
   RULE_CATEGORIES.HEADINGS,
-  RULE_CATEGORIES.STYLES_READABILITY,
+  RULE_CATEGORIES.COLOR_CONTENT,
   RULE_CATEGORIES.IMAGES,
   RULE_CATEGORIES.LINKS,
   RULE_CATEGORIES.FORMS,
-  RULE_CATEGORIES.TABLES,
+  RULE_CATEGORIES.TABLES_LAYOUT,
   RULE_CATEGORIES.WIDGETS_SCRIPTS,
   RULE_CATEGORIES.AUDIO_VIDEO,
   RULE_CATEGORIES.KEYBOARD_SUPPORT,
@@ -85,13 +96,21 @@ export const guidelineIds = [
   GUIDELINES.ALL,
 ];
 
+export const scopeIds = [
+  RULE_SCOPE.ELEMENT,
+  RULE_SCOPE.PAGE,
+  RULE_SCOPE.WEBSITE,
+  RULE_SCOPE.ALL
+];
+
+
 export function getRuleCategoryLabelId (id) {
   switch (id) {
   case RULE_CATEGORIES.LANDMARKS:
     return 'landmarksLabel';
   case RULE_CATEGORIES.HEADINGS:
     return 'headingsLabel';
-  case RULE_CATEGORIES.STYLES_READABILITY:
+  case RULE_CATEGORIES.COLOR_CONTENT:
     return 'stylesContentLabel';
   case RULE_CATEGORIES.IMAGES:
     return 'imagesLabel';
@@ -99,7 +118,7 @@ export function getRuleCategoryLabelId (id) {
     return 'linksLabel';
   case RULE_CATEGORIES.FORMS:
     return 'tablesLabel';
-  case RULE_CATEGORIES.TABLES:
+  case RULE_CATEGORIES.TABLES_LAYOUT:
     return 'formsLabel';
   case RULE_CATEGORIES.WIDGETS_SCRIPTS:
     return 'widgetsScriptsLabel';
@@ -124,7 +143,7 @@ export function getRuleCategoryFilenameId (id) {
     return 'landmarks';
   case RULE_CATEGORIES.HEADINGS:
     return 'headings';
-  case RULE_CATEGORIES.STYLES_READABILITY:
+  case RULE_CATEGORIES.COLOR_CONTENT:
     return 'styles-content';
   case RULE_CATEGORIES.IMAGES:
     return 'images';
@@ -132,7 +151,7 @@ export function getRuleCategoryFilenameId (id) {
     return 'links';
   case RULE_CATEGORIES.FORMS:
     return 'tables';
-  case RULE_CATEGORIES.TABLES:
+  case RULE_CATEGORIES.TABLES_LAYOUT:
     return 'forms';
   case RULE_CATEGORIES.WIDGETS_SCRIPTS:
     return 'widgets-scripts';
@@ -150,6 +169,7 @@ export function getRuleCategoryFilenameId (id) {
     return 'undefined';
   }
 };
+
 
 export function getGuidelineLabelId (id) {
 
@@ -222,7 +242,43 @@ export function getGuidelineFilenameId (id) {
   case GUIDELINES.ALL:
     return 'all-rules';
   default:
-    return GUIDELINES.UNDEFINED;
+    return 'undefined';
+
+  }
+};
+
+export function getScopeLabelId (id) {
+
+  switch(id) {
+
+  case RULE_SCOPE.ELEMENT:
+    return 'elementLabel';
+  case RULE_SCOPE.PAGE:
+    return 'pageLabel';
+  case RULE_SCOPE.WEBSITE:
+    return 'websiteLabel';
+  case RULE_SCOPE.ALL:
+    return 'allRulesLabel';
+  default:
+    return 'undefined';
+
+  }
+};
+
+export function getScopeFilenameId (id) {
+
+  switch(id) {
+
+  case RULE_SCOPE.ELEMENT:
+    return 'element';
+  case RULE_SCOPE.PAGE:
+    return 'page';
+  case RULE_SCOPE.WEBSITE:
+    return 'website';
+  case RULE_SCOPE.ALL:
+    return 'all-rules';
+  default:
+    return 'undefined';
 
   }
 };
