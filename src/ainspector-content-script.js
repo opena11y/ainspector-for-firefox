@@ -588,7 +588,7 @@
       this.WCAG_PRINCIPLE         = WCAG_PRINCIPLE;
       this.WCAG_SUCCESS_CRITERION = WCAG_SUCCESS_CRITERION;
     }
-  }
+  } 
 
   /*  Constant helper functions */
 
@@ -705,7 +705,6 @@
     return n;
   }
 
-
   /*
   *   getAttributeValue: Return attribute value if present on element,
   *   otherwise return empty string.
@@ -745,6 +744,21 @@
     let flag = node.tagName.toLowerCase() === 'input';
     flag = flag && inputsWithChecked.includes(node.type.toLowerCase());
     return flag;
+  }
+
+  /**
+   * @function hasSeelctedState
+   *
+   * @desc Identifies elements with the selected state, that would overide
+   *       or replace the use of aria-selected attribute
+   *
+   * @param  {Object}  node   - DOM element node
+   *
+   * @returns {Boolean} true it element has a selected state, otherwise false
+   */
+
+  function hasSelectedState (node) {
+    return node.tagName.toLowerCase() === 'option';
   }
 
   /**
@@ -890,7 +904,7 @@
   /**
    * @function usesARIALabeling
    *
-   * @desc Returns true if the element has an aria-label or aria-labeledby
+   * @desc Returns true if the element has an aria-label or aria-labeledby 
    *       attributes
    *
    * @param  {Object}  node - DOM node
@@ -1050,17 +1064,17 @@
       function findButton(controlElements) {
         for (let i = 0; i < controlElements.length; i++) {
           const ce = controlElements[i];
-          const de = ce.domElement;
+          const de = ce.domElement; 
           if (((de.tagName === 'input') || (de.tagName === 'button')) &&
               de.typeAttr === type) {
             return ce;
-          }
+          } 
           if (ce.childControlElements.length) {
             const buttonControl = findButton(ce.childControlElements);
             if (buttonControl) {
               return buttonControl;
             }
-          }
+          }        
         }
         return null;
       }
@@ -1093,10 +1107,10 @@
 
     constructor (domElement, parentControlElement) {
       super(domElement, parentControlElement);
-
+      
       const node = domElement.node;
 
-      this.hasTextContent = node.textContent.trim().length > 0;
+      this.hasTextContent = node.textContent.trim().length > 0; 
       this.hasSVGContent = this.checkForSVGContent(node);
 
     }
@@ -1107,7 +1121,7 @@
 
     checkForSVGContent (node) {
       return node.querySelector('svg') ? true : false;
-    }
+    }  
   }
 
 
@@ -1167,14 +1181,14 @@
         }
       }
       return false;
-    }
+    }  
   }
 
   class LegendElement extends ButtonElement {
 
     constructor (domElement, parentControlElement) {
       super(domElement, parentControlElement);
-
+      
     }
 
     get isLegend () {
@@ -1218,7 +1232,7 @@
 
     addChildControlElement (domElement, parentControlElement) {
       const tagName = domElement.tagName;
-      const role = domElement.role;
+      const role = domElement.role; 
       let ce;
 
       switch (tagName) {
@@ -6181,14 +6195,17 @@
   /**
    * @class AriaInfo
    *
-   * @desc Aria information for a dom node
+   * @desc Aria information for a element node
    *
-   * @param  {String}  role  - ARIA role for the element
-   * @param  {Object}  node  - dom element node
+   * @param  {Object}   doc          - Document object reference
+   * @param  {Boolean}  hasRole      - True if node has explicit role definition
+   * @param  {String}   role         - ARIA role for the element
+   * @param  {String}   defaultRole  - Default role of element if no role is defined
+   * @param  {Object}   node         - dom element node
    */
 
   class AriaInfo {
-    constructor (doc, role, defaultRole, node) {
+    constructor (doc, hasRole, role, defaultRole, node) {
       const tagName = node.tagName.toLowerCase();
       const level = parseInt(node.getAttribute('aria-level'));
 
@@ -6209,7 +6226,7 @@
       if (!this.isValidRole) {
         designPattern = designPatterns[defaultRole];
       } else {
-        this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;
+        this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;     
       }
 
       if (!designPattern) {
@@ -6239,9 +6256,9 @@
       this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
                         (designPattern.roleType.indexOf('window') >= 0);
 
-      this.isLandark  = designPattern.roleType.indexOf('landmark') >= 0;
+      this.isLandark  = designPattern.roleType.indexOf('landmark') >= 0;     
 
-      this.isSection  = designPattern.roleType.indexOf('section') >= 0;
+      this.isSection  = designPattern.roleType.indexOf('section') >= 0;     
       this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;
 
       this.flowTo = node.hasAttribute('aria-flowto') ?
@@ -6284,9 +6301,7 @@
           this.valueMax = 100;
           this.validValueMax = true;
         }
-
         this.valueText = node.hasAttribute('aria-valuetext') ? node.getAttribute('aria-valuetext') : '';
-
       }
 
       // for live regions
@@ -6324,9 +6339,14 @@
 
       this.invalidAttrValues  = this.checkForInvalidAttributeValue(this.validAttrs);
       this.invalidRefs        = this.checkForInvalidReferences(doc, this.validAttrs);
+
       this.unsupportedAttrs   = this.checkForUnsupportedAttribute(this.validAttrs, designPattern);
       this.deprecatedAttrs    = this.checkForDeprecatedAttribute(this.validAttrs, designPattern);
-      this.requiredAttrs      = this.checkForRequiredAttributes(this.validAttrs, designPattern, node);
+      if (hasRole) {
+        this.requiredAttrs      = this.checkForRequiredAttributes(this.validAttrs, designPattern, node);
+      } else {
+        this.requiredAttrs      = [];
+      }
 
       switch (tagName) {
         case 'h1':
@@ -6393,12 +6413,12 @@
             if (attr.allowUndeterminedValue) {
               if (!Number.isInteger(num) || (num < -1) || (value === ''))  {
                 attrsWithInvalidValues.push(attr);
-              }
+              }            
             }
             else {
               if (!Number.isInteger(num) || (num < 1) || (value === ''))  {
                 attrsWithInvalidValues.push(attr);
-              }
+              }            
             }
             break;
 
@@ -6508,7 +6528,7 @@
     }
 
     // checks for required aria attributes for a specific role
-    // In some cased native HTML semanitics like "checked' property of
+    // In some cased native HTML semantics like "checked' property of
     // an input element can be used to satisfy the requirement
     checkForRequiredAttributes(attrs, designPattern, node) {
       let requiredAttrs = [];
@@ -6519,7 +6539,8 @@
           name: reqAttr,
           hasDefaultValue: (defaultValue !== '') && (defaultValue !== 'undefined'),
           defaultValue: defaultValue,
-          isDefined: (reqAttr === 'aria-checked') && hasCheckedState(node),
+          isDefined: ((reqAttr === 'aria-checked')  && hasCheckedState(node)) ||
+                     ((reqAttr === 'aria-selected') && hasSelectedState(node)),
           value: ''
         };
 
@@ -6573,7 +6594,7 @@
   /* Constants */
   const debug$Y = new DebugLogging('colorContrast', false);
   const defaultFontSize = 16; // In pixels (px)
-  const fontWeightBold = 300;
+  const fontWeightBold = 300; 
 
     /**
      * @function getLuminance
@@ -6613,12 +6634,12 @@
   /*
    * @class ColorContrast
    *
-   * @desc Identifies the text properties used to determine WCAG color contrast
-   *       requirements including computing the color contrast ratio based on
+   * @desc Identifies the text properties used to determine WCAG color contrast 
+   *       requirements including computing the color contrast ratio based on 
    *       text and background colors
    *
    * @param  {Object}  parentDomElement - Parent DomElement containing ancestor style information
-   * @param  {Object}  elementNode      - dom element node
+   * @param  {Object}  elementNode      - dom element node 
    */
 
   class ColorContrast {
@@ -6661,9 +6682,9 @@
     /**
      * @method normalizeOpacity
      *
-     * @desc Normalizes opacity to a number
+     * @desc Normalizes opacity to a number 
      *
-     * @param {Object}  style                - Computed style object for an element node
+     * @param {Object}  style                - Computed style object for an element node 
      * @param {Object}  parentColorContrast  - Computed color contrast information for parent
      *                                         DomElement
      *
@@ -6721,14 +6742,14 @@
       opacity = Math.max(Math.min(opacity, 1.0), 0.0);
 
       return opacity;
-    }
+    }  
 
     /**
      * @method normalizeBackgroundColor
      *
      * @desc Normalizes background color
      *
-     * @param {Object}  style                - Computed style object for an element node
+     * @param {Object}  style                - Computed style object for an element node 
      * @param {Object}  parentColorContrast  - Computed color contrast information for parent
      *                                         DomElement
      *
@@ -6758,9 +6779,9 @@
     /**
      * @method normalizeBackgroundImage
      *
-     * @desc Normalizes background image
+     * @desc Normalizes background image 
      *
-     * @param {Object}  style                - Computed style object for an element node
+     * @param {Object}  style                - Computed style object for an element node 
      * @param {Object}  parentColorContrast  - Computed color contrast information for parent
      *                                         DomElement
      *
@@ -6786,9 +6807,9 @@
     /*
      * @method normalizeFontSize
      *
-     * @desc Normalizes font size to a number
+     * @desc Normalizes font size to a number 
      *
-     * @param {Object}  style                - Computed style object for an element node
+     * @param {Object}  style                - Computed style object for an element node 
      * @param {Object}  parentColorContrast  - Computed color contrast information for parent
      *                                         DomElement
      *
@@ -6811,16 +6832,16 @@
             fontSize = defaultFontSize;
           }
         }
-      }
+      } 
       return fontSize;
     }
 
     /*
      * @method normalizeFontWeight
      *
-     * @desc Normalizes font weight to a number
+     * @desc Normalizes font weight to a number 
      *
-     * @param {Object}  style                - Computed style object for an element node
+     * @param {Object}  style                - Computed style object for an element node 
      * @param {Object}  parentColorContrast  - Computed color contrast information for parent
      *                                         DomElement
      *
@@ -6861,7 +6882,7 @@
       }
       else {
         fontWeight = parseInt(fontWeight, 10);
-      }
+      }    
       return fontWeight;
     }
 
@@ -8904,7 +8925,7 @@
    *       for both the graphical rendering and assistive technologies
    *
    * @param  {Object}  parentDomElement - Parent DomElement containing ancestor style information
-   * @param  {Object}  elementNode      - dom element node
+   * @param  {Object}  elementNode      - dom element node 
    */
 
   class Visibility {
@@ -8961,14 +8982,14 @@
      * @method normalizeHidden
      *
      * @desc Determine if the hidden attribute is set on this element
-     *       or one of its ancestors
+     *       or one of its ancestors 
      *
      * @param {Object}  node              - dom element node
      * @param {Object}  parentVisibility  - Computed visibility information for parent
      *                                      DomElement
      *
-     * @return {Boolean}  Returns true if element or one of its ancestors has the
-     *                    hidden attribute
+     * @return {Boolean}  Returns true if element or one of its ancestors has the 
+     *                    hidden attribute 
      */
 
     normalizeHidden (node, parentVisibility) {
@@ -8985,14 +9006,14 @@
      * @method normalizeAriaHidden
      *
      * @desc Determine if the aria-hidden attribute is set to true on this element
-     *       or one of its ancestors
+     *       or one of its ancestors 
      *
      * @param {Object}  node              - dom element node
      * @param {Object}  parentVisibility  - Computed visibility information for parent
      *                                      DomElement
      *
-     * @return {Boolean}  Returns true if element or one of its ancestors has the
-     *                    aria-hidden attribute set to true
+     * @return {Boolean}  Returns true if element or one of its ancestors has the 
+     *                    aria-hidden attribute set to true 
      */
 
     normalizeAriaHidden (node, parentVisibility) {
@@ -9013,7 +9034,7 @@
      * @method normalizeDisplay
      *
      * @desc Computes a boolean value to indicate whether the content or its
-     *       ancestor that results in content not being displayed based on
+     *       ancestor that results in content not being displayed based on 
      *       the CSS display property
      *
      * @param {Object}  style             - Computed style object for an element node
@@ -9027,7 +9048,7 @@
       let display = style.getPropertyValue("display");
       let isDisplayNone = false;
 
-      if ((display === 'none') ||
+      if ((display === 'none') || 
           (parentVisibility && parentVisibility.isDisplayNone)) {
         isDisplayNone = true;
       }
@@ -9039,7 +9060,7 @@
      * @method normalizeVisibility
      *
      * @desc Computes a boolean value to indicate whether the content or its
-     *       ancestor that results in content not being displayed based on
+     *       ancestor that results in content not being displayed based on 
      *       the CSS visibility property
      *
      * @param {Object}  style             - Computed style object for an element node
@@ -9051,7 +9072,7 @@
 
     normalizeVisibility (style, parentVisibility) {
       let visibility = style.getPropertyValue("visibility");
-      let isVisibilityHidden =  parentVisibility.isVisibilityHidden;
+      let isVisibilityHidden =  parentVisibility.isVisibilityHidden; 
 
       if ((visibility === 'collapse') ||
           (visibility === 'hidden')) {
@@ -9059,7 +9080,7 @@
       }
       else {
         if (visibility === 'visible') {
-          isVisibilityHidden = false;
+          isVisibilityHidden = false;        
         }
       }
       return isVisibilityHidden;
@@ -10180,8 +10201,9 @@
 
       this.hasNativeCheckedState  = hasCheckedState(elementNode);
       this.hasNativeInvalidState  = hasInvalidState(elementNode);
+      this.hasNativeSelectedState = hasSelectedState(elementNode);
 
-      this.ariaInfo  = new AriaInfo(accNameDoc, this.role, defaultRole, elementNode);
+      this.ariaInfo  = new AriaInfo(accNameDoc, this.hasRole, this.role, defaultRole, elementNode);
       this.eventInfo = new EventInfo(elementNode);
 
       this.accName        = getAccessibleName(accNameDoc, elementNode);
@@ -10560,13 +10582,13 @@
   /**
    * @class DOMText
    *
-   * @desc Used to represent a dom text node for use in computing information
+   * @desc Used to represent a dom text node for use in computing information 
    *       usefule for accessibility rules.
-   *
+   * 
    *       NOTE: Adjacent dom text nodes in the live dom are combined into a
    *             single DOMText object
    *
-   * @param  {Object}  parentInfo - ParentInfo object
+   * @param  {Object}  parentInfo - ParentInfo object 
    * @param  {Object}  textNode   - dom text node to be represented
    */
 
@@ -10601,7 +10623,7 @@
 
     get isDomElement () {
       return false;
-    }
+    }  
 
     /**
      * @method isDomText
@@ -10734,10 +10756,10 @@
           this.idCountsByDoc[documentIndex] = {};
         }
         if (this.idCountsByDoc[documentIndex][id]) {
-          this.idCountsByDoc[documentIndex][id] += 1;
+          this.idCountsByDoc[documentIndex][id] += 1;       
         }
         else {
-          this.idCountsByDoc[documentIndex][id] = 1;
+          this.idCountsByDoc[documentIndex][id] = 1;       
         }
       }
     }
@@ -14375,7 +14397,7 @@
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'ARIA APG: Providing Accessible Names and Descriptions',
             url: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
-          },
+          },        
           { type:  REFERENCES.SPECIFICATION,
             title: 'MDN: The Input Label element',
             url:   'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label'
@@ -14572,7 +14594,73 @@
             url: 'https://www.w3.org/WAI/WCAG21/Techniques/failures/F107'
           }
         ]
-    }
+    },
+    CONTROL_14: {
+          ID:                    'Control 14',
+          DEFINITION:            '@button@, @fieldset@, @input@, @option@, @select@ and @textarea@ form controls must use native HTML attribute, instead of related ARIA attributes, when available.',
+          SUMMARY:               'Use native HTML attributes when available',
+          TARGET_RESOURCES_DESC: '@button@, @fieldset@, @input@, @option@, @select@ and @textarea@',
+          RULE_RESULT_MESSAGES: {
+            FAIL_S:   'For the form element use a native HTML attribute instead of the related ARIA attribute.',
+            FAIL_P:   'For the %N_F form elements use native HTML attributes instead of the related ARIA attributes.',
+            MANUAL_CHECK_S:   'Verify for the form control that you do not want the native disabled behavior of the form control when using @aria-disabled@ attribute, instead of the @disabled@ attribute.',
+            MANUAL_CHECK_P:   'Verify for the %N_MC form controls that you do not want the native disabled behavior of the form control when using @aria-disabled@ attribute, instead of the @disabled@ attribute.',
+            HIDDEN_S: 'The form control is hidden and was not evaluated.',
+            HIDDEN_P: 'The %N_H form controls are hidden were not evaluated.',
+            NOT_APPLICABLE:  'No form controls related ARIA attributes.'
+          },
+          BASE_RESULT_MESSAGES: {
+            ELEMENT_FAIL_1:   'Use the @%1@ attribute instead of @%2@ attribute on the @%3@ element.',
+            ELEMENT_MC_1:     'Verify the use of the @%1@ attribute instead of the native @%2@ attribute on the @%3@ element.',
+            ELEMENT_HIDDEN_1: 'The @%1@ element with the @%2@ attribute was not tested because it is hidden from assistive technologies and/or not visible on screen.'
+          },
+          PURPOSES: [
+            'The native HTML form control attributes, including @checked@, @disabled@, @invalid@, @multple@ and @required@ are related to the ARIA attributes @aria-checked@, @aria-disabled@, @aria-invalid@, @aria-multiselectable@ and @aria-required@ attributes since they communicate the same information to assistive technologies.',
+            'If both are used on a HTML form control there is the possibility they might provide conflicting information to the assistive technology, for example the @checked@ attribute is @true@ and the @aria-checked@ attribute is set to @false@.',
+            'The native HTML form attributes also effect browser behavior, where the ARIA attributes only effect information communicated to assistive technologies. For example, using the @disabled@ attribute removes the form control from the tab sequence of the page, where setting @aria-disabled=true@ does not effect tab sequence.',
+            'Browsers are required by the ARIA specification to always communicate the native HTML attribute information to assistive technologies when their is conflicting information. '
+          ],
+          TECHNIQUES: [
+            'To avoid conflicting information to assistive technologies, use native HTML attributes, instead of related ARIA attributes.',
+            'Use @checked@ attribute, instead of @aria-checked@, for the for @input[type=checkbox]@ and @input[type=radio@ elements.',
+            'Use @disabled@ attribute, instead of @aria-disabled@, for the for @button@, @fieldset@, @input@, @option@, @select@ and @textarea@ elements.',
+            'Use @invalid@ attribute, instead of @aria-invalid@, for the for @button@, @fieldset@, @input@, @option@, @select@ and @textarea@ elements.',
+            'Use @mutiple@ attribute, instead of @aria-multiselectable@, for the for the @select@ element.',
+            'Use @required@ attribute, instead of @aria-required@, for the for @button@, @fieldset@, @input@, @option@, @select@ and @textarea@ elements.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type: REFERENCES.SPECIFICATION,
+              title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Conflicts with Host Language Semantics',
+              url:   'https://www.w3.org/TR/wai-aria/#host_general_conflict'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Button Element',
+              url:   'https://html.spec.whatwg.org/#the-button-element'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Fieldset Element',
+              url:   'https://html.spec.whatwg.org/#the-fieldset-element'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Input Element',
+              url:   'https://html.spec.whatwg.org/#the-input-element'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Option Element',
+              url:   'https://html.spec.whatwg.org/#the-option-element'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Select Element',
+              url:   'https://html.spec.whatwg.org/#the-select-element'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'HTML: Textara Element',
+              url:   'https://html.spec.whatwg.org/#the-textarea-element'
+            }
+          ]
+      }
   };
 
   /* headingRules.js */
@@ -20309,6 +20397,7 @@
             }
           ]
       }
+
   };
 
   /* messages.js for English messages */
@@ -20447,7 +20536,7 @@
    *       'description'
    *
    * @param {Integer} categoryId - Used to identify the rule category
-   *
+   * 
    * @return {Object}  see @desc
    */
 
@@ -21689,7 +21778,7 @@
 
     // Tests if a tag name can be skipped
     isSkipableElement(tagName, type) {
-      const elemSelector = (tagName === 'input') && (typeof type === 'string') ?
+      const elemSelector = (tagName === 'input') && (typeof type === 'string') ? 
                            `${tagName}[type=${type}]` :
                            tagName;
       return skipableElements.includes(elemSelector);
@@ -21715,8 +21804,8 @@
      *
      * @desc Used to collect accessibility information for all the element nd text
      *       nodes on a web page for use the the rules.  It pre-computes values
-     *       that are used by the accessibility rules to test accessibility
-     *       requirements
+     *       that are used by the accessibility rules to test accessibility 
+     *       requirements 
      *
      * @param {Object}  parentinfo      - Parent DomElement associated with the
      *                                    parent element node of the starting node
@@ -21818,14 +21907,14 @@
                       this.transverseDOM(newParentInfo, doc);
                     } catch (error) {
                       isCrossDomain = true;
-                    }
+                    }                    
                     this.iframeInfo.update(domItem, isCrossDomain);
                   } else {
                     this.transverseDOM(newParentInfo, node);
                   }
                 }
               }
-            }
+            }   
             break;
 
         } /* end switch */
@@ -22439,8 +22528,6 @@
       target_resources    : [],
       validate            : function (dom_cache, rule_result) {
 
-        console.log(`[COLOR 4]: ${dom_cache} ${rule_result}`);
-
         dom_cache.controlInfo.allControlElements.forEach( ce => {
           const de = ce.domElement;
           if (!ce.isDisabled && de.ariaInfo.isWidget) {
@@ -22753,7 +22840,7 @@
       target_resources    : ['frame'],
       validate            : function (dom_cache, rule_result) {
         dom_cache.allDomElements.forEach( de => {
-          if (de.tagName === 'frame' && de.node.src) {
+          if (de.tagName === 'frame' && de.node.src && !de.hasRole) {
             if (de.visibility.isVisibleToAT) {
               if (de.accName.name) {
                 rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
@@ -22787,7 +22874,9 @@
       validate            : function (dom_cache, rule_result) {
         dom_cache.iframeInfo.allIFrameElements.forEach( ife => {
           const de = ife.domElement;
-          if (de.tagName === 'iframe' && de.node.src) {
+          if ((de.tagName === 'iframe') &&
+               !de.hasRole &&
+              de.node.src) {
             if (de.visibility.isVisibleToAT) {
               if (de.accName.name) {
                 rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
@@ -22972,7 +23061,7 @@
         const de = ce.domElement;
         if (ce.isInputTypeRadio) {
           if (de.visibility.isVisibleToAT) {
-            const gce = ce.getGroupControlElement();
+            const gce = ce.getGroupControlElement(); 
             if (gce) {
               const gde = gce.domElement;
               if (gde.tagName === 'fieldset') {
@@ -22980,7 +23069,7 @@
                   rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
                 }
                 else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
                 }
               }
               else {
@@ -22988,12 +23077,12 @@
                   rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
                 }
                 else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
                 }
               }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
             }
           }
           else {
@@ -23023,7 +23112,7 @@
         if (de.role === 'button') {
           if (de.visibility.isVisibleOnScreen) {
             if (ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
             }
               else {
               if (de.tagName === 'input') {
@@ -23031,8 +23120,8 @@
                   rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
                 }
                 else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);
-                }
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
+                }            
               }
               else {
                 if (de.tagName === 'button') {
@@ -23046,7 +23135,7 @@
                     else {
                       rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
                     }
-                  }
+                  }            
                 }
                 else {
                   if (ce.hasTextContent) {
@@ -23059,7 +23148,7 @@
                     else {
                       rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
                     }
-                  }
+                  }                          
                 }
               }
             }
@@ -23073,7 +23162,7 @@
                 rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
               }
             }
           }
@@ -23188,7 +23277,7 @@
             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
           }
         }
-      });
+      });  
     } // end validate function
   },
 
@@ -23229,17 +23318,17 @@
                   rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
                 }
                 break;
-
+              
               default:
                 rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
-                break;
+                break;  
             }
 
           } else {
             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
           }
         }
-      });
+      });  
     } // end validate function
   },
 
@@ -23264,11 +23353,11 @@
           if (de.visibility.isVisibleToAT) {
             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
           }
-          else {
+          else {      
             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
           }
         }
-      });
+      });  
     } // end validate function
   },
 
@@ -23301,12 +23390,12 @@
             count = 0;
             dom_cache.controlInfo.allControlElements.forEach(ce2 => {
               const de2 = ce2.domElement;
-              if ((ce1 !== ce2) &&
-                  ((de1.ariaInfo.requiredParents.length === 0) ||
+              if ((ce1 !== ce2) && 
+                  ((de1.ariaInfo.requiredParents.length === 0) || 
                    (ce1.parentControlElement === ce2.parentControlElement)) &&
-                  de2.ariaInfo.isNameRequired &&
+                  de2.ariaInfo.isNameRequired && 
                   de2.visibility.isVisibleToAT) {
-                if ((de1.role === de2.role) &&
+                if ((de1.role === de2.role) && 
                     (ce1.nameForComparision === ce2.nameForComparision)) {
                   count += 1;
                 }
@@ -23314,7 +23403,7 @@
             });
             if (count === 0){
               rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
-            }
+            } 
             else {
               // Since their ar often duplicate button on pages, when two or more buttons share the same
               // name it should be a manual check
@@ -23345,7 +23434,7 @@
             }
           }
         }
-      });
+      });  
     } // end validate function
   },
 
@@ -23381,7 +23470,7 @@
                   const sb2 = fe2.getButtonControl('submit');
                   if (sb1 && sb2) {
                     de2 = sb2.domElement;
-                    if (de2.visibility.isVisibleToAT &&
+                    if (de2.visibility.isVisibleToAT && 
                         (sb1.nameForComparision === sb2.nameForComparision)) {
                       count += 1;
                     }
@@ -23392,8 +23481,8 @@
                 rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
             }
             else {
               rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
@@ -23410,7 +23499,7 @@
                   const rb2 = fe2.getButtonControl('reset');
                   if (rb1 && rb2) {
                     de2 = rb2.domElement;
-                    if (de2.visibility.isVisibleToAT &&
+                    if (de2.visibility.isVisibleToAT && 
                         (rb1.nameForComparision === rb2.nameForComparision)) {
                       count += 1;
                     }
@@ -23421,8 +23510,8 @@
                 rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
             }
             else {
               rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
@@ -23575,7 +23664,82 @@
         }
       });
     } // end validation function
+  },
+
+  /**
+   * @object CONTROL_14
+   *
+   * @desc   HTML form controls must use native properties and states
+   */
+  { rule_id             : 'CONTROL_14',
+    last_updated        : '2023-09-30',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : [],
+    target_resources    : ["input", "option", "select", "textarea"],
+    validate          : function (dom_cache, rule_result) {
+
+      function checkForNativeStates (domElement, ariaAttr, htmlAttr, result='fail') {
+
+        if (domElement.node.hasAttribute(ariaAttr)) {
+          if (domElement.visibility.isVisibleToAT) {
+            if (result === 'fail') {
+              rule_result.addElementResult(TEST_RESULT.FAIL, domElement, 'ELEMENT_FAIL_1', [htmlAttr, ariaAttr, domElement.elemName]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domElement, 'ELEMENT_MC_1', [htmlAttr, ariaAttr, domElement.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domElement, 'ELEMENT_HIDDEN_1', [ariaAttr, domElement.elemName]);
+          }
+        }
+      }
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        switch (de.tagName) {
+          case 'button':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            break;
+
+          case 'fieldset':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            break;
+
+          case 'input':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            if ((de.typeAttr === 'checkbox') || (de.typeAttr === 'radio')) {
+              checkForNativeStates(de, 'aria-checked', 'checked');
+            }
+            break;
+
+          case 'option':
+            checkForNativeStates(de, 'aria-disabled', 'disabled');
+            checkForNativeStates(de, 'aria-selected', 'selected');
+            break;
+
+          case 'select':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            checkForNativeStates(de, 'aria-multiselectable', 'multiple');
+            break;
+
+          case 'textarea':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            break;
+        }
+      });
+
+    } // end validation function
   }
+
 
   ];
 
@@ -24213,10 +24377,10 @@
         if (de.visibility.isVisibleToAT) {
           if (de.accName.name.length === 0) {
             if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
             }
           }
         } else {
@@ -24252,13 +24416,13 @@
         if (accName.name.length > 0) {
           if (de.visibility.isVisibleToAT) {
             if (accDesc.name.length) {
-             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);
+             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
             }
             else {
               if (de.node.hasAttribute('longdesc')) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);                                
               } else {
-               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);                                
               }
             }
           } else {
@@ -24289,17 +24453,17 @@
         if (accName.name.length > 0) {
           if (de.visibility.isVisibleToAT) {
             if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);                    
             } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);                    
             }
-          }
+          } 
           else {
             if (de.tagName === 'img') {
               rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);                    
             }
           }
         }
@@ -24545,7 +24709,7 @@
     { rule_id             : 'KEYBOARD_6',
       last_updated        : '2023-08-22',
       rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
       wcag_primary_id     : '3.2.2',
       wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
@@ -27397,7 +27561,7 @@
                 rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);              
               }
             }
           }
@@ -27515,13 +27679,13 @@
                       }
                     }
                   }
-                }
+                }            
               }
             }
           }
           else {
             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }
+          }        
         }
       });
     } // end validation function
@@ -27611,14 +27775,14 @@
                   }
                   else {
                     rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_8', [attr.name, attr.value, attr.type]);
-                  }
+                  }  
                 }
               }
             }
             else {
-              if (attr.type === 'boolean' ||
-                  attr.type === 'nmtoken' ||
-                  attr.type === 'nmtokens' ||
+              if (attr.type === 'boolean' || 
+                  attr.type === 'nmtoken' || 
+                  attr.type === 'nmtokens' || 
                   attr.type === 'tristate') {
                 rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value]);
               }
@@ -28324,7 +28488,6 @@
       });
     } // end validation function
   }
-
   ];
 
   /* rule.js */
@@ -28756,7 +28919,7 @@
 
         rule_category_id:   this.rule_category_id,
         rule_category_info: this.rule_category_info,
-
+        
         wcag_guideline_id:  this.wcag_guideline_id,
         guideline_info:     this.guideline_info,
 
@@ -29227,7 +29390,7 @@
      * @getter isActionMessage
      *
      * @desc Returns true if the result is a violation, warning or manual check
-     *
+     *    
      * @return {Boolean} see @desc
      */
 
@@ -29242,7 +29405,7 @@
      *
      * @desc Returns true if the result type is element,
      *       otherwise false
-     *
+     *    
      * @return {Boolean} see @desc
      */
 
@@ -29358,7 +29521,7 @@
     getResultMessage () {
       return this.result_message;
     }
-
+    
    /**
      * @method getDataForJSON
      *
@@ -29484,7 +29647,7 @@
     /**
      * @method getId
      *
-     * @desc Gets a string identifying the elements id
+     * @desc Gets a string identifying the elements id 
      *
      * @return {String} see description
      */
@@ -29556,7 +29719,7 @@
      *
      * @return {Object} with attribute name as key to attribute value
      */
-
+     
     getHTMLAttributes () {
       return this.domElement.htmlAttrs;
     }
@@ -30696,7 +30859,7 @@
      *
      * @param  {Integer}  ruleset - Numerical constant that specifies the ruleset
      *                             By default all rules are included
-     *
+     * 
      * @return {RuleGroupResult}  see description
      */
 
@@ -30716,7 +30879,7 @@
      * @param {Integer}  guidelineId  - Number representing the guideline id
      * @param {Integer}  ruleset      - Numerical constant that specifies the ruleset
      *                                  By default all rules are included
-     *
+     * 
      * @return {RuleGroupResult}  see description
      */
 
@@ -30842,15 +31005,15 @@
   /**
    * @class EvaluateLibrary
    *
-   * @desc Base class for APIs for using the evaluation library to evaluate a DOM
+   * @desc Base class for APIs for using the evaluation library to evaluate a DOM 
    *       for WCAG requirements and provides access to descriptive rule information
    */
 
   class EvaluationLibrary {
     constructor (codeTags = false) {
       this.constants = new Constants();
-      // setUseCodeTags sets if localized strings using the @ character to identify
-      // code items in the string return <code> tags or capitalization
+      // setUseCodeTags sets if localized strings using the @ character to identify 
+      // code items in the string return <code> tags or capitalization  
       setUseCodeTags(codeTags);
     }
 
@@ -30890,7 +31053,7 @@
 
     /**
      * @method CONSTANTS
-     *
+     * 
      * @desc Provides access to the Constants used in the evaluation library
      */
 
@@ -31035,13 +31198,14 @@
       return items;
     }
 
-    let rule       = ruleResult.getRule();
-    let required   = ruleResult.isRuleRequired();
+    const rule       = ruleResult.getRule();
+    const required   = ruleResult.isRuleRequired();
 
     let primarySC = {};
     let wcag = [];
-    primarySC.title    = rule.getPrimarySuccessCriterionInfo().title + ' (Primary)';
-    primarySC.url_spec = rule.getPrimarySuccessCriterionInfo().url_spec;
+    const sc = rule.getPrimarySuccessCriterionInfo();
+    primarySC.title = sc.title + ' (Primary)';
+    primarySC.url   = sc.url;
     wcag.push(primarySC);
     wcag = wcag.concat(rule.getRelatedSuccessCriteriaInfo());
 
@@ -31305,7 +31469,7 @@
     info.json = ruleResult.toJSON('', true);
 
     // Save reference to rule results for highlighting elements
-    ainspectorSidebarRuleResult = ruleResult; // eslint-disable-line
+    ainspectorSidebarRuleResult = ruleResult; // eslint-disable-line 
 
     return info;
   }
@@ -31953,8 +32117,8 @@
   /*
   **  Connect to panel.js script and set up listener/handler
   */
-  // NOTE: browser is a global object
-  var panelPort = browser.runtime.connect({ name: 'content' }); // eslint-disable-line
+  // NOTE: browser is a global object 
+  var panelPort = browser.runtime.connect({ name: 'content' }); // eslint-disable-line 
 
   panelPort.onMessage.addListener(messageHandler);
 
@@ -32039,7 +32203,7 @@
   *  This message handler is used to remove element highlighting
   *  when the sidebar is closed
   */
-  // NOTE: browser is a global object
+  // NOTE: browser is a global object 
   browser.runtime.onMessage.addListener(request => {  // eslint-disable-line
     // to be executed on receiving messages from the panel
     if ((request.option    === 'highlight') &&
