@@ -150,7 +150,7 @@
   /* Constants */
   const debug$$ = new DebugLogging('constants', false);
 
-  const VERSION = '2.0.beta1';
+  const VERSION = '2.0.beta2';
 
   /**
    * @constant RULESET
@@ -10037,6 +10037,7 @@
       case 'figcaption':
       case 'label':
       case 'li':
+      case 'option':
       case 'td':
       case 'th':
         accName = nameFromContents(element);
@@ -10508,7 +10509,7 @@
     const tagName     = node.tagName.toLowerCase();
     const hasHref     = node.hasAttribute('href');
     const hasControls = node.hasAttribute('controls');
-    const type        = node.hasAttribute('type') ? node.getAttribute('type') : '';
+    const type        = node.hasAttribute('type') ? node.getAttribute('type') : 'text';
 
     switch (tagName ) {
       case 'a':
@@ -28059,7 +28060,10 @@
 
       dom_cache.allDomElements.forEach( de => {
         if (de.ariaInfo.hasRequiredParents) {
-          const rp = de.ariaInfo.requiredParents;
+          const rp = [...(de.ariaInfo.requiredParents)];
+          if (de.tagName === 'option') {
+            rp.push('combobox');
+          }
           if (de.visibility.isVisibleToAT) {
             const result = checkForRequiredParent(de, rp);
             if (result) {
