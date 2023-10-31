@@ -148,9 +148,10 @@
   /* constants.js */
 
   /* Constants */
-  const debug$$ = new DebugLogging('constants', false);
+  const debug$10 = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta2';
+
 
   /**
    * @constant RULESET
@@ -590,6 +591,52 @@
     }
   } 
 
+  /**
+   * @constant WCAG21_SC
+   * @type String
+   * @desc Constants identify the success criteria in WCAG 2.1
+   *
+   */
+
+  const WCAG21_SC = [
+    '1.3.4',
+    '1.3.5',
+    '1.3.6',
+    '1.4.10',
+    '1.4.11',
+    '1.4.12',
+    '1.4.13',
+    '2.1.4',
+    '2.2.6',
+    '2.3.3',
+    '2.5.1',
+    '2.5.2',
+    '2.5.3',
+    '2.5.4',
+    '2.5.5',
+    '2.5.6',
+    '4.1.3'
+  ];
+
+  /**
+   * @constant WCAG22_SC
+   * @type String
+   * @desc Constants identify the success criteria in WCAG 2.2
+   *
+   */
+
+  const WCAG22_SC = [
+    '2.4.11',
+    '2.4.12',
+    '2.4.13',
+    '2.5.7',
+    '2.5.8',
+    '3.2.6',
+    '3.3.7',
+    '3.3.8',
+    '3.3.9'
+    ];
+
   /*  Constant helper functions */
 
   /**
@@ -603,13 +650,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$$.flag && debug$$.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$10.flag && debug$10.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$$.flag && debug$$.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$10.flag && debug$10.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -919,7 +966,7 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$_ = new DebugLogging('ControlInfo', false);
+  const debug$$ = new DebugLogging('ControlInfo', false);
 
   /**
    * @class ControlElement
@@ -1097,7 +1144,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$_.domElement(ce.domElement, prefix);
+        debug$$.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1217,6 +1264,7 @@
       this.childControlElements    = [];
       this.allFormElements  = [];
       this.allButtonElements = [];
+      this.allRadioAndCheckboxElements = [];
     }
 
     /**
@@ -1338,15 +1386,15 @@
      */
 
     showControlInfo () {
-      if (debug$_.flag) {
-        debug$_.log('== Control Tree ==', 1);
+      if (debug$$.flag) {
+        debug$$.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$_.domElement(ce.domElement);
+          debug$$.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$_.log('== Forms ==', 1);
+        debug$$.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$_.domElement(ce.domElement);
+          debug$$.domElement(ce.domElement);
         });
       }
     }
@@ -6145,8 +6193,8 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$Z = new DebugLogging('AriaInfo', false);
-  debug$Z.flag = false;
+  const debug$_ = new DebugLogging('AriaInfo', false);
+  debug$_.flag = false;
 
   /* Debug helper functions */
 
@@ -6379,15 +6427,15 @@
       }
 
 
-      if (debug$Z.flag) {
-        node.attributes.length && debug$Z.log(`${node.outerHTML}`, 1);
-        debug$Z.log(`[         isWidget]: ${this.isWidget}`);
-        debug$Z.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$Z.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$Z.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$Z.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$Z.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
-        debug$Z.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$_.flag) {
+        node.attributes.length && debug$_.log(`${node.outerHTML}`, 1);
+        debug$_.log(`[         isWidget]: ${this.isWidget}`);
+        debug$_.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$_.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$_.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$_.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$_.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$_.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6592,7 +6640,8 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$Y = new DebugLogging('colorContrast', false);
+  const debug$Z = new DebugLogging('colorContrast', false);
+  debug$Z.flag = false;
   const defaultFontSize = 16; // In pixels (px)
   const fontWeightBold = 300; 
 
@@ -6647,9 +6696,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$Y.flag) {
-        debug$Y.separator();
-        debug$Y.tag(elementNode);
+      if (debug$Z.flag) {
+        debug$Z.separator();
+        debug$Z.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -6671,11 +6720,13 @@
 
       this.colorContrastRatio = computeCCR(this.colorHex, this.backgroundColorHex);
 
-      if (debug$Y.flag) {
-        debug$Y.log(`[                    opacity]: ${this.opacity}`);
-        debug$Y.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$Y.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$Y.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$Z.flag) {
+        debug$Z.log(`[                      color]: ${this.color}`);
+        debug$Z.log(`[           background color]: ${this.backgroundColor}`);
+        debug$Z.log(`[                    opacity]: ${this.opacity}`);
+        debug$Z.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$Z.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$Z.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -6762,10 +6813,10 @@
           (backgroundColor == 'transparent') ||
           (backgroundColor == 'inherit')) {
 
-        debug$Y.flag && debug$Y.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
+        debug$Z.flag && debug$Z.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
 
         if (parentColorContrast) {
-          debug$Y.flag && debug$Y.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
+          debug$Z.flag && debug$Z.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
           backgroundColor   = parentColorContrast.backgroundColor;
         }
         else {
@@ -6978,7 +7029,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$X = new DebugLogging('EventInfo', false);
+  const debug$Y = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -6991,7 +7042,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$X.flag) {
+      if (debug$Y.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -8591,7 +8642,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$W = new DebugLogging('ariaInHtml', false);
+  const debug$X = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8792,11 +8843,11 @@
       };
     }
 
-    if (debug$W.flag) {
+    if (debug$X.flag) {
       if (tagName === 'h2') {
-        debug$W.tag(node);
+        debug$X.tag(node);
       }
-      debug$W.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$X.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -8916,7 +8967,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$V = new DebugLogging('visibility', false);
+  const debug$W = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -8964,17 +9015,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$V.flag) {
-        debug$V.separator();
-        debug$V.tag(elementNode);
-        debug$V.log('[          isHidden]: ' + this.isHidden);
-        debug$V.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$V.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$V.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$V.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$V.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$V.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$V.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$W.flag) {
+        debug$W.separator();
+        debug$W.tag(elementNode);
+        debug$W.log('[          isHidden]: ' + this.isHidden);
+        debug$W.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$W.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$W.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$W.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$W.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$W.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$W.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -9287,8 +9338,8 @@
   /*
   *   namefrom.js
   */
-  const debug$U = new DebugLogging('nameFrom', false);
-  debug$U.flag = false;
+  const debug$V = new DebugLogging('nameFrom', false);
+  debug$V.flag = false;
 
   /*
   *   @function getElementContents
@@ -9434,7 +9485,7 @@
           if (name.length) return { name: normalize(name), source: 'label reference' };
         }
       } catch (error) {
-        debug$U.log(`[nameFromLabelElement][error]: ${error}`);
+        debug$V.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -9848,8 +9899,8 @@
   'h6',
   'summary'
   ];
-  const debug$T = new DebugLogging('getAccName', false);
-  debug$T.flag = false;
+  const debug$U = new DebugLogging('getAccName', false);
+  debug$U.flag = false;
 
   /*
   *   @function getAccessibleName
@@ -10140,8 +10191,8 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$S = new DebugLogging('DOMElement', false);
-  debug$S.flag = false;
+  const debug$T = new DebugLogging('DOMElement', false);
+  debug$T.flag = false;
 
   const elementsWithContent = [
     'area',
@@ -10240,8 +10291,24 @@
 
       this.top      = window.scrollY + elemRect.top;
       this.left     = window.scrollX + elemRect.left;
-      this.height   = elemRect.height;
-      this.width    = elemRect.width;
+      this.height   = Math.round(10 * elemRect.height, 1) / 10;
+      this.width    = Math.round(10 * elemRect.width, 1) / 10;
+
+      this.authorWidth    = cssStyle.getPropertyValue('width');
+      this.authorHeight   = cssStyle.getPropertyValue('height');
+      this.authorLeft     = cssStyle.getPropertyValue('left');
+      this.authorRight    = cssStyle.getPropertyValue('right');
+      this.authorTop      = cssStyle.getPropertyValue('top');
+      this.authorBottom   = cssStyle.getPropertyValue('bottom');
+      this.authorDisplay  = cssStyle.getPropertyValue('display');
+      this.authorPosition = cssStyle.getPropertyValue('position');
+
+      this.authorSizing = (this.authorWidth  !== 'auto') ||
+                          (this.authorHeight !== 'auto') ||
+                          ((this.authorLeft   !== 'auto') &&
+                           (this.authorRight  !== 'auto')) ||
+                          ((this.authorTop    !== 'auto') &&
+                           (this.authorBottom !== 'auto'));
 
       this.children = [];
 
@@ -10254,6 +10321,7 @@
 
       // A name that can be used in rule results to identify the element
       this.elemName = this.tagName;
+      this.elemName += elementNode.type ? `[type=${elementNode.type}]` : '';
       this.elemName += this.id ? `#${this.id}` : '';
       this.elemName += this.hasRole ? `[role=${this.role}]` : '';
 
@@ -10480,12 +10548,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$S.flag) {
+      if (debug$T.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$S.domText(domItem, prefix);
+            debug$T.domText(domItem, prefix);
           } else {
-            debug$S.domElement(domItem, prefix);
+            debug$T.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -10578,7 +10646,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$R = new DebugLogging('domText', false);
+  const debug$S = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -10597,8 +10665,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$R.flag) {
-        debug$R.log(`[text]: ${this.text}`);
+      if (debug$S.flag) {
+        debug$S.log(`[text]: ${this.text}`);
       }
     }
 
@@ -10661,7 +10729,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$Q = new DebugLogging('iframeInfo', false);
+  const debug$R = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -10679,9 +10747,9 @@
     }
 
     showInfo () {
-      if (debug$Q.flag) {
-        debug$Q.log(`[          src]: ${this.src}`);
-        debug$Q.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$R.flag) {
+        debug$R.log(`[          src]: ${this.src}`);
+        debug$R.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -10717,8 +10785,8 @@
      */
 
     showIFrameInfo () {
-      if (debug$Q.flag) {
-        debug$Q.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$R.flag) {
+        debug$R.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
         });
@@ -10729,7 +10797,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$P = new DebugLogging('idInfo', false);
+  const debug$Q = new DebugLogging('idInfo', false);
 
   /**
    * @class idInfo
@@ -10772,10 +10840,10 @@
      */
 
     showIdInfo () {
-      if (debug$P.flag) {
-        debug$P.log('== All Links ==', 1);
+      if (debug$Q.flag) {
+        debug$Q.log('== All Links ==', 1);
         this.idCounts.for( id => {
-          debug$P.log(`[${id}]: ${this.idCounts[id]}`);
+          debug$Q.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -10784,7 +10852,7 @@
   /* imageInfo.js */
 
   /* Constants */
-  const debug$O = new DebugLogging('imageInfo', false);
+  const debug$P = new DebugLogging('imageInfo', false);
 
   /**
    * @class ImageElement
@@ -10977,22 +11045,22 @@
      */
 
     showImageInfo () {
-      if (debug$O.flag) {
-        debug$O.log('== All Image elements ==', 1);
+      if (debug$P.flag) {
+        debug$P.log('== All Image elements ==', 1);
         this.allImageElements.forEach( ie => {
-          debug$O.log(`[fileName]: ${ie.fileName}`, true);
-          debug$O.log(`[    role]: ${ie.domElement.role}`);
-          debug$O.log(`[    name]: ${ie.domElement.accName.name}`);
-          debug$O.log(`[  source]: ${ie.domElement.accName.source}`);
-          debug$O.log(`[  length]: ${ie.domElement.accName.name.length}`);
+          debug$P.log(`[fileName]: ${ie.fileName}`, true);
+          debug$P.log(`[    role]: ${ie.domElement.role}`);
+          debug$P.log(`[    name]: ${ie.domElement.accName.name}`);
+          debug$P.log(`[  source]: ${ie.domElement.accName.source}`);
+          debug$P.log(`[  length]: ${ie.domElement.accName.name.length}`);
         });
-        debug$O.log('== All SVG domElements  ==', 1);
+        debug$P.log('== All SVG domElements  ==', 1);
         this.allSVGDomElements.forEach( de => {
-          debug$O.domElement(de);
+          debug$P.domElement(de);
         });
-        debug$O.log('== All MapElements ==', 1);
+        debug$P.log('== All MapElements ==', 1);
         this.allMapElements.forEach( me => {
-          debug$O.domElement(me.domElement);
+          debug$P.domElement(me.domElement);
         });
       }
     }
@@ -11001,7 +11069,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$N = new DebugLogging('linkInfo', false);
+  const debug$O = new DebugLogging('linkInfo', false);
 
   /**
    * @class LinkInfo
@@ -11031,13 +11099,16 @@
      *
      * @desc Checks to see if the domElement has a role of "link"
      *
-     * @param  {Object}  domElement        - DOMElement object representing an element in the DOM
+     * @param  {Object}  domElement  - DOMElement object representing an element in the DOM
+     * @param  {Boolean} inLink      - True if element is a descendant of a link, otherwise false
      */
 
-    update (domElement) {
+    update (domElement, inLink) {
       if (this.isLink(domElement)) {
         this.allLinkDomElements.push(domElement);
+        return true;
       }
+      return inLink;
     }
 
     /**
@@ -11047,10 +11118,10 @@
      */
 
     showLinkInfo () {
-      if (debug$N.flag) {
-        debug$N.log('== All Links ==', 1);
+      if (debug$O.flag) {
+        debug$O.log('== All Links ==', 1);
         this.allLinkDomElements.forEach( de => {
-          debug$N.domElement(de);
+          debug$O.domElement(de);
         });
       }
     }
@@ -11059,14 +11130,15 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$M = new DebugLogging('ListInfo', false);
+  const debug$N = new DebugLogging('ListInfo', false);
+  debug$N.flag = false;
   const allListitemRoles = ['list', 'listitem', 'menu', 'menuitem', 'menuitemcheckbox', 'menuitemradio'];
   const listRoles = ['list', 'menu'];
 
   /**
    * @class ListElement
    *
-   * @desc Idenifies a DOM element as being a container for a list of items.
+   * @desc Identifies a DOM element as being a container for a list items.
    *
    * @param  {Object}  domElement   - Structural Information
    */
@@ -11079,10 +11151,8 @@
       this.childListElements = [];
       this.isListRole = this.isList(domElement);
       this.linkCount = 0;  // Used in determining if a list is for navigation
-
-      if (debug$M.flag) {
-        debug$M.log('');
-      }
+      this.textContent = 0;
+      this.linkTextContent = 0;
     }
 
     /**
@@ -11106,9 +11176,9 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      debug$M.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
+      debug$N.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
       this.childListElements.forEach( le => {
-        debug$M.domElement(le.domElement, prefix);
+        debug$N.domElement(le.domElement, prefix);
         le.showListInfo(prefix + '  ');
       });
     }
@@ -11216,16 +11286,20 @@
      */
 
     showListInfo () {
-      if (debug$M.flag) {
-        debug$M.log('== All ListElements ==', 1);
-        debug$M.log(`[linkCount]: ${this.linkCount}`);
+      if (debug$N.flag) {
+        debug$N.log('== All ListElements ==', 1);
+        debug$N.log(`[linkCount]: ${this.linkCount}`);
         this.allListElements.forEach( le => {
-          debug$M.domElement(le.domElement);
+          debug$N.log(`[textContent]: ${le.textContent}`);
+          debug$N.log(`[linkTextContent]: ${le.linkTextContent}`);
+          debug$N.domElement(le.domElement);
         });
-        debug$M.log('== List Tree ==', 1);
-        debug$M.log(`[linkCount]: ${this.linkCount}`);
+        debug$N.log('== List Tree ==', 1);
+        debug$N.log(`[linkCount]: ${this.linkCount}`);
         this.childListElements.forEach( le => {
-          debug$M.domElement(le.domElement);
+          debug$N.log(`[textContent]: ${le.textContent}`);
+          debug$N.log(`[linkTextContent]: ${le.linkTextContent}`);
+          debug$N.domElement(le.domElement);
           le.showListInfo('  ');
         });
       }
@@ -11235,8 +11309,8 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$L = new DebugLogging('MediaInfo', false);
-  debug$L.flag = false;
+  const debug$M = new DebugLogging('MediaInfo', false);
+  debug$M.flag = false;
 
   /**
    * @class MediaElement
@@ -11474,25 +11548,25 @@
      */
 
     showListInfo () {
-      if (debug$L.flag) {
-        debug$L.log('== Audio Elements ==', 1);
+      if (debug$M.flag) {
+        debug$M.log('== Audio Elements ==', 1);
         this.audioElements.forEach( ae => {
-          debug$L.log(ae);
+          debug$M.log(ae);
         });
 
-        debug$L.log('== Video Elements ==', 1);
+        debug$M.log('== Video Elements ==', 1);
         this.videoElements.forEach( ve => {
-          debug$L.log(ve);
+          debug$M.log(ve);
         });
 
-        debug$L.log('== Object Elements ==', 1);
+        debug$M.log('== Object Elements ==', 1);
         this.objectElements.forEach( oe => {
-          debug$L.log(oe);
+          debug$M.log(oe);
         });
 
-        debug$L.log('== Embed Elements ==', 1);
+        debug$M.log('== Embed Elements ==', 1);
         this.embedElements.forEach( ee => {
-          debug$L.log(ee);
+          debug$M.log(ee);
         });
 
 
@@ -11503,7 +11577,7 @@
   /* structureInfo.js */
 
   /* Constants */
-  const debug$K = new DebugLogging('structureInfo', false);
+  const debug$L = new DebugLogging('structureInfo', false);
 
   /**
    * @class LandmarkElement
@@ -11542,11 +11616,11 @@
         prefix = '';
       }
       this.childLandmarkElements.forEach( le => {
-        debug$K.domElement(le.domElement, prefix);
+        debug$L.domElement(le.domElement, prefix);
         le.showLandmarkInfo(prefix + '  ');
       });
       this.childHeadingDomElements.forEach( h => {
-        debug$K.domElement(h, prefix);
+        debug$L.domElement(h, prefix);
       });
     }
 
@@ -11676,27 +11750,27 @@
      */
 
     showStructureInfo () {
-      if (debug$K.flag) {
-        debug$K.log('== All Headings ==', 1);
+      if (debug$L.flag) {
+        debug$L.log('== All Headings ==', 1);
         this.allHeadingDomElements.forEach( h => {
-          debug$K.domElement(h);
+          debug$L.domElement(h);
         });
-        debug$K.log('== All Landmarks ==', 1);
+        debug$L.log('== All Landmarks ==', 1);
         this.allLandmarkElements.forEach( le => {
-          debug$K.domElement(le.domElement);
+          debug$L.domElement(le.domElement);
         });
-        debug$K.log('== Landmarks By Doc ==', 1);
+        debug$L.log('== Landmarks By Doc ==', 1);
         this.landmarkElementsByDoc.forEach( (les, index) => {
-          debug$K.log(`Document Index: ${index} (${Array.isArray(les)})`);
+          debug$L.log(`Document Index: ${index} (${Array.isArray(les)})`);
           if (Array.isArray(les)) {
             les.forEach(le => {
-              debug$K.domElement(le.domElement);
+              debug$L.domElement(le.domElement);
             });
           }
         });
-        debug$K.log('== Structure Tree ==', 1);
+        debug$L.log('== Structure Tree ==', 1);
         this.childLandmarkElements.forEach( le => {
-          debug$K.domElement(le.domElement);
+          debug$L.domElement(le.domElement);
           le.showLandmarkInfo('  ');
         });
       }
@@ -11913,30 +11987,30 @@
     levels: ['Undefined',  'AAA',  'AA',  '',  'A'  ],
     all_guidelines: {
       title: 'All Rules',
-      description: 'All the rules related to WCAG 2.1.',
-      url_spec: 'https://www.w3.org/TR/WCAG21/'
+      description: 'All the rules related to WCAG 2.2.',
+      url_spec: 'https://www.w3.org/TR/WCAG22/'
     },
     principles: {
       '1': {
         id: WCAG_PRINCIPLE.P_1,
         title: '1. Perceivable',
         description: 'Information and user interface components must be presentable to users in ways they can perceive.',
-        url_spec: 'https://www.w3.org/TR/WCAG21/#perceivable',
+        url_spec: 'https://www.w3.org/TR/WCAG22/#perceivable',
         guidelines: {
           '1.1': {
             id: WCAG_GUIDELINE.G_1_1,
             title: 'Guideline 1.1 Text Alternatives',
             description: 'Provide text alternatives for any non-text content so that it can be changed into other forms people need, such as large print, braille, speech, symbols or simpler language.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#text-alternatives',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#text-alternatives',
             success_criteria: {
               '1.1.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_1_1_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.1.1 Non-text Content',
                 description: 'All non-text content that is presented to the user has a text alternative that serves the equivalent purpose, except for the situations listed below.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#non-text-content',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/non-text-content.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#non-text-content',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#non-text-content',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#non-text-content',
                 references: {
                 }
               }
@@ -11946,16 +12020,16 @@
             id: WCAG_GUIDELINE.G_1_2,
             title: 'Guideline 1.2 Time-based Media',
             description: 'Provide alternatives for time-based media.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#time-based-media',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#time-based-media',
             success_criteria: {
               '1.2.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_1_2_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.2.1 Audio-only and Video-only (Prerecorded)',
                 description: 'For prerecorded audio-only and prerecorded video-only media, the following are true, except when the audio or video is a media alternative for text and is clearly labeled as such:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#audio-only-and-video-only-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/audio-only-and-video-only-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#audio-only-and-video-only-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#audio-only-and-video-only-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#audio-only-and-video-only-prerecorded',
                 references: {
                 }
               },
@@ -11964,9 +12038,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.2.2 Captions (Prerecorded)',
                 description: 'Captions are provided for all prerecorded audio content in synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#captions-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/captions-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#captions-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#captions-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#captions-prerecorded',
                 references: {
                 }
               },
@@ -11975,9 +12049,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.2.3 Audio Description or Media Alternative (Prerecorded)',
                 description: 'An alternative for time-based media or audio description of the prerecorded video content is provided for synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#audio-description-or-media-alternative-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/audio-description-or-media-alternative-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#audio-description-or-media-alternative-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#audio-description-or-media-alternative-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/audio-description-or-media-alternative-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#audio-description-or-media-alternative-prerecorded',
                 references: {
                 }
               },
@@ -11986,9 +12060,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.2.4 Captions (Live)',
                 description: 'Captions are provided for all live audio content in synchronized media.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#captions-live',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/captions-live.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#captions-live',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#captions-live',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/captions-live.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#captions-live',
                 references: {
                 }
               },
@@ -11997,9 +12071,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.2.5 Audio Description (Prerecorded)',
                 description: 'Audio description is provided for all prerecorded video content in synchronized media.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#audio-description-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/audio-description-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#audio-description-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#audio-description-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/audio-description-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#audio-description-prerecorded',
                 references: {
                 }
               },
@@ -12008,9 +12082,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.2.6 Sign Language (Prerecorded)',
                 description: 'Sign language interpretation is provided for all prerecorded audio content in synchronized media.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#sign-language-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/sign-language-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#sign-language-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#sign-language-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/sign-language-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#sign-language-prerecorded',
                 references: {
                 }
               },
@@ -12019,9 +12093,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.2.7 Extended Audio Description (Prerecorded)',
                 description: 'Where pauses in foreground audio are insufficient to allow audio descriptions to convey the sense of the video, extended audio description is provided for all prerecorded video content in synchronized media.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#extended-audio-description-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/extended-audio-description-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#extended-audio-description-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#extended-audio-description-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/extended-audio-description-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#extended-audio-description-prerecorded',
                 references: {
                 }
               },
@@ -12030,9 +12104,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.2.8 Media Alternative (Prerecorded)',
                 description: 'An alternative for time-based media is provided for all prerecorded synchronized media and for all prerecorded video-only media.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#media-alternative-prerecorded',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/media-alternative-prerecorded.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#media-alternative-prerecorded',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#media-alternative-prerecorded',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/media-alternative-prerecorded.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#media-alternative-prerecorded',
                 references: {
                 }
               },
@@ -12041,9 +12115,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.2.9 Audio-only (Live)',
                 description: 'An alternative for time-based media that presents equivalent information for live audio-only content is provided.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#audio-only-live',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/audio-only-live.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#audio-only-live',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#audio-only-live',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-live.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#audio-only-live',
                 references: {
                 }
               }
@@ -12053,16 +12127,16 @@
             id: WCAG_GUIDELINE.G_1_3,
             title: 'Guideline 1.3 Adaptable',
             description: 'Create content that can be presented in different ways (for example simpler layout) without losing information or structure.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#adaptable',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#adaptable',
             success_criteria: {
               '1.3.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_1_3_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.3.1 Info and Relationships',
                 description: 'Information, structure, and relationships conveyed through presentation can be programmatically determined or are available in text.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#info-and-relationships',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#info-and-relationships',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#info-and-relationships',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#info-and-relationships',
                 references: {
                 }
               },
@@ -12071,9 +12145,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.3.2 Meaningful Sequence',
                 description: 'When the sequence in which content is presented affects its meaning, a correct reading sequence can be programmatically determined.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#meaningful-sequence',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/meaningful-sequence.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#meaningful-sequence',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#meaningful-sequence',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/meaningful-sequence.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#meaningful-sequence',
                 references: {
                 }
               },
@@ -12082,9 +12156,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.3.3 Sensory Characteristics',
                 description: 'Instructions provided for understanding and operating content do not rely solely on sensory characteristics of components such as shape, color, size, visual location, orientation, or sound.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#sensory-characteristics',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/sensory-characteristics.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#sensory-characteristics',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#sensory-characteristics',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/sensory-characteristics.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#sensory-characteristics',
                 references: {
                 }
               },
@@ -12093,9 +12167,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.3.4 Orientation',
                 description: 'Content does not restrict its view and operation to a single display orientation, such as portrait or landscape, unless a specific display orientation is essential.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#orientation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/orientation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#orientation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#orientation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/orientation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#orientation',
                 references: {
                 }
               },
@@ -12104,9 +12178,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.3.5 Identify Input Purpose',
                 description: 'The purpose of each input field collecting information about the user can be programmatically determined when:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#identify-input-purpose',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#identify-input-purpose',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#identify-input-purpose',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#identify-input-purpose',
                 references: {
                 }
               },
@@ -12115,9 +12189,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.3.6 Identify Purpose',
                 description: 'In content implemented using markup languages, the purpose of User Interface Components, icons, and regions can be programmatically determined.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#identify-purpose',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/identify-purpose.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#identify-purpose',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#identify-purpose',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/identify-purpose.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#identify-purpose',
                 references: {
                 }
               }
@@ -12127,16 +12201,16 @@
             id: WCAG_GUIDELINE.G_1_4,
             title: 'Guideline 1.4 Distinguishable',
             description: 'Make it easier for users to see and hear content including separating foreground from background.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#distinguishable',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#distinguishable',
             success_criteria: {
               '1.4.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_1_4_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.4.1 Use of Color',
                 description: 'Color is not used as the only visual means of conveying information, indicating an action, prompting a response, or distinguishing a visual element.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#use-of-color',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#use-of-color',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#use-of-color',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#use-of-color',
                 references: {
                 }
               },
@@ -12145,9 +12219,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 1.4.2 Audio Control',
                 description: 'If any audio on a Web page plays automatically for more than 3 seconds, either a mechanism is available to pause or stop the audio, or a mechanism is available to control audio volume independently from the overall system volume level.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#audio-control',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/audio-control.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#audio-control',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#audio-control',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#audio-control',
                 references: {
                 }
               },
@@ -12156,9 +12230,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.3 Contrast (Minimum)',
                 description: 'The visual presentation of text and images of text has a contrast ratio of at least 4.5:1, except for the following:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#contrast-minimum',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#contrast-minimum',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#contrast-minimum',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#contrast-minimum',
                 references: {
                 }
               },
@@ -12167,9 +12241,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.4 Resize text',
                 description: 'Except for captions and images of text, text can be resized without assistive technology up to 200 percent without loss of content or functionality.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#resize-text',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/resize-text.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#resize-text',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#resize-text',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#resize-text',
                 references: {
                 }
               },
@@ -12178,9 +12252,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.5 Images of Text',
                 description: 'If the technologies being used can achieve the visual presentation, text is used to convey information rather than images of text except for the following:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#images-of-text',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/images-of-text.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#images-of-text',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#images-of-text',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#images-of-text',
                 references: {
                 }
               },
@@ -12189,9 +12263,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.4.6 Contrast (Enhanced)',
                 description: 'The visual presentation of text and images of text has a contrast ratio of at least 7:1, except for the following:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#contrast-enhanced',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#contrast-enhanced',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#contrast-enhanced',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#contrast-enhanced',
                 references: {
                 }
               },
@@ -12200,9 +12274,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.4.7 Low or No Background Audio',
                 description: 'For prerecorded audio-only content that (1) contains primarily speech in the foreground, (2) is not an audio CAPTCHA or audio logo, and (3) is not vocalization intended to be primarily musical expression such as singing or rapping, at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#low-or-no-background-audio',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/low-or-no-background-audio.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#low-or-no-background-audio',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#low-or-no-background-audio',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/low-or-no-background-audio.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#low-or-no-background-audio',
                 references: {
                 }
               },
@@ -12211,9 +12285,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.4.8 Visual Presentation',
                 description: 'For the visual presentation of blocks of text, a mechanism is available to achieve the following:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#visual-presentation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/visual-presentation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#visual-presentation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#visual-presentation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#visual-presentation',
                 references: {
                 }
               },
@@ -12222,9 +12296,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 1.4.9 Images of Text (No Exception)',
                 description: 'Images of text are only used for pure decoration or where a particular presentation of text is essential to the information being conveyed.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#images-of-text-no-exception',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/images-of-text-no-exception.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#images-of-text-no-exception',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#images-of-text-no-exception',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/images-of-text-no-exception.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#images-of-text-no-exception',
                 references: {
                 }
               },
@@ -12233,9 +12307,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.10 Reflow',
                 description: 'Content can be presented without loss of information or functionality, and without requiring scrolling in two dimensions for:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#reflow',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/reflow.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#reflow',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#reflow',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/reflow.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#reflow',
                 references: {
                 }
               },
@@ -12244,9 +12318,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.11 Non-text Contrast',
                 description: 'The visual presentation of the following have a contrast ratio of at least 3:1 against adjacent color(s):',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#non-text-contrast',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#non-text-contrast',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#non-text-contrast',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#non-text-contrast',
                 references: {
                 }
               },
@@ -12255,9 +12329,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.12 Text Spacing',
                 description: 'In content implemented using markup languages that support the following text style properties, no loss of content or functionality occurs by setting all of the following and by changing no other style property:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#text-spacing',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/text-spacing.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#text-spacing',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#text-spacing',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#text-spacing',
                 references: {
                 }
               },
@@ -12266,9 +12340,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 1.4.13 Content on Hover or Focus',
                 description: 'Where receiving and then removing pointer hover or keyboard focus triggers additional content to become visible and then hidden, the following are true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#content-on-hover-or-focus',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/content-on-hover-or-focus.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#content-on-hover-or-focus',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#content-on-hover-or-focus',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#content-on-hover-or-focus',
                 references: {
                 }
               }
@@ -12280,22 +12354,22 @@
         id: WCAG_PRINCIPLE.P_2,
         title: '2. Operable',
         description: 'User interface components and navigation must be operable.',
-        url_spec: 'https://www.w3.org/TR/WCAG21/#operable',
+        url_spec: 'https://www.w3.org/TR/WCAG22/#operable',
         guidelines: {
           '2.1': {
             id: WCAG_GUIDELINE.G_2_1,
             title: 'Guideline 2.1 Keyboard Accessible',
             description: 'Make all functionality available from a keyboard.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#keyboard-accessible',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#keyboard-accessible',
             success_criteria: {
               '2.1.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_2_1_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.1.1 Keyboard',
                 description: 'All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes, except where the underlying function requires input that depends on the path of the user\'s movement and not just the endpoints.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#keyboard',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#keyboard',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#keyboard',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#keyboard',
                 references: {
                 }
               },
@@ -12304,9 +12378,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.1.2 No Keyboard Trap',
                 description: 'If keyboard focus can be moved to a component of the page using a keyboard interface, then focus can be moved away from that component using only a keyboard interface, and, if it requires more than unmodified arrow or tab keys or other standard exit methods, the user is advised of the method for moving focus away.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#no-keyboard-trap',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#no-keyboard-trap',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#no-keyboard-trap',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/no-keyboard-trap.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#no-keyboard-trap',
                 references: {
                 }
               },
@@ -12315,9 +12389,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.1.3 Keyboard (No Exception)',
                 description: 'All functionality of the content is operable through a keyboard interface without requiring specific timings for individual keystrokes.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#keyboard-no-exception',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/keyboard-no-exception.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#keyboard-no-exception',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#keyboard-no-exception',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/keyboard-no-exception.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#keyboard-no-exception',
                 references: {
                 }
               },
@@ -12326,9 +12400,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.1.4 Character Key Shortcuts',
                 description: 'If a keyboard shortcut is implemented in content using only letter (including upper- and lower-case letters), punctuation, number, or symbol characters, then at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#character-key-shortcuts',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/character-key-shortcuts.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#character-key-shortcuts',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#character-key-shortcuts',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/character-key-shortcuts.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#character-key-shortcuts',
                 references: {
                 }
               }
@@ -12338,16 +12412,16 @@
             id: WCAG_GUIDELINE.G_2_2,
             title: 'Guideline 2.2 Enough Time',
             description: 'Provide users enough time to read and use content.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#enough-time',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#enough-time',
             success_criteria: {
               '2.2.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_2_2_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.2.1 Timing Adjustable',
                 description: 'For each time limit that is set by the content, at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#timing-adjustable',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/timing-adjustable.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#timing-adjustable',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#timing-adjustable',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#timing-adjustable',
                 references: {
                 }
               },
@@ -12356,9 +12430,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.2.2 Pause, Stop, Hide',
                 description: 'For moving, blinking, scrolling, or auto-updating information, all of the following are true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#pause-stop-hide',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/pause-stop-hide.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#pause-stop-hide',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#pause-stop-hide',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#pause-stop-hide',
                 references: {
                 }
               },
@@ -12367,9 +12441,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.2.3 No Timing',
                 description: 'Timing is not an essential part of the event or activity presented by the content, except for non-interactive synchronized media and real-time events.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#no-timing',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/no-timing.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#no-timing',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#no-timing',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/no-timing.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#no-timing',
                 references: {
                 }
               },
@@ -12378,9 +12452,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.2.4 Interruptions',
                 description: 'Interruptions can be postponed or suppressed by the user, except interruptions involving an emergency.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#interruptions',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/interruptions.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#interruptions',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#interruptions',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/interruptions.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#interruptions',
                 references: {
                 }
               },
@@ -12389,9 +12463,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.2.5 Re-authenticating',
                 description: 'When an authenticated session expires, the user can continue the activity without loss of data after re-authenticating.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#re-authenticating',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/re-authenticating.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#re-authenticating',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#re-authenticating',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/re-authenticating.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#re-authenticating',
                 references: {
                 }
               },
@@ -12400,9 +12474,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.2.6 Timeouts',
                 description: 'Users are warned of the duration of any user inactivity that could cause data loss, unless the data is preserved for more than 20 hours when the user does not take any actions.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#timeouts',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/timeouts.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#timeouts',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#timeouts',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/timeouts.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#timeouts',
                 references: {
                 }
               }
@@ -12412,16 +12486,16 @@
             id: WCAG_GUIDELINE.G_2_3,
             title: 'Guideline 2.3 Seizures and Physical Reactions',
             description: 'Do not design content in a way that is known to cause seizures or physical reactions.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#seizures-and-physical-reactions',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#seizures-and-physical-reactions',
             success_criteria: {
               '2.3.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_2_3_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.3.1 Three Flashes or Below Threshold',
                 description: 'Web pages do not contain anything that flashes more than three times in any one second period, or the flash is below the general flash and red flash thresholds.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#three-flashes-or-below-threshold',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/three-flashes-or-below-threshold.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#three-flashes-or-below-threshold',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#three-flashes-or-below-threshold',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#three-flashes-or-below-threshold',
                 references: {
                 }
               },
@@ -12430,9 +12504,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.3.2 Three Flashes',
                 description: 'Web pages do not contain anything that flashes more than three times in any one second period.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#three-flashes',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/three-flashes.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#three-flashes',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#three-flashes',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/three-flashes.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#three-flashes',
                 references: {
                 }
               },
@@ -12441,9 +12515,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.3.3 Animation from Interactions',
                 description: 'Motion animation triggered by interaction can be disabled, unless the animation is essential to the functionality or the information being conveyed.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#animation-from-interactions',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#animation-from-interactions',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#animation-from-interactions',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#animation-from-interactions',
                 references: {
                 }
               }
@@ -12453,16 +12527,16 @@
             id: WCAG_GUIDELINE.G_2_4,
             title: 'Guideline 2.4 Navigable',
             description: 'Provide ways to help users navigate, find content, and determine where they are.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#navigable',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#navigable',
             success_criteria: {
               '2.4.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_2_4_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.4.1 Bypass Blocks',
                 description: 'A mechanism is available to bypass blocks of content that are repeated on multiple Web pages.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#bypass-blocks',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/bypass-blocks.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#bypass-blocks',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#bypass-blocks',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/bypass-blocks.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#bypass-blocks',
                 references: {
                 }
               },
@@ -12471,9 +12545,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.4.2 Page Titled',
                 description: 'Web pages have titles that describe topic or purpose.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#page-titled',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/page-titled.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#page-titled',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#page-titled',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/page-titled.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#page-titled',
                 references: {
                 }
               },
@@ -12482,9 +12556,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.4.3 Focus Order',
                 description: 'If a Web page can be navigated sequentially and the navigation sequences affect meaning or operation, focusable components receive focus in an order that preserves meaning and operability.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#focus-order',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/focus-order.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#focus-order',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#focus-order',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#focus-order',
                 references: {
                 }
               },
@@ -12493,9 +12567,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.4.4 Link Purpose (In Context)',
                 description: 'The purpose of each link can be determined from the link text alone or from the link text together with its programmatically determined link context, except where the purpose of the link would be ambiguous to users in general.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#link-purpose-in-context',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#link-purpose-in-context',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#link-purpose-in-context',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#link-purpose-in-context',
                 references: {
                 }
               },
@@ -12504,9 +12578,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 2.4.5 Multiple Ways',
                 description: 'More than one way is available to locate a Web page within a set of Web pages except where the Web Page is the result of, or a step in, a process.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#multiple-ways',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/multiple-ways.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#multiple-ways',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#multiple-ways',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/multiple-ways.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#multiple-ways',
                 references: {
                 }
               },
@@ -12515,9 +12589,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 2.4.6 Headings and Labels',
                 description: 'Headings and labels describe topic or purpose.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#headings-and-labels',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/headings-and-labels.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#headings-and-labels',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#headings-and-labels',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/headings-and-labels.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#headings-and-labels',
                 references: {
                 }
               },
@@ -12526,9 +12600,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 2.4.7 Focus Visible',
                 description: 'Any keyboard operable user interface has a mode of operation where the keyboard focus indicator is visible.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#focus-visible',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/focus-visible.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#focus-visible',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#focus-visible',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#focus-visible',
                 references: {
                 }
               },
@@ -12537,9 +12611,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.4.8 Location',
                 description: 'Information about the user\'s location within a set of Web pages is available.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#location',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/location.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#location',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#location',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/location.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#location',
                 references: {
                 }
               },
@@ -12548,9 +12622,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.4.9 Link Purpose (Link Only)',
                 description: 'A mechanism is available to allow the purpose of each link to be identified from link text alone, except where the purpose of the link would be ambiguous to users in general.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#link-purpose-link-only',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#link-purpose-link-only',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#link-purpose-link-only',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-link-only.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#link-purpose-link-only',
                 references: {
                 }
               },
@@ -12559,9 +12633,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.4.10 Section Headings',
                 description: 'Section headings are used to organize the content.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#section-headings',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/section-headings.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#section-headings',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#section-headings',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/section-headings.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#section-headings',
                 references: {
                 }
               },
@@ -12604,16 +12678,16 @@
             id: WCAG_GUIDELINE.G_2_5,
             title: 'Guideline 2.5 Input Modalities',
             description: 'Make it easier for users to operate functionality through various inputs beyond keyboard.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#input-modalities',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#input-modalities',
             success_criteria: {
               '2.5.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_2_5_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.5.1 Pointer Gestures',
                 description: 'All functionality that uses multipoint or path-based gestures for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#pointer-gestures',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/pointer-gestures.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#pointer-gestures',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#pointer-gestures',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/pointer-gestures.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#pointer-gestures',
                 references: {
                 }
               },
@@ -12622,9 +12696,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.5.2 Pointer Cancellation',
                 description: 'For functionality that can be operated using a single pointer, at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#pointer-cancellation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#pointer-cancellation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#pointer-cancellation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#pointer-cancellation',
                 references: {
                 }
               },
@@ -12633,9 +12707,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.5.3 Label in Name',
                 description: 'For user interface components with labels that include text or images of text, the name contains the text that is presented visually.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#label-in-name',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#label-in-name',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#label-in-name',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#label-in-name',
                 references: {
                 }
               },
@@ -12644,9 +12718,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 2.5.4 Motion Actuation',
                 description: 'Functionality that can be operated by device motion or user motion can also be operated by user interface components and responding to the motion can be disabled to prevent accidental actuation, except when:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#motion-actuation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/motion-actuation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#motion-actuation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#motion-actuation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/motion-actuation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#motion-actuation',
                 references: {
                 }
               },
@@ -12655,9 +12729,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.5.5 Target Size',
                 description: 'The size of the target for pointer inputs is at least 44 by 44 CSS pixels except when:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#target-size',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/target-size.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#target-size',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#target-size',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#target-size',
                 references: {
                 }
               },
@@ -12666,9 +12740,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 2.5.6 Concurrent Input Mechanisms',
                 description: 'Web content does not restrict use of input modalities available on a platform except where the restriction is essential, required to ensure the security of the content, or required to respect user settings.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#concurrent-input-mechanisms',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/concurrent-input-mechanisms.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#concurrent-input-mechanisms',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#concurrent-input-mechanisms',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/concurrent-input-mechanisms.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#concurrent-input-mechanisms',
                 references: {
                 }
               },
@@ -12702,22 +12776,22 @@
         id: WCAG_PRINCIPLE.P_3,
         title: '3. Understandable',
         description: 'Information and the operation of user interface must be understandable.',
-        url_spec: 'https://www.w3.org/TR/WCAG21/#understandable',
+        url_spec: 'https://www.w3.org/TR/WCAG22/#understandable',
         guidelines: {
           '3.1': {
             id: WCAG_GUIDELINE.G_3_1,
             title: 'Guideline 3.1 Readable',
             description: 'Make text content readable and understandable.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#readable',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#readable',
             success_criteria: {
               '3.1.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_3_1_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 3.1.1 Language of Page',
                 description: 'The default human language of each Web page can be programmatically determined.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#language-of-page',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/language-of-page.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#language-of-page',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#language-of-page',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#language-of-page',
                 references: {
                 }
               },
@@ -12726,9 +12800,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 3.1.2 Language of Parts',
                 description: 'The human language of each passage or phrase in the content can be programmatically determined except for proper names, technical terms, words of indeterminate language, and words or phrases that have become part of the vernacular of the immediately surrounding text.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#language-of-parts',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/language-of-parts.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#language-of-parts',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#language-of-parts',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/language-of-parts.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#language-of-parts',
                 references: {
                 }
               },
@@ -12737,9 +12811,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.1.3 Unusual Words',
                 description: 'A mechanism is available for identifying specific definitions of words or phrases used in an unusual or restricted way, including idioms and jargon.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#unusual-words',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/unusual-words.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#unusual-words',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#unusual-words',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/unusual-words.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#unusual-words',
                 references: {
                 }
               },
@@ -12748,9 +12822,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.1.4 Abbreviations',
                 description: 'A mechanism for identifying the expanded form or meaning of abbreviations is available.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#abbreviations',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/abbreviations.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#abbreviations',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#abbreviations',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/abbreviations.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#abbreviations',
                 references: {
                 }
               },
@@ -12759,9 +12833,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.1.5 Reading Level',
                 description: 'When text requires reading ability more advanced than the lower secondary education level after removal of proper names and titles, supplemental content, or a version that does not require reading ability more advanced than the lower secondary education level, is available.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#reading-level',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/reading-level.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#reading-level',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#reading-level',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/reading-level.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#reading-level',
                 references: {
                 }
               },
@@ -12770,9 +12844,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.1.6 Pronunciation',
                 description: 'A mechanism is available for identifying specific pronunciation of words where meaning of the words, in context, is ambiguous without knowing the pronunciation.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#pronunciation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/pronunciation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#pronunciation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#pronunciation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/pronunciation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#pronunciation',
                 references: {
                 }
               }
@@ -12782,16 +12856,16 @@
             id: WCAG_GUIDELINE.G_3_2,
             title: 'Guideline 3.2 Predictable',
             description: 'Make Web pages appear and operate in predictable ways.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#predictable',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#predictable',
             success_criteria: {
               '3.2.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_3_2_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 3.2.1 On Focus',
                 description: 'When any user interface component receives focus, it does not initiate a change of context.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#on-focus',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/on-focus.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#on-focus',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#on-focus',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/on-focus.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#on-focus',
                 references: {
                 }
               },
@@ -12800,9 +12874,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 3.2.2 On Input',
                 description: 'Changing the setting of any user interface component does not automatically cause a change of context unless the user has been advised of the behavior before using the component.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#on-input',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/on-input.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#on-input',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#on-input',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/on-input.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#on-input',
                 references: {
                 }
               },
@@ -12811,9 +12885,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 3.2.3 Consistent Navigation',
                 description: 'Navigational mechanisms that are repeated on multiple Web pages within a set of Web pages occur in the same relative order each time they are repeated, unless a change is initiated by the user.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#consistent-navigation',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/consistent-navigation.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#consistent-navigation',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#consistent-navigation',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#consistent-navigation',
                 references: {
                 }
               },
@@ -12822,9 +12896,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 3.2.4 Consistent Identification',
                 description: 'Components that have the same functionality within a set of Web pages are identified consistently.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#consistent-identification',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/consistent-identification.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#consistent-identification',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#consistent-identification',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/consistent-identification.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#consistent-identification',
                 references: {
                 }
               },
@@ -12833,9 +12907,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.2.5 Change on Request',
                 description: 'Changes of context are initiated only by user request or a mechanism is available to turn off such changes.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#change-on-request',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/change-on-request.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#change-on-request',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#change-on-request',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/change-on-request.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#change-on-request',
                 references: {
                 }
               },
@@ -12856,16 +12930,16 @@
             id: WCAG_GUIDELINE.G_3_3,
             title: 'Guideline 3.3 Input Assistance',
             description: 'Help users avoid and correct mistakes.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#input-assistance',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#input-assistance',
             success_criteria: {
               '3.3.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_3_3_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 3.3.1 Error Identification',
                 description: 'If an input error is automatically detected, the item that is in error is identified and the error is described to the user in text.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#error-identification',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/error-identification.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#error-identification',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#error-identification',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#error-identification',
                 references: {
                 }
               },
@@ -12874,9 +12948,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 3.3.2 Labels or Instructions',
                 description: 'Labels or instructions are provided when content requires user input.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#labels-or-instructions',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/labels-or-instructions.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#labels-or-instructions',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#labels-or-instructions',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#labels-or-instructions',
                 references: {
                 }
               },
@@ -12885,9 +12959,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 3.3.3 Error Suggestion',
                 description: 'If an input error is automatically detected and suggestions for correction are known, then the suggestions are provided to the user, unless it would jeopardize the security or purpose of the content.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#error-suggestion',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/error-suggestion.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#error-suggestion',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#error-suggestion',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/error-suggestion.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#error-suggestion',
                 references: {
                 }
               },
@@ -12896,9 +12970,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 3.3.4 Error Prevention (Legal, Financial, Data)',
                 description: 'For Web pages that cause legal commitments or financial transactions for the user to occur, that modify or delete user-controllable data in data storage systems, or that submit user test responses, at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#error-prevention-legal-financial-data',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/error-prevention-legal-financial-data.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#error-prevention-legal-financial-data',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#error-prevention-legal-financial-data',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-legal-financial-data.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#error-prevention-legal-financial-data',
                 references: {
                 }
               },
@@ -12907,9 +12981,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.3.5 Help',
                 description: 'Context-sensitive help is available.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#help',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/help.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#help',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#help',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/help.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#help',
                 references: {
                 }
               },
@@ -12918,9 +12992,9 @@
                 level: WCAG_LEVEL.AAA,
                 title: 'Success Criterion 3.3.6 Error Prevention (All)',
                 description: 'For Web pages that require the user to submit information, at least one of the following is true:',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#error-prevention-all',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/error-prevention-all.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#error-prevention-all',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#error-prevention-all',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-all.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#error-prevention-all',
                 references: {
                 }
               },
@@ -12965,22 +13039,22 @@
         id: WCAG_PRINCIPLE.P_4,
         title: '4. Robust',
         description: 'Content must be robust enough that it can be interpreted by by a wide variety of user agents, including assistive technologies.',
-        url_spec: 'https://www.w3.org/TR/WCAG21/#robust',
+        url_spec: 'https://www.w3.org/TR/WCAG22/#robust',
         guidelines: {
           '4.1': {
             id: WCAG_GUIDELINE.G_4_1,
             title: 'Guideline 4.1 Compatible',
             description: 'Maximize compatibility with current and future user agents, including assistive technologies.',
-            url_spec: 'https://www.w3.org/TR/WCAG21/#compatible',
+            url_spec: 'https://www.w3.org/TR/WCAG22/#compatible',
             success_criteria: {
               '4.1.1': {
                 id: WCAG_SUCCESS_CRITERION.SC_4_1_1,
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 4.1.1 Parsing',
                 description: 'In content implemented using markup languages, elements have complete start and end tags, elements are nested according to their specifications, elements do not contain duplicate attributes, and any IDs are unique, except where the specifications allow these features.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#parsing',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/parsing.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#parsing',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#parsing',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/parsing.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#parsing',
                 references: {
                 }
               },
@@ -12989,9 +13063,9 @@
                 level: WCAG_LEVEL.A,
                 title: 'Success Criterion 4.1.2 Name, Role, Value',
                 description: 'For all user interface components (including but not limited to: form elements, links and components generated by scripts), the name and role can be programmatically determined; states, properties, and values that can be set by the user can be programmatically set; and notification of changes to these items is available to user agents, including assistive technologies.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#name-role-value',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/name-role-value.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#name-role-value',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#name-role-value',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#name-role-value',
                 references: {
                 }
               },
@@ -13000,9 +13074,9 @@
                 level: WCAG_LEVEL.AA,
                 title: 'Success Criterion 4.1.3 Status Messages',
                 description: 'In content implemented using markup languages, status messages can be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus.',
-                url_spec: 'https://www.w3.org/TR/WCAG21/#status-messages',
-                url_understand: 'https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html',
-                url_meet: 'https://www.w3.org/WAI/WCAG21/quickref/#status-messages',
+                url_spec: 'https://www.w3.org/TR/WCAG22/#status-messages',
+                url_understand: 'https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html',
+                url_meet: 'https://www.w3.org/WAI/WCAG22/quickref/#status-messages',
                 references: {
                 }
               }
@@ -13057,6 +13131,10 @@
         'If there is a text transcript make sure the transcript accurately represents the audio content.'
       ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'W3C: Making Audio and Video Media Accessible',
+          url:   'https://www.w3.org/WAI/media/av/'
+        },
         { type:  REFERENCES.SPECIFICATION,
           title: 'HMTL: The audio element',
           url:   'https://html.spec.whatwg.org/multipage/media.html#the-audio-element'
@@ -13120,6 +13198,10 @@
         'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
       ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'W3C: Making Audio and Video Media Accessible',
+          url:   'https://www.w3.org/WAI/media/av/'
+        },
         { type:  REFERENCES.SPECIFICATION,
           title: 'HMTL: The object element',
           url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
@@ -13175,6 +13257,10 @@
         'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
       ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'W3C: Making Audio and Video Media Accessible',
+          url:   'https://www.w3.org/WAI/media/av/'
+        },
         { type:  REFERENCES.SPECIFICATION,
           title: 'HMTL: The embed element',
           url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
@@ -13214,6 +13300,10 @@
       MANUAL_CHECKS:  [ 'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.'
                       ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'W3C: Making Audio and Video Media Accessible',
+          url:   'https://www.w3.org/WAI/media/av/'
+        },
         { type:  REFERENCES.SPECIFICATION,
           title: 'WCAG 2.1 Success Criterion 1.4.2 Audio Control',
           url:   'https://www.w3.org/TR/WCAG21/#audio-control'
@@ -15519,6 +15609,58 @@
         {type:  REFERENCES.REFERENCE,
           title: 'W3C Math Wiki: MathML Tools',
           url:   'https://www.w3.org/Math/wiki/Tools'
+        }
+      ]
+    },
+    IMAGE_8: {
+      ID:         'Image 8',
+      DEFINITION: 'When an image is used to represent stylized text, replace the image with text content and use CSS to style text.',
+      SUMMARY:    'Use CSS to stylize text',
+      TARGET_RESOURCES_DESC: '@img@ and [role="img"]',
+      RULE_RESULT_MESSAGES: {
+        MANUAL_CHECK_S:   'If the image is used to stylize text, replace the image with text content styled with CSS.',
+        MANUAL_CHECK_P:   'If any of the %N_MC images are used to stylize text, replace the image with text content styled with CSS.',
+        HIDDEN_S: 'One image element with an accessible name was not evaluated.',
+        HIDDEN_P: '%N_H image elements with accessible names that are hidden were not evaluated.',
+        NOT_APPLICABLE: 'No @img@, @area@ or @[role="img"]@ elements found on this page.'
+      },
+      BASE_RESULT_MESSAGES: {
+        ELEMENT_MC_1: 'If the image is used to represent stylized text, replace the image with text and use CSS to style text.',
+        ELEMENT_HIDDEN_1: '@%1@ element was not evaluated because it is hidden from assistive technologies.'
+      },
+      PURPOSES: [
+        'To enable people with visual impairments who require a particular visual presentation of text to be able to adjust the text presentation as needed.',
+        'Adjustments include the use of a particular font size, foreground and background color, font family, line spacing or alignment.'
+      ],
+      TECHNIQUES: [
+        'Replace the image of text with text content that is styled using Cascading Style Sheets (CSS).'
+      ],
+      MANUAL_CHECKS: [
+      ],
+      INFORMATIONAL_LINKS: [
+        {type:  REFERENCES.SPECIFICATION,
+          title: 'W3C Understanding Images of Text',
+          url:   'https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html'
+        },
+        {type:  REFERENCES.SPECIFICATION,
+          title: 'W3C CSS Snapshot',
+          url:   'https://www.w3.org/TR/css/'
+        },
+        {type:  REFERENCES.REFERENCE,
+          title: 'MDN Cascading Style Sheets',
+          url:   'https://developer.mozilla.org/en-US/docs/Web/CSS'
+        },
+        {type:  REFERENCES.REFERENCE,
+          title: '22: Using CSS to control visual presentation of text',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C22'
+        },
+        {type:  REFERENCES.REFERENCE,
+          title: 'C30: Using CSS to replace text with images of text and providing user interface controls to switch',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C30'
+        },
+        {type:  REFERENCES.REFERENCE,
+          title: 'G140: Separating information and structure from presentation to enable different presentations',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G140'
         }
       ]
     }
@@ -18734,6 +18876,259 @@
     }
   };
 
+  /* targetSizeRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /* --------------------------------------------------------------------------- */
+
+  const targetSizeRules$1 = {
+
+   TARGET_SIZE_1: {
+        ID:                    'Target Size 1',
+        DEFINITION:            'Author sizing of links have at least the dimensions of 24 by 24 CSS pixels, unless it meets one of the four exceptions.',
+        SUMMARY:               'Author sizing of links (Minimum)',
+        TARGET_RESOURCES_DESC: 'links',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Remove or increase the author sizing of the area to activate the undersized link to at least 24 by 24 CSS pixels.',
+          FAIL_P:  'Remove or increase the author sizing of the area to activate the %N_F undersized links to at least 24 by 24 CSS pixel.',
+          HIDDEN_S:  'One undersized link was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized links were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized links found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions are %1 by %2 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions are %1 by %2, so either remove author sizing of the link dimensions or increase the authoring sizing dimensions to at least 24 x 24 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The author sized link is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
+          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+        ],
+        TECHNIQUES: [
+          'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
+          'If the link does not meet one of the exceptions, increase the author defined dimensions to at least 24 by 24 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Minimum)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    },
+
+
+   TARGET_SIZE_2: {
+        ID:                    'Target Size 2',
+        DEFINITION:            'Author sizing of links have at least the dimensions of 44 by 44 CSS pixels, unless it meets one of the four exceptions.',
+        SUMMARY:               'Author sizing of links (Enhanced)',
+        TARGET_RESOURCES_DESC: 'links',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Remove or increase the author sizing of the area to activate the undersized link to at least 44 by 44 CSS pixels.',
+          FAIL_P:  'Remove or increase the author sizing of the area to activate the %N_F undersized links to at least 44 by 44 CSS pixel.',
+          HIDDEN_S:  'One undersized link was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized links were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized links found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions are %1 by %2 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions are %1 by %2, so either remove author sizing of the link dimensions or increase the authoring sizing dimensions to at least 44 x 44 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The author sized link is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
+          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+        ],
+        TECHNIQUES: [
+          'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
+          'If the link does not meet one of the exceptions, increase the author defined dimensions to at least 44 by 44 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Enhanced)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    },
+
+    TARGET_SIZE_3: {
+        ID:                    'Target Size 3',
+        DEFINITION:            'Button dimensions are at least 24 by 24 CSS pixels.',
+        SUMMARY:               'Button target size (Minimum)',
+        TARGET_RESOURCES_DESC: 'buttons',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Use CSS to increase the size of the area to activate the undersized button to at least 24 by 24 CSS pixels.',
+          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized buttons to at least 24 by 24 CSS pixel.',
+          HIDDEN_S:  'One undersized button was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized buttons were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized buttons found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions of the @%1@ element is %2 by %3 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions of the @%1@ element is %2 by %3, use CSS to increase the button dimensions to at least 24 x 24 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
+        ],
+        TECHNIQUES: [
+          'Use CSS to increase the dimensions of the button to at least 24 by 24 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Minimum)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    },
+
+   TARGET_SIZE_4: {
+        ID:                    'Target Size 4',
+        DEFINITION:            'Button dimensions are at least 44 by 44 CSS pixels.',
+        SUMMARY:               'Button target size (Enhanced)',
+        TARGET_RESOURCES_DESC: 'buttons',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Use CSS to increase the size of the area to activate the undersized button to at least 44 by 44 CSS pixels.',
+          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized buttons to at least 44 by 44 CSS pixel.',
+          HIDDEN_S:  'One undersized button was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized buttons were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized buttons found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions of the @%1@ element is %2 by %3 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions of the @%1@ element is %2 by %3, use CSS to increase the button dimensions to at least 44 x 44 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
+        ],
+        TECHNIQUES: [
+          'Use CSS to increase the dimensions of the button to at least 44 by 44 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Enhanced)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    }
+
+  };
+
   /* timingRules.js */
 
   /* --------------------------------------------------------------------------- */
@@ -18992,6 +19387,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The video element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
@@ -19048,6 +19447,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The object element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
@@ -19100,6 +19503,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The embed element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
@@ -19154,6 +19561,10 @@
           'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The video element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
@@ -19205,6 +19616,10 @@
           'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL 5: The object element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
@@ -19252,6 +19667,10 @@
           'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The embed element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
@@ -19301,6 +19720,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The video element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
@@ -19356,6 +19779,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL 5: The object element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
@@ -19407,6 +19834,10 @@
           'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The embed element',
             url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
@@ -20432,6 +20863,7 @@
   messages$1.rules = Object.assign(messages$1.rules, resizeRules$1);
   messages$1.rules = Object.assign(messages$1.rules, sensoryRules$1);
   messages$1.rules = Object.assign(messages$1.rules, tableRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, targetSizeRules$1);
   messages$1.rules = Object.assign(messages$1.rules, timingRules$1);
   messages$1.rules = Object.assign(messages$1.rules, titleRules$1);
   messages$1.rules = Object.assign(messages$1.rules, videoRules$1);
@@ -20440,7 +20872,7 @@
   /* locale.js */
 
   /* Constants */
-  const debug$J = new DebugLogging('locale', false);
+  const debug$K = new DebugLogging('locale', false);
 
   var globalUseCodeTags = false;
 
@@ -20496,7 +20928,7 @@
     if (!message) {
       message = `[common][error]: id="${id}"`;
     }
-    debug$J.flag && debug$J.log(`[${id}][${value}]: ${message}`);
+    debug$K.flag && debug$K.log(`[${id}][${value}]: ${message}`);
     return message;
   }
 
@@ -20648,7 +21080,7 @@
       for (const g in principle.guidelines) {
         const guideline = principle.guidelines[g];
         if (guideline.id === guidelineId) {
-          debug$J.flag && debug$J.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
+          debug$K.flag && debug$K.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
           return {
             num: g,
             title: guideline.title,
@@ -20658,7 +21090,7 @@
         }
       }
     }
-    debug$J.flag && debug$J.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
+    debug$K.flag && debug$K.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
     // Assume all rules
     return {
       title: messages[locale].common.allRules,
@@ -20691,7 +21123,7 @@
         for (const sc in guideline.success_criteria) {
           const success_criterion = guideline.success_criteria[sc];
           if (sc === successCriterionId) {
-            debug$J.flag && debug$J.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
+            debug$K.flag && debug$K.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
             return {
               id: successCriterionId,
               level: success_criterion.level,
@@ -20703,7 +21135,7 @@
         }
       }
     }
-    debug$J.flag && debug$J.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
+    debug$K.flag && debug$K.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
     return null;
   }
 
@@ -20723,7 +21155,7 @@
    */
 
   function getSuccessCriteriaInfo(successCriteriaIds) {
-    debug$J.flag && debug$J.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
+    debug$K.flag && debug$K.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
     const scInfoArray = [];
     successCriteriaIds.forEach( sc => {
       scInfoArray.push(getSuccessCriterionInfo(sc));
@@ -20770,7 +21202,7 @@
    */
 
   function getRuleDefinition (ruleId) {
-    debug$J.flag && debug$J.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
+    debug$K.flag && debug$K.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
     return transformElementMarkup(messages[locale].rules[ruleId].DEFINITION);
   }
 
@@ -20785,7 +21217,7 @@
    */
 
   function getRuleSummary (ruleId) {
-    debug$J.flag && debug$J.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
+    debug$K.flag && debug$K.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
     return transformElementMarkup(messages[locale].rules[ruleId].SUMMARY);
   }
 
@@ -20800,7 +21232,7 @@
    */
 
   function getTargetResourcesDesc (ruleId) {
-    debug$J.flag && debug$J.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
+    debug$K.flag && debug$K.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
     return transformElementMarkup(messages[locale].rules[ruleId].TARGET_RESOURCES_DESC);
   }
 
@@ -20819,7 +21251,7 @@
     messages[locale].rules[ruleId].PURPOSES.forEach ( p => {
       purposes.push(transformElementMarkup(p));
     });
-    debug$J.flag && debug$J.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
+    debug$K.flag && debug$K.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
     return purposes;
   }
 
@@ -20838,7 +21270,7 @@
     messages[locale].rules[ruleId].TECHNIQUES.forEach ( t => {
       techniques.push(transformElementMarkup(t));
     });
-    debug$J.flag && debug$J.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
+    debug$K.flag && debug$K.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
     return techniques;
   }
 
@@ -20866,8 +21298,8 @@
           url: infoLink.url
         }
       );
-      debug$J.flag && debug$J.log(`[infoLink][title]: ${infoLink.title}`);
-      debug$J.flag && debug$J.log(`[infoLink][  url]: ${infoLink.url}`);
+      debug$K.flag && debug$K.log(`[infoLink][title]: ${infoLink.title}`);
+      debug$K.flag && debug$K.log(`[infoLink][  url]: ${infoLink.url}`);
     });
     return infoLinks;
   }
@@ -20887,7 +21319,7 @@
     messages[locale].rules[ruleId].MANUAL_CHECKS.forEach ( mc => {
       manualChecks.push(transformElementMarkup(mc));
     });
-    debug$J.flag && debug$J.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
+    debug$K.flag && debug$K.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
     return manualChecks;
   }
 
@@ -20906,7 +21338,7 @@
     const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$J.flag && debug$J.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$K.flag && debug$K.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -20926,7 +21358,7 @@
     const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
     for ( const key in msgs ) {
       resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$J.flag && debug$J.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      debug$K.flag && debug$K.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -20991,15 +21423,28 @@
     return newStr;
   }
 
+
+  /* helper functions */
+
+  function getWCAGVersion (primaryId) {
+    if (WCAG21_SC.includes(primaryId)) {
+      return 'WCAG21';
+    }
+    if (WCAG22_SC.includes(primaryId)) {
+      return 'WCAG22';
+    }
+    return 'WCAG20';
+  }
+
   /* tableInfo.js */
 
   /* Constants */
-  const debug$I = new DebugLogging('tableInfo', false);
-  debug$I.flag = false;
-  debug$I.rows = false;
-  debug$I.cells = false;
-  debug$I.tableTree = false;
-  debug$I.headerCalc = false;
+  const debug$J = new DebugLogging('tableInfo', false);
+  debug$J.flag = false;
+  debug$J.rows = false;
+  debug$J.cells = false;
+  debug$J.tableTree = false;
+  debug$J.headerCalc = false;
 
   /**
    * @class TableElement
@@ -21136,13 +21581,13 @@
       const tableElement = this;
       this.rows.forEach( row => {
         row.cells.forEach( cell => {
-          debug$I.headerCalc && debug$I.log(`${cell}`, 1);
+          debug$J.headerCalc && debug$J.log(`${cell}`, 1);
           if (cell.headerSource === HEADER_SOURCE.HEADER_NONE) {
             if (!cell.isHeader) {
               const node = cell.domElement.node;
               if (node.hasAttribute('headers')) {
                 const ids = node.getAttribute('headers').split(' ');
-                debug$I.headesCalc && debug$I.log(`[headers]: ${ids.join(' ')}`);
+                debug$J.headesCalc && debug$J.log(`[headers]: ${ids.join(' ')}`);
                 for (let i = 0; i < ids.length; i += 1) {
                   const de = domCache.getDomElementById(ids[i]);
                   if (de && de.accName.name) {
@@ -21157,7 +21602,7 @@
                 // get Column Headers
                 for (let i = 1; i < row.rowNumber; i += 1) {
                   const hc = tableElement.getCell(i, cell.startColumn);
-                  debug$I.headerCalc && debug$I.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
+                  debug$J.headerCalc && debug$J.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeColumn) &&
                       hc.domElement.accName.name) {
@@ -21168,7 +21613,7 @@
                 // get Row Headers
                 for (let i = 1; i < cell.startColumn; i += 1) {
                   const hc = tableElement.getCell(row.rowNumber, i);
-                  debug$I.headerCalc && debug$I.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
+                  debug$J.headerCalc && debug$J.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeRow) &&
                       hc.domElement.accName.name) {
@@ -21180,7 +21625,7 @@
                   cell.headerSource = HEADER_SOURCE.ROW_COLUMN;
                 }
               }
-              debug$I.headerCalc && debug$I.log(`${cell}`);
+              debug$J.headerCalc && debug$J.log(`${cell}`);
             }
           }
         });
@@ -21227,7 +21672,7 @@
     }
 
     debugRowGroup (prefix, item) {
-      debug$I.log(`${prefix}${item}`);
+      debug$J.log(`${prefix}${item}`);
       if (item.isGroup) {
         item.children.forEach( child => {
           if (child) {
@@ -21238,14 +21683,14 @@
     }
 
     debug () {
-      if (debug$I.flag) {
-        debug$I.log(`${this}`);
-        if (debug$I.tableTree) {
+      if (debug$J.flag) {
+        debug$J.log(`${this}`);
+        if (debug$J.tableTree) {
           this.children.forEach( child => {
             this.debugRowGroup('  ', child);
           });
         }
-        debug$I.separator();
+        debug$J.separator();
         for (let i = 0; i < this.rows.length; i += 1) {
           this.rows[i].debug('  ');
         }
@@ -21360,15 +21805,15 @@
     }
 
     debug (prefix='') {
-      if (debug$I.flag && debug$I.rows) {
-        debug$I.log(`${prefix}${this}`);
+      if (debug$J.flag && debug$J.rows) {
+        debug$J.log(`${prefix}${this}`);
         for (let i = 0; i < this.cells.length; i += 1) {
           const cell = this.cells[i];
           if (cell) {
             cell.debug(prefix + '  ');
           }
           else {
-            debug$I.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
+            debug$J.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
           }
         }
       }
@@ -21449,8 +21894,8 @@
     }
 
     debug (prefix='') {
-      if (debug$I.flag) {
-        debug$I.log(`${prefix}${this}`);
+      if (debug$J.flag) {
+        debug$J.log(`${prefix}${this}`);
       }
     }
 
@@ -21571,8 +22016,8 @@
      */
 
     showTableInfo () {
-      if (debug$I.flag) {
-        debug$I.log('== All Tables ==', 1);
+      if (debug$J.flag) {
+        debug$J.log('== All Tables ==', 1);
           this.allTableElements.forEach( te => {
             te.debug();
           });
@@ -21583,7 +22028,7 @@
   /* timingInfo.js */
 
   /* Constants */
-  const debug$H = new DebugLogging('TimingInfo', false);
+  const debug$I = new DebugLogging('TimingInfo', false);
 
   /**
    * @class TimingInfo
@@ -21634,10 +22079,10 @@
      */
 
     showTimingInfo () {
-      if (debug$H.flag) {
-        debug$H.log('== All Timing elements ==', 1);
+      if (debug$I.flag) {
+        debug$I.log('== All Timing elements ==', 1);
         this.allTimingDomElements.forEach( de => {
-          debug$H.log(`[fileName]: ${de.tagName}`, true);
+          debug$I.log(`[fileName]: ${de.tagName}`, true);
         });
       }
     }
@@ -21646,11 +22091,11 @@
   /* domCache.js */
 
   /* Constants */
-  const debug$G = new DebugLogging('domCache', false);
-  debug$G.flag = false;
-  debug$G.showDomTexts = false;
-  debug$G.showDomElems = false;
-  debug$G.showTree = false;
+  const debug$H = new DebugLogging('domCache', false);
+  debug$H.flag = false;
+  debug$H.showDomTexts = false;
+  debug$H.showDomElems = false;
+  debug$H.showTree = false;
 
   const skipableElements = [
     'base',
@@ -21689,6 +22134,9 @@
       this.tableElement    = null;
       this.tableRowGroup   = null;
 
+      this.inLink          = false;
+      this.inParagraph     = false;
+
       if (info) {
         this.controlElement  = info.controlElement;
         this.document        = info.document;
@@ -21702,6 +22150,8 @@
         this.mediaElement    = info.mediaElement;
         this.tableElement    = info.tableElement;
         this.tableRowGroup   = info.tableRowGroup;
+        this.inLink          = info.inLink;
+        this.inParagraph     = info.inParagraph;
       }
     }
   }
@@ -21837,6 +22287,13 @@
                   this.allDomTexts.push(domItem);
                 }
               }
+
+              if (parentInfo.listElement) {
+                parentInfo.listElement.textContent += domItem.text.length;
+                if (parentInfo.inLink) {
+                  parentInfo.listElement.linkTextContent += domItem.text.length;
+                }
+              }
             }
             break;
 
@@ -21929,7 +22386,7 @@
      * @desc  Updates page level collections of elements for landmarks, headings and controls
      *
      * @param {Object}  parentInfo       - Parent DomElement associated DOMElement
-     * @param {Object}  domElement       - The dom element to start transversing the dom
+     * @param {Object}  domElement       - The DOM element to start transversal of the DOM
      *
      * @returns {Object} ParentInfo  - updated ParentInfo object for use in the transversal
      */
@@ -21950,13 +22407,15 @@
 
       newParentInfo.controlElement  = this.controlInfo.update(controlElement, domElement);
       newParentInfo.mapElement      = this.imageInfo.update(mapElement, domElement);
-      this.idInfo.update(documentIndex, domElement);
-      this.linkInfo.update(domElement);
+      newParentInfo.inLink          = this.linkInfo.update(domElement, parentInfo.inLink);
       newParentInfo.listElement     = this.listInfo.update(listElement, domElement);
       newParentInfo.mediaElement    = this.mediaInfo.update(mediaElement, domElement);
       newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
       [newParentInfo.tableElement, newParentInfo.tableRowGroup] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
 
+      newParentInfo.inParagraph = domElement.tagName === 'p' ? true : parentInfo.inParagraph;
+
+      this.idInfo.update(documentIndex, domElement);
       this.timingInfo.update(domElement);
 
       return newParentInfo;
@@ -22004,24 +22463,24 @@
      */
 
     showDomElementTree () {
-      if (debug$G.flag) {
-        if (debug$G.showDomElems) {
-          debug$G.log(' === AllDomElements ===', true);
+      if (debug$H.flag) {
+        if (debug$H.showDomElems) {
+          debug$H.log(' === AllDomElements ===', true);
           this.allDomElements.forEach( de => {
-            debug$G.domElement(de);
+            debug$H.domElement(de);
           });
         }
 
-        if (debug$G.showDomTexts) {
-          debug$G.log(' === AllDomTexts ===', true);
+        if (debug$H.showDomTexts) {
+          debug$H.log(' === AllDomTexts ===', true);
           this.allDomTexts.forEach( dt => {
-            debug$G.domText(dt);
+            debug$H.domText(dt);
           });
         }
 
-        if (debug$G.showTree) {
-          debug$G.log(' === DOMCache Tree ===', true);
-          debug$G.domElement(this.startingDomElement);
+        if (debug$H.showTree) {
+          debug$H.log(' === DOMCache Tree ===', true);
+          debug$H.domElement(this.startingDomElement);
           this.startingDomElement.showDomElementTree(' ');
         }
       }
@@ -22031,8 +22490,8 @@
   /* audioRules.js */
 
   /* Constants */
-  const debug$F = new DebugLogging('Audio Rules', false);
-  debug$F.flag = false;
+  const debug$G = new DebugLogging('Audio Rules', false);
+  debug$G.flag = false;
 
 
   /*
@@ -22185,8 +22644,8 @@
   /* bypassRules.js */
 
   /* Constants */
-  const debug$E = new DebugLogging('Bypass Rules', false);
-  debug$E.flag = false;
+  const debug$F = new DebugLogging('Bypass Rules', false);
+  debug$F.flag = false;
 
   /*
    * OpenA11y Rules
@@ -22294,8 +22753,8 @@
   /* colorRules.js */
 
   /* Constants */
-  const debug$D = new DebugLogging('Color Rules', false);
-  debug$D.flag = false;
+  const debug$E = new DebugLogging('Color Rules', false);
+  debug$E.flag = false;
 
 
   /*
@@ -22327,14 +22786,14 @@
           const id      = node.id ? `[id=${node.id}]` : '';
           const cc      = domElement.colorContrast;
           const crr     = cc.colorContrastRatio;
-          debug$D.flag && debug$D.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+          debug$E.flag && debug$E.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
         }
 
 
         const MIN_CCR_NORMAL_FONT = 4.5;
         const MIN_CCR_LARGE_FONT  = 3.1;
 
-        debug$D.flag && debug$D.log(`===== COLOR 1 ====`);
+        debug$E.flag && debug$E.log(`===== COLOR 1 ====`);
 
         dom_cache.allDomTexts.forEach( domText => {
           const de  = domText.parentDomElement;
@@ -22442,14 +22901,14 @@
           const id      = node.id ? `[id=${node.id}]` : '';
           const cc      = domElement.colorContrast;
           const crr     = cc.colorContrastRatio;
-          debug$D.flag && debug$D.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+          debug$E.flag && debug$E.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
         }
 
 
         const MIN_CCR_NORMAL_FONT = 7.1;
         const MIN_CCR_LARGE_FONT  = 4.5;
 
-        debug$D.flag && debug$D.log(`===== COLOR 3 ====`);
+        debug$E.flag && debug$E.log(`===== COLOR 3 ====`);
 
         dom_cache.allDomTexts.forEach( domText => {
           const de  = domText.parentDomElement;
@@ -22590,8 +23049,8 @@
   /* errorRules.js */
 
   /* Constants */
-  const debug$C = new DebugLogging('Error Rules', false);
-  debug$C.flag = false;
+  const debug$D = new DebugLogging('Error Rules', false);
+  debug$D.flag = false;
 
   /*
    * OpenA11y Rules
@@ -22814,8 +23273,8 @@
   /* frameRules.js */
 
   /* Constants */
-  const debug$B = new DebugLogging('Frame Rules', false);
-  debug$B.flag = false;
+  const debug$C = new DebugLogging('Frame Rules', false);
+  debug$C.flag = false;
 
 
   /*
@@ -22899,8 +23358,8 @@
   /* controlRules.js */
 
   /* Constants */
-  const debug$A = new DebugLogging('Control Rules', false);
-  debug$A.flag = false;
+  const debug$B = new DebugLogging('Control Rules', false);
+  debug$B.flag = false;
 
   const autoFillValues = [
     'name',
@@ -23747,8 +24206,8 @@
   /* headingRules.js */
 
   /* Constants */
-  const debug$z = new DebugLogging('Heading Rules', false);
-  debug$z.flag = false;
+  const debug$A = new DebugLogging('Heading Rules', false);
+  debug$A.flag = false;
 
   /*
    * OpenA11y Rules
@@ -24138,8 +24597,8 @@
   /* htmlRules.js */
 
   /* Constants */
-  const debug$y = new DebugLogging('HTML Rules', false);
-  debug$y.flag = false;
+  const debug$z = new DebugLogging('HTML Rules', false);
+  debug$z.flag = false;
 
   /*
    * OpenA11y Rules
@@ -24204,8 +24663,8 @@
   /* imageRules.js */
 
   /* Constants */
-  const debug$x = new DebugLogging('Image Rules', false);
-  debug$x.flag = false;
+  const debug$y = new DebugLogging('Image Rules', false);
+  debug$y.flag = false;
 
   /*
    * OpenA11y Alliance Rules
@@ -24470,14 +24929,43 @@
         }
       });
     } // end validation function
-  }
+  },
+
+  /**
+   * @object IMAGE_8
+   *
+   * @desc Images of text
+   */
+
+  { rule_id             : 'IMAGE_8',
+    last_updated        : '2023-10-17',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    wcag_primary_id     : '1.4.5',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach(ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.accName.source]);
+            }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
   ];
 
   /* keyboardRules.js */
 
   /* Constants */
-  const debug$w = new DebugLogging('Keyboard Rules', false);
-  debug$w.flag = true;
+  const debug$x = new DebugLogging('Keyboard Rules', false);
+  debug$x.flag = true;
 
   /* helper functions */
 
@@ -24536,12 +25024,12 @@
      */
 
     { rule_id             : 'KEYBOARD_2',
-      last_updated        : '2023-08-17',
+      last_updated        : '2023-10-08',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
-      wcag_primary_id     : '2.1.1',
-      wcag_related_ids    : ['2.1.2', '2.4.3',  '2.4.7', '3.2.1'],
+      wcag_primary_id     : '2.4.3',
+      wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
       target_resources    : ['links', 'controls', 'widgets'],
       validate            : function (dom_cache, rule_result) {
 
@@ -24737,8 +25225,8 @@
   /* landmarkRules.js */
 
   /* Constants */
-  const debug$v = new DebugLogging('Landmark Rules', false);
-  debug$v.flag = false;
+  const debug$w = new DebugLogging('Landmark Rules', false);
+  debug$w.flag = false;
 
   /*
    * OpenA11y Rules
@@ -25518,8 +26006,8 @@
   /* languageRules.js */
 
   /* Constants */
-  const debug$u = new DebugLogging('Language Rules', false);
-  debug$u.flag = false;
+  const debug$v = new DebugLogging('Language Rules', false);
+  debug$v.flag = false;
 
   const LANGUAGE_CODES = {
     subtags : "aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik in io is it iu iw ja ji jv jw ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mo mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg sh si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu aaa aab aac aad aae aaf aag aah aai aak aal aam aan aao aap aaq aas aat aau aav aaw aax aaz aba abb abc abd abe abf abg abh abi abj abl abm abn abo abp abq abr abs abt abu abv abw abx aby abz aca acb acd ace acf ach aci ack acl acm acn acp acq acr acs act acu acv acw acx acy acz ada adb add ade adf adg adh adi adj adl adn ado adp adq adr ads adt adu adw adx ady adz aea aeb aec aed aee aek ael aem aen aeq aer aes aeu aew aey aez afa afb afd afe afg afh afi afk afn afo afp afs aft afu afz aga agb agc agd age agf agg agh agi agj agk agl agm agn ago agp agq agr ags agt agu agv agw agx agy agz aha ahb ahg ahh ahi ahk ahl ahm ahn aho ahp ahr ahs aht aia aib aic aid aie aif aig aih aii aij aik ail aim ain aio aip aiq air ais ait aiw aix aiy aja ajg aji ajn ajp ajt aju ajw ajz akb akc akd ake akf akg akh aki akj akk akl akm ako akp akq akr aks akt aku akv akw akx aky akz ala alc ald ale alf alg alh ali alj alk all alm aln alo alp alq alr als alt alu alv alw alx aly alz ama amb amc ame amf amg ami amj amk aml amm amn amo amp amq amr ams amt amu amv amw amx amy amz ana anb anc and ane anf ang anh ani anj ank anl anm ann ano anp anq anr ans ant anu anv anw anx any anz aoa aob aoc aod aoe aof aog aoh aoi aoj aok aol aom aon aor aos aot aou aox aoz apa apb apc apd ape apf apg aph api apj apk apl apm apn apo app apq apr aps apt apu apv apw apx apy apz aqa aqc aqd aqg aql aqm aqn aqp aqr aqz arb arc ard are arh ari arj ark arl arn aro arp arq arr ars art aru arv arw arx ary arz asa asb asc asd ase asf asg ash asi asj ask asl asn aso asp asq asr ass ast asu asv asw asx asy asz ata atb atc atd ate atg ath ati atj atk atl atm atn ato atp atq atr ats att atu atv atw atx aty atz aua aub auc aud aue auf aug auh aui auj auk aul aum aun auo aup auq aur aus aut auu auw aux auy auz avb avd avi avk avl avm avn avo avs avt avu avv awa awb awc awd awe awg awh awi awk awm awn awo awr aws awt awu awv aww awx awy axb axe axg axk axl axm axx aya ayb ayc ayd aye ayg ayh ayi ayk ayl ayn ayo ayp ayq ayr ays ayt ayu ayx ayy ayz aza azb azc azd azg azj azm azn azo azt azz baa bab bac bad bae baf bag bah bai baj bal ban bao bap bar bas bat bau bav baw bax bay baz bba bbb bbc bbd bbe bbf bbg bbh bbi bbj bbk bbl bbm bbn bbo bbp bbq bbr bbs bbt bbu bbv bbw bbx bby bbz bca bcb bcc bcd bce bcf bcg bch bci bcj bck bcl bcm bcn bco bcp bcq bcr bcs bct bcu bcv bcw bcy bcz bda bdb bdc bdd bde bdf bdg bdh bdi bdj bdk bdl bdm bdn bdo bdp bdq bdr bds bdt bdu bdv bdw bdx bdy bdz bea beb bec bed bee bef beg beh bei bej bek bem beo bep beq ber bes bet beu bev bew bex bey bez bfa bfb bfc bfd bfe bff bfg bfh bfi bfj bfk bfl bfm bfn bfo bfp bfq bfr bfs bft bfu bfw bfx bfy bfz bga bgb bgc bgd bge bgf bgg bgi bgj bgk bgl bgm bgn bgo bgp bgq bgr bgs bgt bgu bgv bgw bgx bgy bgz bha bhb bhc bhd bhe bhf bhg bhh bhi bhj bhk bhl bhm bhn bho bhp bhq bhr bhs bht bhu bhv bhw bhx bhy bhz bia bib bic bid bie bif big bij bik bil bim bin bio bip biq bir bit biu biv biw bix biy biz bja bjb bjc bjd bje bjf bjg bjh bji bjj bjk bjl bjm bjn bjo bjp bjq bjr bjs bjt bju bjv bjw bjx bjy bjz bka bkb bkc bkd bkf bkg bkh bki bkj bkk bkl bkm bkn bko bkp bkq bkr bks bkt bku bkv bkw bkx bky bkz bla blb blc bld ble blf blg blh bli blj blk bll blm bln blo blp blq blr bls blt blv blw blx bly blz bma bmb bmc bmd bme bmf bmg bmh bmi bmj bmk bml bmm bmn bmo bmp bmq bmr bms bmt bmu bmv bmw bmx bmy bmz bna bnb bnc bnd bne bnf bng bni bnj bnk bnl bnm bnn bno bnp bnq bnr bns bnt bnu bnv bnw bnx bny bnz boa bob boe bof bog boh boi boj bok bol bom bon boo bop boq bor bot bou bov bow box boy boz bpa bpb bpd bpg bph bpi bpj bpk bpl bpm bpn bpo bpp bpq bpr bps bpt bpu bpv bpw bpx bpy bpz bqa bqb bqc bqd bqf bqg bqh bqi bqj bqk bql bqm bqn bqo bqp bqq bqr bqs bqt bqu bqv bqw bqx bqy bqz bra brb brc brd brf brg brh bri brj brk brl brm brn bro brp brq brr brs brt bru brv brw brx bry brz bsa bsb bsc bse bsf bsg bsh bsi bsj bsk bsl bsm bsn bso bsp bsq bsr bss bst bsu bsv bsw bsx bsy bta btb btc btd bte btf btg bth bti btj btk btl btm btn bto btp btq btr bts btt btu btv btw btx bty btz bua bub buc bud bue buf bug buh bui buj buk bum bun buo bup buq bus but buu buv buw bux buy buz bva bvb bvc bvd bve bvf bvg bvh bvi bvj bvk bvl bvm bvn bvo bvp bvq bvr bvt bvu bvv bvw bvx bvy bvz bwa bwb bwc bwd bwe bwf bwg bwh bwi bwj bwk bwl bwm bwn bwo bwp bwq bwr bws bwt bwu bww bwx bwy bwz bxa bxb bxc bxd bxe bxf bxg bxh bxi bxj bxk bxl bxm bxn bxo bxp bxq bxr bxs bxu bxv bxw bxx bxz bya byb byc byd bye byf byg byh byi byj byk byl bym byn byo byp byq byr bys byt byv byw byx byy byz bza bzb bzc bzd bze bzf bzg bzh bzi bzj bzk bzl bzm bzn bzo bzp bzq bzr bzs bzt bzu bzv bzw bzx bzy bzz caa cab cac cad cae caf cag cah cai caj cak cal cam can cao cap caq car cas cau cav caw cax cay caz cba cbb cbc cbd cbe cbg cbh cbi cbj cbk cbl cbn cbo cbr cbs cbt cbu cbv cbw cby cca ccc ccd cce ccg cch ccj ccl ccm ccn cco ccp ccq ccr ccs cda cdc cdd cde cdf cdg cdh cdi cdj cdm cdn cdo cdr cds cdy cdz cea ceb ceg cek cel cen cet cfa cfd cfg cfm cga cgc cgg cgk chb chc chd chf chg chh chj chk chl chm chn cho chp chq chr cht chw chx chy chz cia cib cic cid cie cih cik cim cin cip cir ciw ciy cja cje cjh cji cjk cjm cjn cjo cjp cjr cjs cjv cjy cka ckb ckh ckl ckn cko ckq ckr cks ckt cku ckv ckx cky ckz cla clc cld cle clh cli clj clk cll clm clo clt clu clw cly cma cmc cme cmg cmi cmk cml cmm cmn cmo cmr cms cmt cna cnb cnc cng cnh cni cnk cnl cno cns cnt cnu cnw cnx coa cob coc cod coe cof cog coh coj cok col com con coo cop coq cot cou cov cow cox coy coz cpa cpb cpc cpe cpf cpg cpi cpn cpo cpp cps cpu cpx cpy cqd cqu cra crb crc crd crf crg crh cri crj crk crl crm crn cro crp crq crr crs crt crv crw crx cry crz csa csb csc csd cse csf csg csh csi csj csk csl csm csn cso csq csr css cst csu csv csw csy csz cta ctc ctd cte ctg cth ctl ctm ctn cto ctp cts ctt ctu ctz cua cub cuc cug cuh cui cuj cuk cul cum cuo cup cuq cur cus cut cuu cuv cuw cux cvg cvn cwa cwb cwd cwe cwg cwt cya cyb cyo czh czk czn czo czt daa dac dad dae daf dag dah dai daj dak dal dam dao dap daq dar das dau dav daw dax day daz dba dbb dbd dbe dbf dbg dbi dbj dbl dbm dbn dbo dbp dbq dbr dbt dbu dbv dbw dby dcc dcr dda ddd dde ddg ddi ddj ddn ddo ddr dds ddw dec ded dee def deg deh dei dek del dem den dep deq der des dev dez dga dgb dgc dgd dge dgg dgh dgi dgk dgl dgn dgo dgr dgs dgt dgu dgw dgx dgz dha dhd dhg dhi dhl dhm dhn dho dhr dhs dhu dhv dhw dhx dia dib dic did dif dig dih dii dij dik dil dim din dio dip diq dir dis dit diu diw dix diy diz dja djb djc djd dje djf dji djj djk djl djm djn djo djr dju djw dka dkk dkl dkr dks dkx dlg dlk dlm dln dma dmb dmc dmd dme dmg dmk dml dmm dmn dmo dmr dms dmu dmv dmw dmx dmy dna dnd dne dng dni dnj dnk dnn dnr dnt dnu dnv dnw dny doa dob doc doe dof doh doi dok dol don doo dop doq dor dos dot dov dow dox doy doz dpp dra drb drc drd dre drg drh dri drl drn dro drq drr drs drt dru drw dry dsb dse dsh dsi dsl dsn dso dsq dta dtb dtd dth dti dtk dtm dto dtp dtr dts dtt dtu dty dua dub duc dud due duf dug duh dui duj duk dul dum dun duo dup duq dur dus duu duv duw dux duy duz dva dwa dwl dwr dws dww dya dyb dyd dyg dyi dym dyn dyo dyu dyy dza dzd dze dzg dzl dzn eaa ebg ebk ebo ebr ebu ecr ecs ecy eee efa efe efi ega egl ego egx egy ehu eip eit eiv eja eka ekc eke ekg eki ekk ekl ekm eko ekp ekr eky ele elh eli elk elm elo elp elu elx ema emb eme emg emi emk emm emn emo emp ems emu emw emx emy ena enb enc end enf enh enm enn eno enq enr enu env enw eot epi era erg erh eri erk ero err ers ert erw ese esh esi esk esl esm esn eso esq ess esu esx etb etc eth etn eto etr ets ett etu etx etz euq eve evh evn ewo ext eya eyo eza eze faa fab fad faf fag fah fai faj fak fal fam fan fap far fat fau fax fay faz fbl fcs fer ffi ffm fgr fia fie fil fip fir fit fiu fiw fkk fkv fla flh fli fll fln flr fly fmp fmu fng fni fod foi fom fon for fos fox fpe fqs frc frd frk frm fro frp frq frr frs frt fse fsl fss fub fuc fud fue fuf fuh fui fuj fum fun fuq fur fut fuu fuv fuy fvr fwa fwe gaa gab gac gad gae gaf gag gah gai gaj gak gal gam gan gao gap gaq gar gas gat gau gav gaw gax gay gaz gba gbb gbc gbd gbe gbf gbg gbh gbi gbj gbk gbl gbm gbn gbo gbp gbq gbr gbs gbu gbv gbw gbx gby gbz gcc gcd gce gcf gcl gcn gcr gct gda gdb gdc gdd gde gdf gdg gdh gdi gdj gdk gdl gdm gdn gdo gdq gdr gds gdt gdu gdx gea geb gec ged geg geh gei gej gek gel gem geq ges gew gex gey gez gfk gft gfx gga ggb ggd gge ggg ggk ggl ggn ggo ggr ggt ggu ggw gha ghc ghe ghh ghk ghl ghn gho ghr ghs ght gia gib gic gid gig gih gil gim gin gio gip giq gir gis git giu giw gix giy giz gji gjk gjm gjn gju gka gke gkn gko gkp glc gld glh gli glj glk gll glo glr glu glw gly gma gmb gmd gme gmh gml gmm gmn gmq gmu gmv gmw gmx gmy gmz gna gnb gnc gnd gne gng gnh gni gnk gnl gnm gnn gno gnq gnr gnt gnu gnw gnz goa gob goc god goe gof gog goh goi goj gok gol gom gon goo gop goq gor gos got gou gow gox goy goz gpa gpe gpn gqa gqi gqn gqr gqu gra grb grc grd grg grh gri grj grk grm gro grq grr grs grt gru grv grw grx gry grz gse gsg gsl gsm gsn gso gsp gss gsw gta gti gtu gua gub guc gud gue guf gug guh gui guk gul gum gun guo gup guq gur gus gut guu guv guw gux guz gva gvc gve gvf gvj gvl gvm gvn gvo gvp gvr gvs gvy gwa gwb gwc gwd gwe gwf gwg gwi gwj gwm gwn gwr gwt gwu gww gwx gxx gya gyb gyd gye gyf gyg gyi gyl gym gyn gyr gyy gza gzi gzn haa hab hac had hae haf hag hah hai haj hak hal ham han hao hap haq har has hav haw hax hay haz hba hbb hbn hbo hbu hca hch hdn hds hdy hea hed heg heh hei hem hgm hgw hhi hhr hhy hia hib hid hif hig hih hii hij hik hil him hio hir hit hiw hix hji hka hke hkk hks hla hlb hld hle hlt hlu hma hmb hmc hmd hme hmf hmg hmh hmi hmj hmk hml hmm hmn hmp hmq hmr hms hmt hmu hmv hmw hmx hmy hmz hna hnd hne hnh hni hnj hnn hno hns hnu hoa hob hoc hod hoe hoh hoi hoj hok hol hom hoo hop hor hos hot hov how hoy hoz hpo hps hra hrc hre hrk hrm hro hrp hrr hrt hru hrw hrx hrz hsb hsh hsl hsn hss hti hto hts htu htx hub huc hud hue huf hug huh hui huj huk hul hum huo hup huq hur hus hut huu huv huw hux huy huz hvc hve hvk hvn hvv hwa hwc hwo hya hyx iai ian iap iar iba ibb ibd ibe ibg ibi ibl ibm ibn ibr ibu iby ica ich icl icr ida idb idc idd ide idi idr ids idt idu ifa ifb ife iff ifk ifm ifu ify igb ige igg igl igm ign igo igs igw ihb ihi ihp ihw iin iir ijc ije ijj ijn ijo ijs ike iki ikk ikl iko ikp ikr ikt ikv ikw ikx ikz ila ilb ilg ili ilk ill ilo ils ilu ilv ilw ima ime imi iml imn imo imr ims imy inb inc ine ing inh inj inl inm inn ino inp ins int inz ior iou iow ipi ipo iqu iqw ira ire irh iri irk irn iro irr iru irx iry isa isc isd ise isg ish isi isk ism isn iso isr ist isu itb itc ite iti itk itl itm ito itr its itt itv itw itx ity itz ium ivb ivv iwk iwm iwo iws ixc ixl iya iyo iyx izh izi izr izz jaa jab jac jad jae jaf jah jaj jak jal jam jan jao jaq jar jas jat jau jax jay jaz jbe jbi jbj jbk jbn jbo jbr jbt jbu jbw jcs jct jda jdg jdt jeb jee jeg jeh jei jek jel jen jer jet jeu jgb jge jgk jgo jhi jhs jia jib jic jid jie jig jih jii jil jim jio jiq jit jiu jiv jiy jjr jkm jko jkp jkr jku jle jls jma jmb jmc jmd jmi jml jmn jmr jms jmw jmx jna jnd jng jni jnj jnl jns job jod jor jos jow jpa jpr jpx jqr jra jrb jrr jrt jru jsl jua jub juc jud juh jui juk jul jum jun juo jup jur jus jut juu juw juy jvd jvn jwi jya jye jyy kaa kab kac kad kae kaf kag kah kai kaj kak kam kao kap kaq kar kav kaw kax kay kba kbb kbc kbd kbe kbf kbg kbh kbi kbj kbk kbl kbm kbn kbo kbp kbq kbr kbs kbt kbu kbv kbw kbx kby kbz kca kcb kcc kcd kce kcf kcg kch kci kcj kck kcl kcm kcn kco kcp kcq kcr kcs kct kcu kcv kcw kcx kcy kcz kda kdc kdd kde kdf kdg kdh kdi kdj kdk kdl kdm kdn kdo kdp kdq kdr kdt kdu kdv kdw kdx kdy kdz kea keb kec ked kee kef keg keh kei kej kek kel kem ken keo kep keq ker kes ket keu kev kew kex key kez kfa kfb kfc kfd kfe kff kfg kfh kfi kfj kfk kfl kfm kfn kfo kfp kfq kfr kfs kft kfu kfv kfw kfx kfy kfz kga kgb kgc kgd kge kgf kgg kgh kgi kgj kgk kgl kgm kgn kgo kgp kgq kgr kgs kgt kgu kgv kgw kgx kgy kha khb khc khd khe khf khg khh khi khj khk khl khn kho khp khq khr khs kht khu khv khw khx khy khz kia kib kic kid kie kif kig kih kii kij kil kim kio kip kiq kis kit kiu kiv kiw kix kiy kiz kja kjb kjc kjd kje kjf kjg kjh kji kjj kjk kjl kjm kjn kjo kjp kjq kjr kjs kjt kju kjx kjy kjz kka kkb kkc kkd kke kkf kkg kkh kki kkj kkk kkl kkm kkn kko kkp kkq kkr kks kkt kku kkv kkw kkx kky kkz kla klb klc kld kle klf klg klh kli klj klk kll klm kln klo klp klq klr kls klt klu klv klw klx kly klz kma kmb kmc kmd kme kmf kmg kmh kmi kmj kmk kml kmm kmn kmo kmp kmq kmr kms kmt kmu kmv kmw kmx kmy kmz kna knb knc knd kne knf kng kni knj knk knl knm knn kno knp knq knr kns knt knu knv knw knx kny knz koa koc kod koe kof kog koh koi koj kok kol koo kop koq kos kot kou kov kow kox koy koz kpa kpb kpc kpd kpe kpf kpg kph kpi kpj kpk kpl kpm kpn kpo kpp kpq kpr kps kpt kpu kpv kpw kpx kpy kpz kqa kqb kqc kqd kqe kqf kqg kqh kqi kqj kqk kql kqm kqn kqo kqp kqq kqr kqs kqt kqu kqv kqw kqx kqy kqz kra krb krc krd kre krf krh kri krj krk krl krm krn kro krp krr krs krt kru krv krw krx kry krz ksa ksb ksc ksd kse ksf ksg ksh ksi ksj ksk ksl ksm ksn kso ksp ksq ksr kss kst ksu ksv ksw ksx ksy ksz kta ktb ktc ktd kte ktf ktg kth kti ktj ktk ktl ktm ktn kto ktp ktq ktr kts ktt ktu ktv ktw ktx kty ktz kub kuc kud kue kuf kug kuh kui kuj kuk kul kum kun kuo kup kuq kus kut kuu kuv kuw kux kuy kuz kva kvb kvc kvd kve kvf kvg kvh kvi kvj kvk kvl kvm kvn kvo kvp kvq kvr kvs kvt kvu kvv kvw kvx kvy kvz kwa kwb kwc kwd kwe kwf kwg kwh kwi kwj kwk kwl kwm kwn kwo kwp kwq kwr kws kwt kwu kwv kww kwx kwy kwz kxa kxb kxc kxd kxe kxf kxh kxi kxj kxk kxl kxm kxn kxo kxp kxq kxr kxs kxt kxu kxv kxw kxx kxy kxz kya kyb kyc kyd kye kyf kyg kyh kyi kyj kyk kyl kym kyn kyo kyp kyq kyr kys kyt kyu kyv kyw kyx kyy kyz kza kzb kzc kzd kze kzf kzg kzh kzi kzj kzk kzl kzm kzn kzo kzp kzq kzr kzs kzt kzu kzv kzw kzx kzy kzz laa lab lac lad lae laf lag lah lai laj lak lal lam lan lap laq lar las lau law lax lay laz lba lbb lbc lbe lbf lbg lbi lbj lbk lbl lbm lbn lbo lbq lbr lbs lbt lbu lbv lbw lbx lby lbz lcc lcd lce lcf lch lcl lcm lcp lcq lcs lda ldb ldd ldg ldh ldi ldj ldk ldl ldm ldn ldo ldp ldq lea leb lec led lee lef leg leh lei lej lek lel lem len leo lep leq ler les let leu lev lew lex ley lez lfa lfn lga lgb lgg lgh lgi lgk lgl lgm lgn lgq lgr lgt lgu lgz lha lhh lhi lhl lhm lhn lhp lhs lht lhu lia lib lic lid lie lif lig lih lii lij lik lil lio lip liq lir lis liu liv liw lix liy liz lja lje lji ljl ljp ljw ljx lka lkb lkc lkd lke lkh lki lkj lkl lkm lkn lko lkr lks lkt lku lky lla llb llc lld lle llf llg llh lli llj llk lll llm lln llo llp llq lls llu llx lma lmb lmc lmd lme lmf lmg lmh lmi lmj lmk lml lmm lmn lmo lmp lmq lmr lmu lmv lmw lmx lmy lmz lna lnb lnd lng lnh lni lnj lnl lnm lnn lno lns lnu lnw lnz loa lob loc loe lof log loh loi loj lok lol lom lon loo lop loq lor los lot lou lov low lox loy loz lpa lpe lpn lpo lpx lra lrc lre lrg lri lrk lrl lrm lrn lro lrr lrt lrv lrz lsa lsd lse lsg lsh lsi lsl lsm lso lsp lsr lss lst lsy ltc ltg lti ltn lto lts ltu lua luc lud lue luf lui luj luk lul lum lun luo lup luq lur lus lut luu luv luw luy luz lva lvk lvs lvu lwa lwe lwg lwh lwl lwm lwo lwt lwu lww lya lyg lyn lzh lzl lzn lzz maa mab mad mae maf mag mai maj mak mam man map maq mas mat mau mav maw max maz mba mbb mbc mbd mbe mbf mbh mbi mbj mbk mbl mbm mbn mbo mbp mbq mbr mbs mbt mbu mbv mbw mbx mby mbz mca mcb mcc mcd mce mcf mcg mch mci mcj mck mcl mcm mcn mco mcp mcq mcr mcs mct mcu mcv mcw mcx mcy mcz mda mdb mdc mdd mde mdf mdg mdh mdi mdj mdk mdl mdm mdn mdp mdq mdr mds mdt mdu mdv mdw mdx mdy mdz mea meb mec med mee mef meg meh mei mej mek mel mem men meo mep meq mer mes met meu mev mew mey mez mfa mfb mfc mfd mfe mff mfg mfh mfi mfj mfk mfl mfm mfn mfo mfp mfq mfr mfs mft mfu mfv mfw mfx mfy mfz mga mgb mgc mgd mge mgf mgg mgh mgi mgj mgk mgl mgm mgn mgo mgp mgq mgr mgs mgt mgu mgv mgw mgx mgy mgz mha mhb mhc mhd mhe mhf mhg mhh mhi mhj mhk mhl mhm mhn mho mhp mhq mhr mhs mht mhu mhw mhx mhy mhz mia mib mic mid mie mif mig mih mii mij mik mil mim min mio mip miq mir mis mit miu miw mix miy miz mja mjc mjd mje mjg mjh mji mjj mjk mjl mjm mjn mjo mjp mjq mjr mjs mjt mju mjv mjw mjx mjy mjz mka mkb mkc mke mkf mkg mkh mki mkj mkk mkl mkm mkn mko mkp mkq mkr mks mkt mku mkv mkw mkx mky mkz mla mlb mlc mld mle mlf mlh mli mlj mlk mll mlm mln mlo mlp mlq mlr mls mlu mlv mlw mlx mlz mma mmb mmc mmd mme mmf mmg mmh mmi mmj mmk mml mmm mmn mmo mmp mmq mmr mmt mmu mmv mmw mmx mmy mmz mna mnb mnc mnd mne mnf mng mnh mni mnj mnk mnl mnm mnn mno mnp mnq mnr mns mnt mnu mnv mnw mnx mny mnz moa moc mod moe mof mog moh moi moj mok mom moo mop moq mor mos mot mou mov mow mox moy moz mpa mpb mpc mpd mpe mpg mph mpi mpj mpk mpl mpm mpn mpo mpp mpq mpr mps mpt mpu mpv mpw mpx mpy mpz mqa mqb mqc mqe mqf mqg mqh mqi mqj mqk mql mqm mqn mqo mqp mqq mqr mqs mqt mqu mqv mqw mqx mqy mqz mra mrb mrc mrd mre mrf mrg mrh mrj mrk mrl mrm mrn mro mrp mrq mrr mrs mrt mru mrv mrw mrx mry mrz msb msc msd mse msf msg msh msi msj msk msl msm msn mso msp msq msr mss mst msu msv msw msx msy msz mta mtb mtc mtd mte mtf mtg mth mti mtj mtk mtl mtm mtn mto mtp mtq mtr mts mtt mtu mtv mtw mtx mty mua mub muc mud mue mug muh mui muj muk mul mum mun muo mup muq mur mus mut muu muv mux muy muz mva mvb mvd mve mvf mvg mvh mvi mvk mvl mvm mvn mvo mvp mvq mvr mvs mvt mvu mvv mvw mvx mvy mvz mwa mwb mwc mwd mwe mwf mwg mwh mwi mwj mwk mwl mwm mwn mwo mwp mwq mwr mws mwt mwu mwv mww mwx mwy mwz mxa mxb mxc mxd mxe mxf mxg mxh mxi mxj mxk mxl mxm mxn mxo mxp mxq mxr mxs mxt mxu mxv mxw mxx mxy mxz myb myc myd mye myf myg myh myi myj myk myl mym myn myo myp myq myr mys myt myu myv myw myx myy myz mza mzb mzc mzd mze mzg mzh mzi mzj mzk mzl mzm mzn mzo mzp mzq mzr mzs mzt mzu mzv mzw mzx mzy mzz naa nab nac nad nae naf nag nah nai naj nak nal nam nan nao nap naq nar nas nat naw nax nay naz nba nbb nbc nbd nbe nbf nbg nbh nbi nbj nbk nbm nbn nbo nbp nbq nbr nbs nbt nbu nbv nbw nbx nby nca ncb ncc ncd nce ncf ncg nch nci ncj nck ncl ncm ncn nco ncp ncr ncs nct ncu ncx ncz nda ndb ndc ndd ndf ndg ndh ndi ndj ndk ndl ndm ndn ndp ndq ndr nds ndt ndu ndv ndw ndx ndy ndz nea neb nec ned nee nef neg neh nei nej nek nem nen neo neq ner nes net neu nev new nex ney nez nfa nfd nfl nfr nfu nga ngb ngc ngd nge ngf ngg ngh ngi ngj ngk ngl ngm ngn ngo ngp ngq ngr ngs ngt ngu ngv ngw ngx ngy ngz nha nhb nhc nhd nhe nhf nhg nhh nhi nhk nhm nhn nho nhp nhq nhr nht nhu nhv nhw nhx nhy nhz nia nib nic nid nie nif nig nih nii nij nik nil nim nin nio niq nir nis nit niu niv niw nix niy niz nja njb njd njh nji njj njl njm njn njo njr njs njt nju njx njy njz nka nkb nkc nkd nke nkf nkg nkh nki nkj nkk nkm nkn nko nkp nkq nkr nks nkt nku nkv nkw nkx nkz nla nlc nle nlg nli nlj nlk nll nln nlo nlq nlr nlu nlv nlw nlx nly nlz nma nmb nmc nmd nme nmf nmg nmh nmi nmj nmk nml nmm nmn nmo nmp nmq nmr nms nmt nmu nmv nmw nmx nmy nmz nna nnb nnc nnd nne nnf nng nnh nni nnj nnk nnl nnm nnn nnp nnq nnr nns nnt nnu nnv nnw nnx nny nnz noa noc nod noe nof nog noh noi noj nok nol nom non noo nop noq nos not nou nov now noy noz npa npb npg nph npi npl npn npo nps npu npy nqg nqk nqm nqn nqo nqq nqy nra nrb nrc nre nrg nri nrk nrl nrm nrn nrp nrr nrt nru nrx nrz nsa nsc nsd nse nsf nsg nsh nsi nsk nsl nsm nsn nso nsp nsq nsr nss nst nsu nsv nsw nsx nsy nsz nte ntg nti ntj ntk ntm nto ntp ntr nts ntu ntw ntx nty ntz nua nub nuc nud nue nuf nug nuh nui nuj nuk nul num nun nuo nup nuq nur nus nut nuu nuv nuw nux nuy nuz nvh nvm nvo nwa nwb nwc nwe nwg nwi nwm nwo nwr nwx nwy nxa nxd nxe nxg nxi nxk nxl nxm nxn nxq nxr nxu nxx nyb nyc nyd nye nyf nyg nyh nyi nyj nyk nyl nym nyn nyo nyp nyq nyr nys nyt nyu nyv nyw nyx nyy nza nzb nzi nzk nzm nzs nzu nzy nzz oaa oac oar oav obi obk obl obm obo obr obt obu oca och oco ocu oda odk odt odu ofo ofs ofu ogb ogc oge ogg ogo ogu oht ohu oia oin ojb ojc ojg ojp ojs ojv ojw oka okb okd oke okg okh oki okj okk okl okm okn oko okr oks oku okv okx ola old ole olk olm olo olr oma omb omc ome omg omi omk oml omn omo omp omq omr omt omu omv omw omx ona onb one ong oni onj onk onn ono onp onr ons ont onu onw onx ood oog oon oor oos opa opk opm opo opt opy ora orc ore org orh orn oro orr ors ort oru orv orw orx ory orz osa osc osi oso osp ost osu osx ota otb otd ote oti otk otl otm otn oto otq otr ots ott otu otw otx oty otz oua oub oue oui oum oun owi owl oyb oyd oym oyy ozm paa pab pac pad pae paf pag pah pai pak pal pam pao pap paq par pas pat pau pav paw pax pay paz pbb pbc pbe pbf pbg pbh pbi pbl pbn pbo pbp pbr pbs pbt pbu pbv pby pbz pca pcb pcc pcd pce pcf pcg pch pci pcj pck pcl pcm pcn pcp pcr pcw pda pdc pdi pdn pdo pdt pdu pea peb ped pee pef peg peh pei pej pek pel pem peo pep peq pes pev pex pey pez pfa pfe pfl pga pgg pgi pgk pgl pgn pgs pgu pgy pha phd phg phh phi phk phl phm phn pho phq phr pht phu phv phw pia pib pic pid pie pif pig pih pii pij pil pim pin pio pip pir pis pit piu piv piw pix piy piz pjt pka pkb pkc pkg pkh pkn pko pkp pkr pks pkt pku pla plb plc pld ple plf plg plh plj plk pll pln plo plp plq plr pls plt plu plv plw ply plz pma pmb pmc pmd pme pmf pmh pmi pmj pmk pml pmm pmn pmo pmq pmr pms pmt pmu pmw pmx pmy pmz pna pnb pnc pne png pnh pni pnj pnk pnl pnm pnn pno pnp pnq pnr pns pnt pnu pnv pnw pnx pny pnz poc pod poe pof pog poh poi pok pom pon poo pop poq pos pot pov pow pox poy poz ppa ppe ppi ppk ppl ppm ppn ppo ppp ppq ppr pps ppt ppu pqa pqe pqm pqw pra prb prc prd pre prf prg prh pri prk prl prm prn pro prp prq prr prs prt pru prw prx pry prz psa psc psd pse psg psh psi psl psm psn pso psp psq psr pss pst psu psw psy pta pth pti ptn pto ptp ptr ptt ptu ptv ptw pty pua pub puc pud pue puf pug pui puj puk pum puo pup puq pur put puu puw pux puy puz pwa pwb pwg pwi pwm pwn pwo pwr pww pxm pye pym pyn pys pyu pyx pyy pzn qaa..qtz qua qub quc qud quf qug quh qui quk qul qum qun qup quq qur qus quv quw qux quy quz qva qvc qve qvh qvi qvj qvl qvm qvn qvo qvp qvs qvw qvy qvz qwa qwc qwe qwh qwm qws qwt qxa qxc qxh qxl qxn qxo qxp qxq qxr qxs qxt qxu qxw qya qyp raa rab rac rad raf rag rah rai raj rak ral ram ran rao rap raq rar ras rat rau rav raw rax ray raz rbb rbk rbl rbp rcf rdb rea reb ree reg rei rej rel rem ren rer res ret rey rga rge rgk rgn rgr rgs rgu rhg rhp ria rie rif ril rim rin rir rit riu rjg rji rjs rka rkb rkh rki rkm rkt rkw rma rmb rmc rmd rme rmf rmg rmh rmi rmk rml rmm rmn rmo rmp rmq rmr rms rmt rmu rmv rmw rmx rmy rmz rna rnd rng rnl rnn rnp rnr rnw roa rob roc rod roe rof rog rol rom roo rop ror rou row rpn rpt rri rro rrt rsb rsi rsl rtc rth rtm rtw rub ruc rue ruf rug ruh rui ruk ruo rup ruq rut ruu ruy ruz rwa rwk rwm rwo rwr rxd rxw ryn rys ryu saa sab sac sad sae saf sah sai saj sak sal sam sao sap saq sar sas sat sau sav saw sax say saz sba sbb sbc sbd sbe sbf sbg sbh sbi sbj sbk sbl sbm sbn sbo sbp sbq sbr sbs sbt sbu sbv sbw sbx sby sbz sca scb sce scf scg sch sci sck scl scn sco scp scq scs scu scv scw scx sda sdb sdc sde sdf sdg sdh sdj sdk sdl sdm sdn sdo sdp sdr sds sdt sdu sdv sdx sdz sea seb sec sed see sef seg seh sei sej sek sel sem sen seo sep seq ser ses set seu sev sew sey sez sfb sfe sfm sfs sfw sga sgb sgc sgd sge sgg sgh sgi sgj sgk sgl sgm sgn sgo sgp sgr sgs sgt sgu sgw sgx sgy sgz sha shb shc shd she shg shh shi shj shk shl shm shn sho shp shq shr shs sht shu shv shw shx shy shz sia sib sid sie sif sig sih sii sij sik sil sim sio sip siq sir sis sit siu siv siw six siy siz sja sjb sjd sje sjg sjk sjl sjm sjn sjo sjp sjr sjs sjt sju sjw ska skb skc skd ske skf skg skh ski skj skk skm skn sko skp skq skr sks skt sku skv skw skx sky skz sla slc sld sle slf slg slh sli slj sll slm sln slp slq slr sls slt slu slw slx sly slz sma smb smc smd smf smg smh smi smj smk sml smm smn smp smq smr sms smt smu smv smw smx smy smz snb snc sne snf sng snh sni snj snk snl snm snn sno snp snq snr sns snu snv snw snx sny snz soa sob soc sod soe sog soh soi soj sok sol son soo sop soq sor sos sou sov sow sox soy soz spb spc spd spe spg spi spk spl spm spo spp spq spr sps spt spu spv spx spy sqa sqh sqj sqk sqm sqn sqo sqq sqr sqs sqt squ sra srb src sre srf srg srh sri srk srl srm srn sro srq srr srs srt sru srv srw srx sry srz ssa ssb ssc ssd sse ssf ssg ssh ssi ssj ssk ssl ssm ssn sso ssp ssq ssr sss sst ssu ssv ssx ssy ssz sta stb std ste stf stg sth sti stj stk stl stm stn sto stp stq str sts stt stu stv stw sty sua sub suc sue sug sui suj suk sul sum suq sur sus sut suv suw sux suy suz sva svb svc sve svk svm svr svs svx swb swc swf swg swh swi swj swk swl swm swn swo swp swq swr sws swt swu swv sww swx swy sxb sxc sxe sxg sxk sxl sxm sxn sxo sxr sxs sxu sxw sya syb syc syd syi syk syl sym syn syo syr sys syw syy sza szb szc szd sze szg szl szn szp szv szw taa tab tac tad tae taf tag tai taj tak tal tan tao tap taq tar tas tau tav taw tax tay taz tba tbb tbc tbd tbe tbf tbg tbh tbi tbj tbk tbl tbm tbn tbo tbp tbq tbr tbs tbt tbu tbv tbw tbx tby tbz tca tcb tcc tcd tce tcf tcg tch tci tck tcl tcm tcn tco tcp tcq tcs tct tcu tcw tcx tcy tcz tda tdb tdc tdd tde tdf tdg tdh tdi tdj tdk tdl tdn tdo tdq tdr tds tdt tdu tdv tdx tdy tea teb tec ted tee tef teg teh tei tek tem ten teo tep teq ter tes tet teu tev tew tex tey tfi tfn tfo tfr tft tga tgb tgc tgd tge tgf tgg tgh tgi tgj tgn tgo tgp tgq tgr tgs tgt tgu tgv tgw tgx tgy tgz thc thd the thf thh thi thk thl thm thn thp thq thr ths tht thu thv thw thx thy thz tia tic tid tie tif tig tih tii tij tik til tim tin tio tip tiq tis tit tiu tiv tiw tix tiy tiz tja tjg tji tjl tjm tjn tjo tjs tju tjw tka tkb tkd tke tkf tkg tkk tkl tkm tkn tkp tkq tkr tks tkt tku tkw tkx tkz tla tlb tlc tld tlf tlg tlh tli tlj tlk tll tlm tln tlo tlp tlq tlr tls tlt tlu tlv tlw tlx tly tma tmb tmc tmd tme tmf tmg tmh tmi tmj tmk tml tmm tmn tmo tmp tmq tmr tms tmt tmu tmv tmw tmy tmz tna tnb tnc tnd tne tnf tng tnh tni tnk tnl tnm tnn tno tnp tnq tnr tns tnt tnu tnv tnw tnx tny tnz tob toc tod toe tof tog toh toi toj tol tom too top toq tor tos tou tov tow tox toy toz tpa tpc tpe tpf tpg tpi tpj tpk tpl tpm tpn tpo tpp tpq tpr tpt tpu tpv tpw tpx tpy tpz tqb tql tqm tqn tqo tqp tqq tqr tqt tqu tqw tra trb trc trd tre trf trg trh tri trj trk trl trm trn tro trp trq trr trs trt tru trv trw trx try trz tsa tsb tsc tsd tse tsf tsg tsh tsi tsj tsk tsl tsm tsp tsq tsr tss tst tsu tsv tsw tsx tsy tsz tta ttb ttc ttd tte ttf ttg tth tti ttj ttk ttl ttm ttn tto ttp ttq ttr tts ttt ttu ttv ttw tty ttz tua tub tuc tud tue tuf tug tuh tui tuj tul tum tun tuo tup tuq tus tut tuu tuv tuw tux tuy tuz tva tvd tve tvk tvl tvm tvn tvo tvs tvt tvu tvw tvy twa twb twc twd twe twf twg twh twl twm twn two twp twq twr twt twu tww twx twy txa txb txc txe txg txh txi txm txn txo txq txr txs txt txu txx txy tya tye tyh tyi tyj tyl tyn typ tyr tys tyt tyu tyv tyx tyz tza tzh tzj tzl tzm tzn tzo tzx uam uan uar uba ubi ubl ubr ubu uby uda ude udg udi udj udl udm udu ues ufi uga ugb uge ugn ugo ugy uha uhn uis uiv uji uka ukg ukh ukl ukp ukq uks uku ukw uky ula ulb ulc ule ulf uli ulk ull ulm uln ulu ulw uma umb umc umd umg umi umm umn umo ump umr ums umu una und une ung unk unm unn unp unr unu unx unz uok upi upv ura urb urc ure urf urg urh uri urj urk url urm urn uro urp urr urt uru urv urw urx ury urz usa ush usi usk usp usu uta ute utp utr utu uum uun uur uuu uve uvh uvl uwa uya uzn uzs vaa vae vaf vag vah vai vaj val vam van vao vap var vas vau vav vay vbb vbk vec ved vel vem veo vep ver vgr vgt vic vid vif vig vil vin vis vit viv vka vki vkj vkk vkl vkm vko vkp vkt vku vlp vls vma vmb vmc vmd vme vmf vmg vmh vmi vmj vmk vml vmm vmp vmq vmr vms vmu vmv vmw vmx vmy vmz vnk vnm vnp vor vot vra vro vrs vrt vsi vsl vsv vto vum vun vut vwa waa wab wac wad wae waf wag wah wai waj wak wal wam wan wao wap waq war was wat wau wav waw wax way waz wba wbb wbe wbf wbh wbi wbj wbk wbl wbm wbp wbq wbr wbt wbv wbw wca wci wdd wdg wdj wdk wdu wdy wea wec wed weg weh wei wem wen weo wep wer wes wet weu wew wfg wga wgb wgg wgi wgo wgu wgw wgy wha whg whk whu wib wic wie wif wig wih wii wij wik wil wim win wir wit wiu wiv wiw wiy wja wji wka wkb wkd wkl wku wkw wky wla wlc wle wlg wli wlk wll wlm wlo wlr wls wlu wlv wlw wlx wly wma wmb wmc wmd wme wmh wmi wmm wmn wmo wms wmt wmw wmx wnb wnc wnd wne wng wni wnk wnm wnn wno wnp wnu wnw wny woa wob woc wod woe wof wog woi wok wom won woo wor wos wow woy wpc wra wrb wrd wrg wrh wri wrk wrl wrm wrn wro wrp wrr wrs wru wrv wrw wrx wry wrz wsa wsi wsk wsr wss wsu wsv wtf wth wti wtk wtm wtw wua wub wud wuh wul wum wun wur wut wuu wuv wux wuy wwa wwb wwo wwr www wxa wxw wya wyb wyi wym wyr wyy xaa xab xac xad xae xag xai xal xam xan xao xap xaq xar xas xat xau xav xaw xay xba xbb xbc xbd xbe xbg xbi xbj xbm xbn xbo xbp xbr xbw xbx xby xcb xcc xce xcg xch xcl xcm xcn xco xcr xct xcu xcv xcw xcy xda xdc xdk xdm xdy xeb xed xeg xel xem xep xer xes xet xeu xfa xga xgb xgd xgf xgg xgi xgl xgm xgn xgr xgu xgw xha xhc xhd xhe xhr xht xhu xhv xia xib xii xil xin xip xir xiv xiy xjb xjt xka xkb xkc xkd xke xkf xkg xkh xki xkj xkk xkl xkn xko xkp xkq xkr xks xkt xku xkv xkw xkx xky xkz xla xlb xlc xld xle xlg xli xln xlo xlp xls xlu xly xma xmb xmc xmd xme xmf xmg xmh xmj xmk xml xmm xmn xmo xmp xmq xmr xms xmt xmu xmv xmw xmx xmy xmz xna xnb xnd xng xnh xni xnk xnn xno xnr xns xnt xnu xny xnz xoc xod xog xoi xok xom xon xoo xop xor xow xpa xpc xpe xpg xpi xpj xpk xpm xpn xpo xpp xpq xpr xps xpt xpu xpy xqa xqt xra xrb xrd xre xrg xri xrm xrn xrq xrr xrt xru xrw xsa xsb xsc xsd xse xsh xsi xsj xsl xsm xsn xso xsp xsq xsr xss xsu xsv xsy xta xtb xtc xtd xte xtg xth xti xtj xtl xtm xtn xto xtp xtq xtr xts xtt xtu xtv xtw xty xtz xua xub xud xug xuj xul xum xun xuo xup xur xut xuu xve xvi xvn xvo xvs xwa xwc xwd xwe xwg xwj xwk xwl xwo xwr xwt xww xxb xxk xxm xxr xxt xya xyb xyj xyk xyl xyt xyy xzh xzm xzp yaa yab yac yad yae yaf yag yah yai yaj yak yal yam yan yao yap yaq yar yas yat yau yav yaw yax yay yaz yba ybb ybd ybe ybh ybi ybj ybk ybl ybm ybn ybo ybx yby ych ycl ycn ycp yda ydd yde ydg ydk yds yea yec yee yei yej yel yen yer yes yet yeu yev yey yga ygi ygl ygm ygp ygr ygu ygw yha yhd yhl yia yif yig yih yii yij yik yil yim yin yip yiq yir yis yit yiu yiv yix yiy yiz yka ykg yki ykk ykl ykm ykn yko ykr ykt yku yky yla ylb yle ylg yli yll ylm yln ylo ylr ylu yly yma ymb ymc ymd yme ymg ymh ymi ymk yml ymm ymn ymo ymp ymq ymr yms ymt ymx ymz yna ynd yne yng ynh ynk ynl ynn yno ynq yns ynu yob yog yoi yok yol yom yon yos yot yox yoy ypa ypb ypg yph ypk ypm ypn ypo ypp ypz yra yrb yre yri yrk yrl yrm yrn yrs yrw yry ysc ysd ysg ysl ysn yso ysp ysr yss ysy yta ytl ytp ytw yty yua yub yuc yud yue yuf yug yui yuj yuk yul yum yun yup yuq yur yut yuu yuw yux yuy yuz yva yvt ywa ywg ywl ywn ywq ywr ywt ywu yww yxa yxg yxl yxm yxu yxy yyr yyu yyz yzg yzk zaa zab zac zad zae zaf zag zah zai zaj zak zal zam zao zap zaq zar zas zat zau zav zaw zax zay zaz zbc zbe zbl zbt zbw zca zch zdj zea zeg zeh zen zga zgb zgh zgm zgn zgr zhb zhd zhi zhn zhw zhx zia zib zik zil zim zin zir ziw ziz zka zkb zkd zkg zkh zkk zkn zko zkp zkr zkt zku zkv zkz zle zlj zlm zln zlq zls zlw zma zmb zmc zmd zme zmf zmg zmh zmi zmj zmk zml zmm zmn zmo zmp zmq zmr zms zmt zmu zmv zmw zmx zmy zmz zna znd zne zng znk zns zoc zoh zom zoo zoq zor zos zpa zpb zpc zpd zpe zpf zpg zph zpi zpj zpk zpl zpm zpn zpo zpp zpq zpr zps zpt zpu zpv zpw zpx zpy zpz zqe zra zrg zrn zro zrp zrs zsa zsk zsl zsm zsr zsu zte ztg ztl ztm ztn ztp ztq zts ztt ztu ztx zty zua zuh zum zun zuy zwa zxx zyb zyg zyj zyn zyp zza zzj aao abh abv acm acq acw acx acy adf ads aeb aec aed aen afb afg ajp apc apd arb arq ars ary arz ase asf asp asq asw auz avl ayh ayl ayn ayp bbz bfi bfk bjn bog bqn bqy btj bve bvl bvu bzs cdo cds cjy cmn coa cpx csc csd cse csf csg csl csn csq csr czh czo doq dse dsl dup ecs esl esn eso eth fcs fse fsl fss gan gds gom gse gsg gsm gss gus hab haf hak hds hji hks hos hps hsh hsl hsn icl ils inl ins ise isg isr jak jax jcs jhs jls jos jsl jus kgi knn kvb kvk kvr kxd lbs lce lcf liw lls lsg lsl lso lsp lst lsy ltg lvs lzh max mdl meo mfa mfb mfs min mnp mqg mre msd msi msr mui mzc mzg mzy nan nbs ncs nsi nsl nsp nsr nzs okl orn ors pel pga pks prl prz psc psd pse psg psl pso psp psr pys rms rsi rsl sdl sfb sfs sgg sgx shu slf sls sqk sqs ssh ssp ssr svk swc swh swl syy tmw tse tsm tsq tss tsy tza ugn ugy ukl uks urk uzn uzs vgt vkk vkt vsi vsl vsv wuu xki xml xmm xms yds ysl yue zib zlm zmi zsl zsm afak aghb arab armi armn avst bali bamu bass batk beng blis bopo brah brai bugi buhd cakm cans cari cham cher cirt copt cprt cyrl cyrs deva dsrt dupl egyd egyh egyp elba ethi geok geor glag goth gran grek gujr guru hang hani hano hans hant hebr hira hluw hmng hrkt hung inds ital java jpan jurc kali kana khar khmr khoj knda kore kpel kthi lana laoo latf latg latn lepc limb lina linb lisu loma lyci lydi mahj mand mani maya mend merc mero mlym mong moon mroo mtei mymr narb nbat nkgb nkoo nshu ogam olck orkh orya osma palm perm phag phli phlp phlv phnx plrd prti qaaa..qabx rjng roro runr samr sara sarb saur sgnw shaw shrd sind sinh sora sund sylo syrc syre syrj syrn tagb takr tale talu taml tang tavt telu teng tfng tglg thaa thai tibt tirh ugar vaii visp wara wole xpeo xsux yiii zinh zmth zsym zxxx zyyy zzzz aa ac ad ae af ag ai al am an ao aq ar as at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bu bv bw by bz ca cc cd cf cg ch ci ck cl cm cn co cp cr cs cu cv cw cx cy cz dd de dg dj dk dm do dz ea ec ee eg eh er es et eu fi fj fk fm fo fr fx ga gb gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nt nu nz om pa pe pf pg ph pk pl pm pn pr ps pt pw py qa qm..qz re ro rs ru rw sa sb sc sd se sg sh si sj sk sl sm sn so sr ss st su sv sx sy sz ta tc td tf tg th tj tk tl tm tn to tp tr tt tv tw tz ua ug um us uy uz va vc ve vg vi vn vu wf ws xa..xz yd ye yt yu za zm zr zw zz 001 002 003 005 009 011 013 014 015 017 018 019 021 029 030 034 035 039 053 054 057 061 142 143 145 150 151 154 155 419 1606nict 1694acad 1901 1959acad 1994 1996 alalc97 aluku arevela arevmda baku1926 bauddha biscayan biske bohoric boont dajnko emodeng fonipa fonupa fonxsamp hepburn heploc hognorsk itihasa jauer jyutping kkcor kscor laukika lipaw luna1918 metelko monoton ndyuka nedis njiva nulik osojs pamaka petr1708 pinyin polyton puter rigik rozaj rumgr scotland scouse solba surmiran sursilv sutsilv tarask uccor ucrcor ulster unifon vaidika valencia vallader wadegile ",
@@ -25651,8 +26139,8 @@
   /* Constants */
 
 
-  const debug$t = new DebugLogging('Layout Rules', false);
-  debug$t.flag = false;
+  const debug$u = new DebugLogging('Layout Rules', false);
+  debug$u.flag = false;
 
   /*
    * OpenA11y Rules
@@ -25815,8 +26303,8 @@
   /* linkRules.js */
 
   /* Constants */
-  const debug$s = new DebugLogging('Link Rules', false);
-  debug$s.flag = false;
+  const debug$t = new DebugLogging('Link Rules', false);
+  debug$t.flag = false;
 
   /*
    * OpenA11y Rules
@@ -25967,8 +26455,8 @@
   /* listRules.js */
 
   /* Constants */
-  const debug$r = new DebugLogging('List Rules', false);
-  debug$r.flag = false;
+  const debug$s = new DebugLogging('List Rules', false);
+  debug$s.flag = false;
 
 
   /*
@@ -26025,47 +26513,8 @@
           rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [listCount]);
         }
 
-
-  /*
-
-          var TEST_RESULT = TEST_RESULT;
-          var VISIBILITY  = VISIBILITY;
-
-          var page_element = dom_cache.keyboard_focus_cache.page_element;
-
-          var list_elements     = dom_cache.lists_cache.list_elements;
-          var list_elements_len = list_elements.length; // loop control
-
-          for (var i = 0; i < list_elements_len; i++) {
-            var le = list_elements[i];
-            var de = le.dom_element;
-            var cs = de.computed_style;
-
-            var tag_name = de.tag_name;
-            if (de.has_role) tag_name += '[role=' + de.role + ']';
-
-            if (cs.is_visible_to_at  === VISIBILITY.VISIBLE) {
-              if (le.list_type === LIST.CONTAINER) {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', [tag_name]);
-              }
-              else  {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', [tag_name]);
-              }
-            }
-            else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, le, 'ELEMENT_HIDDEN_1', [tag_name]);
-            }
-
-          } // end loop
-
-          if (list_elements_len > 0) {
-            rule_result.addResult(TEST_RESULT.MANUAL_CHECK, page_element, 'PAGE_MC_1', [list_elements_len]);
-          }
-
-  */
-
-        } // end validate function
-      },
+      } // end validate function
+    },
     /**
      * @object LIST_2
      *
@@ -26100,49 +26549,15 @@
           }
 
         });
-
-
-  /*
-
-          var TEST_RESULT = TEST_RESULT;
-          var VISIBILITY  = VISIBILITY;
-
-          var container_elements     = dom_cache.lists_cache.container_elements;
-          var container_elements_len = container_elements.length; // loop control
-
-          for (var i = 0; i < container_elements_len; i++) {
-            var le = container_elements[i];
-            var de = le.dom_element;
-            var cs = de.computed_style;
-
-            var tag_name = de.tag_name;
-            if (de.has_role) tag_name += '[role=' + de.role + ']';
-
-            if (cs.is_visible_to_at  === VISIBILITY.VISIBLE) {
-              if (le.accessible_name.length) {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_1', [le.accessible_name]);
-              }
-              else {
-                rule_result.addResult(TEST_RESULT.MANUAL_CHECK, le, 'ELEMENT_MC_2', [tag_name]);
-              }
-            }
-            else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, le, 'ELEMENT_HIDDEN_1', [tag_name]);
-            }
-
-          } // end loop
-
-          */
-
-        } // end validate function
-      }
+      } // end validate function
+    }
   ];
 
   /* navigationRules.js */
 
   /* Constants */
-  const debug$q = new DebugLogging('Navigation Rules', false);
-  debug$q.flag = false;
+  const debug$r = new DebugLogging('Navigation Rules', false);
+  debug$r.flag = false;
 
 
   /* Helper Functions */
@@ -26390,8 +26805,8 @@
   /* readingOrderRules.js */
 
   /* Constants */
-  const debug$p = new DebugLogging('Reading Order Rules', false);
-  debug$p.flag = false;
+  const debug$q = new DebugLogging('Reading Order Rules', false);
+  debug$q.flag = false;
 
   /*
    * OpenA11y Rules
@@ -26438,8 +26853,8 @@
   /* resizeRules.js */
 
   /* Constants */
-  const debug$o = new DebugLogging('Resize Rules', false);
-  debug$o.flag = false;
+  const debug$p = new DebugLogging('Resize Rules', false);
+  debug$p.flag = false;
 
   /*
    * OpenA11y Rules
@@ -26491,8 +26906,8 @@
   /* sensoryRules.js */
 
   /* Constants */
-  const debug$n = new DebugLogging('Sensory Rules', false);
-  debug$n.flag = false;
+  const debug$o = new DebugLogging('Sensory Rules', false);
+  debug$o.flag = false;
 
   /*
    * OpenA11y Rules
@@ -26525,8 +26940,8 @@
   /* tableRules.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('Table Rules', false);
-  debug$m.flag = false;
+  const debug$n = new DebugLogging('Table Rules', false);
+  debug$n.flag = false;
 
   /*
    * OpenA11y Rules
@@ -26938,6 +27353,186 @@
 
     } // end validation function
   }
+  ];
+
+  /* targetSizeRules.js */
+
+  /* Constants */
+  const debug$m = new DebugLogging('Target Size Rules', false);
+  debug$m.flag = true;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Target Size Rules
+   */
+
+  const targetSizeRules = [
+
+    /**
+     * @object TARGET_SIZE_1
+     *
+     * @desc Link target size minimum
+     */
+
+    { rule_id             : 'TARGET_SIZE_1',
+      last_updated        : '2023-10-26',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['links'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+          const h = de.height;
+          const w = de.width;
+
+          if (!de.parentInfo.inParagraph && de.authorSizing) {
+            if ((w < 24) || (h < 24)) {
+              if (de.visibility.isVisibleOnScreen) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_2
+     *
+     * @desc Link target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_2',
+      last_updated        : '2023-10-26',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['links'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+          const h = de.height;
+          const w = de.width;
+          if (!de.parentInfo.inParagraph && de.authorSizing) {
+            if ((w < 44) || (h < 44)) {
+              if (de.visibility.isVisibleOnScreen) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_3
+     *
+     * @desc Link target size minimum
+     */
+
+    { rule_id             : 'TARGET_SIZE_3',
+      last_updated        : '2023-10-29',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : false,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allButtonElements.forEach( be => {
+          const de = be.domElement;
+          const h = de.height;
+          const w = de.width;
+          if ((w < 24) || (h < 24)) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_4
+     *
+     * @desc Button target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_4',
+      last_updated        : '2023-10-29',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : false,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
+      validate          : function (dom_cache, rule_result) {
+
+        debug$m.log(`[TARGET_SIZE_4]`);
+
+        dom_cache.controlInfo.allButtonElements.forEach( be => {
+          const de = be.domElement;
+          const h = de.height;
+          const w = de.width;
+
+          if (debug$m.flag) {
+            debug$m.log(`[${de.accName.name}] h: ${h}  w: ${w}`);
+            debug$m.log(`[       width]: ${de.authorWidth}`);
+            debug$m.log(`[      height]: ${de.authorHeight}`);
+            debug$m.log(`[      inLink]: ${de.parentInfo.inLink}`);
+            debug$m.log(`[      inPara]: ${de.parentInfo.inParagraph}`);
+            debug$m.log(`[authorSizing]: ${de.authorSizing}`);
+            debug$m.log(`[     top]: ${de.authorTop}`);
+            debug$m.log(`[  bottom]: ${de.authorBottom}`);
+            debug$m.log(`[    left]: ${de.authorLeft}`);
+            debug$m.log(`[   right]: ${de.authorRight}`);
+            debug$m.log(`[ display]: ${de.authorDisplay}`);
+            debug$m.log(`[position]: ${de.authorPosition}`);
+          }
+
+          if ((w < 44) || (h < 44)) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.eleName, h, w]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+          }
+        });
+
+      } // end validate function
+    }
+
   ];
 
   /* timingRules.js */
@@ -28498,51 +29093,7 @@
 
   /* Constants */
   const debug$h = new DebugLogging('Rule', false);
-
-  const wcag21_SC = [
-    '1.3.4',
-    '1.3.5',
-    '1.3.6',
-    '1.4.10',
-    '1.4.11',
-    '1.4.12',
-    '1.4.13',
-    '2.1.4',
-    '2.2.6',
-    '2.3.3',
-    '2.5.1',
-    '2.5.2',
-    '2.5.3',
-    '2.5.4',
-    '2.5.5',
-    '2.5.6',
-    '4.1.3'
-  ];
-
-  const wcag22_SC = [
-    '2.4.11',
-    '2.4.12',
-    '2.4.13',
-    '2.5.7',
-    '2.5.8',
-    '3.2.6',
-    '3.3.7',
-    '3.3.8',
-    '3.3.9'
-    ];
-
-  /* helper functions */
-
-  function getWCAGVersion (primaryId) {
-    if (wcag21_SC.includes(primaryId)) {
-      return 'WCAG21';
-    }
-    if (wcag22_SC.includes(primaryId)) {
-      return 'WCAG22';
-    }
-    return 'WCAG20';
-  }
-
+  debug$h.flag = false;
 
   /* ----------------------------------------------------------------   */
   /*                             Rule                                   */
@@ -28983,6 +29534,7 @@
   addToArray(resizeRules);
   addToArray(sensoryRules);
   addToArray(tableRules);
+  addToArray(targetSizeRules);
   addToArray(titleRules);
   addToArray(timingRules);
   addToArray(videoRules);
@@ -30765,12 +31317,12 @@
 
         if (isFilter(ruleset, ruleFilter, rule.getId()) ||
             isWCAG(ruleset, level, rule)) {
-
           if ((scopeFilter === 'ALL') ||
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
               ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
             const ruleResult = new RuleResult(rule);
             debug$7.flag && debug$7.log(`[validate]: ${ruleResult.rule.getId()}`);
+
             ruleResult.validate(domCache);
             this.allRuleResults.push(ruleResult);
           }
@@ -31033,7 +31585,7 @@
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
      */
 
-    evaluate (startingDoc, title='', url='', ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter = []) {
+    evaluate (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL', ruleFilter = []) {
 
       let domCache = new DOMCache(startingDoc);
       let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, level, scopeFilter, ruleFilter);
@@ -31096,6 +31648,20 @@
     }
 
     /**
+     * @method getWCAGVersion
+     *
+     * @desc Get version of WCAG a success criteria first appeared
+     *
+     * @param {String}  csID  - Id of the success criteria (e.g. 1.4.5)
+     *
+     * @returns {String}  WCAG20 | WCAG21 | WCAG22
+     */
+
+    getWCAGVersion (scID) {
+      return getWCAGVersion(scID);
+    }
+
+    /**
      * @method getRuleInfo
      *
      * @desc Provides access to localized rule information
@@ -31108,6 +31674,8 @@
       ruleInfo.id            = getRuleId(id);
       ruleInfo.filename      = 'rule-' + rule.rule_id.toLowerCase().replace('_', '-') + '.html';
       ruleInfo.last_updated  = rule.last_updated;
+
+      ruleInfo.rule_required    = rule.rule_required;
 
       ruleInfo.rule_scope       = rule.rule_scope;
       ruleInfo.rule_category    = getRuleCategoryInfo(rule.rule_category_id);
