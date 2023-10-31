@@ -27330,7 +27330,7 @@
 
      dom_cache.tableInfo.allTableElements.forEach(te => {
         const de = te.domElement;
-        if (te.tableType > TABLE_TYPE.DATA) {
+        if (te.tableType >= TABLE_TYPE.DATA) {
           if (de.visibility.isVisibleToAT) {
             const de = te.domElement;
             if (de.accName.name && de.accDescription.name) {
@@ -27352,9 +27352,6 @@
           }
         }
       });
-
-
-
     } // end validation function
   }
   ];
