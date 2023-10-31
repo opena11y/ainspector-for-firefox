@@ -21868,6 +21868,8 @@
       this.headers = [];
       this.headersSource = HEADER_SOURCE.NONE;
 
+      this.hasContent = (node.textContent.trim().length > 0) || (node.firstElementChild !== null);
+
     }
 
     get columnSpan () {
@@ -27291,7 +27293,9 @@
                     }
                   }
                   else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
+                    if (cell.hasContent) {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
+                    }
                   }
                 }
               }
