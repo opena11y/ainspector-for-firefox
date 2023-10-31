@@ -44,10 +44,10 @@ export default class ViewRuleResultCSV extends commonCSV{
           }
         }
 
-        if (info.accNameInfo.error_desc) {
-          if (props.indexOf('error_desc') < 0) {
-            props.push('error_desc');
-            props.push('error_desc_source');
+        if (info.accNameInfo.error) {
+          if (props.indexOf('error') < 0) {
+            props.push('error');
+            props.push('error_source');
           }
         }
       }

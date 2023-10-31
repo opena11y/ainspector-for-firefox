@@ -832,8 +832,8 @@
   },
 
   "elementResultErrorDesc": {
-    "message": "Error Description",
-    "description": "Error Description heading in element results view."
+    "message": "Error Message",
+    "description": "Error Message heading in element results view."
   },
 
   "elementResultCCR": {

@@ -18857,7 +18857,8 @@
         ],
         TECHNIQUES: [
           'Accessible name is typically defined using the @caption@ element, but the @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
-          'Accessible description is typically defined using the @aria-describedby@ attribute, but the @title@ attribute can also be used.'
+          'Accessible description is typically defined using the @aria-describedby@ attribute, but the @title@ attribute can also be used.',
+          'NOTE: The @summary@ attribute is no longer supported in HTML.'
         ],
         MANUAL_CHECKS: [
           'Verify the accessible name clearly identifies the purpose of the table.',
@@ -30305,6 +30306,43 @@
         name_source:     this.domElement.accName.source,
         name_required:   this.domElement.ariaInfo.isNameRequired,
         name_prohibited: this.domElement.ariaInfo.isNameProhibited,
+
+        desc: this.domElement.accDescription.name,
+        desc_source: this.domElement.accDescription.source,
+
+        error: this.domElement.errMessage.name,
+        error_source: this.domElement.errMessage.source
+
+      };
+      return info;
+    }
+
+   /**
+   * @method getAccessibleDescriptionInfo
+   *
+   * @desc Gets accessible description information
+   *
+   * @return {Object}
+   */
+    getAccessibleDescriptionInfo () {
+      const info = {
+        name:            this.domElement.accDescription.name,
+        name_source:     this.domElement.accDescription.source,
+      };
+      return info;
+    }
+
+   /**
+   * @method getAccessibleErrorMessageInfo
+   *
+   * @desc Gets accessible error information
+   *
+   * @return {Object}
+   */
+    getAccessibleErrorMessageInfo () {
+      const info = {
+        name:            this.domElement.errMessage.name,
+        name_source:     this.domElement.errMessage.source,
       };
       return info;
     }
@@ -32085,6 +32123,7 @@
       let visibilityInfo  = JSON.stringify(elementResult.getVisibilityInfo());
       let htmlAttrInfo    = JSON.stringify(elementResult.getHTMLAttributes());
       let ariaAttrInfo    = JSON.stringify(elementResult.getAriaAttributes());
+
 
       const item = {
         'index'            : (index + 1).toString(),

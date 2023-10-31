@@ -62,10 +62,10 @@ template.innerHTML = `
           <div class="source"><span>Source:</span> <span id="accdesc-source"></span></div>
         </div>
 
-        <div id="errordesc-info">
-          <h3 id="errordesc-info-label">Error Description</h3>
-          <div class="source"><span>Text:</span> <span id="errordesc"></span></div>
-          <div class="source"><span>Source:</span> <span id="errordesc-source"></span></div>
+        <div id="error-msg-info">
+          <h3 id="errordesc-info-label">Error Message</h3>
+          <div class="source"><span>Text:</span> <span id="error-msg"></span></div>
+          <div class="source"><span>Source:</span> <span id="error-msg-source"></span></div>
         </div>
 
         <div id="ccr-info">
@@ -166,9 +166,9 @@ export default class ViewRuleResultInfo extends HTMLElement {
     this.accDescSpan       = this.shadowRoot.querySelector('#accdesc');
     this.accDescSourceSpan = this.shadowRoot.querySelector('#accdesc-source');
 
-    this.errorDescInfoDiv    = this.shadowRoot.querySelector('#errordesc-info');
-    this.errorDescSpan       = this.shadowRoot.querySelector('errordesc');
-    this.errorDescSourceSpan = this.shadowRoot.querySelector('#errordesc-source');
+    this.errorMsgInfoDiv    = this.shadowRoot.querySelector('#error-msg-info');
+    this.errorMsgSpan       = this.shadowRoot.querySelector('#error-msg');
+    this.errorMsgSourceSpan = this.shadowRoot.querySelector('#error-msg-source');
 
     this.ccrInfoDiv    = this.shadowRoot.querySelector('#ccr-info');
     this.ccrInfoTbody  = this.shadowRoot.querySelector('#ccr-content');
@@ -380,7 +380,7 @@ export default class ViewRuleResultInfo extends HTMLElement {
   }
 
   updateAccessibleNameInfo(elementInfo) {
-    const accNameInfo = elementInfo.accNameInfo;
+    const accNameInfo  = elementInfo.accNameInfo;
 
     this.accNameInfoLabelMoreSpan.textContent = '';
     if (accNameInfo.name_required) {
@@ -414,12 +414,12 @@ export default class ViewRuleResultInfo extends HTMLElement {
       this.accDescInfoDiv.classList.add('hide');
     }
 
-    if (accNameInfo.error_desc) {
-      this.errorDescInfoDiv.classList.remove('hide');
-      this.errorDescSpan.textContent = accNameInfo.error_desc;
-      this.errorDescSourceSpan.textContent = accNameInfo.error_desc_source;
+    if (accNameInfo.error) {
+      this.errorMsgInfoDiv.classList.remove('hide');
+      this.errorMsgSpan.textContent = accNameInfo.error;
+      this.errorMsgSourceSpan.textContent = accNameInfo.error_source;
     } else {
-      this.errorDescInfoDiv.classList.add('hide');
+      this.errorMsgInfoDiv.classList.add('hide');
     }
 
   }
@@ -505,7 +505,7 @@ export default class ViewRuleResultInfo extends HTMLElement {
       this.tagNameInfoDiv.classList.add('hide');
       this.accNameInfoDiv.classList.add('hide');
       this.accDescInfoDiv.classList.add('hide');
-      this.errorDescInfoDiv.classList.add('hide');
+      this.errorMsgInfoDiv.classList.add('hide');
       this.ccrInfoDiv.classList.add('hide');
       this.visInfoDiv.classList.add('hide');
       this.attrsInfoTable.classList.add('hide');
@@ -571,10 +571,10 @@ export default class ViewRuleResultInfo extends HTMLElement {
         this.copyText += 'source: ' + accNameInfo.desc_source + '\n\n';
       }
 
-      if (accNameInfo.error_desc) {
+      if (accNameInfo.error) {
         this.copyText += msg.elementResultErrorDesc + '\n';
-        this.copyText += 'text: ' + accNameInfo.error_desc + '\n';
-        this.copyText += 'source: ' + accNameInfo.error_desc_source + '\n\n';
+        this.copyText += 'text: ' + accNameInfo.error + '\n';
+        this.copyText += 'source: ' + accNameInfo.error_source + '\n\n';
       }
 
       const ccrText = this.appendToCopyText(elementInfo.ccrInfo);
