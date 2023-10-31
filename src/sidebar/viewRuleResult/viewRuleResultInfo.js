@@ -510,7 +510,7 @@ export default class ViewRuleResultInfo extends HTMLElement {
       this.visInfoDiv.classList.add('hide');
       this.attrsInfoTable.classList.add('hide');
     }
-    this.updateCopyText(elementInfo);
+    this.updateCopyText(elementInfo, ruleResult);
   }
 
   clear (message1, message2) {
@@ -528,11 +528,11 @@ export default class ViewRuleResultInfo extends HTMLElement {
     }
   }
 
-  updateCopyText (elementInfo) {
+  updateCopyText (elementInfo, ruleResult) {
     this.copyText = '';
 
     this.copyText += msg.ruleDefinitionLabel  + '\n';
-    this.copyText += elementInfo.ruleDefinition + '\n\n';
+    this.copyText += ruleResult.definition + '\n\n';
 
     this.copyText += elementInfo.isActionMessage ? msg.elementResultAction + '\n' : msg.elementResultMessage + '\n';
     this.copyText += elementInfo.actionMessage + '\n\n';
