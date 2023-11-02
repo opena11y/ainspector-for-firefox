@@ -1024,6 +1024,17 @@
                          (node.getAttribute('aria-required').toLowerCase() === 'true') :
                          false;
 
+      this.labelElement = this.checkForLabelEncapsulation(parentControlElement);
+      if (this.labelElement) {
+        this.hasLabel = true;
+        this.labelWidth  = this.labelElement.domElement.width;
+        this.labelHeight = this.labelElement.domElement.height;
+      }
+      else {
+        this.hasLabel = false;
+        this.labelWidth = 0;
+        this.labelHeight = 0;
+      }
     }
 
     get isButton () {
@@ -1044,6 +1055,16 @@
 
     get isInteractive () {
       return true;
+    }
+
+    checkForLabelEncapsulation (parentControlElement) {
+      while (parentControlElement) {
+        if (parentControlElement.isLabel) {
+          return parentControlElement;
+        }
+        parentControlElement = parentControlElement.parentControlElement;
+      }
+      return false;
     }
 
     addChildControlElement (controlElement) {
@@ -1265,6 +1286,32 @@
       this.allFormElements  = [];
       this.allButtonElements = [];
       this.allRadioAndCheckboxElements = [];
+      this.allLabelElements = [];
+    }
+
+    /**
+     * @method updateLabelForReferences
+     *
+     * @desc Updates controls with label[for] references
+     *
+     */
+
+    updateLabelForReferences () {
+      this.allLabelElements.forEach (le => {
+        const id = le.for;
+        if (id) {
+          for (let i = 0; this.allControlElements.length; i += 1) {
+            const ce = this.allControlElements[i];
+            if (ce.domElement.id === id) {
+              ce.labelElement = le;
+              ce.hasLabel = true;
+              ce.labelWidth  = ce.domElement.width;
+              ce.labelHeight = ce.domElement.height;
+              break;
+            }
+          }
+        }
+      });
     }
 
     /**
@@ -1294,6 +1341,7 @@
 
         case 'label':
           ce = new LabelElement(domElement, parentControlElement);
+          this.allLabelElements.push(ce);
           break;
 
         case 'legend':
@@ -19126,8 +19174,67 @@
             url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
           }
         ]
-    }
+    },
 
+    TARGET_SIZE_5: {
+        ID:                    'Target Size 5',
+        DEFINITION:            'Radio button and checkbox activation areas are at least 24 by 24 CSS pixels.',
+        SUMMARY:               'Radio button and checkbox target size (Minimum)',
+        TARGET_RESOURCES_DESC: 'radio buttons and checkboxes',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Use CSS to increase the size of the area to activate the undersized radio button or checkbox to at least 24 by 24 CSS pixels.',
+          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized radio buttons and chackboxes to at least 24 by 24 CSS pixel.',
+          HIDDEN_S:  'One undersized radio button or checkbox was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized radio buttons or checkboxes were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized radio buttons or checkboxes found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions of the @%1@ element is %2 by %3 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions of the @%1@ element is %2 by %3, use CSS to increase the button dimensions to at least 24 x 24 CSS pixels.',
+          ELEMENT_PASS_2:   'The current dimensions of the associated @label@ element is %1 by %2 and meet the target size requirement',
+          ELEMENT_FAIL_2:   'The current dimensions of the associated @label@ element is %1 by %2, use CSS to increase the button dimensions to at least 24 x 24 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
+        ],
+        TECHNIQUES: [
+          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 24 by 24 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Minimum)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    }
   };
 
   /* timingRules.js */
@@ -22224,6 +22331,7 @@
       this.computeAriaOwnsRefs();
       this.tableInfo.computeTableTypes();
       this.tableInfo.computeHeaders(this);
+      this.controlInfo.updateLabelForReferences();
     }
 
     getDomElementById(id) {
@@ -27448,7 +27556,7 @@
     /**
      * @object TARGET_SIZE_3
      *
-     * @desc Link target size minimum
+     * @desc button target size minimum
      */
 
     { rule_id             : 'TARGET_SIZE_3',
@@ -27533,7 +27641,61 @@
         });
 
       } // end validate function
+    },
+
+   /**
+     * @object TARGET_SIZE_5
+     *
+     * @desc Checkbox and radio button target size
+     */
+
+    { rule_id             : 'TARGET_SIZE_5',
+      last_updated        : '2023-10-31',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+
+          if (de.role === 'radio' || de.role === 'checkbox') {
+            if (de.visibility.isVisibleOnScreen) {
+              let h = de.height;
+              let w = de.width;
+              if (( h < 24) || ( w < 24)) {
+                if (ce.hasLabel) {
+                  h = ce.labelHeight;
+                  w = ce.labelWidth;
+                  if (( h < 24) || (w < 24)) {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+
+        });
+
+      } // end validate function
     }
+
 
   ];
 
