@@ -4,7 +4,8 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 3.0.0        |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and some UI features
+| 2.99.5       |   11/16/23  | Fixed bugs and add target size rules
+| 2.99.0       |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and some UI features
 | 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
@@ -16,7 +17,11 @@
 | 1.1.1        |   9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
 | 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
 
-### 3.0.0
+### 2.99.5 (Beta of version 3.0)
+* Fixed some bugs in color contrast calculation
+* Added target size rules
+
+### 2.99.0 (Beta of version 3.0)
 * Updated to use OpenA11y Evaluation Library 2.0 to support WCAG 2.1 requirements
 * New ruleset and rule scope filtering options
 * Improved element result level information

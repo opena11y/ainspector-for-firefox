@@ -28,7 +28,12 @@
 
 ## Version History
 
-### 3.0.b1
+### 2.99.5 (Beta of version 3.0)
+* Fixed some bugs in color contrast calculation
+* Added target size rules
+* Other minor updates to rules and documentation
+
+### 2.99.0
 * Updated to use OpenA11y Evaluation Library 2.0 to support;
   * WCAG 2.1
   * ARIA 1.2

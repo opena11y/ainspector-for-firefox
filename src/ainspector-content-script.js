@@ -967,6 +967,7 @@
 
   /* Constants */
   const debug$$ = new DebugLogging('ControlInfo', false);
+  debug$$.flag = false;
 
   /**
    * @class ControlElement
@@ -1025,6 +1026,7 @@
                          false;
 
       this.labelElement = this.checkForLabelEncapsulation(parentControlElement);
+
       if (this.labelElement) {
         this.hasLabel = true;
         this.labelWidth  = this.labelElement.domElement.width;
@@ -1298,15 +1300,25 @@
 
     updateLabelForReferences () {
       this.allLabelElements.forEach (le => {
-        const id = le.for;
+        const id = le.labelForAttr;
         if (id) {
           for (let i = 0; this.allControlElements.length; i += 1) {
             const ce = this.allControlElements[i];
             if (ce.domElement.id === id) {
-              ce.labelElement = le;
-              ce.hasLabel = true;
-              ce.labelWidth  = ce.domElement.width;
-              ce.labelHeight = ce.domElement.height;
+              if (ce.labelElement) {
+                // pick largest label for size calculations
+                if (ce.labelElement.area < le.domElement.area) {
+                  ce.labelElement = le;
+                  ce.labelWidth  = le.domElement.width;
+                  ce.labelHeight = le.domElement.height;
+                }
+              }
+              else {
+                ce.labelElement = le;
+                ce.hasLabel = true;
+                ce.labelWidth  = le.domElement.width;
+                ce.labelHeight = le.domElement.height;
+              }
               break;
             }
           }
@@ -6690,8 +6702,10 @@
   /* Constants */
   const debug$Z = new DebugLogging('colorContrast', false);
   debug$Z.flag = false;
-  const defaultFontSize = 16; // In pixels (px)
-  const fontWeightBold = 300; 
+  const defaultFontSize = 16;    // In pixels (px)
+  const biggerFontSize  = 18.66; // In pixels (px)
+  const largeFontSize   = 24;    // In pixels (px)
+  const fontWeightBold  = 300;
 
     /**
      * @function getLuminance
@@ -7066,11 +7080,12 @@
      */
 
     getLargeFont (fontSize, fontWeight) {
-      let isSizeReallyBig = fontSize > (1.2 * defaultFontSize);
-      let isSizeBig       = fontSize > defaultFontSize;
-      let isBold          = fontWeight >= fontWeightBold;
+      const isSizeLarge   = fontSize >= largeFontSize;
+      const isSizeBigger  = fontSize >= biggerFontSize;
+      const isBold        = fontWeight >= fontWeightBold;
 
-      return isSizeReallyBig || (isSizeBig && isBold);
+
+      return isSizeLarge || (isSizeBigger && isBold);
     }
   }
 
@@ -10329,6 +10344,9 @@
       this.isLink      = this.role === 'link';
       this.isLandmark  = this.checkForLandamrk();
       this.isHeading   = this.role === 'heading';
+      this.isInDialog  = this.tagName === 'dialog' ||
+                         this.role === 'dialog' ||
+                         parentInfo.inDialog;
 
       // CSS Position property and size information
 
@@ -10341,6 +10359,7 @@
       this.left     = window.scrollX + elemRect.left;
       this.height   = Math.round(10 * elemRect.height, 1) / 10;
       this.width    = Math.round(10 * elemRect.width, 1) / 10;
+      this.area     = this.height * this.width;
 
       this.authorWidth    = cssStyle.getPropertyValue('width');
       this.authorHeight   = cssStyle.getPropertyValue('height');
@@ -13445,27 +13464,27 @@
   const colorRules$1 = {
     COLOR_1: {
         ID:                    'Color 1',
-        DEFINITION:            'Text content must exceed minimum Color Contrast Ratio (CCR) of 3.1 for large and/or bolded text and 4.5 for any other size or style of text.',
+        DEFINITION:            'Text content must exceed minimum Color Contrast Ratio (CCR) of 3 for large and/or bolded text and 4.5 for any other size or style of text.',
         SUMMARY:               'Color contrast of text: Minimum',
         TARGET_RESOURCES_DESC: 'Text content',
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Change the foreground and background colors of the text element to meet the CCR threshold.',
           FAIL_P:   'Change the foreground and background colors of the %N_F text elements to meet the CCR threshold.',
           MANUAL_CHECK_S:     'One element requires manual checking for CCR threshold to the use of a background image.',
-          MANUAL_CHECK_P:     '%N_MC elements require manual checking for CCR thrshold to the use of background images.',
+          MANUAL_CHECK_P:     '%N_MC elements require manual checking for CCR threshold to the use of background images.',
           HIDDEN_S: 'The element with text content that is hidden was not analyzed for color contrast accessibility.',
           HIDDEN_P: 'The %N_H elements with text content that are hidden were not analyzed for color contrast accessibility.',
           NOT_APPLICABLE:  'No visible text content on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   'CCR of %1 exceeds 4.5.',
-          ELEMENT_PASS_2:   'CCR of %1 exceeds 3.1 for large or bolded text.',
-          ELEMENT_FAIL_1:   'CCR of %1, adjust foreground and background colors to exceed 4.5.',
-          ELEMENT_FAIL_2:   'CCR of %1 for large or bolded text, adjust foreground and background colors to exceed 3.1.',
-          ELEMENT_MC_1:     'CCR of %1 is greater than 4.5, but background image may reduce color contrast.',
-          ELEMENT_MC_2:     'CCR of %1 is less than or equal to 4.5, but background image may improve color contrast.',
-          ELEMENT_MC_3:     'CCR of %1 is greater than 3.1 for large or bolded text, but background image may reduce color contrast.',
-          ELEMENT_MC_4:     'CCR of %1 is less than or equal to 3.1 for large and bolded text, but background image may improve color contrast.',
+          ELEMENT_PASS_1:   'CCR of %1 meets or exceeds 4.5.',
+          ELEMENT_PASS_2:   'CCR of %1 meets or exceeds 3 for large or bolded text.',
+          ELEMENT_FAIL_1:   'CCR of %1, adjust foreground and background colors to meets or exceeds 4.5.',
+          ELEMENT_FAIL_2:   'CCR of %1 for large or bolded text, adjust foreground and background colors to meet or exceed 3.',
+          ELEMENT_MC_1:     'CCR of %1 is is equal to or greater than 4.5, but background image may reduce color contrast.',
+          ELEMENT_MC_2:     'CCR of %1 is less than 4.5, but background image may improve color contrast.',
+          ELEMENT_MC_3:     'CCR of %1 is equal to or greater than 3 for large or bolded text, but background image may reduce color contrast.',
+          ELEMENT_MC_4:     'CCR of %1 is less than 3 for large and bolded text, but background image may improve color contrast.',
           ELEMENT_HIDDEN_1: 'CCR was not tested since the text is hidden from assistive technologies.'
         },
         PURPOSES:       [ 'The higher the color contrast of text the more easy it is to read, especially for people with visual impairments.'
@@ -13538,7 +13557,7 @@
     },
     COLOR_3: {
         ID:                    'Color 3',
-        DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 4.5 for large and/or bolded text and 7.1 for any other size or style of text.',
+        DEFINITION:            'Text content must exceed Color Contrast Ratio (CCR) of 4.5 for large and/or bolded text and 7 for any other size or style of text.',
         SUMMARY:               'Color contrast of text: Enhanced',
         TARGET_RESOURCES_DESC: 'All elements with text content',
         RULE_RESULT_MESSAGES: {
@@ -13551,14 +13570,14 @@
           NOT_APPLICABLE:  'No visible text content on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   'CCR of %1 exceeds 7.1.',
-          ELEMENT_PASS_2:   'CCR of %1 exceeds 4.5 for large or bolded text.',
-          ELEMENT_FAIL_1:   'CCR of %1, adjust foreground and background colors to exceed 7.1.',
-          ELEMENT_FAIL_2:   'CCR of %1 for large or bolded text, adjust foreground and background colors to exceed 4.5.',
-          ELEMENT_MC_1:     'CCR of %1 is greater than 7.1, but background image may reduce color contrast.',
-          ELEMENT_MC_2:     'CCR of %1 is less than or equal to 7.1, but background image may improve color contrast.',
-          ELEMENT_MC_3:     'CCR of %1 is greater than 4.5 for large or bolded text, but background image may reduce color contrast.',
-          ELEMENT_MC_4:     'CCR of %1 is less than or equal to 4.5 for large and bolded text, but background image may improve color contrast.',
+          ELEMENT_PASS_1:   'CCR of %1 meets or exceeds 7.',
+          ELEMENT_PASS_2:   'CCR of %1 meets or exceeds 4.5 for large or bolded text.',
+          ELEMENT_FAIL_1:   'CCR of %1, adjust foreground and background colors to meet or exceed 7.',
+          ELEMENT_FAIL_2:   'CCR of %1 for large or bolded text, adjust foreground and background colors to meet or exceed 4.5.',
+          ELEMENT_MC_1:     'CCR of %1 is equal to or greater than 7, but background image may reduce color contrast.',
+          ELEMENT_MC_2:     'CCR of %1 is less than 7, but background image may improve color contrast.',
+          ELEMENT_MC_3:     'CCR of %1 is equal to or greater than 4.5 for large or bolded text, but background image may reduce color contrast.',
+          ELEMENT_MC_4:     'CCR of %1 is less than 4.5 for large and bolded text, but background image may improve color contrast.',
           ELEMENT_HIDDEN_1: 'CCR was not tested since the text is hidden from assistive technologies.'
         },
         PURPOSES:       [ 'The higher the color contrast of text the more easy it is to read, especially for people with visual impairments.'
@@ -13568,14 +13587,14 @@
                           'Remove background images or verify they do not compromise color contrast requirements.'
                         ],
         MANUAL_CHECKS:  [ 'Use graphic editing tools to analyze the color(s) of the background image and then recacluate the CCR with the range of colors in the background image.',
-                          'Verify the range of colors that could be part of the background of text is have a CCR > 7.1.'
+                          'Verify the range of colors that could be part of the background of text is have a CCR >= 7.'
         ],
         INFORMATIONAL_LINKS: [{ type:  REFERENCES.SPECIFICATION,
-                           title: 'WCAG 2.0 Success Criterion 1.4.6 Contrast (Enhanced): The visual presentation of text and images of text has a contrast ratio of at least 7.1:1, with exceptions',
+                           title: 'WCAG 2.0 Success Criterion 1.4.6 Contrast (Enhanced): The visual presentation of text and images of text has a contrast ratio of at least 7:1, with exceptions',
                            url:   'https://www.w3.org/TR/WCAG/#contrast-enhanced'
                          },
                          { type:  REFERENCES.WCAG_TECHNIQUE,
-                           title: 'How to meet Success Criterion 1.4.6 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 7.1:1, with exceptions',
+                           title: 'How to meet Success Criterion 1.4.6 Contrast (Minimum): The visual presentation of text and images of text has a contrast ratio of at least 7:1, with exceptions',
                            url:   'https://www.w3.org/WAI/WCAG21/quickref/#contrast-enhanced'
                          },
                         { type:  REFERENCES.WCAG_TECHNIQUE,
@@ -16136,14 +16155,15 @@
         },
         PURPOSES: [
           'Landmarks provide a way to organize the various types of content on a page for users of assistive technologies. The organization of content regions using landmarks is functionally similar to the way visual designers organize information for people who rely on a graphical rendering of the content.',
-          'When content is not contained in a landmark, it will be unreachable using landmark navigation, which is an important feature provided by assistive technologies such as screen readers.'
+          'When content is not contained in a landmark, it will be unreachable using landmark navigation, which is an important feature provided by assistive technologies such as screen readers.',
+          'EXCEPTION: Dialog content is not required to be in a landmark.'
         ],
         TECHNIQUES: [
           'Use the appropriate landmarks to identify the different regions of content on a web page.',
           'The most important landmark roles are @main@ and @navigation@, as nearly every page will include at least those regions.',
           'Other commonly used landmark roles include @banner@, @contentinfo@, @complementary@ and @search@.',
-          'Use HTML5 sectioning elements that have a default ARIA landmark role: @main@ (@main@), @nav@ (@navigation@), @aside@ (@complementary@) and in some situations @header@ (@banner@) and @footer@ (@contentinfo@). When using these elements, the @role@ attribute should NOT be defined.',
-          'In HTML4 and XHTML 1.0 documents, a landmark can be created using a @div@ element with a @role@ attribute and the appropriate ARIA landmark role value (e.g., @role="main"@).',
+          'Use HTML sectioning elements that have a default ARIA landmark role: @main@ (@main@), @nav@ (@navigation@), @aside@ (@complementary@) and in some situations @header@ (@banner@) and @footer@ (@contentinfo@). When using these elements, the @role@ attribute should NOT be defined.',
+          'A landmark can be created using a @div@ element with a @role@ attribute and the appropriate ARIA landmark role value (e.g., @role="main"@).',
           'The @search@ role is typically placed on a @form@ element or a @div@ that surrounds the search form.'
         ],
         MANUAL_CHECKS: [
@@ -16155,8 +16175,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: Sections',
-            url:   'https://www.w3.org/TR/html5/sections.html#sections'
+            title: 'HTML: Sections',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
@@ -16688,12 +16708,12 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#banner'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: The HEADER element',
-            url:   'https://www.w3.org/TR/html5/sections.html#the-header-element'
+            title: 'HTML: The HEADER element',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html#the-header-element'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: Sections',
-            url:   'https://www.w3.org/TR/html5/sections.html#sections'
+            title: 'HTML: Sections',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
@@ -16940,12 +16960,12 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#contentinfo'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: The FOOTER element',
-            url:   'https://www.w3.org/TR/html5/sections.html#the-footer-element'
+            title: 'HTML: The FOOTER element',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html#the-footer-element'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: Sections',
-            url:   'https://www.w3.org/TR/html5/sections.html#sections'
+            title: 'HTML: Sections',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Landmark Roles',
@@ -17223,8 +17243,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#region'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: Sections',
-            url:   'https://www.w3.org/TR/html5/sections.html#sections'
+            title: 'HTML: Sections',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
@@ -17301,8 +17321,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML5: Sections',
-            url:   'https://www.w3.org/TR/html5/sections.html#sections'
+            title: 'HTML: Sections',
+            url:   'https://html.spec.whatwg.org/multipage/sections.html'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'WAI-ARIA Authoring Practices 1.2: Landmarks',
@@ -19183,7 +19203,7 @@
         TARGET_RESOURCES_DESC: 'radio buttons and checkboxes',
         RULE_RESULT_MESSAGES: {
           FAIL_S:  'Use CSS to increase the size of the area to activate the undersized radio button or checkbox to at least 24 by 24 CSS pixels.',
-          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized radio buttons and chackboxes to at least 24 by 24 CSS pixel.',
+          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized radio buttons and checkboxes to at least 24 by 24 CSS pixel.',
           HIDDEN_S:  'One undersized radio button or checkbox was not evaluated because it is not visible.',
           HIDDEN_P:  '%N_H undersized radio buttons or checkboxes were not evaluated because they are not visible.',
           NOT_APPLICABLE:  'No undersized radio buttons or checkboxes found on the page'
@@ -19201,6 +19221,66 @@
         ],
         TECHNIQUES: [
           'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 24 by 24 pixels.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type: REFERENCES.WCAG_SPECIFICATION,
+            title: 'WCAG Understanding Target Size (Minimum)',
+            url: 'https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Windows UWP Guidelines for touch targets',
+            url:   'https://docs.microsoft.com/en-us/windows/uwp/design/input/guidelines-for-targeting'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Google Material Design Touch targets',
+            url:   'https://material.io/design/layout/spacing-methods.html#touch-targets'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'web.dev Accessible tap targets',
+            url:   'https://web.dev/accessible-tap-targets/'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Human Fingertips to Investigate the Mechanics of Tactile Sense (PDF)',
+            url:   'http://touchlab.mit.edu/publications/2003_009.pdf'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'One-Handed Thumb Use on Small Touchscreen Devices',
+            url:   'http://www.cs.umd.edu/hcil/trs/2006-11/2006-11.htm'
+          },
+          { type:  REFERENCES.REFERENCE,
+            title: 'Microsoft Guidelines for Building Touch Friendly Sites',
+            url:   'https://learn.microsoft.com/en-us/windows/apps/design/input/guidelines-for-targeting'
+          }
+        ]
+    },
+
+    TARGET_SIZE_6: {
+        ID:                    'Target Size 6',
+        DEFINITION:            'Radio button and checkbox activation areas are at least 44 by 44 CSS pixels.',
+        SUMMARY:               'Radio button and checkbox target size (Enhanced)',
+        TARGET_RESOURCES_DESC: 'radio buttons and checkboxes',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:  'Use CSS to increase the size of the area to activate the undersized radio button or checkbox to at least 44 by 44 CSS pixels.',
+          FAIL_P:  'Use CSS to increase the size of the area to activate the %N_F undersized radio buttons and checkboxes to at least 44 by 44 CSS pixel.',
+          HIDDEN_S:  'One undersized radio button or checkbox was not evaluated because it is not visible.',
+          HIDDEN_P:  '%N_H undersized radio buttons or checkboxes were not evaluated because they are not visible.',
+          NOT_APPLICABLE:  'No undersized radio buttons or checkboxes found on the page'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   'The current dimensions of the @%1@ element is %2 by %3 and meet the target size requirement',
+          ELEMENT_FAIL_1:   'The current dimensions of the @%1@ element is %2 by %3, use CSS to increase the button dimensions to at least 44 x 44 CSS pixels.',
+          ELEMENT_PASS_2:   'The current dimensions of the associated @label@ element is %1 by %2 and meet the target size requirement',
+          ELEMENT_FAIL_2:   'The current dimensions of the associated @label@ element is %1 by %2, use CSS to increase the button dimensions to at least 44 x 44 CSS pixels.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is visually hidden and is not tested for target size.'
+        },
+        PURPOSES: [
+          'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
+          'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
+        ],
+        TECHNIQUES: [
+          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 44 by 44 pixels.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -22244,8 +22324,9 @@
       this.tableElement    = null;
       this.tableRowGroup   = null;
 
-      this.inLink          = false;
-      this.inParagraph     = false;
+      this.inLink      = false;
+      this.inParagraph = false;
+      this.inDialog    = false;
 
       if (info) {
         this.controlElement  = info.controlElement;
@@ -22260,8 +22341,10 @@
         this.mediaElement    = info.mediaElement;
         this.tableElement    = info.tableElement;
         this.tableRowGroup   = info.tableRowGroup;
-        this.inLink          = info.inLink;
-        this.inParagraph     = info.inParagraph;
+
+        this.inLink       = info.inLink;
+        this.inParagraph  = info.inParagraph;
+        this.inDialog     = info.inDialog;
       }
     }
   }
@@ -22525,6 +22608,7 @@
       [newParentInfo.tableElement, newParentInfo.tableRowGroup] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
 
       newParentInfo.inParagraph = domElement.tagName === 'p' ? true : parentInfo.inParagraph;
+      newParentInfo.inDialog    = domElement.isInDialog;
 
       this.idInfo.update(documentIndex, domElement);
       this.timingInfo.update(domElement);
@@ -22877,7 +22961,7 @@
     /**
      * @object COLOR_1
      *
-     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3.1 for large text
+     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3 for large text
      */
 
     { rule_id             : 'COLOR_1',
@@ -22902,7 +22986,7 @@
 
 
         const MIN_CCR_NORMAL_FONT = 4.5;
-        const MIN_CCR_LARGE_FONT  = 3.1;
+        const MIN_CCR_LARGE_FONT  = 3;
 
         debug$E.flag && debug$E.log(`===== COLOR 1 ====`);
 
@@ -22992,14 +23076,14 @@
     /**
      * @object COLOR_3
      *
-     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3.1 for large text
+     * @desc  Color contrast ratio must be >= 7 for normal text, or >= 4.5 for large text
      */
 
     { rule_id             : 'COLOR_3',
       last_updated        : '2022-07-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required        : true,
+      rule_required        : false,
       wcag_primary_id     : '1.4.6',
       wcag_related_ids    : ['1.4.1','1.4.3'],
       target_resources    : ['text content'],
@@ -23016,7 +23100,7 @@
         }
 
 
-        const MIN_CCR_NORMAL_FONT = 7.1;
+        const MIN_CCR_NORMAL_FONT = 7;
         const MIN_CCR_LARGE_FONT  = 4.5;
 
         debug$E.flag && debug$E.log(`===== COLOR 3 ====`);
@@ -23027,7 +23111,7 @@
           const ccr = cc.colorContrastRatio;
 
           if (de.visibility.isVisibleOnScreen) {
-            if (cc.isLargeFont) {
+            if (cc.isLargeFont || cc.isBoldedFont) {
               if (ccr >= MIN_CCR_LARGE_FONT) {
                 // Passes color contrast requirements
                 if (cc.hasBackgroundImage) {
@@ -25382,7 +25466,7 @@
         dom_cache.allDomElements.forEach ( de => {
           const parentLandmark = de.parentInfo.landmarkElement;
           const isLandmark = de.isLandmark;
-          if ((de.hasContent || de.mayHaveContent)) {
+          if (!de.isInDialog && (de.hasContent || de.mayHaveContent)) {
             if (de.visibility.isVisibleToAT) {
               if ( isLandmark || parentLandmark ) {
                 const role = isLandmark ? de.role : parentLandmark.domElement.role;
@@ -27468,8 +27552,8 @@
   /* targetSizeRules.js */
 
   /* Constants */
-  const debug$m = new DebugLogging('Target Size Rules', false);
-  debug$m.flag = true;
+  const debug$m = new DebugLogging('Size', false);
+  debug$m.flag = false;
 
   /*
    * OpenA11y Rules
@@ -27526,7 +27610,7 @@
       last_updated        : '2023-10-26',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : true,
+      rule_required       : false,
       wcag_primary_id     : '2.5.5',
       wcag_related_ids    : [],
       target_resources    : ['links'],
@@ -27563,7 +27647,7 @@
       last_updated        : '2023-10-29',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : false,
+      rule_required       : true,
       wcag_primary_id     : '2.5.8',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
@@ -27605,8 +27689,6 @@
       target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
       validate          : function (dom_cache, rule_result) {
 
-        debug$m.log(`[TARGET_SIZE_4]`);
-
         dom_cache.controlInfo.allButtonElements.forEach( be => {
           const de = be.domElement;
           const h = de.height;
@@ -27646,11 +27728,11 @@
    /**
      * @object TARGET_SIZE_5
      *
-     * @desc Checkbox and radio button target size
+     * @desc Checkbox and radio button target size minimum
      */
 
     { rule_id             : 'TARGET_SIZE_5',
-      last_updated        : '2023-10-31',
+      last_updated        : '2023-11-17',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
@@ -27694,7 +27776,61 @@
         });
 
       } // end validate function
+    },
+
+   /**
+     * @object TARGET_SIZE_6
+     *
+     * @desc Checkbox and radio button target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_6',
+      last_updated        : '2023-11-17',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : false,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+
+          if (de.role === 'radio' || de.role === 'checkbox') {
+            if (de.visibility.isVisibleOnScreen) {
+              let h = de.height;
+              let w = de.width;
+              if (( h < 44) || ( w < 44)) {
+                if (ce.hasLabel) {
+                  h = ce.labelHeight;
+                  w = ce.labelWidth;
+                  if (( h < 44) || (w < 44)) {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+
+        });
+
+      } // end validate function
     }
+
 
 
   ];
