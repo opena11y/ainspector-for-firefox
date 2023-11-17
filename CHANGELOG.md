@@ -4,7 +4,7 @@
 
 | Version      |    Date    | Notes |
 |--------------|:----------:|-----------------------------------------------------|
-| 2.99.5       |   11/16/23  | Fixed bugs and add target size rules
+| 2.99.5       |   11/17/23 | Fixed bugs and add target size rules
 | 2.99.0       |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and some UI features
 | 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
@@ -20,6 +20,7 @@
 ### 2.99.5 (Beta of version 3.0)
 * Fixed some bugs in color contrast calculation
 * Added target size rules
+* Other smaller updates to rules and documentation
 
 ### 2.99.0 (Beta of version 3.0)
 * Updated to use OpenA11y Evaluation Library 2.0 to support WCAG 2.1 requirements
