@@ -135,7 +135,7 @@
   },
 
   "timingLabel": {
-    "message": "Timing",
+    "message": "Timing/Live Regions",
     "description": "Label for Timing rule category view"
   },
 
@@ -1002,7 +1002,7 @@
   },
 
   "csvSummary-timingLabel": {
-    "message": "Number of Timing rules with",
+    "message": "Number of Timing and Live Region rules with",
     "description": "CSV label for Timing rule category for number of rules with"
   },
 
