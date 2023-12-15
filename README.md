@@ -28,6 +28,16 @@
 
 ## Version History
 
+### 2.99.6 (Beta of version 3.0)
+* Updated evaluation library to add addition WCAG 2.1 and 2.2 Level A rules
+  * 2.5.1 Pointer Gestures
+  * 2.5.2 Pointer Cancellation
+  * 2.5.3 Label in Name
+  * 2.5.4 Motion Actuation
+  * 2.1.4 Character Key Shortcuts
+  * 3.2.6 Consistent Help
+* Fixed some bugs in evaluation library
+
 ### 2.99.5 (Beta of version 3.0)
 * Fixed some bugs in color contrast calculation
 * Added target size rules
