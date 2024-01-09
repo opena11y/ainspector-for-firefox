@@ -8,6 +8,8 @@ import {
 
 import { sortRuleResults } from './sortUtils.js';
 
+import { removeTags } from './utils.js';
+
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const getName    = browser.runtime.getManifest().name;
@@ -214,8 +216,8 @@ export class commonCSV {
       if (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(rr.result) > 0)) {
         values.push(rr.ruleId.replace('_', ' '));
-        values.push(rr.summary);
-        values.push(rr.result);
+        values.push(removeTags(rr.summary));
+        values.push(removeTags(rr.result));
         values.push(rr.resultValue);
         values.push(rr.scope);
         if (incRC) {
@@ -274,8 +276,8 @@ export class commonCSV {
   getRuleTitle (ruleInfo) {
     let csv = '\n';
     csv += this.contentCSV(msg.csvRuleId,             ruleInfo.ruleId.replace('_', ' '));
-    csv += this.contentCSV(msg.viewTitleSummaryLabel, ruleInfo.summary);
-    csv += this.contentCSV(msg.ruleDefinitionLabel,   ruleInfo.definition);
+    csv += this.contentCSV(msg.viewTitleSummaryLabel, removeTags(ruleInfo.summary));
+    csv += this.contentCSV(msg.ruleDefinitionLabel,   removeTags(ruleInfo.definition));
     // get only primary Success Criteria, the first item in ruleInfo.sc array
     csv += this.contentCSV(msg.ruleSCLabel,           [ruleInfo.sc[0]]);
     csv += this.contentCSV(msg.ruleComplianceLabel,   ruleInfo.compliance);

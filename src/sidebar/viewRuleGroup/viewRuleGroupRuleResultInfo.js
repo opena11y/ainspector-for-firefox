@@ -1,5 +1,9 @@
 /* viewRuleGroupRuleResultInfo.js */
 
+import {
+  addContentToElement
+} from '../utils.js';
+
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
@@ -127,7 +131,7 @@ export default class ViewRuleGroupRuleResultInfo extends HTMLElement {
     let i, ul, li, a, item;
     if (!info) return;
     if (typeof info === 'string') {
-      elem.textContent = info;
+      addContentToElement(elem, info, true);
     } else {
       if (info.length) {
         elem.innerHTML = '';
@@ -136,16 +140,16 @@ export default class ViewRuleGroupRuleResultInfo extends HTMLElement {
           li = document.createElement('li');
           item = info[i];
           if (typeof item === 'string') {
-            li.textContent = item;
+            addContentToElement(li, item);
           } else {
             if (item.url) {
               a = document.createElement('a');
               a.href = item.url;
-              a.textContent = item.title;
+              addContentToElement(a, item.title);
               a.target="_ai_reference"
               li.appendChild(a);
             } else {
-              li.textContent = item.title;
+              addContentToElement(li, item.title);
             }
           }
           ul.appendChild(li);

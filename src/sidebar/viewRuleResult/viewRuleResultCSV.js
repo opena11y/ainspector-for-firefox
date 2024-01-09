@@ -1,9 +1,12 @@
 /* viewRuleResultCSV.js */
 
+import { removeTags } from '../utils.js';
+
 import {
   cleanCSVItem,
   commonCSV
 } from '../commonCSV.js';
+
 
 const basicProps = ['tagName', 'result',  'resultValue', 'position', 'role', 'actionMessage'];
 
@@ -96,12 +99,9 @@ export default class ViewRuleResultCSV extends commonCSV{
   getTableProps () {
     let props = [];
     for (const id in this.elementResults) {
-      console.log(`[getTableProps][A][        id]: ${id}`);
       if (id) {
         let info = this.elementResults[id];
-        console.log(`[getTableProps][B][     info]: ${info}`);
         if (info) {
-          console.log(`[getTableProps][C][tableInfo]: ${info.tableInfo}`);
           if (info.tableInfo.type) {
             if (props.length == 0) {
               for (let item in info.tableInfo) {
@@ -110,7 +110,6 @@ export default class ViewRuleResultCSV extends commonCSV{
             }
           }
           else {
-            console.log(`[getTableProps][D]`);
             // if any element doesn't have table properties, return empty array
             return [];
           }

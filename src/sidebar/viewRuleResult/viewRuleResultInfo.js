@@ -1,6 +1,10 @@
 /* viewRuleResultInfo.js */
 
-import { getResultStyle }     from '../utils.js';
+import {
+  addContentToElement,
+  getResultStyle
+} from '../utils.js';
+
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -314,7 +318,8 @@ export default class ViewRuleResultInfo extends HTMLElement {
   renderContent(elem, info) {
     let tr, th, td, a, item, hasContent = false;
     if (typeof info === 'string') {
-      elem.textContent = info;
+      addContentToElement(elem, info, true);
+//      elem.textContent = info;
       if (info.length) {
         hasContent = true;
       }
@@ -330,7 +335,8 @@ export default class ViewRuleResultInfo extends HTMLElement {
             td = this.getSpecialProperyContent(info, property);
           } else {
             td = document.createElement('td');
-            td.textContent = info[property];
+            addContentToElement(td, info[property]);
+//            td.textContent = info[property];
           }
           if (td) {
             tr.appendChild(th);

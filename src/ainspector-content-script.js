@@ -11500,17 +11500,35 @@
 
   class MediaElement {
     constructor (domElement) {
+      const node = domElement.node;
+      const type = node.getAttribute('type');
+
       this.domElement = domElement;
       this.tracks = [];
+      this.params = [];
+
       this.hasAutoPlay = domElement.node.hasAttribute('autoplay');
+      this.type = (typeof type === 'string') ? type.toLowerCase() : '';
+    }
+
+    get isAudio () {
+      return this.type.includes('audio') || this.domElement.tagName === 'audio';
+    }
+
+    get isVideo () {
+      return this.type.includes('video') || this.domElement.tagName === 'video';
     }
 
     get allowsTracks () {
-      return true;
+      return ['audio', 'video'].includes(this.domElement.tagName);
+    }
+
+    get isEmbed () {
+      return this.domElement.tagName === 'embed';
     }
 
     get isObject () {
-      return false;
+      return this.domElement.tagName === 'object';
     }
 
     get hasCaptionTrack () {
@@ -11519,14 +11537,6 @@
 
     get hasDescriptionTrack () {
       return this.checkForTrackKind('descriptions');
-    }
-
-    get hasSubtitleTrack () {
-      return this.checkForTrackKind('subtitles');
-    }
-
-    get hasChaptersTrack () {
-      return this.checkForTrackKind('chapters');
     }
 
     checkForTrackKind (type) {
@@ -11563,43 +11573,6 @@
     }
   }
 
-
-  /**
-   * @class ObjectElement
-   *
-   * @desc Identifies a DOM element as an object element.
-   *
-   * @param  {Object}  domElement   - DOM element object
-   */
-
-  class ObjectElement {
-    constructor (domElement) {
-      const node = domElement.node;
-      this.domElement = domElement;
-      this.params = [];
-      this.type = node.hasAttribute('type') ? node.type.toLowerCase() : '';
-    }
-    get allowsTracks () {
-      return false;
-    }
-
-    get isObject () {
-      return true;
-    }
-
-    get isAudio () {
-      return this.type.includes('audio');
-    }
-
-    get isVideo () {
-      return this.type.includes('video');
-    }
-
-    toString() {
-      return `[ObjectElement]: ${this.domElement}`;
-    }
-  }
-
   /**
    * @class ParamElement
    *
@@ -11619,41 +11592,6 @@
 
   }
 
-  /**
-   * @class EmbedElement
-   *
-   * @desc Identifies a DOM element as an embed element.
-   *
-   * @param  {Object}  domElement   - DOM element object
-   */
-
-  class EmbedElement {
-    constructor (domElement) {
-      const node = domElement.node;
-      this.domElement = domElement;
-      this.type = node.hasAttribute('type') ? node.type.toLowerCase() : '';
-    }
-
-    get allowsTracks () {
-      return false;
-    }
-
-    get isAudio () {
-      return this.type.includes('audio');
-    }
-
-   get isVideo () {
-      return this.type.includes('video');
-    }
-
-    get isObject () {
-      return false;
-    }
-
-    toString() {
-      return `[EmbedElement]: ${this.domElement}`;
-    }
-  }
 
   /**
    * @class MediaInfo
@@ -11664,10 +11602,6 @@
 
   class MediaInfo {
     constructor () {
-      this.audioElements  = [];
-      this.embedElements  = [];
-      this.objectElements = [];
-      this.videoElements  = [];
       this.allMediaElements = [];
     }
 
@@ -11677,19 +11611,16 @@
 
         case 'audio':
           mediaElement = new MediaElement(domElement);
-          this.audioElements.push(mediaElement);
           this.allMediaElements.push(mediaElement);
           break;
 
         case 'embed':
-          mediaElement = new EmbedElement(domElement);
-          this.embedElements.push(mediaElement);
+          mediaElement = new MediaElement(domElement);
           this.allMediaElements.push(mediaElement);
           break;
 
         case 'object':
-          mediaElement = new ObjectElement(domElement);
-          this.objectElements.push(mediaElement);
+          mediaElement = new MediaElement(domElement);
           this.allMediaElements.push(mediaElement);
           break;
 
@@ -11710,7 +11641,6 @@
 
         case 'video':
           mediaElement = new MediaElement(domElement);
-          this.videoElements.push(mediaElement);
           this.allMediaElements.push(mediaElement);
           break;
 
@@ -11727,26 +11657,10 @@
 
     showListInfo () {
       if (debug$T.flag) {
-        debug$T.log('== Audio Elements ==', 1);
-        this.audioElements.forEach( ae => {
-          debug$T.log(ae);
+        debug$T.log('== Media Elements ==', 1);
+        this.allElements.forEach( me => {
+          debug$T.log(me);
         });
-
-        debug$T.log('== Video Elements ==', 1);
-        this.videoElements.forEach( ve => {
-          debug$T.log(ve);
-        });
-
-        debug$T.log('== Object Elements ==', 1);
-        this.objectElements.forEach( oe => {
-          debug$T.log(oe);
-        });
-
-        debug$T.log('== Embed Elements ==', 1);
-        this.embedElements.forEach( ee => {
-          debug$T.log(ee);
-        });
-
 
       }
     }
@@ -13265,69 +13179,78 @@
     }
   };
 
-  /* audioRules.js */
+  /* video-onlyRules.js */
 
   /* --------------------------------------------------------------------------- */
-  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /*       OpenA11y Rules Localized Language Support (NLS): English              */
   /* --------------------------------------------------------------------------- */
 
   const audioRules$1 = {
     AUDIO_1: {
       ID:                    'Audio 1',
-      DEFINITION:            '@audio@ elements must have caption or text transcription of the audio content.',
-      SUMMARY:               '@audio@ must have alternative',
-      TARGET_RESOURCES_DESC: '@audio@ elements',
+      DEFINITION:            'For prerecorded audio-only media provide a text transcript that presents equivalent information of prerecorded content. Exception for when the audio is a media alternative for text and is clearly labeled as such.',
+      SUMMARY:               'Audio-only  (Prerecorded)',
+      TARGET_RESOURCES_DESC: '@audio@, @object@ and @embed@ elements',
       RULE_RESULT_MESSAGES: {
-        FAIL_S:         'Add caption or text transcript to @audio@ element',
-        FAIL_P:         'Add a caption or text transcript to each of the %N_F the @audio@ elements with out captions or transcripts.',
-        MANUAL_CHECK_S: 'Verify the @audio@ element has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P: 'Verify the %N_MC @audio@ elements are audio only have either a caption or text transcript of the audio.',
-        HIDDEN_S:       'The @audio@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P:       'The %N_H @audio@ elements that are hidden were not analyzed for accessible audio.',
-        NOT_APPLICABLE: 'No @audio@ elements found on this page.'
+        FAIL_S:         'Add a text transcript to the @audio@ element with out captions or transcripts',
+        FAIL_P:         'Add a  text transcript to each of the %N_F the audio-only elements with out a text transcript.',
+        MANUAL_CHECK_S: 'Verify if the media element is audio-only, if it is audio-only verify that it has a text transcript of the audio content.',
+        MANUAL_CHECK_P: 'Verify the if the %N_MC media elements are audio-only, if any are audio-only verify it has a text transcript of the audio content.',
+        HIDDEN_S:       'The media element that is hidden was not analyzed for accessible audio.',
+        HIDDEN_P:       'The %N_H media elements that are hidden were not analyzed for accessible audio.'
       },
       BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:    '@audio@ element has caption.',
-        ELEMENT_PASS_2:    '@audio@ element has a text transcript.',
-        ELEMENT_FAIL_1:    'Add caption or text transcript to @audio@ element.',
-        ELEMENT_MC_1:      'Verify the @audio@ element has captions or text transcript.',
-        ELEMENT_HIDDEN_1:  'The @audio@ element is hidden and was not evaluated.'
+        ELEMENT_PASS_1:    '@%1@ element has caption track.',
+        ELEMENT_PASS_2:    '@%1@ element has a text transcript.',
+        ELEMENT_FAIL_1:    'Provide a text transcript for @%1@ element content.',
+        ELEMENT_MC_1:      'Verify the audio media content has a text transcript.',
+        ELEMENT_MC_2:      'Verify the @%1@ element is providing audio-only content, and if it is audio-only that is has captions or text transcript.',
+        ELEMENT_HIDDEN_1:  'The @%1@ element is hidden and was not evaluated.'
       },
       PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
+        'People who are deaf, are hard of hearing, or who are having trouble understanding audio information for any reason can read the text transcripts.',
+        'People who are deaf-blind can read the text in braille.',
+        'Additionally, text transcripts support the ability to search for non-text content and to repurpose content in a variety of ways.'
       ],
       TECHNIQUES: [
-        'Use the @track@ element to add captioning to the audio content.',
+        'For the @audio@ eleemnt use the @track@ element to add captioning to the audio content.',
         'Use WebVTT to encode the timed stamped captioning information for the audio content.',
-        'Use @aria-describedby@ to reference a text transcript of the audio content.'
+        'Use @aria-describedby@ to reference an equivalent text description of the audio content.'
       ],
       MANUAL_CHECKS: [
-        'When captions are enabled on the media player, check to make sure the captions visible.',
-        'If there is a caption make sure the captions accurately represents the audio content.',
-        'If there is a text transcript make sure the transcript accurately represents the audio content.'
       ],
       INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'Understanding SC 1.2.1: Audio-only and Video-only (Prerecorded) ',
+          url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html'
+        },
+        { type:  REFERENCES.SPECIFICATION,
           title: 'W3C: Making Audio and Video Media Accessible',
           url:   'https://www.w3.org/WAI/media/av/'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The audio element',
+          title: 'HMTL Specification: The audio element',
           url:   'https://html.spec.whatwg.org/multipage/media.html#the-audio-element'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The track element',
+          title: 'HMTL Specification: The track element',
           url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
         },
-        { type:  REFERENCES.SPECIFICATION,
+        { type:  REFERENCES.TECHNIQUE,
           title: 'WebVTT: The Web Video Text Tracks Format',
           url:   'https://www.w3.org/TR/webvtt1/'
         },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G158: Providing an alternative for time-based media for audio-only content',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G158'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F30: Failure of Success Criterion 1.1.1 and 1.2.1 due to using text alternatives that are not alternatives (e.g., filenames or placeholder text)',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F30'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F67: Failure of Success Criterion 1.1.1 and 1.2.1 due to providing long descriptions for non-text content that does not serve the same purpose or does not present the same information',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F67'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'University of Washington: Creating Accessible Videos',
@@ -13341,126 +13264,8 @@
     },
     AUDIO_2: {
       ID:                    'Audio 2',
-      DEFINITION:            '@object@ elements used for audio only must have caption or text transcription of the audio content.',
-      SUMMARY:               '@object@ for audio must have alternative',
-      TARGET_RESOURCES_DESC: '@object@ elements',
-      RULE_RESULT_MESSAGES: {
-        FAIL_S:   'Add caption or text transcript to @object@ element.',
-        FAIL_P:   'Add a caption or text transcript to each of the %N_F the @object@ elements with out captions or transcripts.',
-        MANUAL_CHECK_S:     'Check if the @object@ element is audio only content.  If it is audio only make sure it has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P:     'Check if any of the %N_MC @object@ elements are audio only. If any are audio only make sure they have either a caption or text transcript of the audio.',
-        HIDDEN_S: 'The @object@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P: 'The %N_H @object@ elements that are hidden were not analyzed for accessible audio.',
-        NOT_APPLICABLE:  'No @embed@ elements found on this page.'
-      },
-      BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:   '@object@ element references text transcript.',
-        ELEMENT_FAIL_1:   'Add captions or text transcript to @object@ element.',
-        ELEMENT_MC_1:     'Verify the @object@ element has synchronous captions.',
-        ELEMENT_MC_2:     'Verify the @object@ element only renders audio only, if it is audio only verify that it has captions or text transcript.',
-        ELEMENT_HIDDEN_1: 'The @object@ element is hidden and was not evaluated.'
-      },
-      PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
-      ],
-      TECHNIQUES: [
-        'Use the @audio@ element instead of the @object@ element for audio only content, since the @audio@ element provides better support for captions and text transcripts.',
-        'Use @aria-describedby@ attribute to point to a text description of the audio only content.'
-      ],
-      MANUAL_CHECKS: [
-        'Check the web page for a link to a text transcript of the audio, or if the transcript is part of the page rendering the audio.',
-        'Check the media player for a button to turn on and off captions.',
-        'When captions are enabled on the media player, check to make sure the captions visible and represent the speech and sounds heard on the audio.',
-        'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
-      ],
-      INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'W3C: Making Audio and Video Media Accessible',
-          url:   'https://www.w3.org/WAI/media/av/'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The object element',
-          url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'University of Washington: Creating Accessible Videos',
-          url:   'https://www.washington.edu/accessibility/videos/'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-          url:   'https://webaim.org/techniques/captions/'
-        }
-      ]
-    },
-    AUDIO_3: {
-      ID:                    'Audio 3',
-      DEFINITION:            '@embed@ elements used for audio only must have caption or text transcription of the audio content.',
-      SUMMARY:               '@embed@ for audio must have alternative',
-      TARGET_RESOURCES_DESC: '@embed@ elements',
-      RULE_RESULT_MESSAGES: {
-        FAIL_S:          'Add caption or text transcript to @embed@ element.',
-        FAIL_P:          'Add a caption or text transcript to each of the %N_F @embed@ elements without captions or transcripts.',
-        MANUAL_CHECK_S:  'Check if the @embed@ element is audio only content.  If it is audio only make sure it has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P:  'Check if any of the %N_MC @embed@ elements are audio only. If any are audio only make sure they have either a caption or text transcript of the audio.',
-        HIDDEN_S:        'The @embed@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P:        'The %N_H @embed@ elements that are hidden were not analyzed for accessibile audio.',
-        NOT_APPLICABLE:  'No @embed@ elements found on this page'
-      },
-      BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:   '@embed@ element references text transcript.',
-        ELEMENT_FAIL_1:   'Add captions or text transcript to @embed@ element.',
-        ELEMENT_MC_1:     'Verify the @embed@ element has synchronous captions.',
-        ELEMENT_MC_2:     'Verify the @embed@ element only renders audio only, if it is audio only verify that it has captions or text transcript.',
-        ELEMENT_HIDDEN_1: 'The @object@ element is hidden and was not evaluated.'
-      },
-      PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
-      ],
-      TECHNIQUES: [
-        'Use the @audio@ element instead of the @embed@ element for audio only content, since the @audio@ element provides better support for captions and text transcripts.',
-        'Use @aria-describedby@ attribute to point to a text description of the audio only content.'
-      ],
-      MANUAL_CHECKS: [
-        'Check the web page for a link to a text transcript of the audio, or if the transcript is part of the page rendering the audio.',
-        'Check the media player for a button to turn on and off captions',
-        'When captions are enabled on the media player, check to make sure the captions visible and represent the speech and sounds heard on the audio.',
-        'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
-      ],
-      INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'W3C: Making Audio and Video Media Accessible',
-          url:   'https://www.w3.org/WAI/media/av/'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The embed element',
-          url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'University of Washington: Creating Accessible Videos',
-          url:   'https://www.washington.edu/accessibility/videos/'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-          url:   'https://webaim.org/techniques/captions/'
-        }
-      ]
-    },
-    AUDIO_4: {
-      ID:                    'Audio 4',
       DEFINITION:            'Media content with audio that automatically starts playing when the page loads and lasts longer than 3 seconds must provide a means for the user able to stop, pause or mute the audio content.',
-      SUMMARY:               'Pause, stop or mute audio',
+      SUMMARY:               'Audio Control',
       TARGET_RESOURCES_DESC: 'Content that is used to auto play media that includes audio content',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:     'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.',
@@ -13469,26 +13274,45 @@
       BASE_RESULT_MESSAGES: {
         PAGE_MC_1:   'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.'
       },
-      PURPOSES:        [ 'Audio content interferes with people using speech based assistive technologies like screen readers.'
-                      ],
-      TECHNIQUES:     [ 'Remove or disable the auto playing of media that includes audio content.',
-                        'Provide a means to pause, stop or mute the audio content.',
-                        'Use cookies to preserve the user preference of pausing, stopping or muting the audio content.'
-                      ],
-      MANUAL_CHECKS:  [ 'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.'
-                      ],
+      PURPOSES: [
+        'Individuals who use screen reading technologies can hear the screen reader without other sounds playing. This is especially important for those who are hard of hearing and for those whose screen readers use the system volume (so they cannot turn sound down and screen reader up).',
+        'People who have difficulty focusing on visual content (including text) benefit when audio is playing.'
+      ],
+      TECHNIQUES: [
+        'Remove or disable the auto playing of media that includes audio content.',
+        'Provide a means to pause, stop or mute the audio content.',
+        'Use cookies to preserve the user preference of pausing, stopping or muting the audio content.'
+      ],
+      MANUAL_CHECKS:  [
+      ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'WCAG Understanding 1.4.2 Audio Control',
+          url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html'
+        },
         { type:  REFERENCES.TECHNIQUE,
           title: 'W3C: Making Audio and Video Media Accessible',
           url:   'https://www.w3.org/WAI/media/av/'
         },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'WCAG 2.1 Success Criterion 1.4.2 Audio Control',
-          url:   'https://www.w3.org/TR/WCAG21/#audio-control'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G60: Playing a sound that turns off automatically within three seconds',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G60'
         },
-        { type:  REFERENCES.WCAG_TECHNIQUE,
-          title: 'How to meet Success Criterion 1.4.2 Audio Control',
-          url:   'https://www.w3.org/WAI/WCAG21/quickref/#audio-control'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G170: Providing a control near the beginning of the Web page that turns off sounds that play automatically',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G170'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G171: Playing sounds only on user request',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G171'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F23: Failure of 1.4.2 due to playing a sound longer than 3 seconds where there is no mechanism to turn it off',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F23'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F93: Failure of Success Criterion 1.4.2 for absence of a way to pause or stop an HTML5 media element that autoplays',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F93'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'University of Washington: Creating Accessible Videos',
@@ -13910,8 +13734,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-LABEL'
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/#the-label-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-invalid',
@@ -13998,8 +13822,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-LABEL'
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/#the-label-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-invalid',
@@ -14201,7 +14025,7 @@
           HIDDEN_P: '%N_H form control elements that are hidden were not evaluated.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   '@%1@ control has the label: \'%2\'',
+          ELEMENT_PASS_1:   '@%1@ control has the label: "%2"',
           ELEMENT_FAIL_1:   'Add label to @%1@ control.',
           ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
         },
@@ -14286,8 +14110,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @input[type=image]@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#adef-type-INPUT'
+            title: 'HTML Specification: The @input[type=image]@ element',
+            url:   'https://html.spec.whatwg.org/#image-button-state-(type=image)'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -14298,8 +14122,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -14496,8 +14320,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element FOR attribute',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#adef-for'
+            title: 'HTML Specification: The @label@ element @for@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-label-for'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -14858,8 +14682,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @input[type="submit"]@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-INPUT'
+            title: 'HTML Specification: The @input[type="submit"]@ element',
+            url:   'https://html.spec.whatwg.org/#submit-button-state-(type=submit)'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'H32: Providing submit buttons',
@@ -15101,68 +14925,43 @@
 
     CONTROL_17: {
         ID:                    'Control 17',
-        DEFINITION:            'Add description.',
+        DEFINITION:            'Some assistive technologies, including speech input, do not reliably associate labels with the controls when label encapsulation is used for labeling.',
         SUMMARY:               'Avoid label encapsulation',
         TARGET_RESOURCES_DESC: '@input@, @select@, @textarea@, @progress@, @meter@ and @output@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add a label to the form control element that is unlabelled.',
+          FAIL_S:   'Add a an @id@ to the control and use the @ a label to the form control element that is unlabelled.',
           FAIL_P:   'Add labels to the %N_F form control elements that are unlabelled.',
           HIDDEN_S: 'One form control element that is hidden was not evaluated.',
           HIDDEN_P: '%N_H form control elements that are hidden were not evaluated.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   '@%1@ control is labeled using %2',
-          ELEMENT_FAIL_1:   'Add a @for@ attribute to the label and @id@ to the form cotnrol',
+          ELEMENT_PASS_1:   '@%1@ control is labeled using: %2',
+          ELEMENT_FAIL_1:   'Add a @for@ attribute to the @label@ element to reference an @id@ on the associated @%1@ control',
           ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
         },
         PURPOSES: [
-          'A label associated with a form control ensures that information about the form control is spoken by screen readers when it receives focus.'
+          'Speech input and other assistive technologies cannot reliably use the label encapsulation method for identifying a label with it\'s associated form control.',
+          'Speech input uses the label as part of commands to move focus or change the state of form controls.  Examples of speech input commands include: "click first name" for moving focus to a textbox, "click thick crust" to select a radio button associated with a pizza crust selection.'
         ],
         TECHNIQUES: [
-          'The preferred technique for labeling form controls is by reference: First, include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.',
-          'NOTE: The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
-          'In special cases, the @aria-labelledby@ attribute can be used on the form control element to reference the id(s) of the elements on the page that describe its purpose.',
-          'In special cases, the @aria-label@ attribute can be used on the form control element to provide an explicit text description of its purpose.',
-          'In special cases, the @title@ attribute on the form control element can be used to provide an explicit text description of its purpose.'
+          'When using the @label@ element include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.'
         ],
         MANUAL_CHECKS: [
-          'Good labels are both concise and descriptive of the control elements purpose.',
-          'If control elements are arranged in groups, use @fieldset/legend@ elements@ to provide a grouping label.',
-          'Consider using @aria-describedby@ to provide references to instructions or error information related to the form control.',
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
             title: 'HTML Specification: The @label@ element',
             url:   'https://html.spec.whatwg.org/multipage/forms.html#the-label-element'
           },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
-            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-label'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-labelledby@ attribute',
-            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML Specification: The @title@ attribute',
-            url:   'https://html.spec.whatwg.org/multipage/dom.html#the-title-attribute'
-          },
-          {type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
-            url: 'https://www.w3.org/WAI/tutorials/forms/'
-          },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'H44: Using label elements to associate text labels with form controls',
             url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H44'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'H65: Using the title attribute to identify form controls when the label element cannot be used',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H65'
-          },
-          { type:  REFERENCES.WCAG_TECHNIQUE,
-            title: 'H71: Providing a description for groups of form controls using fieldset and legend elements',
-            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H71'
+            title: 'W3C ARIA Authoring Practices Issue: Naming Form Controls with the Label Element',
+            url:   'https://github.com/w3c/aria-practices/issues/2870'
           }
+
         ]
     }
   };
@@ -15208,8 +15007,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @h1@ element',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15260,8 +15059,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @h1@ element',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.1 Specification: @main@ role',
@@ -15304,8 +15103,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15360,8 +15159,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15406,8 +15205,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'C22: Using CSS to control visual presentation of text',
@@ -15454,8 +15253,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H2 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H2'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         }
       ]
     },
@@ -15626,7 +15425,7 @@
       },
       PURPOSES: [
         'A text alternative for an image, usually specified with an @alt@ attribute, provides a summary of the purpose of the image for people with visual impairments, enabling them to understand the content or purpose of the image on the page.',
-        'An image with a text alternative that is an empty string or that has @role="presentation"@ is ignored by assistive technologies. Such markup indicates that the image is being used for decoration, spacing or other stylistic purposes rather than meaningful content.'
+        'An image with a text alternative that is an empty string or that has @role="none"@ is ignored by assistive technologies. Such markup indicates that the image is being used for decoration, spacing or other stylistic purposes rather than meaningful content.'
       ],
       TECHNIQUES: [
         'A text alternative should summarize the purpose of an image as succinctly as possible (preferably with no more than 100 characters).',
@@ -15634,7 +15433,7 @@
         'The @aria-labelledby@ attribute can be used to provide a text alternative when an image can be described using text already associated with the image, or for elements with @role="img"@.',
         'The @aria-label@ attribute should only be used to provide a text alternative in the special case when an element has a @role="img"@ attribute. Use the @alt@ attribute for @img@ and @area@ elements.',
         'The @title@ attribute will be used by assistive technologies to provide a text alternative if no other specification technique is found.',
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and one that should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and one that should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
       ],
@@ -15656,8 +15455,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -15717,7 +15516,7 @@
         'The @aria-labelledby@ attribute can be used to provide a text alternative when images can be described using text already associated with the image, such as a visible caption, or for elements with @role="img"@.',
         'The @aria-label@ attribute should only be used to provide a text alternative in the special case when an element has a @role="img"@ attribute.',
         'The @title@ attribute will be used by assistive technologies to provide a text alternative if no other specification technique is found.  NOTE: Using the @title@ attribute will also generate a tooltip in some browsers.',
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
         'Find each image on the page and verify that it is only being used decoratively or is redundant with other information on the page.'
@@ -15740,8 +15539,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -15808,8 +15607,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G94: Providing text alternative for non-text content that serves the same purpose and presents the same information as the non-text content',
@@ -15856,8 +15655,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G94: Providing text alternative for non-text content that serves the same purpose and presents the same information as the non-text content',
@@ -15876,9 +15675,9 @@
 
     IMAGE_5: {
       ID:         'Image 5',
-      DEFINITION: 'Images with @[alt=""]@ or @[role="presentation"]@ must only be used to identify purely decorative images, spacing or stylistic purposes.',
+      DEFINITION: 'Images with @[alt=""]@ or @[role="none"]@ must only be used to identify purely decorative images, spacing or stylistic purposes.',
       SUMMARY:    'Image is decorative',
-      TARGET_RESOURCES_DESC: '@img[alt=""]@, @img[role="presentation"]@, @[role="img"]@ with an empty text alternative',
+      TARGET_RESOURCES_DESC: '@img[alt=""]@, @img[role="none"]@, @[role="img"]@ with an empty text alternative',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S: 'Verify the image is being used purely for decorative, spacing or styling purposes.',
         MANUAL_CHECK_P: 'Verify the %N_MC images are being used purely for decorative, spacing or styling purposes.',
@@ -15897,7 +15696,7 @@
         'If an image contains information, but is mistakenly identified as decorative, users of assistive technologies will not have access to the information.'
       ],
       TECHNIQUES: [
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
       ],
@@ -15972,8 +15771,8 @@
           url:   'https://www.w3.org/TR/html-longdesc/'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -18092,7 +17891,7 @@
           'Use CSS and web standards techniques for the coding of content, and the graphical styling and positioning of content.',
           'Avoid using table markup for graphical layout, if you do use tables for layout make sure the content still is meaningful when the table markup is disabled.',
           'Avoid using nested tables for layout, the deeper the level of nesting the more chance there of having a confusing sequence of content.',
-          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="presentation"@ attribute to clearly indicate the table markup is being used for layout.'
+          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="none"@ attribute to clearly indicate the table markup is being used for layout.'
         ],
         MANUAL_CHECKS: [
           'Use browser developer tools to disable table markup or enable a user stylesheet to change table cells to be rendered as block level elements.',
@@ -18162,7 +17961,7 @@
           'Use CSS and web standards techniques for the coding of content, and the graphical styling and positioning of content.',
           'Avoid using table markup for graphical layout, if you do use tables for layout make sure the content still is meaningful when the table markup is disabled.',
           'Avoid using nested tables for layout, the deeper the level of nesting the more chance there of having a confusing sequence of content.',
-          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="presentation"@ attribute to clearly indicate the table markup is being used for layout.'
+          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="none"@ attribute to clearly indicate the table markup is being used for layout.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -18288,8 +18087,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 12.2 The A element',
-          url:   'https://www.w3.org/TR/html4/struct/links.html#edef-A'
+          title: 'HTML Specification: The A element',
+          url:   'https://html.spec.whatwg.org/#the-a-element'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -18304,8 +18103,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @title@ attribute',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          title: 'HTML Specification: The @title@ attribute',
+          url:   'https://html.spec.whatwg.org/#attr-title'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'H30: Providing link text that describes the purpose of a link for anchor elements',
@@ -18347,8 +18146,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 12.2 The A element',
-          url:   'https://www.w3.org/TR/html4/struct/links.html#edef-A'
+          title: 'HTML Specification: The A element',
+          url:   'https://html.spec.whatwg.org/#the-a-element'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -18363,8 +18162,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @title@ attribute',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          title: 'HTML Specification: The @title@ attribute',
+          url:   'https://html.spec.whatwg.org/#attr-title'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'H30: Providing link text that describes the purpose of a link for anchor elements',
@@ -18568,8 +18367,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           }
         ]
     }
@@ -19098,7 +18897,7 @@
         'Make sure related content moves as a block when repositioning content on a page.'
       ],
       MANUAL_CHECKS: [
-        'Disable layout tables (e.g. table[role="presentation"]) and CSS to make sure the content rendered has a meaningful sequence.'
+        'Disable layout tables (e.g. table[role="none"]) and CSS to make sure the content rendered has a meaningful sequence.'
       ],
       INFORMATIONAL_LINKS: [
         {
@@ -19348,23 +19147,27 @@
   const spacingRules$1 = {
     SPACING_1: {
           ID:                    'Spacing 1',
-          DEFINITION:            'Add description.',
+          DEFINITION:            'No loss of content or functionality occurs by users adjusting any of the following text styling properties within a limited range: line height (line spacing), paragraph spacing, letter spacing and word spacing.  There are some exceptions for some languages and scripts.',
           SUMMARY:               'Text Spacing',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
             MANUAL_CHECK_S:  'The evaluation can not automatically determine if the page supports text spacing requirements.  Use a browser add-on or assistive technology that supports changes in text spacing to verify support for this requirements.'
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify all functionality that uses multi-touch or tracing a path for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential.'
+            PAGE_MC_1:  'The evaluation can not automatically determine if the page supports text spacing requirements.  Use a browser add-on or assistive technology that supports changes in text spacing to verify support for this requirements.'
           },
           PURPOSES: [
-            'add purpose 1',
-            'add purpose 2'
+            'People with low vision who require increased space between lines, words, and letters are able to read text.',
+            'People with dyslexia may increase space between lines, words, and letters to increase reading speed.',
+            'White space between blocks of text can help people with cognitive disabilities discern sections and call out boxes.'
           ],
           TECHNIQUES: [
-            'add technique 1',
-            'add technique 2',
-            'add technique 3'
+            'This requirement does not require authors to set any of their content to a specified metric, nor does it intend to imply that all users will adjust the specified metrics. Rather, it specifies that should a user choose to set any of these metrics they can do so without any loss of content or functionality. The author requirement is both to not interfere with a user\'s ability to override the author settings, and to ensure that modified content is not visually distorted within the adjustment ranges of the requirement.',
+            'Range: Line height (line spacing) to at least 1.5 times the font size.',
+            'Range: Spacing following paragraphs to at least 2 times the font size.',
+            'Range: Letter spacing (tracking) to at least 0.12 times the font size.',
+            'Range: Word spacing to at least 0.16 times the font size.',
+            ''
           ],
           MANUAL_CHECKS: [
           ],
@@ -19372,6 +19175,18 @@
             { type:  REFERENCES.SPECIFICATION,
               title: 'W3C WCAG: Understanding Text Spacing',
               url:   'https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'Chrome Extension: Text Spacing Editor',
+              url:   'https://chromewebstore.google.com/detail/text-spacing-editor/amnelgbfbdlfjeaobejkfmjjnmeddaoj'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'Firefox Extension: Text Spacing Editor',
+              url:   'https://addons.mozilla.org/en-US/firefox/addon/text-spacing-editor-actum/'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'HOLISTICA11Y: Text Spacing Bookmarklet',
+              url:   'https://holistica11y.com/text-spacing-bookmarklet-for-accessibility-testing/'
             },
             { type:  REFERENCES.TECHNIQUE,
               title: 'C36:Allowing for text spacing override',
@@ -19392,6 +19207,10 @@
             { type:  REFERENCES.TECHNIQUE,
               title: 'C28:Specifying the size of text containers using em units',
               url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C21'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F104: Failure of Success Criterion 1.4.12 due to clipped or overlapped content when text spacing is adjusted',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F104'
             }
           ]
     }
@@ -19502,11 +19321,11 @@
           'Use @title@ attribute to provide an accessible name for a data table.',
           'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
-          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.'
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="none"@ on the @table@ element.'
         ],
         MANUAL_CHECKS: [
           'Make sure the the accessible name accurately and succinctly identifies the purpose of the data table.',
-          'If the table markup is actually being used for laying out content in rows or columns, use @role="presentation"@ on the @table@ element.'
+          'If the table markup is actually being used for laying out content in rows or columns, use @role="none"@ on the @table@ element.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19526,8 +19345,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19585,8 +19404,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19620,7 +19439,7 @@
           'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @title@ attribute to provide an accessible name for a data table.',
-          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.',
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="none"@ on the @table@ element.',
           'NOTE: The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or desciptions.'
         ],
         MANUAL_CHECKS: [
@@ -19671,8 +19490,8 @@
         SUMMARY:               'Identify table markup as data or layout',
         TARGET_RESOURCES_DESC: '@table@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'The table without headers or @role="none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
-          FAIL_P:   'For the %N_F tables without headers or @role=none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
+          FAIL_S:   'The table without headers or @role="none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="none"@ on the table elements if the table is being used to layout content.',
+          FAIL_P:   'For the %N_F tables without headers or @role=none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="none"@ on the table elements if the table is being used to layout content.',
           MANUAL_CHECK_S: 'Verify the @table@ element that only has one row or column is used only only for layout.',
           MANUAL_CHECK_P: 'Verify the %N_H @table@ elements that only have one row or column are used only only for layout.',
           HIDDEN_S: 'One @table@ element that is hidden was not evaluated.',
@@ -19694,7 +19513,7 @@
         PURPOSES: [
           'The @table@ element is designed for representing tabular data in a web page, but table markup has also been used by web developers as a means to layout content in rows and columns.',
           'Users of assistive technology are confused when the purpose of table markup is not clearly identified (i.e. layout or for tabular data).',
-          'Use @role="presentation"@ on the @table@ element to clearly identify a table markup for layout.',
+          'Use @role="none"@ on the @table@ element to clearly identify a table markup for layout.',
           'Adding an accessible name and/or description to a @table@ element identifies table markup as a data table (e.g. layout tables must not have an accessible name or description).',
           'The use header cells (e.g. @th@ or @td[scope]@ elements) identifies a @table@ element as a data table.'
         ],
@@ -19702,7 +19521,7 @@
           'Use @th@ elements in the first row and/or first column to identify a table as a data table.',
           'Use @caption@ element; @aria-label@ or @aria-labelledby@ attribute to add an accessible name to a @table@ element.',
           'Use the @aria-describedby@ attribute to add an accessible description to a @table@ element.',
-          'Use @role="presentation"@ on the @table@ element to identify a table and its child table elements (e.g. @tr@ and @td@ elements) are being used for layout.',
+          'Use @role="none"@ on the @table@ element to identify a table and its child table elements (e.g. @tr@ and @td@ elements) are being used for layout.',
           'Layout tables must only use the @tr@ and @td@ table elements for layout content and must NOT have an accessible name or description.'
         ],
         MANUAL_CHECKS: [
@@ -19715,12 +19534,16 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#presentation'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.2 Table Captions: The CAPTION element',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#h-11.2.2'
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The CAPTION element',
+            url:   'https://html.spec.whatwg.org/#the-caption-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19771,8 +19594,12 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19824,8 +19651,12 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19873,8 +19704,12 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -20486,40 +20321,45 @@
   const videoRules$1 = {
     VIDEO_1: {
         ID:                    'Video 1',
-        DEFINITION:            '@video@ elements used for prerecorded video only content must have text or audio description of the video content.',
-        SUMMARY:               '@video@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@video@ elements',
+        DEFINITION:            'Prerecorded video-only media must have either a text based alternative or an audio description track that presents equivalent information for prerecorded video-only content.',
+        SUMMARY:               'Video-only (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @video@ element with the @aria-describedby@ attributes is used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements with the @aria-describedby@ attributes are used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
+          MANUAL_CHECK_S:     'Verify the media element with the @aria-describedby@ attributes is used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC media elements with the @aria-describedby@ attributes are used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
           HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
           HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
           NOT_APPLICABLE:  'No @video@ elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:    '@video@ element has audio description track',
-          ELEMENT_MC_1:      'Verify the @video@ element is used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
-          ELEMENT_MC_2:      'Verify the @video@ element is used for video only content provides an audio track to describe the video content or text description of the video.',
-          ELEMENT_HIDDEN_1:  'The @video@ element is hidden and therefore not evaluated.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
+          ELEMENT_MC_2: 'Verify the @%1@ element is used for video-only content provides an audio track to describe the video content or text description of the video.',
+          ELEMENT_MC_3: 'Verify the @%1@ element with @video@ in its @type@ attrbute is used for video-only content.  If so verify the @aria-describedby@ references a text description of the video-only content.',
+          ELEMENT_MC_4: 'Verify the @%1@ element with @video@ in its @type@ attrbute is used for video-only content.  If so verify the video-only content has a text or audio descriptions.',
+          ELEMENT_MC_5: 'Verify if the @%1@ element is used for video-only content.  If so verify the @aria-describedby@ references a text description of the video-only content.',
+          ELEMENT_MC_6: 'Verify if the @%1@ element is used for video-only content.  If so verify the video-only content has a text or audio description.',
+          ELEMENT_HIDDEN_1:  'The @%1@ element is hidden and therefore not evaluated.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+          'This Success Criterion helps people who have difficulty perceiving visual content.',
+          'Assistive technology can read text alternatives aloud, present them visually, or convert them to braille.',
+          'Alternatives for timed-based media that are text based may help some people who have difficulty understanding the meaning of prerecorded video content.',
+          'People who are deaf, are hard of hearing, or who are having trouble understanding audio information for any reason can read the text presentation. Research is ongoing regarding automatic translation of text into sign language.',
+          'People who are deaf-blind can read the text in braille.',
+          'Additionally, text supports the ability to search for non-text content and to re-purpose content in a variety of ways.'
         ],
         TECHNIQUES: [
-          'Use the @track@ element to add audio descriptions to the video content.',
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
           'Use @aria-describedby@ to reference a text description of the video content.',
           'Include an audio sound track that describes the video content.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.1: Audio-only and Video-only (Prerecorded)',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The video element',
@@ -20534,6 +20374,30 @@
             url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
+            title: 'G159: Providing an alternative for time-based media for video-only content',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G159'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G166: Providing audio that describes the important video content and describing it as such',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G166'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'H96: Using the track element to provide audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/html/H96'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'F30: Failure of Success Criterion 1.1.1 and 1.2.1 due to using text alternatives that are not alternatives (e.g., filenames or placeholder text)',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F30'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'F67: Failure of Success Criterion 1.1.1 and 1.2.1 due to providing long descriptions for non-text content that does not serve the same purpose or does not present the same information',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F67'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
+          { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
             url:   'https://www.washington.edu/accessibility/videos/'
           },
@@ -20543,51 +20407,64 @@
           }
         ]
     },
+
     VIDEO_2: {
         ID:                    'Video 2',
-        DEFINITION:            '@object@ elements used for prerecorded video only content must have text or audio descriptions of the video content.',
-        SUMMARY:               '@object@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@object@ elements',
+        DEFINITION:            'Captions are provided for all prerecorded audio content in synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
+        SUMMARY:               'Captions (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for prerecorded video only content.  If it is used for video only, verify it has either a text or audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for prerecorded video only content.  If any are used for video only, verify they have either a text or audio description of the video content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page.'
+          MANUAL_CHECK_S:     'Verify that the media element has video with synchronized audio, if so verify the video includes captioning.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC media elements are video with synchronized audio, if so verify each video includes captioning.',
+          HIDDEN_S: 'The media element that is hidden was not evaluated for captions.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated for captions.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_2: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for video only content.  If so verify the video only content has a text or audio descriptions.',
-          ELEMENT_MC_3: 'Verify if the @object@ element is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_4: 'Verify if the @object@ element is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_HIDDEN_1:       'The @object@ element is hidden and cannot render video content.'
+          ELEMENT_PASS_1: '@%1@ element has caption track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes open captioning or a caption track.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has open captioning or support a caption track.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content provides open captioning or a caption track.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for captions.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
-        ],
+          'People who are deaf or have a hearing loss can access the auditory information in the synchronized media content through captions.'
+         ],
         TECHNIQUES: [
-          'Use the @video@ element instead of the @object@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
+          'For the @video@ eleemnt use the @track@ element to add a caption track to the video content.',
+          'Use open captions to include the captions as part of the video.',
+          'If closed captions are not supported, use open captioning to include captions as part of the video.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+       { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.2: Captions (Prerecorded)',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The video element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The track element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G93: Providing open (always visible) captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G87: Providing closed captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G87'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G87: Providing closed captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G87'
+          },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C: Making Audio and Video Media Accessible',
             url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20601,49 +20478,65 @@
     },
     VIDEO_3: {
         ID:                    'Video 3',
-        DEFINITION:            '@embed@ elements used for video only content must have caption or text transcription of the audio content.',
-        SUMMARY:               '@embed@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
+        DEFINITION:            'An audio description (preferred) or alternative for time-based media of the prerecorded video content is provided for synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
+        SUMMARY:               'Audio Description or Media Alternative (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for prerecorded video only content.  If it is used for video only, verify it has either a text or audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for prerecorded video only content.  If any are used for video only, verify they have either a text or audio description of the video content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page.'
+          MANUAL_CHECK_S:     'Verify the @video@ element is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description or media alternative of the video content.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements are used for prerecorded video with synchronized audio.   If so, verify each of the videos includes an audio description or the media alternative of the video content.',
+          HIDDEN_S: 'The media element that is hidden was not evaluated.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attribute is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_2: 'Verify the @embed@ element with @video@ in its @type@ attribute is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_MC_3: 'Verify if the @embed@ element is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_4: 'Verify if the @embed@ element is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes audio descriptions or media alternative.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has audio descriptions or media alternative.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content has an audio description or media alternative.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for audio descriptions.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+          'This Success Criterion may help some people who have difficulty watching video or other synchronized media content, including people who have difficulty perceiving or understanding moving images.'
         ],
         TECHNIQUES: [
-          'Use the @video@ element instead of the @embed@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
+          'Use @aria-describedby@ to reference a text description of the video content.',
+          'NOTE: Audio descriptions are preferred over other alternatives since WCAG Success Criteria 1.2.5 (AA) requires the use of audio descriptions and legal requirements for accessibility include WCAG AA requirements.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.3: Audio Description or Media Alternative (Prerecorded)',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The video element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The track element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G69: Providing an alternative for time based media',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G69'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G78: Providing a second, user-selectable, audio track that includes audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G78'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'H96: Using the track element to provide audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/html/H96'
+          },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C: Making Audio and Video Media Accessible',
             url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20657,38 +20550,32 @@
     },
     VIDEO_4: {
         ID:                    'Video 4',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @video@ element must have synchronized captions.',
-        SUMMARY:               '@video@ must have caption',
-        TARGET_RESOURCES_DESC: '@video@ elements',
+        DEFINITION:            'Captions are provided for all live audio content in synchronized media.',
+        SUMMARY:               'Captions (Live)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add caption @track@ element to the @video@ element.',
-          FAIL_P:   'Add caption @track@ element to each of the %N_F @video@ elements with out caption tracks.',
-          MANUAL_CHECK_S:     'Verify that the @video@ element without a caption track has open captions.',
-          MANUAL_CHECK_P:     'Verify that the %N_MC @video@ elements without caption tracks have open captions.',
-          HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @video@ elements found on this page.'
+          MANUAL_CHECK_S: 'Verify that the media element has video with synchronized audio, if so verify the video includes captioning.',
+          MANUAL_CHECK_P: 'Verify if any of the %N_MC media elements are video with synchronized audio, if so verify each video includes captioning.',
+          HIDDEN_S:       'The media element that is hidden was not evaluated for captions.',
+          HIDDEN_P:       'The %N_H media elements that are hidden were not evaluated for captions.',
+          NOT_APPLICABLE: 'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:         '@video@ element has caption track.',
-          ELEMENT_FAIL_1:       'Add caption @track@ element to @video@ element.',
-          ELEMENT_MC_1: 'Verify the video content includes open captions.',
-          ELEMENT_HIDDEN_1:       'The @video@ element is hidden and cannot render content.'
+          ELEMENT_PASS_1: '@%1@ element has caption track.',
+          ELEMENT_MC_1:   'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes open captioning or a caption track.',
+          ELEMENT_MC_2:   'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has open captioning or support a caption track.',
+          ELEMENT_MC_3:   'Verify the @%1@ element is being used for video with synchronized audio content provides open captioning or a caption track.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for captions.'
         },
         PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to understand the audio content of the video.',
-          'Some types of learning disabilities affect auditory processing, captions provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded video content.'
-         ],
+          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
+          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+        ],
         TECHNIQUES: [
-          'Use the @track@ element to add a caption track to the video content.',
-          'Use open captions to include the captions as part of the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers connecting through wireless services.'
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
+          'Use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.TECHNIQUE,
@@ -20702,6 +20589,10 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The track element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20715,139 +20606,31 @@
     },
     VIDEO_5: {
         ID:                    'Video 5',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @object@ element must have synchronized captions.',
-        SUMMARY:               '@object@ for video must have captions',
-        TARGET_RESOURCES_DESC: '@object@ elements',
+        DEFINITION:            'Audio description is provided for all prerecorded video content in synchronized media.',
+        SUMMARY:               'Audio Description (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for video content with synchronized audio (i.e movie, lecture).  If it is video with synchronized audio, verify it has open or closed captioning of the audio content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for video content with synchronized audio (i.e movie, lecture).  If any are used for video with synchronized audio, verify it has open or closed captioning of the audio content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attribute has synchronized audio (i.e. movie, lecture).  If so, verify there is open or closed captioning of the audio content.',
-          ELEMENT_MC_2: 'Verify the @object@ element renders video content with synchronized audio (i.e. movie, lecture).  If so, verify there is open or closed captioning of the audio content.',
-          ELEMENT_HIDDEN_1: 'The @object@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to have access to the speech and sounds of the video.',
-          'Some types of learning disabilities effect auditory processing, captions provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded content.'
-        ],
-        TECHNIQUES: [
-          'Consider using the @video@ element instead of the @object@ element for video containing synchronized audio.  The @video@ element has better support for adding caption tracks.',
-          'Use video authoring tools and player technologies that support captioning.  Use the features of the authoring system and player to add open or closed captions to the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers.'
-        ],
-        MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL 5: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_6: {
-        ID:                    'Video 6',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @embed@ element must have synchronized captions.',
-        SUMMARY:               '@embed@ for video must have captions',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for video content with synchronized audio (i.e movie, lecture).  If it is video with synchronized audio, verify it has captions of the audio content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for video content with synchronized audio (i.e movie, lecture).  If any are used for video with synchronized audio, verify it has captions of the audio content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attribute has synchronized audio (i.e. movie, lecture).  If so, verify their are captions avialble for the audio content.',
-          ELEMENT_MC_2: 'Verify the @embed@ element renders video content with synchronized audio (i.e. movie, lecture).  If so, verify their are captions avialble for the audio content.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to have access to the speech and sounds of the video.',
-          'Some types of learning disabilities effect auditory processing, captoins provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded content.'
-        ],
-        TECHNIQUES: [
-          'Consider using the @video@ element instead of the @object@ element for video containing synchronized audio.  The @video@ element has better support for adding caption tracks.',
-          'Use video authoring tools and player technologies that support captioning.  Use the features of the authoring system and player to add open or closed captions to the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers.'
-        ],
-        MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_7: {
-        ID:                    'Video 7',
-        DEFINITION:            '@video@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have an audio description of the video content.',
-        SUMMARY:               '@video@ element must have audio description.',
-        TARGET_RESOURCES_DESC: '@video@ elements.',
-        RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add audio description track to @video@ element without an audio description track.',
-          FAIL_P:   'Add audio description track to each of the %N_F the @video@ elements without audio description tracks.',
-          MANUAL_CHECK_S:     'Verify the @video@ element with is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description of the video content.',
+          MANUAL_CHECK_S:     'Verify the @video@ element is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description of the video content.',
           MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements are used for prerecorded video with synchronized audio.   If so, verify each of the videos includes an audio description of the video content.',
-          HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @video@ elements found on this page.'
+          HIDDEN_S: 'The media element that is hidden was not evaluated.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:         '@video@ element has audio description track.',
-          ELEMENT_FAIL_1:       'Add audio description track to @video@ element.',
-          ELEMENT_MC_1: 'Verify an audio description of the video content is included in the audio track of the video.',
-          ELEMENT_HIDDEN_1:       'The @video@ element is hidden and cannot render content.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes audio descriptions.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has audio descriptions.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content has an audio description.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for audio descriptions.'
         },
         PURPOSES: [
           'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
+          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'      ],
         TECHNIQUES: [
-          'Use the @track@ element to add audio descriptions to the video content.',
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
           'Use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.TECHNIQUE,
@@ -20865,116 +20648,6 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_8: {
-        ID:                    'Video 8',
-        DEFINITION:            '@object@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have an audio description of the video content.',
-        SUMMARY:               '@object@ for video must have audio description.',
-        TARGET_RESOURCES_DESC: '@object@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so, verify each video includes an audio description of the video content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so verify an audio description of the video content is available.',
-          ELEMENT_MC_2: 'Verify if the @object@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so verify an audio description of the video content is available.',
-          ELEMENT_HIDDEN_1:       'The @object@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
-        TECHNIQUES: [
-          'Use the @video@ element instead of the @object@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
-        ],
-        MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL 5: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_9: {
-        ID:                    'Video 9',
-        DEFINITION:            '@embed@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have audio description of the video content.',
-        SUMMARY:               '@embed@ for video must have audio description',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).   If so, verify the video includes an audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).   If so, verify each of the videos include an audio description of the video content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attrbute is used for video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          ELEMENT_MC_2: 'Verify if the @embed@ element is used for video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
-        TECHNIQUES: [
-          'Use the @video@ element instead of the @embed@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
-        ],
-        MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -21942,7 +21615,7 @@
   /* Constants */
   const debug$R = new DebugLogging('locale', false);
 
-  var globalUseCodeTags = false;
+  var globalUseCodeTags = true;
 
   const messages = {
     en: messages$1
@@ -22491,9 +22164,9 @@
    * @desc Converts element markup identified in strings with '@' characters will be capitalized text
    *       or encapsulated within a code element.
    *
-   * @param {String}   elemStr     - Element result message to convert content inside '@' to caps
+   * @param {String}   elemStr     - Element result message to convert content inside '@' to caps or <code>
    * @param {Boolean}  useCodeTags - If true content between '@' characters will be encapsulated
-   *                                 in either a code element or if false or ommitted capitalized
+   *                                 in either a code element or if false or omitted capitalized
    * @return  String
    */
 
@@ -23506,6 +23179,8 @@
                   }
                   else {
                     domItem.isShadowClosed = true;
+                    // check for descendants of the custom element
+                    this.transverseDOM(newParentInfo, node);
                   }
                 } else {
                   // Check for iframe tag
@@ -23659,114 +23334,55 @@
     /**
      * @object AUDIO_1
      *
-     * @desc Audio elements must have captions or text transcripts
+     * @desc Provide text alternative for audio only
      */
 
     { rule_id             : 'AUDIO_1',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['audio', 'track'],
+      target_resources    : ['audio', 'embed', 'object', 'track'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.audioElements.forEach( ae => {
-          const de = ae.domElement;
-          if (de.visibility.isVisibleToAT || ae.hasAutoPlay) {
-            if (ae.tracks.length) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+
+          if (me.isAudio || !me.isVideo) {
+            const de = me.domElement;
+
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.tracks.length) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+                  }
+                }
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                if (de.accDescription.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+                }
+                else {
+                  if (me.isAudio) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                  }
+                }
               }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object AUDIO_2
-     *
-     * @desc If object element is used for audio only, object must have captions or text transcript
-     */
-
-    { rule_id             : 'AUDIO_2',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (de.accDescription.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
             }
             else {
-              if (oe.type.includes('audio')) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object AUDIO_3
-     *
-     * @desc If embed element is used for audio only, embed  must have captions or text transcript
-     */
-
-    { rule_id             : 'AUDIO_3',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (de.accDescription.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (ee.type.includes('audio')) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         });
 
@@ -23774,13 +23390,13 @@
     },
 
       /**
-       * @object AUDIO_4
+       * @object AUDIO_2
        *
        * @desc  Audio automatically starts
        */
 
-    { rule_id             : 'AUDIO_4',
-      last_updated        : '2023-08-11',
+    { rule_id             : 'AUDIO_2',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
@@ -25512,27 +25128,24 @@
     target_resources    : ["input", 'output', "select", "textarea"],
     validate          : function (dom_cache, rule_result) {
 
-      debug$H.log(`[COntrol 17]: Avoid label encapsulation`);
-
       dom_cache.controlInfo.allControlElements.forEach(ce => {
         const de = ce.domElement;
         if (!ce.isInputTypeImage) {
           if (de.isLabelable) {
             if (de.visibility.isVisibleToAT) {
               if (de.accName.source.indexOf('encapsulation') < 0) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.accName.source]);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
               }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
             }
           }
         }
       });
-
     } // end validation function
   }
 
@@ -25801,15 +25414,17 @@
         rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [nestingErrors]);
       }
       else {
-        if (manualChecks > 0) {
-          if (manualChecks === 1) {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        if (dom_cache.structureInfo.allHeadingDomElements.length > 0) {
+          if (manualChecks > 0) {
+            if (manualChecks === 1) {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+            }
+            else {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
+            }
+          } else {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
           }
-          else {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
-          }
-        } else {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
         }
       }
 
@@ -28645,8 +28260,6 @@
       target_resources    : ['text'],
       validate          : function (dom_cache, rule_result) {
 
-        debug$o.log(`[SPACING 1]: TO DO`);
-
         rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
 
       } // end validate function
@@ -29617,36 +29230,61 @@
     /**
      * @object VIDEO_1
      *
-     * @desc Video elements used for prerecorded video only content using the video element must have text or audio description
+     * @desc Pre-recorded video only must have description
      */
 
     { rule_id             : 'VIDEO_1',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['video', 'track'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT || ve.hasAutoPlay) {
-            if (ve.tracks.length) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                  }
+                }
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                if (me.isVideo) {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.tagName]);
+                  }
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_5', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_6', [de.tagName]);
+                  }
+                }
+
               }
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
           }
         });
 
@@ -29656,41 +29294,43 @@
     /**
      * @object VIDEO_2
      *
-     * @desc Video elements used for prerecorded video only content using the object element must have text or audio description
+     * @desc Prerecorded video with synchronized audio (i.e. movie, lecture) must have captions
      */
 
     { rule_id             : 'VIDEO_2',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['object', 'param'],
+      wcag_primary_id     : '1.2.2',
+      wcag_related_ids    : ['1.2.4'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasCaptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
               }
             }
             else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', []);
-              }
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         });
 
@@ -29700,31 +29340,43 @@
     /**
      * @object VIDEO_3
      *
-     * @desc Video elements used for prerecorded video only content using the embed element must have text or audio description
+     * @desc Prerecorded video with synchronized audio (i.e. movie) using the video element must have audio description
      */
 
     { rule_id             : 'VIDEO_3',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['embed'],
+      wcag_primary_id     : '1.2.3',
+      wcag_related_ids    : ['1.2.5'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+         dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         });
 
@@ -29734,31 +29386,43 @@
     /**
      * @object VIDEO_4
      *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the video element must have captions
+     * @desc Captions (Live)
      */
 
     { rule_id             : 'VIDEO_4',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.4'],
-      target_resources    : ['video', 'track'],
+      wcag_primary_id     : '1.2.4',
+      wcag_related_ids    : ['1.2.2'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ve.hasCaptionTrack || ve.hasSubtitleTrack) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasCaptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         });
 
@@ -29768,168 +29432,43 @@
     /**
      * @object VIDEO_5
      *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the object element must have captions
+     * @desc Audio Description (Prerecorded)
      */
 
     { rule_id             : 'VIDEO_5',
-      last_updated        : '2023-08-11',
+      last_updated        : '2024-01-04',
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.4'],
-      target_resources    : ['object', 'param'],
+      wcag_primary_id     : '1.2.5',
+      wcag_related_ids    : ['1.2.3'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
       validate          : function (dom_cache, rule_result) {
 
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+         dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
             }
             else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
             }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_6
-     *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the embed element must have captions
-     */
-
-    { rule_id             : 'VIDEO_6',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.1', '1.2.4'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_7
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the video element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_7',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.5'],
-      target_resources    : ['video', 'track'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ve.hasDescriptionTrack) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_8
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the object element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_8',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.1', '1.2.5'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_9
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the embed element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_9',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.1', '1.2.5'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
           }
         });
 
@@ -30698,7 +30237,7 @@
                             "insertion",
                             "none",
                             "paragraph",
-                            "presentation",
+                            "none",
                             "strong",
                             "subscript",
                             "superscript"],
@@ -30780,7 +30319,7 @@
           "note",
           "option",
           "paragraph",
-          "presentation",
+          "none",
           "progressbar",
           "radio",
           "radiogroup",
@@ -31131,7 +30670,7 @@
     /**
      * @method getManualCheckProcedures
      *
-     * @desc Gets manual checking proceedures for evaluating the rule
+     * @desc Gets manual checking procedures for evaluating the rule
      *       requirements
      *
      * @return  {Array}  Array of InformationalLinkInfo objects
