@@ -53,13 +53,15 @@ function addContentToElement (elem, content, clear=false) {
   let n;
 
   if (typeof content !== 'string') {
-    content = content.toString();
+    try {
+      content = content.toString();
+    }
+    catch (error) {
+      content = "[error]: " + error;
+    }
   }
 
-  const startTag = '<code>';
-  const endTag = '</code>';
-
-  let i = content.indexOf(startTag);
+  let i = content.indexOf('@');
   let j = 0;
 
 
@@ -67,14 +69,17 @@ function addContentToElement (elem, content, clear=false) {
     n = document.createTextNode(content.substring(j,i));
     elem.appendChild(n);
 
-    j = content.indexOf(endTag, i);
+    j = content.indexOf('@', i+1);
+    if (j < 0) {
+      j = content.length - 1;
+    }
 
-    n = document.createElement(startTag.substring(1, startTag.length-1));
-    addContentToElement(n, content.substring((i+startTag.length),j));
+    n = document.createElement('code');
+    addContentToElement(n, content.substring((i+1),j));
     elem.appendChild(n);
-    j += endTag.length;
+    j += 1;
 
-    i = content.indexOf(startTag, j);
+    i = content.indexOf('@', j);
   }
 
   if (j < content.length) {
