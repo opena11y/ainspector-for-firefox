@@ -3,6 +3,20 @@
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
 import { isCharacterAllowed, validatePrefix, validateShortcut } from './validate.js';
 
+// Information dialogs
+import InfoDialog from './info-dialog/infoDialog.js';
+customElements.define('info-dialog', InfoDialog);
+
+import InfoRulesets from './info-dialog/infoRulesets.js';
+customElements.define('info-rulesets', InfoRulesets);
+
+import InfoWCAGLevels from './info-dialog/infoWCAGLevels.js';
+customElements.define('info-wcag-levels', InfoWCAGLevels);
+
+import InfoScopes from './info-dialog/infoScopes.js';
+customElements.define('info-scopes', InfoScopes);
+
+
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {

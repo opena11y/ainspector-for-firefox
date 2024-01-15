@@ -13,35 +13,33 @@ export const defaultOptions = {
   level : 'AA',
   scopeFilter: 'ALL',
   firstStepRules: [
-    'AUDIO_1',
-    'BYPASS_1',
-    'COLOR_1',
-    'COLOR_2',
-    'CONTROL_1',
-    'CONTROL_2',
-    'CONTROL_3',
-    'CONTROL_10',
-    'CONTROL_12',
-    'HEADING_1',
-    'IMAGE_1',
-    'KEYBOARD_1',
-    'KEYBOARD_2',
-    'KEYBOARD_3',
-    'LANDMARK_1',
-    'LINK_1',
-    'NAVIGATION_1',
-    'TABLE_1',
-    'TABLE_2',
-    'TABLE_5',
-    'TIMING_1',
-    'VIDEO_1',
-    'VIDEO_2',
-    'VIDEO_3',
-    'WIDGET_1',
-    'WIDGET_3',
-    'WIDGET_4',
-    'WIDGET_5',
-    'WIDGET_12'
+    'AUDIO_1',      // Level A
+    'BYPASS_1',     // Level A
+    'COLOR_1',      // Level A
+    'COLOR_2',      // Level AA
+    'CONTROL_1',    // Level A
+    'CONTROL_2',    // Level A
+    'CONTROL_3',    // Level A
+    'CONTROL_10',   // Level AA
+    'CONTROL_12',   // Level A
+    'HEADING_1',    // Level A
+    'IMAGE_1',      // Level A
+    'KEYBOARD_1',   // Level A
+    'KEYBOARD_2',   // Level A
+    'KEYBOARD_3',   // Level A
+    'LANDMARK_1',   // Level A
+    'LINK_1',       // Level A
+    'NAVIGATION_1', // Level AA
+    'TABLE_1',      // Level A
+    'TABLE_2',      // Level AA
+    'TABLE_5',      // Level A
+    'TIMING_1',     // Level A
+    'VIDEO_2',      // Level A
+    'WIDGET_1',     // Level A
+    'WIDGET_3',     // Level A
+    'WIDGET_4',     // Level A
+    'WIDGET_5',     // Level A
+    'WIDGET_12'     // Level AA
   ],
   rerunDelayEnabled: true,
   rerunDelayValue: '5',

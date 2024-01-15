@@ -1,0 +1,72 @@
+/* infoDialog.css */
+
+button#open-button {
+  display: inline;
+  background: transparent;
+  border: none;
+}
+
+dialog#info-dialog {
+  max-width: 70%;
+  padding: 0;
+  background-color: white;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  color: black;
+}
+
+dialog#info-dialog .header {
+  margin-bottom: 0.5em;
+  padding: 4px;
+  padding-left: 1em;
+  border-bottom: 1px solid #aaa;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-weight:  bold;
+  background-color: #eee;
+  position: relative;
+  font-size: 1em;
+}
+
+dialog#info-dialog .header h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+}
+
+dialog#info-dialog .header button {
+  position: absolute;
+  top: -0.25em;
+  right: 0;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  color: black;
+}
+
+dialog#info-dialog .content {
+  margin: 2em 1.5em 2em 1.5em;
+}
+
+dialog#info-dialog .buttons {
+  float: right;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+dialog#info-dialog button {
+  margin: 6px;
+}
+
+dialog#info-dialog .buttons button {
+  min-width: 5em;
+}
+
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+button:hover {
+  cursor: pointer;
+}

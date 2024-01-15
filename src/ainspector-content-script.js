@@ -6371,7 +6371,7 @@
       this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
                         (designPattern.roleType.indexOf('window') >= 0);
 
-      this.isLandark  = designPattern.roleType.indexOf('landmark') >= 0;     
+      this.isLandmark  = designPattern.roleType.indexOf('landmark') >= 0;
 
       this.isSection  = designPattern.roleType.indexOf('section') >= 0;     
       this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;
@@ -10454,7 +10454,7 @@
       this.isInteractiveElement = checkForInteractiveElement(elementNode);
 
       this.isLink      = this.role === 'link';
-      this.isLandmark  = this.checkForLandamrk();
+      this.isLandmark  = this.checkIsLandamrk();
       this.isHeading   = this.role === 'heading';
       this.isInDialog  = this.tagName === 'dialog' ||
                          this.role === 'dialog' ||
@@ -10538,14 +10538,14 @@
     }
 
     /**
-     * @method checkForLandamrk
+     * @method checkIsLandamrk
      *
-     * @desc Tests if a domElement is a landmark
+     * @desc Returns true if the domElement has a landmark role, otherwise false
      *
-     * @param  {Object}  domElement - DOMElement object representing an element in the DOM
+     * @returns  {Boolean}  see @desc
      */
 
-    checkForLandamrk () {
+    checkIsLandamrk () {
       let flag = false;
       const role = this.role || this.defaultRole;
       const name = this.accName.name;
@@ -25101,7 +25101,7 @@
           }
         }
         else {
-          if (de.isInteractive && (de.ariaInfo.equiredParents.length === 0)) {
+          if (de.isInteractive && (de.ariaInfo.requiredParents.length === 0)) {
             if (de.visibility.isVisibleToAT) {
               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
             }
