@@ -13,7 +13,7 @@ template.innerHTML = `
           A
         </th>
         <td class="text-start">
-          Level A requirments sets a minimum level of accessibility, but does not achieve accessibility for many people with disabilities.
+          Level A requirments set a minimum level of accessibility, but does not achieve accessibility for many people with disabilities.
         </td>
       </tr>
       <tr>
@@ -21,7 +21,7 @@ template.innerHTML = `
           AA
         </th>
         <td class="text-start">
-          Level AA requirements meet the accessibility of a broader range of disabilities and when combined with Level A requirements is typically considered the minimum requirements to be considered accessible.
+          Level AA requirements meet the accessibility of a broader range of disabilities and when combined with Level A requirements are typically considered the minimum requirements to be considered accessible.
         </td>
       </tr>
       <tr>

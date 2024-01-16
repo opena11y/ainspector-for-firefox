@@ -4,7 +4,7 @@ const template = document.createElement('template');
 template.innerHTML = `
 
   <h3 class="rules" id="id-rulesets">
-    Number of Rules By WCAG Version and Level
+    Number of Rules
   </h3>
   <table class="table table-striped" aria-labelledby="id-rulesets">
     <thead>
