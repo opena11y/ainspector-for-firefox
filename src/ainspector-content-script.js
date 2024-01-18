@@ -14905,7 +14905,7 @@
 
       CONTROL_16: {
           ID:                    'Control 16',
-          DEFINITION:            'Use @autocomplete@ attributes or other programmatic techniques that support auto-populating form controls with information previously entered by the user, unless the content meets one of the exceptions.',
+          DEFINITION:            'Use @autocomplete@ attributes or other programmatic techniques that support auto-populating form controls with information previously entered by the user, unless the content meets one of the exceptions related to gaming, security or data validity.',
           SUMMARY:               'Redundant Entry',
           TARGET_RESOURCES_DESC: '@input@, @output@, @select@, @textarea@ and widgets',
           RULE_RESULT_MESSAGES: {
@@ -14928,10 +14928,7 @@
           ],
           TECHNIQUES: [
             'Add an @autocomplete@ attribute to the form control that would support auto-populating the form control from previously entered information.',
-            'There are many other programmatic techniques to support auto-population, that are too numerous to discuss here.',
-            'EXCEPTION: Essential uses of input re-entry for things like memory games which would be invalidated if the previous answers were supplied.',
-            'EXCEPTION: Security measures such as preventing a password string from being shown or copied. When creating a password, it should be a unique and complex string and therefore cannot be validated by the author. If the system requires the user to manually create a password that is not displayed, having users re-validate their new string is allowed as an exception.',
-            'EXCEPTION: When the previously entered information is no longer valid, it can be requested that the user enter that information again.'
+            'There are many other programmatic techniques to support auto-population, including but not limited to the use of cookies, HTTP session variables and server side stored information.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -14953,7 +14950,7 @@
 
     CONTROL_17: {
         ID:                    'Control 17',
-        DEFINITION:            'Some assistive technologies, including speech input, do not reliably associate labels with the controls when label encapsulation is used for labeling.',
+        DEFINITION:            'Some assistive technologies, including speech input, do not reliably associate labels with the controls when only label encapsulation is used for labeling.',
         SUMMARY:               'Avoid label encapsulation',
         TARGET_RESOURCES_DESC: '@input@, @select@, @textarea@, @progress@, @meter@ and @output@ elements',
         RULE_RESULT_MESSAGES: {
@@ -15347,10 +15344,10 @@
           SUMMARY:               'Consistent ordering of help',
           TARGET_RESOURCES_DESC: 'Pages in a website',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if a page contains help or contact information and if it does, it\'s order on the page.  Verification requires understanding the requirements, determining of the the requirement applies to a page and then verifying through inspection of the page if the ordering requirements have been met.',
+            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if a page contains help or contact information and if it does, it\'s order on the page.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through inspection of the page if the ordering requirements have been met.',
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify the consistent ordering of help and contact information on web pages within a website.',
+            PAGE_MC_1: 'The evaluation library can not automatically determine if a page contains help or contact information and if it does, it\'s order on the page.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through inspection of the page if the ordering requirements have been met.',
           },
           PURPOSES: [
             'The intent of this Success Criterion is to ensure users can find help for completing tasks on a Web site, when it is available. When the placement of the help mechanism is kept consistent across a set of pages, users looking for help will find it easier to identify. This is distinct from interface-level help, such as contextual help, features like spell checkers, and instructional text in a form. ',
@@ -15897,7 +15894,7 @@
     IMAGE_8: {
       ID:         'Image 8',
       DEFINITION: 'When an image is used to represent stylized text, replace the image with text content and use CSS to style text.',
-      SUMMARY:    'Use CSS to stylize text',
+      SUMMARY:    'Images of text',
       TARGET_RESOURCES_DESC: '@img@ and [role="img"]',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:   'If the image is used to stylize text, replace the image with text content styled with CSS.',
@@ -16166,7 +16163,7 @@
     KEYBOARD_5: {
         ID:                    'Keyboard 5',
         DEFINITION:            'The element with keyboard focus must have a visible focus style that is different from the non-focus state.',
-        SUMMARY:               'Focus must be visible',
+        SUMMARY:               'Focus must be discernible',
         TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements and elements with widget roles with @tabindex@ values',
         RULE_RESULT_MESSAGES: {
           MANUAL_CHECK_S:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
@@ -16264,10 +16261,10 @@
           SUMMARY:               'Content on Hover or Focus',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining of the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
+            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining of the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
+            PAGE_MC_1: 'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
           },
           PURPOSES: [
             'Users with low vision who view content under magnification will be better able to view content on hover or focus without reducing their desired magnification.',
@@ -16300,7 +16297,7 @@
     },
     KEYBOARD_8: {
           ID:                    'Keyboard 8',
-          DEFINITION:            'If a web page can be navigated sequentially and the navigation sequences affect meaning or operation, focusable components receive focus in an order that preserves meaning and operability.',
+          DEFINITION:            'Focusable components receive focus in an order that preserves their meaning and operability.',
           SUMMARY:               'Focus Order',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
@@ -18499,7 +18496,6 @@
             PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by motion, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the motions requirements apply to this page or if one of the exceptions is met.',
           },
           PURPOSES: [
-            'The intent of this success criterion is to ensure that functions triggered by moving a device (for example, shaking or tilting) or by gesturing towards the device (so that sensors like a camera can pick up and interpret the gesturing), can also be operated by more conventional user interface components.',
             'Alternatives to motion activation helps people who may be unable to perform particular motions (such as tilting, shaking, or gesturing) because the device may be mounted or users may be physically unable to perform the necessary movement. This success criterion ensures that users can still operate all functionality by other means such as touch or via assistive technologies. ',
             'All users benefit when they are in situations where they are unable to move their devices.'
           ],
@@ -18772,8 +18768,8 @@
             PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by multi-touch or tracing a path with a pointer, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page or the exception is met.',
           },
           PURPOSES: [
-            'Alternatives to multi-touch and path specific movements is required to ensure that content can be controlled with a range of pointing devices, abilities, and assistive technologies. Some people cannot perform gestures in a precise manner, or they may use a specialized or adapted input device such as a head pointer, eye-gaze system, or speech-controlled mouse emulator. Some pointing methods lack the capability or accuracy to perform multipoint or path-based gestures.',
-            'A path-based gesture involves an interaction where not just the endpoints matter. If going through an intermediate point (usually near the start of the gesture) also affects its meaning then it is a path-based gesture. The user engages a pointer (starting point), carries out a movement that goes through at least one intermediate-point before disengaging the pointer (end point). The intermediate point defines the gesture as requiring a specific path, even if the complete path is not defined.'
+            'Some people cannot perform gestures in a precise manner, or they may use a specialized or adapted input device such as a head pointer, eye-gaze system, or speech-controlled mouse emulator.',
+            'Some pointing methods lack the capability or accuracy to perform multipoint or path-based gestures.'
           ],
           TECHNIQUES: [
             'Example: A web site includes a map view that supports the pinch gesture to zoom into the map content. User interface controls offer the operation using plus and minus buttons to zoom in and out. ',
@@ -18856,10 +18852,10 @@
           SUMMARY:               'Dragging Movements',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S: 'The evaluation library can not automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
+            MANUAL_CHECK_S: 'The evaluation library cannot automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'The evaluation library can not automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
+            PAGE_MC_1: 'The evaluation library cannot automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
           },
           PURPOSES: [
             'Users who struggle with performing dragging movements can still operate an interface with a pointer interface.'
@@ -19195,7 +19191,7 @@
             'Range: Spacing following paragraphs to at least 2 times the font size.',
             'Range: Letter spacing (tracking) to at least 0.12 times the font size.',
             'Range: Word spacing to at least 0.16 times the font size.',
-            ''
+            'Test: Use a browser extension or bookmrklet to test your content.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -20022,7 +20018,7 @@
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
         ],
         TECHNIQUES: [
-          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 24 by 24 pixels.'
+          'Use CSS to increase the dimensions of the radio buttons and/or checkbox or the associated label elements to at least 24 by 24 pixels.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -20082,7 +20078,7 @@
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
         ],
         TECHNIQUES: [
-          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 44 by 44 pixels.'
+          'Use CSS to increase the dimensions of the radio buttons and/or checkbox or the associated label elements to at least 44 by 44 pixels.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -25598,7 +25594,7 @@
     { rule_id             : 'HELP_1',
       last_updated        : '2023-12-03',
       rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
       wcag_primary_id     : '3.2.6',
       wcag_related_ids    : [],
@@ -28426,30 +28422,28 @@
 
       dom_cache.tableInfo.allTableElements.forEach(te => {
         const de = te.domElement;
-        if ((de.role === 'cell') || (de.role === 'gridcell')) {
-          if (de.visibility.isVisibleToAT) {
-            if ((te.tableType === TABLE_TYPE.DATA) || (te.tableType === TABLE_TYPE.COMPLEX)) {
-              if (de.accDescription.name) {
-                if (de.accDescription.source === 'aria-describedby') {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
-                }
+        if (de.visibility.isVisibleToAT) {
+          if ((te.tableType === TABLE_TYPE.DATA) || (te.tableType === TABLE_TYPE.COMPLEX)) {
+            if (de.accDescription.name) {
+              if (de.accDescription.source === 'aria-describedby') {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
               }
               else {
-                if (te.tableType === TABLE_TYPE.DATA){
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-                }
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+              }
+            }
+            else {
+              if (te.tableType === TABLE_TYPE.DATA){
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
               }
             }
           }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
         }
       });
     } // end validation function

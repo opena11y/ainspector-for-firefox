@@ -42,7 +42,7 @@ function  getResultStyle (result) {
  * @param {Boolen} clear     clear   - Flag to remove any content from the node before adding
  */
 
-function addContentToElement (elem, content, clear=false) {
+function addContentToElement (elem, content, clear=false, prefix=true) {
 
   if (clear) {
     while(elem.hasChildNodes()) {
@@ -50,7 +50,7 @@ function addContentToElement (elem, content, clear=false) {
     }
   }
 
-  let n;
+  let n, i;
 
   if (typeof content !== 'string') {
     try {
@@ -61,9 +61,8 @@ function addContentToElement (elem, content, clear=false) {
     }
   }
 
-  let i = content.indexOf('@');
+  i = content.indexOf('@');
   let j = 0;
-
 
   while (i >= 0) {
     n = document.createTextNode(content.substring(j,i));
@@ -75,7 +74,7 @@ function addContentToElement (elem, content, clear=false) {
     }
 
     n = document.createElement('code');
-    addContentToElement(n, content.substring((i+1),j));
+    addContentToElement(n, content.substring((i+1),j), false, false);
     elem.appendChild(n);
     j += 1;
 
