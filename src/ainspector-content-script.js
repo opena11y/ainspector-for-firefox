@@ -21503,7 +21503,7 @@
           BASE_RESULT_MESSAGES: {
             ELEMENT_FAIL_1:    'Remove the deprecated @%1@ attribute from @%2@ element.',
             ELEMENT_FAIL_2:    'Remove the unsupported @%1@ attribute from @%2@ element.',
-            ELEMENT_HIDDEN_1:  'The @%2@ element was not tested because it is hidden from assistive technologies.'
+            ELEMENT_HIDDEN_1:  'The @%1@ element was not tested because it is hidden from assistive technologies.'
           },
           PURPOSES: [
             'Not all ARIA properties and states are useful on every ARIA role and starting with ARIA 1.2 certain states and properties that were once considered global have been deprecated on specific roles.',
@@ -30401,7 +30401,7 @@
       ],
     validate : function (dom_cache, rule_result) {
       dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.deprecatedAttrs || de.ariaInfo.unsupportedAttrs) {
+        if (de.ariaInfo.deprecatedAttrs.length || de.ariaInfo.unsupportedAttrs.length) {
           if (de.visibility.isVisibleToAT) {
             de.ariaInfo.deprecatedAttrs.forEach( attr => {
               rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, de.elemName]);
