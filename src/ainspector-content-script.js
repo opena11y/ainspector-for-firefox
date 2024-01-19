@@ -15354,9 +15354,9 @@
             'ocating the help mechanism in a consistent location across pages makes it easier for users to find it.'
           ],
           TECHNIQUES: [
-            'Example: On-line job application: Some of the application questions may be hard for new job seekers to understand even after reading the contextual help. For example, the form may request their identification number, but they may have several and not know which one to enter. Consistently located contact information will enable them to use phone or email so they can get an answer to their question. ',
-            'Example: Medical appointment scheduling form: When the service a patient is trying to book is not easily findable within the interface, they may need human help. A consistently located messaging option (chat client) enables them to quickly interact with a staff person that can help, without requiring them to manage a second interface. ',
-            'Example: Finding a specific policy or procedure: An employee who needs to complete a work task may have difficulty locating the specific policy or procedure document on their employer\'s Web site. A consistently located "How Do I" page may include the information that enables them to independently complete this task. '
+            '^Example:^ On-line job application: Some of the application questions may be hard for new job seekers to understand even after reading the contextual help. For example, the form may request their identification number, but they may have several and not know which one to enter. Consistently located contact information will enable them to use phone or email so they can get an answer to their question. ',
+            '^Example:^ Medical appointment scheduling form: When the service a patient is trying to book is not easily findable within the interface, they may need human help. A consistently located messaging option (chat client) enables them to quickly interact with a staff person that can help, without requiring them to manage a second interface. ',
+            '^Example:^ Finding a specific policy or procedure: An employee who needs to complete a work task may have difficulty locating the specific policy or procedure document on their employer\'s Web site. A consistently located "How Do I" page may include the information that enables them to independently complete this task. '
           ],
           MANUAL_CHECKS: [
           ],
@@ -16313,10 +16313,10 @@
             'Only a small portion of the page may be visible to an individual using a screen magnifier at a high level of magnification. Such a user may interpret a field in the wrong context if the focus order is not logical.'
           ],
           TECHNIQUES: [
-            'Example: On a web page that contains a tree of interactive controls, the user can use the up and down arrow keys to move from tree node to tree node. Pressing the right arrow key expands a node, then using the down arrow key moves into the newly expanded nodes.',
-            'Example: A Web page implements modeless dialogs via scripting. When the trigger button is activated, a dialog opens. The interactive elements in the dialog are inserted in the focus order immediately after the button. When the dialog is open, the focus order goes from the button to the elements of the dialog, then to the interactive element following the button. When the dialog is closed, the focus order goes from the button to the following element.',
-            'Example: A Web page implements modal dialogs via scripting. When the trigger button is activated, a dialog opens and focus is set within the dialog. As long as the dialog is open, focus is limited to the elements of the dialog. When the dialog is dismissed, focus returns to the button or the element following the button.',
-            'Example: An HTML Web page is created with the left hand navigation occurring in the HTML after the main body content, and styled with CSS to appear on the left hand side of the page. This is done to allow focus to move to the main body content first without requiring tabIndex attributes or JavaScript.'
+            '^Example:^ On a web page that contains a tree of interactive controls, the user can use the up and down arrow keys to move from tree node to tree node. Pressing the right arrow key expands a node, then using the down arrow key moves into the newly expanded nodes.',
+            '^Example:^ A Web page implements modeless dialogs via scripting. When the trigger button is activated, a dialog opens. The interactive elements in the dialog are inserted in the focus order immediately after the button. When the dialog is open, the focus order goes from the button to the elements of the dialog, then to the interactive element following the button. When the dialog is closed, the focus order goes from the button to the following element.',
+            '^Example:^ A Web page implements modal dialogs via scripting. When the trigger button is activated, a dialog opens and focus is set within the dialog. As long as the dialog is open, focus is limited to the elements of the dialog. When the dialog is dismissed, focus returns to the button or the element following the button.',
+            '^Example:^ An HTML Web page is created with the left hand navigation occurring in the HTML after the main body content, and styled with CSS to appear on the left hand side of the page. This is done to allow focus to move to the main body content first without requiring tabIndex attributes or JavaScript.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -16372,9 +16372,9 @@
             'People with attention limitations, short term memory limitations, or limitations in executive processes benefit by being able to discover where the focus is located.'
           ],
           TECHNIQUES: [
-            'Example: A page has a sticky footer (attached to the bottom of the viewport). When tabbing down the page the focused item is not completely hidden by the footer because content in the viewport scrolls up to always display the item with keyboard focus using scroll padding.',
-            'Example: A page has a full-width cookie approval dialog. The dialog is modal, preventing access to the other controls in the page until it has been dismissed. Focus is not obscured because the major portion of the cookie approval dialog remains on screen (until selections are made and submitted), and so the major portion of the keyboard focus indicator remains visible.',
-            'Example: A notification is implemented as a sticky header and the keyboard focus is moved to the notification so at least part of the focus indicator is in view. The notification disappears when it loses focus so it does not obscure any other controls, and part of the prior keyboard focus indicator is visible.'
+            '^Example:^ A page has a sticky footer (attached to the bottom of the viewport). When tabbing down the page the focused item is not completely hidden by the footer because content in the viewport scrolls up to always display the item with keyboard focus using scroll padding.',
+            '^Example:^ A page has a full-width cookie approval dialog. The dialog is modal, preventing access to the other controls in the page until it has been dismissed. Focus is not obscured because the major portion of the cookie approval dialog remains on screen (until selections are made and submitted), and so the major portion of the keyboard focus indicator remains visible.',
+            '^Example:^ A notification is implemented as a sticky header and the keyboard focus is moved to the notification so at least part of the focus indicator is in view. The notification disappears when it loses focus so it does not obscure any other controls, and part of the prior keyboard focus indicator is visible.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -18500,11 +18500,11 @@
             'All users benefit when they are in situations where they are unable to move their devices.'
           ],
           TECHNIQUES: [
-            'Example: A user can choose an application setting which turns off Shake to Undo and other motion-activated features. ',
-            'Example: After text is input in a field, shaking a device shows a dialog offering users to undo the input. A cancel button next to the text field offers the same functionality.',
-            'Example: A user can tilt a device to advance to the next or a previous page. Buttons are also provided to perform the same function. ',
-            'Example: A user can move or pan a device to change the view in an interactive photo. A control is also available to perform these same functions. ',
-            'Example: A user can gesture towards the device to navigate content. Controls are also available to navigate. '
+            '^Example:^ A user can choose an application setting which turns off Shake to Undo and other motion-activated features. ',
+            '^Example:^ After text is input in a field, shaking a device shows a dialog offering users to undo the input. A cancel button next to the text field offers the same functionality.',
+            '^Example:^ A user can tilt a device to advance to the next or a previous page. Buttons are also provided to perform the same function. ',
+            '^Example:^ A user can move or pan a device to change the view in an interactive photo. A control is also available to perform these same functions. ',
+            '^Example:^ A user can gesture towards the device to navigate content. Controls are also available to navigate. '
           ],
           MANUAL_CHECKS: [
           ],
@@ -18691,11 +18691,6 @@
           'If landmarks have labels, use consistent labeling of the landmarks across all pages within the website.'
         ],
         MANUAL_CHECKS: [
-          'Verify that the main content of the page is contained within the @main@ landmark.',
-          'Verify that recurring content at the top of each page is contained within a @banner@ landmark.',
-          'Verify that website navigational links are contained within @navigation@ landmarks.',
-          'Verify that recurring content at the bottom of each page is contained within a @contentinfo@ landmark.',
-          'Verify that if a landmark has a label and there are comparable landmarks on other pages in the website, the labels are the same on each page.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -18772,11 +18767,11 @@
             'Some pointing methods lack the capability or accuracy to perform multipoint or path-based gestures.'
           ],
           TECHNIQUES: [
-            'Example: A web site includes a map view that supports the pinch gesture to zoom into the map content. User interface controls offer the operation using plus and minus buttons to zoom in and out. ',
-            'Example: A web site includes a map view that supports the pinch gesture to zoom into the map content. As an single-pointer alternative, the map also allows users to double-tap, hold, and then move the pointer up or down to zoom in or out. ',
-            'Example: A news site has a horizontal content slider with hidden news teasers that can moved into the viewport via a fast horizontal swipe/flicking motion. It also offers forward and backward arrow buttons for single-point activation to navigate to adjacent slider content. ',
-            'Example: A kanban widget with several vertical areas representing states in a defined process allows the user to right- or left-swipe elements to move them to an adjacent silo. The user can also accomplish this by selecting the element with a single tap or click, and then activating an arrow button to move the selected element. ',
-            'Example: A custom slider requires movement in a strict left/right direction when operated by dragging the thumb control. Buttons on both sides of the slider increment and decrement the selected value and update the thumb position. '        ],
+            '^Example:^ A web site includes a map view that supports the pinch gesture to zoom into the map content. User interface controls offer the operation using plus and minus buttons to zoom in and out. ',
+            '^Example:^ A web site includes a map view that supports the pinch gesture to zoom into the map content. As an single-pointer alternative, the map also allows users to double-tap, hold, and then move the pointer up or down to zoom in or out. ',
+            '^Example:^ A news site has a horizontal content slider with hidden news teasers that can moved into the viewport via a fast horizontal swipe/flicking motion. It also offers forward and backward arrow buttons for single-point activation to navigate to adjacent slider content. ',
+            '^Example:^ A kanban widget with several vertical areas representing states in a defined process allows the user to right- or left-swipe elements to move them to an adjacent silo. The user can also accomplish this by selecting the element with a single tap or click, and then activating an arrow button to move the selected element. ',
+            '^Example:^ A custom slider requires movement in a strict left/right direction when operated by dragging the thumb control. Buttons on both sides of the slider increment and decrement the selected value and update the thumb position. '        ],
           MANUAL_CHECKS: [
           ],
           INFORMATIONAL_LINKS: [
@@ -18817,12 +18812,12 @@
             'Individuals who are unable to detect changes of context are less likely to become disoriented while navigating a site. '
           ],
           TECHNIQUES: [
-            'No Down-Event: The down-event of the pointer is not used to execute any part of the function',
-            'Abort or Undo: Completion of the function is on the up-event, and a mechanism is available to abort the function before completion or to undo the function after completion.',
-            'Up Reversal: The up-event reverses any outcome of the preceding down-event.',
-            'Essential: Completing the function on the down-event is essential.',
-            'Example: For interface elements that have a single tap or long press as input, the corresponding event is triggered when the finger is lifted inside that element. ',
-            'Example: A drag-and-drop interface allows users to sort vertically stacked cards by picking up one card with the pointer (down-event), move it to a new position, and insert it at the new location when the pointer is released (up-event). Releasing the pointer outside the drop target area reverts the action, i.e., it moves the card back to the old position before the interaction started.'
+            '^No Down-Event:^ The down-event of the pointer is not used to execute any part of the function',
+            '^Abort or Undo:^ Completion of the function is on the up-event, and a mechanism is available to abort the function before completion or to undo the function after completion.',
+            '^Up Reversal:^ The up-event reverses any outcome of the preceding down-event.',
+            '^Essential:^ Completing the function on the down-event is essential.',
+            '^Example:^ For interface elements that have a single tap or long press as input, the corresponding event is triggered when the finger is lifted inside that element. ',
+            '^Example:^ A drag-and-drop interface allows users to sort vertically stacked cards by picking up one card with the pointer (down-event), move it to a new position, and insert it at the new location when the pointer is released (up-event). Releasing the pointer outside the drop target area reverts the action, i.e., it moves the card back to the old position before the interaction started.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -18861,12 +18856,12 @@
             'Users who struggle with performing dragging movements can still operate an interface with a pointer interface.'
           ],
           TECHNIQUES: [
-            'Example: A map allows users to drag the view of the map around, and the map has up/down/left/right buttons to move the view as well.',
-            'Example: A sortable list of elements may, after tapping or clicking on a list element, provide adjacent controls for moving the element up or down in the list by simply tapping or clicking on those controls.',
-            'Example: A taskboard that allows users to drag and drop items between columns also provides an additional pop-up menu after tapping or clicking on items for moving the selected element to another column by tapping or clicking on pop-up menu entries.',
-            'Example: A radial control widget (color wheel) where the value can be set by dragging the marker for the currently selected color to another position, also allows picking another color value by tapping or clicking on another place in the color wheel.',
-            'Example: A linear slider control widget, where the value can be set by dragging the visual indicator (thumb) showing the current value, allows tapping or clicking on any point of the slider track to change the value and set the thumb to that position.',
-            'Example: A widget where you can drag a gift to one person in a photo of a group of people also has a menu alternative where users can select the person that should receive the gift from the menu.'
+            '^Example:^ A map allows users to drag the view of the map around, and the map has up/down/left/right buttons to move the view as well.',
+            '^Example:^ A sortable list of elements may, after tapping or clicking on a list element, provide adjacent controls for moving the element up or down in the list by simply tapping or clicking on those controls.',
+            '^Example:^ A taskboard that allows users to drag and drop items between columns also provides an additional pop-up menu after tapping or clicking on items for moving the selected element to another column by tapping or clicking on pop-up menu entries.',
+            '^Example:^ A radial control widget (color wheel) where the value can be set by dragging the marker for the currently selected color to another position, also allows picking another color value by tapping or clicking on another place in the color wheel.',
+            '^Example:^ A linear slider control widget, where the value can be set by dragging the visual indicator (thumb) showing the current value, allows tapping or clicking on any point of the slider track to change the value and set the thumb to that position.',
+            '^Example:^ A widget where you can drag a gift to one person in a photo of a group of people also has a menu alternative where users can select the person that should receive the gift from the menu.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -19187,11 +19182,11 @@
           ],
           TECHNIQUES: [
             'This requirement does not require authors to set any of their content to a specified metric, nor does it intend to imply that all users will adjust the specified metrics. Rather, it specifies that should a user choose to set any of these metrics they can do so without any loss of content or functionality. The author requirement is both to not interfere with a user\'s ability to override the author settings, and to ensure that modified content is not visually distorted within the adjustment ranges of the requirement.',
-            'Range: Line height (line spacing) to at least 1.5 times the font size.',
-            'Range: Spacing following paragraphs to at least 2 times the font size.',
-            'Range: Letter spacing (tracking) to at least 0.12 times the font size.',
-            'Range: Word spacing to at least 0.16 times the font size.',
-            'Test: Use a browser extension or bookmrklet to test your content.'
+            '^Range:^ Line height (line spacing) to at least 1.5 times the font size.',
+            '^Range:^ Spacing following paragraphs to at least 2 times the font size.',
+            '^Range:^ Letter spacing (tracking) to at least 0.12 times the font size.',
+            '^Range:^ Word spacing to at least 0.16 times the font size.',
+            '^Test:^ Use a browser extension or bookmrklet to test your content.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -19413,7 +19408,7 @@
         TECHNIQUES: [
           'Use the  @aria-describedby@ attribute to provide a reference to an accessible description of the information in a data table.',
           'Use the  @title@ attribute to provide a accessible description of the information in a data table.',
-          'NOTE: The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or descriptions.'
+          '^Note:^ The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or descriptions.'
         ],
         MANUAL_CHECKS: [
           'Verify the content of the accessible description accurately summarizes the organization, numerical information in the table or authors intended conclusions from viewing the table.'
@@ -19464,10 +19459,9 @@
           'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @title@ attribute to provide an accessible name for a data table.',
           'If the table is not used for tabular data, but instead for layout of content, use the @role="none"@ on the @table@ element.',
-          'NOTE: The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or desciptions.'
+          '^Note:^ The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or desciptions.'
         ],
         MANUAL_CHECKS: [
-          'Verify the accessible names for tables are unique and identify the content in the data tables.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19549,8 +19543,6 @@
           'Layout tables must only use the @tr@ and @td@ table elements for layout content and must NOT have an accessible name or description.'
         ],
         MANUAL_CHECKS: [
-          'If a table is used for layout verify the order of content still makes sense when the table markup is disabled.',
-          'If a table is used for data tables, verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19614,7 +19606,6 @@
           'Use @th@ element for cells used as header cells in the table.'
         ],
         MANUAL_CHECKS: [
-          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19670,8 +19661,6 @@
           'Use @headers@ attribute on each @td@ element used as a data cell to identify header information in complex data tables.'
         ],
         MANUAL_CHECKS: [
-          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.',
-          'Verify that empty @td@ and @th@ elements and does not need table headers.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19720,11 +19709,9 @@
         TECHNIQUES: [
           'Accessible name is typically defined using the @caption@ element, but the @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
           'Accessible description is typically defined using the @aria-describedby@ attribute, but the @title@ attribute can also be used.',
-          'NOTE: The @summary@ attribute is no longer supported in HTML.'
+          '^Note:^ The @summary@ attribute is no longer supported in HTML.'
         ],
         MANUAL_CHECKS: [
-          'Verify the accessible name clearly identifies the purpose of the table.',
-          'Verify the description summarizes the content of the table.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19771,10 +19758,10 @@
         PURPOSES: [
           'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
-          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
-          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+          '^Exception (common) Inline:^ When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          '^Exception (common) User Agent Control:^ If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Equivalent Target Exception:^ If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Essential Exception:^ If the target is required to be a particular target size and cannot be provided in another way.'
         ],
         TECHNIQUES: [
           'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
@@ -19835,10 +19822,10 @@
         PURPOSES: [
           'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
-          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
-          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+          '^Exception (common) Inline:^ When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          '^Exception(common) User Agent Control:^ If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Equivalent Target Exception:^ If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Essential Exception:^ If the target is required to be a particular target size and cannot be provided in another way.'
         ],
         TECHNIQUES: [
           'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
@@ -20139,12 +20126,12 @@
           'Providing adjustable time periods in line with the persons capabilities makes it possible for people to complete the tasks associated with the website.'
         ],
         TECHNIQUES: [
-          'Turn off: The user is allowed to turn off the time limit before encountering it.',
-          'Adjust: The user is allowed to adjust the time limit before encountering it over a wide range that is at least ten times the length of the default setting.',
-          'Extend: The user is warned before time expires and given at least 20 seconds to extend the time limit with a simple action (for example, "press the space bar"), and the user is allowed to extend the time limit at least ten time.',
-          'Real-time Exception: The time limit is a required part of a real-time event (for example, an auction), and no alternative to the time limit is possible.',
-          'Essential Exception: The time limit is essential and extending it would invalidate the activity.',
-          '20 Hour Exception: The time limit is longer than 20 hours.'
+          '^Turn off:^ The user is allowed to turn off the time limit before encountering it.',
+          '^Adjust:^ The user is allowed to adjust the time limit before encountering it over a wide range that is at least ten times the length of the default setting.',
+          '^Extend:^ The user is warned before time expires and given at least 20 seconds to extend the time limit with a simple action (for example, "press the space bar"), and the user is allowed to extend the time limit at least ten time.',
+          '^Real-time Exception:^ The time limit is a required part of a real-time event (for example, an auction), and no alternative to the time limit is possible.',
+          '^Essential Exception:^ The time limit is essential and extending it would invalidate the activity.',
+          '^20 Hour Exception:^ The time limit is longer than 20 hours.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -20175,9 +20162,9 @@
           'People with visual impairments and visual processing learning disabilities may not be able to read or understand content that is blinking, scrolling or auto updating'
         ],
         TECHNIQUES: [
-          'Pause/Resume: Through configuration or controls on the page, enable the user to pause and resume the moving, blinking, scrolling or auto-updating content.',
-          'Stop: Through configuration or controls on the page, enable the user to stop the moving, blinking, scrolling or auto-updating content and see all of the content at one time.',
-          'Hide: Through configuration or controls on the page, enable the user to hide the moving, blinking, scrolling or auto-updating content if it is not essential for the activity.'
+          '^Pause/Resume:^ Through configuration or controls on the page, enable the user to pause and resume the moving, blinking, scrolling or auto-updating content.',
+          '^Stop:^ Through configuration or controls on the page, enable the user to stop the moving, blinking, scrolling or auto-updating content and see all of the content at one time.',
+          '^Hide:^ Through configuration or controls on the page, enable the user to hide the moving, blinking, scrolling or auto-updating content if it is not essential for the activity.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -20207,7 +20194,7 @@
         PURPOSES: [
           'People who have photosensitive seizure disorders can have a seizure triggered by content that flashes at certain frequencies for more than a few flashes.',
           'People are even more sensitive to red flashing than to other colors.',
-          'NOTE: The WCAG flashing requirements was adapted from the broadcasting industry standards (e.g. content is viewed from a closer distance and using a larger angle of vision).'
+          '^Note:^ The WCAG flashing requirements was adapted from the broadcasting industry standards (e.g. content is viewed from a closer distance and using a larger angle of vision).'
         ],
         TECHNIQUES: [
           'There is no remediation technique, the content must be removed or disabled from flashing.'
@@ -20252,9 +20239,6 @@
             'If the page is part of a sequence of web pages, include the sequence number and total number of steps in the @title@ element.'
           ],
           MANUAL_CHECKS: [
-            'If applicable, verify that the title of the page identifies the website to which it belongs.',
-            'Verify that the title of the page also identifies the page content.',
-            'If the page is part of a sequence of web pages, verify that the title describes which step it is in the sequence.'
           ],
           INFORMATIONAL_LINKS: [
             { type:  REFERENCES.SPECIFICATION,
@@ -20525,7 +20509,7 @@
         TECHNIQUES: [
           'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
           'Use @aria-describedby@ to reference a text description of the video content.',
-          'NOTE: Audio descriptions are preferred over other alternatives since WCAG Success Criteria 1.2.5 (AA) requires the use of audio descriptions and legal requirements for accessibility include WCAG AA requirements.'
+          '^Note:^ Audio descriptions are preferred over other alternatives since WCAG Success Criteria 1.2.5 (AA) requires the use of audio descriptions and legal requirements for accessibility include WCAG AA requirements.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -22253,21 +22237,38 @@
 
     let c = '';
     let i = content.indexOf('@');
+    let k = content.indexOf('^');
     let j = 0;
 
-    while (i >= 0) {
-      c += content.substring(j, i);
+    while ((i >= 0) || (k >= 0)) {
+      if (i > k) {
+        c += content.substring(j, i);
 
-      j = content.indexOf('@', (i+1));
-      if (j < 0) {
-        j = content.length - 1;
+        j = content.indexOf('@', (i+1));
+        if (j < 0) {
+          j = content.length - 1;
+        }
+        c += '<code>';
+        c += content.substring(i+1, j);
+        c += '</code>';
+        j += 1;
+
+        i = content.indexOf('@', j);
       }
-      c += '<code>';
-      c += content.substring(i+1, j);
-      c += '</code>';
-      j += 1;
+      else {
+        c += content.substring(j, k);
 
-      i = content.indexOf('@', j);
+        j = content.indexOf('^', (k+1));
+        if (j < 0) {
+          j = content.length - 1;
+        }
+        c += '<b>';
+        c += content.substring(k+1, j);
+        c += '</b>';
+        j += 1;
+
+        k = content.indexOf('^', j);
+      }
     }
 
     if (j < content.length) {

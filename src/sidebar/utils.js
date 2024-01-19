@@ -50,7 +50,7 @@ function addContentToElement (elem, content, clear=false, prefix=true) {
     }
   }
 
-  let n, i;
+  let n, i, j, k;
 
   if (typeof content !== 'string') {
     try {
@@ -62,23 +62,42 @@ function addContentToElement (elem, content, clear=false, prefix=true) {
   }
 
   i = content.indexOf('@');
-  let j = 0;
+  k = content.indexOf('^');
+  j = 0;
 
-  while (i >= 0) {
-    n = document.createTextNode(content.substring(j,i));
-    elem.appendChild(n);
+  while ((i >= 0) || (k >= 0)) {
+    if (i > k) {
+      n = document.createTextNode(content.substring(j,i));
+      elem.appendChild(n);
 
-    j = content.indexOf('@', i+1);
-    if (j < 0) {
-      j = content.length - 1;
+      j = content.indexOf('@', i+1);
+      if (j < 0) {
+        j = content.length - 1;
+      }
+
+      n = document.createElement('code');
+      addContentToElement(n, content.substring((i+1),j));
+      elem.appendChild(n);
+      j += 1;
+
+      i = content.indexOf('@', j);
     }
+    else {
+      n = document.createTextNode(content.substring(j,k));
+      elem.appendChild(n);
 
-    n = document.createElement('code');
-    addContentToElement(n, content.substring((i+1),j), false, false);
-    elem.appendChild(n);
-    j += 1;
+      j = content.indexOf('^', k+1);
+      if (j < 0) {
+        j = content.length - 1;
+      }
 
-    i = content.indexOf('@', j);
+      n = document.createElement('b');
+      addContentToElement(n, content.substring((k+1),j));
+      elem.appendChild(n);
+      j += 1;
+
+      k = content.indexOf('^', j);
+    }
   }
 
   if (j < content.length) {

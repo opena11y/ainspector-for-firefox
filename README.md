@@ -28,6 +28,11 @@
 
 ## Version History
 
+### 3.00
+* Updated video and audio rules
+* Fixed some bugs in table rules
+* Added additional WCAG 2.1 and 2.2 rules
+
 ### 2.99.6 (Beta of version 3.0)
 * Updated evaluation library to add addition WCAG 2.1 and 2.2 Level A rules
   * 2.5.1 Pointer Gestures
