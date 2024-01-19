@@ -13243,7 +13243,7 @@
       TECHNIQUES: [
         'For the @audio@ eleemnt use the @track@ element to add captioning to the audio content.',
         'Use WebVTT to encode the timed stamped captioning information for the audio content.',
-        'Use @aria-describedby@ to reference an equivalent text description of the audio content.'
+        'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
       ],
       MANUAL_CHECKS: [
       ],
@@ -14062,7 +14062,7 @@
         ],
         TECHNIQUES: [
           'The preferred technique for labeling form controls is by reference: First, include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.',
-          'NOTE: The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
+          '^NOTE:^ The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
           'In special cases, the @aria-labelledby@ attribute can be used on the form control element to reference the id(s) of the elements on the page that describe its purpose.',
           'In special cases, the @aria-label@ attribute can be used on the form control element to provide an explicit text description of its purpose.',
           'In special cases, the @title@ attribute on the form control element can be used to provide an explicit text description of its purpose.'
@@ -20359,7 +20359,7 @@
         ],
         TECHNIQUES: [
           'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.',
           'Include an audio sound track that describes the video content.'
         ],
         MANUAL_CHECKS: [
@@ -20439,7 +20439,8 @@
           'People who are deaf or have a hearing loss can access the auditory information in the synchronized media content through captions.'
          ],
         TECHNIQUES: [
-          'For the @video@ eleemnt use the @track@ element to add a caption track to the video content.',
+          'For the @video@ element use the @track@ element to add a caption track to the video content.',
+          'Use WebVTT to encode the timed stamped captioning information for the audio content.',
           'Use open captions to include the captions as part of the video.',
           'If closed captions are not supported, use open captioning to include captions as part of the video.'
         ],
@@ -20457,6 +20458,10 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The track element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'G93: Providing open (always visible) captions',
@@ -20507,8 +20512,8 @@
           'This Success Criterion may help some people who have difficulty watching video or other synchronized media content, including people who have difficulty perceiving or understanding moving images.'
         ],
         TECHNIQUES: [
-          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.',
+          'For the @video@ element use the @track@ element to add audio descriptions to the video content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.',
           '^Note:^ Audio descriptions are preferred over other alternatives since WCAG Success Criteria 1.2.5 (AA) requires the use of audio descriptions and legal requirements for accessibility include WCAG AA requirements.'
         ],
         MANUAL_CHECKS: [
@@ -20580,8 +20585,9 @@
           'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
         ],
         TECHNIQUES: [
-          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.'
+          'For the @video@ element use the @track@ element to add audio descriptions to the video content.',
+          'Use WebVTT to encode the timed stamped captioning information for the audio content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -20597,6 +20603,14 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The track element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
@@ -20636,7 +20650,7 @@
           'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'      ],
         TECHNIQUES: [
           'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.'
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -21476,19 +21490,20 @@
       },
       WIDGET_14: {
           ID:                    'Widget 14',
-          DEFINITION:            'ARIA attributes that have been deprecated for a role should be removed.',
-          SUMMARY:               'Remove deprecated ARIA attributes.',
-          TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are deprecated.',
+          DEFINITION:            'ARIA attributes that are unsuppoorted or deprecated for a role should be removed.',
+          SUMMARY:               'Unsupported and deprecated ARIA attributes.',
+          TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are unsupported or deprecated.',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Remove the deprecated ARIA attribute from the element.',
-            FAIL_P:   'Remove the deprecated ARIA attributes from the %N_F elements.',
-            HIDDEN_S: 'The element with deprecated ARIA attribute that is hidden and was not evaluated.',
-            HIDDEN_P: '%N_H elements with deprecated ARIA attributes that are hidden were not evaluated.',
+            FAIL_S:   'Remove the unsupported or deprecated ARIA attribute from the element.',
+            FAIL_P:   'Remove the unsupported or deprecated ARIA attributes from the %N_F elements.',
+            HIDDEN_S: 'The element with unsupported or deprecated ARIA attribute that is hidden and was not evaluated.',
+            HIDDEN_P: '%N_H elements with unsupported or deprecated ARIA attributes that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No elements with deprecated ARIA attributes found.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_FAIL_1:    'Remove @%1@ attribute from @%2@ element.',
-            ELEMENT_HIDDEN_1:  'The @%1@ attribute on the @%2@ element was not tested because it is hidden from assistive technologies.'
+            ELEMENT_FAIL_1:    'Remove the deprecated @%1@ attribute from @%2@ element.',
+            ELEMENT_FAIL_2:    'Remove the unsupported @%1@ attribute from @%2@ element.',
+            ELEMENT_HIDDEN_1:  'The @%2@ element was not tested because it is hidden from assistive technologies.'
           },
           PURPOSES: [
             'Not all ARIA properties and states are useful on every ARIA role and starting with ARIA 1.2 certain states and properties that were once considered global have been deprecated on specific roles.',
@@ -21496,7 +21511,7 @@
             'The same ARIA property and state restrictions on explicit roles apply to implicit roles.'
           ],
           TECHNIQUES: [
-            'Remove the deprecated ARIA attribute from the element.'
+            'Remove the unsupported or deprecated ARIA attribute from the element.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -30289,7 +30304,7 @@
   /**
    * @object WIDGET_14
    *
-   * @desc     Roles with deprecated ARIA attributes
+   * @desc     Roles with unsupported or deprecated ARIA attributes
    */
   { rule_id             : 'WIDGET_14',
     last_updated        : '2023-04-21',
@@ -30386,16 +30401,17 @@
       ],
     validate : function (dom_cache, rule_result) {
       dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.deprecatedAttrs) {
+        if (de.ariaInfo.deprecatedAttrs || de.ariaInfo.unsupportedAttrs) {
           if (de.visibility.isVisibleToAT) {
             de.ariaInfo.deprecatedAttrs.forEach( attr => {
               rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, de.elemName]);
             });
+            de.ariaInfo.unsupportedAttrs.forEach( attr => {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, de.elemName]);
+            });
           }
           else {
-            de.ariaInfo.deprecatedAttrs.forEach( attr => {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, de.elemName]);
-            });
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
           }
         }
       });
