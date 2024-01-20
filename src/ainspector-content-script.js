@@ -6354,6 +6354,8 @@
       }
 
       this.isValidRole  = typeof designPattern === 'object';
+      this.isDPUBRole = role.indexOf('doc-') >= 0;
+
       this.isAbstractRole = false;
 
 
@@ -20835,11 +20837,14 @@
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add a valid widget, section, landmark or live region role value to the element.',
             FAIL_P:   'Add a valid widget, section, landmark or live region role values to %N_F out of %N_T elements with @role@ attributes.',
+            MANUAL_CHECK_S:   'Verify the element with the DPUB role is valid and appropriate for the web page.',
+            MANUAL_CHECK_P:   'Verify the %N_MC elements with DPUB roles are valid and appropriate for the web page.',
             HIDDEN_S: 'The element with a role that is hidden and was not evaluated.',
             HIDDEN_P: '%N_H elements with a role that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No elements with @role@ attribute on this page'
           },
           BASE_RESULT_MESSAGES: {
+            ELEMENT_MC_1:     'Verify if the @%1@ role is a valid DPUB role.',
             ELEMENT_PASS_1:   '@%1@ is a widget role.',
             ELEMENT_PASS_2:   '@%1@ is a landmark role.',
             ELEMENT_PASS_3:   '@%1@ is a live region role.',
@@ -29654,7 +29659,12 @@
         if (de.hasRole) {
           if (de.visibility.isVisibleToAT) {
             if (!de.ariaInfo.isValidRole) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              if (de.ariaInfo.isDPUBRole) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
             }
             else {
               if (de.ariaInfo.isAbstractRole) {

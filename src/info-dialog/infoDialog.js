@@ -21,7 +21,7 @@ template.innerHTML = `
   <dialog id="info-dialog">
     <div class="header">
       <h2 id=>Ruleset Options Information</h2>
-      <button id="close-button-1" aria-label="close" tabindex="-1">✕</button>
+      <button id="close-button-1" aria-label="Close">✕</button>
     </div>
 
     <div class="content">
@@ -67,9 +67,11 @@ export default class InfoDialog extends HTMLElement {
 
     this.closeButton1  = this.shadowRoot.querySelector('#close-button-1');
     this.closeButton1.addEventListener('click', this.onCloseButtonClick.bind(this));
+    this.closeButton1.addEventListener('keydown', this.onKeyDown.bind(this));
 
     this.closeButton2  = this.shadowRoot.querySelector('#close-button-2');
     this.closeButton2.addEventListener('click', this.onCloseButtonClick.bind(this));
+    this.closeButton2.addEventListener('keydown', this.onKeyDown.bind(this));
 
     this.moreInfoButton  = this.shadowRoot.querySelector('#more-info-button');
     if (moreButtonLabel) {
@@ -106,6 +108,29 @@ export default class InfoDialog extends HTMLElement {
     });
 
     newTab.then(onCreated, onError);
+  }
+
+  onKeyDown (event) {
+
+    if ((event.key === "Tab") &&
+        !event.altKey &&
+        !event.ctlKey &&
+        !event.metaKey) {
+
+      if (event.shiftKey &&
+          (event.currentTarget === this.closeButton1)) {
+        this.closeButton2.focus();
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      if (!event.shiftKey &&
+          (event.currentTarget === this.closeButton2)) {
+        this.closeButton1.focus();
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
   }
 
 }
