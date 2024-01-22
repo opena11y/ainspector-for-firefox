@@ -14846,12 +14846,12 @@
 
       CONTROL_15: {
           ID:                    'Control 15',
-          DEFINITION:            'The labels for controls and widgets that include text or images of text, the name contains the text that is presented visually.',
-          SUMMARY:               'Label in Name',
+          DEFINITION:            'The labels (e.g. accessible name) for controls and widgets that include text or images of text, the name contains the text that is presented visually.',
+          SUMMARY:               'Label in name for controls',
           TARGET_RESOURCES_DESC: '@input@, @output@, @select@, @textarea@ and widgets',
           RULE_RESULT_MESSAGES: {
             MANUAL_CHECK_S:  'Verify the control with images, @aria-label@ and/or references to hidden content contain the same text associated with the visually rendered label associated with the control.',
-            MANUAL_CHECK_P:  'Verify tha each of the %N_MC controls with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
+            MANUAL_CHECK_P:  'Verify that each of the %N_MC controls with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
             HIDDEN_S:  'One control with images, @aria-label@ and/or references to hidden content was not tested because it is hidden from assistive technologies',
             HIDDEN_P:  '%N_H controls with images, @aria-label@ and/or references were not tested because they are hidden from assistive technologies',
           },
@@ -14879,7 +14879,7 @@
           ],
           INFORMATIONAL_LINKS: [
             { type:  REFERENCES.SPECIFICATION,
-              title: 'W3C WCAG UNderstanding Label in Name',
+              title: 'W3C WCAG Understanding Label in Name',
               url:   'https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html'
             },
             { type:  REFERENCES.TECHNIQUE,
@@ -18250,7 +18250,68 @@
             url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
           }
         ]
-    }
+    },
+
+      LINK_4: {
+          ID:                    'Link 4',
+          DEFINITION:            'The labels (e.g. accessible name) for links that include text or images of text, the name contains the text that is presented visually.',
+          SUMMARY:               'Label in name for links',
+          TARGET_RESOURCES_DESC: '@a@',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S:  'Verify the link with images, @aria-label@ and/or references to hidden content contain the same text associated with the visually rendered label associated with the control.',
+            MANUAL_CHECK_P:  'Verify the %N_MC links with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
+            HIDDEN_S:  'One link with images, @aria-label@ and/or references to hidden content was not tested because it is hidden from assistive technologies',
+            HIDDEN_P:  '%N_H linkss with images, @aria-label@ and/or references were not tested because they are hidden from assistive technologies',
+          },
+          BASE_RESULT_MESSAGES: {
+            ELEMENT_MC_1: 'Verify the image @alt@ text contains any text represented in the image.',
+            ELEMENT_MC_2: 'Verify the @aria-label@ contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_MC_3: 'Verify the computed name of all the referenced content, contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_HIDDEN_1: 'The hidden control with an accessible name that includes image content was not tested.',
+            ELEMENT_HIDDEN_2: 'The hidden control with an accessible name with @aria-label@ content was not tested.',
+            ELEMENT_HIDDEN_3: 'The hidden control with an accessible name that includes references to hidden content was not tested.',
+            PAGE_MC_1: 'The pages contains '
+          },
+          PURPOSES: [
+            'Voice recognition users can directly activate controls on a page with fewer surprising changes of focus.',
+            'Screen reader users will have a better experience because the labels that they hear match the visible text labels that they see on the screen.',
+            'In general avoid using images and hidden text for defining accessible names whenever possible.'
+          ],
+          TECHNIQUES: [
+            'If images of text that are part of an accessible name (e.g. label), the alt text must be the same as the text of the image.',
+            'If @aria-label@ is used as part of an accessible name (e.g. label), the @aria-label@ contains the same text associated the visually rendered content associated with the control.',
+            'If a hidden @aria-labelledby@ reference is used as part of the accessible name (e.g. label), verify the computed name of all the referenced contain has the same text associated the visually rendered label associated with the control.',
+            'Accessible names may contain additional information useful to people using assistive technologies, but should start with the visible text associated with the control.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG Understanding Label in Name',
+              url:   'https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'W3C Accessible Name and Description Computation 1.1',
+              url:   'https://www.w3.org/TR/accname-1.1/'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G208: Including the text of the visible label as part of the accessible name',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G208'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G211: Matching the accessible name to the visible label',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G211'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G162: Positioning labels to maximize predictability of relationships',
+              url:   'https://www.w3.org/WAI/GL/2016/WD-WCAG20-TECHS-20160105/G162'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F96: Failure due to the accessible name not containing the visible label text',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F96'
+            }
+          ]
+      }
   };
 
   /* listRules.js */
@@ -29264,6 +29325,53 @@
         });
       } // end validation function
     },
+
+    { rule_id             : 'LINK_4',
+      last_updated        : '2024-01-20',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      wcag_primary_id     : '2.5.3',
+      wcag_related_ids    : [],
+      target_resources    : ["a", "[role=link]"],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+
+          if (de.accName.includesAlt) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            if (de.accName.includesAriaLabel) {
+              if (de.visibility.isVisibleToAT) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.elemName]);
+              }
+            }
+            else {
+              if (de.accName.nameIsNotVisible) {
+                if (de.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.elemName]);
+                }
+              }
+
+            }
+          }
+
+        });
+
+      } // end validation function
+    }
   ];
 
   /* listRules.js */
