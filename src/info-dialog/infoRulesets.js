@@ -30,19 +30,19 @@ template.innerHTML = `
         <th class="text-start">
           <a href="https://www.w3.org/TR/WCAG21/" target="_wcag">WCAG 2.1 (2018)</a>
           </th>
-        <td class="text-end">101</td>
+        <td class="text-end">102</td>
         <td class="text-end">30</td>
         <td class="text-end">4</td>
-        <td class="text-end">135</td>
+        <td class="text-end">136</td>
       </tr>
       <tr>
         <th class="text-start">
           <a href="https://www.w3.org/TR/WCAG22/" target="_wcag">WCAG 2.2 (2023)</a>
         </th>
-        <td class="text-end">102</td>
+        <td class="text-end">103</td>
         <td class="text-end">37</td>
         <td class="text-end">4</td>
-        <td class="text-end">143</td>
+        <td class="text-end">144</td>
       </tr>
       <tr>
         <th class="text-start">First Step</th>
