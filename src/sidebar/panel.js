@@ -712,7 +712,6 @@ function runContentScripts (callerfn) {
       contentCode += `  ruleset: "${options.ruleset}",`;
       contentCode += `  level: "${options.level}",`;
       contentCode += `  scopeFilter: "${options.scopeFilter}",`;
-      contentCode += `  firstStepRules: ["${options.firstStepRules.join('","')}"],`;
       contentCode += `  highlight: "${options.highlight}",`;
       // note the following properties are number and boolean values
       contentCode += `  groupId: ${sidebarGroupId},`;

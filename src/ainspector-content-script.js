@@ -25185,6 +25185,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
       target_resources    : ['audio', 'embed', 'object', 'track'],
@@ -25243,6 +25244,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.2',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -25279,6 +25281,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.3.8',
       wcag_related_ids    : [],
       target_resources    : ['widgets'],
@@ -25316,6 +25319,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['2.4.4'],
       target_resources    : ['a'],
@@ -25425,6 +25429,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '1.4.3',
       wcag_related_ids    : ['1.4.1','1.4.6'],
       target_resources    : ['text content'],
@@ -25519,6 +25524,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '1.4.1',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -25540,6 +25546,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required        : false,
+      first_step          : false,
       wcag_primary_id     : '1.4.6',
       wcag_related_ids    : ['1.4.1','1.4.3'],
       target_resources    : ['text content'],
@@ -25634,6 +25641,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.11',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -25666,6 +25674,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.11',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -25722,6 +25731,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.3.1',
       wcag_related_ids    : [],
       target_resources    : ['input[type="checkbox"]',
@@ -25806,6 +25816,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.3.3',
       wcag_related_ids    : [],
       target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea'],
@@ -25850,6 +25861,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.3.3',
       wcag_related_ids    : [],
       target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
@@ -25885,6 +25897,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.3.4',
       wcag_related_ids    : [],
       target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
@@ -25946,6 +25959,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : [],
       target_resources    : ['frame'],
@@ -25979,6 +25993,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : [],
       target_resources    : ['iframe'],
@@ -26090,6 +26105,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
@@ -26127,6 +26143,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="image"]'],
@@ -26165,6 +26182,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['input[type="radio"]'],
@@ -26215,6 +26233,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : false,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['button'],
@@ -26295,6 +26314,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.1',
     wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
     target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
@@ -26328,6 +26348,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['label'],
@@ -26366,6 +26387,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6'],
     target_resources    : ['label', 'legend'],
@@ -26404,6 +26426,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
     target_resources    : ['fieldset'],
@@ -26455,6 +26478,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : ['4.1.1'],
     target_resources    : ['input', 'select', 'textarea'],
@@ -26486,6 +26510,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
@@ -26563,6 +26588,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
@@ -26646,6 +26672,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '3.2.2',
     wcag_related_ids    : [],
     target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
@@ -26756,6 +26783,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.3.5',
     wcag_related_ids    : ['3.3.2', '2.4.6'],
     target_resources    : ['input[type="text"]'],
@@ -26788,6 +26816,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : [],
     target_resources    : ["input", "option", "select", "textarea"],
@@ -26863,6 +26892,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '2.5.3',
     wcag_related_ids    : [],
     target_resources    : ["input", "output", "select", "textarea", "widgets"],
@@ -26919,6 +26949,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.7',
     wcag_related_ids    : [],
     target_resources    : ["input", "select", "textarea"],
@@ -26966,6 +26997,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.FORMS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '3.3.2',
     wcag_related_ids    : [],
     target_resources    : ["input", 'output', "select", "textarea"],
@@ -27019,6 +27051,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.HEADINGS,
       rule_required       : false,
+      first_step          : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
       target_resources    : ['h1'],
@@ -27063,6 +27096,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.HEADINGS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '2.4.6',
       wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
       target_resources    : ['h1'],
@@ -27413,6 +27447,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.6',
       wcag_related_ids    : [],
       target_resources    : ['page'],
@@ -27449,6 +27484,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.3.1',
       wcag_related_ids    : ['2.2.2', '4.1.1'],
       target_resources    : ['marquee'],
@@ -27493,6 +27529,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', 'area', '[role="img"]'],
@@ -27534,6 +27571,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', '[role="img"]'],
@@ -27571,6 +27609,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', '[role="img"]'],
@@ -27604,6 +27643,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', 'area'],
@@ -27637,6 +27677,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', '[role="img"]'],
@@ -27675,6 +27716,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', '[role="img"]'],
@@ -27713,6 +27755,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.1.1',
     wcag_related_ids    : [],
     target_resources    : ['img', '[role="img"]'],
@@ -27752,6 +27795,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.4.5',
     wcag_related_ids    : [],
     target_resources    : ['img', 'area', '[role="img"]'],
@@ -27808,6 +27852,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.1.1',
       wcag_related_ids    : ['4.1.2'],
       target_resources    : ['widgets'],
@@ -27838,6 +27883,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.4.3',
       wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
       target_resources    : ['links', 'controls', 'widgets'],
@@ -27909,6 +27955,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.1.2',
       wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
       target_resources    : ['object'],
@@ -27937,6 +27984,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.1.2',
       wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
       target_resources    : ['object'],
@@ -27966,6 +28014,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.7',
       wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
       target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
@@ -28010,6 +28059,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.2',
       wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
       target_resources    : ['select'],
@@ -28041,6 +28091,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.13',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
@@ -28064,6 +28115,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.3',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
@@ -28085,6 +28137,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.11',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
@@ -28121,6 +28174,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['main', '[role="main"]'],
@@ -28139,6 +28193,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['Page', 'all'],
@@ -28180,6 +28235,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['nav', '[role="navigation"]'],
@@ -28244,6 +28300,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['header', '[role="banner"]'],
@@ -28264,6 +28321,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['header', '[role="banner"]'],
@@ -28283,6 +28341,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['footer', '[role="contentinfo"]'],
@@ -28302,6 +28361,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.1',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['footer', '[role="contentinfo"]'],
@@ -28320,6 +28380,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       required            : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['header', '[role="banner"]'],
@@ -28338,6 +28399,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['header', '[role="banner"]'],
@@ -28356,6 +28418,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['nav', '[role="naviation"]'],
@@ -28374,6 +28437,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['main', '[role="main"]'],
@@ -28392,6 +28456,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['footer', '[role="contentinfo"]'],
@@ -28410,6 +28475,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['header', '[role="banner"]'],
@@ -28428,6 +28494,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['[role="search"]'],
@@ -28446,6 +28513,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['[role="form"]'],
@@ -28464,6 +28532,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['[role="region"]'],
@@ -28497,6 +28566,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
@@ -28519,6 +28589,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
@@ -28546,6 +28617,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LANDMARKS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
       target_resources    : ['aside', '[role="complementary"]'],
@@ -28943,6 +29015,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.1.1',
       wcag_related_ids    : [],
       target_resources    : ['html'],
@@ -28972,6 +29045,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.1.2',
       wcag_related_ids    : ['3.1.1'],
       target_resources    : ['[lang]'],
@@ -29036,6 +29110,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : ['1.3.1'],
       target_resources    : ['Page', 'table'],
@@ -29092,6 +29167,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
       target_resources    : ['table'],
@@ -29134,6 +29210,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
       target_resources    : ['[aria_flowto]'],
@@ -29164,6 +29241,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.4',
       wcag_related_ids    : [],
       target_resources    : ['page'],
@@ -29199,6 +29277,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.4.4',
       wcag_related_ids    : ['2.4.9'],
       target_resources    : ['a', 'area', '[role=link]'],
@@ -29237,6 +29316,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '2.4.4',
       wcag_related_ids    : ['2.4.9'],
       target_resources    : ['a', 'area', '[role=link]'],
@@ -29310,6 +29390,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.1',
       wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
       target_resources    : ['a', 'area', 'select'],
@@ -29331,6 +29412,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.3',
       wcag_related_ids    : [],
       target_resources    : ["a", "[role=link]"],
@@ -29399,6 +29481,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.1',
       wcag_related_ids    : [],
       target_resources    : ['ul', 'ol', 'li', '[role="list"]', '[role="listitem"]'],
@@ -29448,6 +29531,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.6',
       wcag_related_ids    : ['1.3.1'],
       target_resources    : ['ul', 'ol', '[role="list"]'],
@@ -29571,6 +29655,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.4',
       wcag_related_ids    : [],
       target_resources    : ['page'],
@@ -29625,6 +29710,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.4.5',
       wcag_related_ids    : [],
       target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\''],
@@ -29672,6 +29758,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.3',
       wcag_related_ids    : ['3.2.4'],
       target_resources    : ['Website', 'role=\'main\'', 'role=\'navigation\'', 'role=\'banner\'', 'role=\'contentinfo\'','role=\'search\''],
@@ -29715,6 +29802,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.3',
       wcag_related_ids    : ['3.2.4'],
       target_resources    : ['Website', 'h2'],
@@ -29758,6 +29846,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.4',
       wcag_related_ids    : ['3.2.3'],
       target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\'', 'role=\'main\'', 'role=\'banner\'', 'role=\'contentinfo\'', 'h2'],
@@ -29802,6 +29891,7 @@
       rule_scope          : RULE_SCOPE.WEBSITE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '3.2.4',
       wcag_related_ids    : ['3.2.3'],
       target_resources    : ['Website', 'h2'],
@@ -29858,6 +29948,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.1',
       wcag_related_ids    : [],
       target_resources    : ['widgets'],
@@ -29881,6 +29972,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.2',
       wcag_related_ids    : [],
       target_resources    : ['widgets'],
@@ -29904,6 +29996,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.7',
       wcag_related_ids    : [],
       target_resources    : ['widgets'],
@@ -29942,6 +30035,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.2',
       wcag_related_ids    : [],
       target_resources    : [],
@@ -29990,6 +30084,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.4',
       wcag_related_ids    : [],
       target_resources    : ['content'],
@@ -30009,6 +30104,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.10',
       wcag_related_ids    : [],
       target_resources    : ['content'],
@@ -30043,6 +30139,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.3.3',
       wcag_related_ids    : [],
       target_resources    : ['button', 'link'],
@@ -30077,6 +30174,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.1.4',
       wcag_related_ids    : [],
       target_resources    : ['page'],
@@ -30100,6 +30198,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.1.4',
       wcag_related_ids    : [],
       target_resources    : ['a', 'input', 'output', 'select', 'textarea'],
@@ -30145,6 +30244,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.4.12',
       wcag_related_ids    : [],
       target_resources    : ['text'],
@@ -30179,6 +30279,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['td'],
@@ -30244,6 +30345,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1'],
     target_resources    : ['table', 'caption'],
@@ -30279,6 +30381,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['table'],
@@ -30324,6 +30427,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['table'],
@@ -30380,6 +30484,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['table'],
@@ -30447,6 +30552,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : false,
+    first_step          : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['td[scope]'],
@@ -30490,6 +30596,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['td'],
@@ -30542,6 +30649,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '1.3.1',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : ['caption', 'table[aria-label]', 'table[aria-labelledby]', 'table[aria-describedby]', 'table[title]'],
@@ -30599,6 +30707,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.8',
       wcag_related_ids    : [],
       target_resources    : ['links'],
@@ -30637,6 +30746,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.LINKS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '2.5.5',
       wcag_related_ids    : [],
       target_resources    : ['links'],
@@ -30674,6 +30784,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.8',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
@@ -30710,6 +30821,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '2.5.5',
       wcag_related_ids    : [],
       target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
@@ -30762,6 +30874,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.5.8',
       wcag_related_ids    : [],
       target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
@@ -30815,6 +30928,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.FORMS,
       rule_required       : false,
+      first_step          : false,
       wcag_primary_id     : '2.5.5',
       wcag_related_ids    : [],
       target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
@@ -30885,6 +30999,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TIMING_LIVE,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '2.2.1',
       wcag_related_ids    : [],
       target_resources    : ['a', 'input', 'button', 'wdiget'],
@@ -30908,6 +31023,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TIMING_LIVE,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.2.2',
       wcag_related_ids    : [],
       target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
@@ -30939,6 +31055,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.TIMING_LIVE,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.3.1',
       wcag_related_ids    : [],
       target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
@@ -30985,6 +31102,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.2',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['Page', 'title'],
@@ -31010,6 +31128,7 @@
       rule_scope          : RULE_SCOPE.PAGE,
       rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '2.4.2',
       wcag_related_ids    : ['1.3.1', '2.4.6'],
       target_resources    : ['Page', 'title', 'h1'],
@@ -31130,6 +31249,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.2.1',
       wcag_related_ids    : ['1.2.2', '1.2.4'],
       target_resources    : ['embed', 'object', 'track', 'video'],
@@ -31194,6 +31314,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : true,
       wcag_primary_id     : '1.2.2',
       wcag_related_ids    : ['1.2.4'],
       target_resources    : ['embed', 'object', 'track', 'video'],
@@ -31240,6 +31361,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.2.3',
       wcag_related_ids    : ['1.2.5'],
       target_resources    : ['embed', 'object', 'track', 'video'],
@@ -31286,6 +31408,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.2.4',
       wcag_related_ids    : ['1.2.2'],
       target_resources    : ['embed', 'object', 'track', 'video'],
@@ -31332,6 +31455,7 @@
       rule_scope          : RULE_SCOPE.ELEMENT,
       rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
       rule_required       : true,
+      first_step          : false,
       wcag_primary_id     : '1.2.5',
       wcag_related_ids    : ['1.2.3'],
       target_resources    : ['embed', 'object', 'track', 'video'],
@@ -31391,6 +31515,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['ARIA Widget roles'],
@@ -31434,6 +31559,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['Elements with onclick events'],
@@ -31493,6 +31619,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[role]'],
@@ -31556,6 +31683,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[aria-atomic]',
@@ -31669,6 +31797,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[aria-atomic]',
@@ -31737,6 +31866,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[checkbox]',
@@ -31781,6 +31911,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[feed]',
@@ -31860,6 +31991,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : [ "caption",
@@ -31945,6 +32077,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[aria-owns]'],
@@ -31975,6 +32108,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[role="meter"]',
@@ -32044,6 +32178,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[role="meter"]',
@@ -32085,6 +32220,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : true,
     wcag_primary_id     : '2.4.6',
     wcag_related_ids    : ['1.3.1', '3.3.2'],
     target_resources    : ['[ARIA widget roles'],
@@ -32124,6 +32260,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.2',
     wcag_related_ids    : ['2.4.6'],
     target_resources    : [ "caption",
@@ -32165,6 +32302,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '4.1.1',
     wcag_related_ids    : ['4.1.2'],
     target_resources    : [
@@ -32284,6 +32422,7 @@
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
     rule_required       : true,
+    first_step          : false,
     wcag_primary_id     : '2.1.1',
     wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
     target_resources    : ["Custom elements using web component APIs"],
@@ -32331,6 +32470,7 @@
       this.rule_category_id    = rule_item.rule_category; // Integer
       this.last_updated        = rule_item.last_updated; // String
       this.target_resources    = rule_item.target_resources; // array of strings
+      this.first_step          = rule_item.first_step; // Boolean
       this.wcag_primary_id     = rule_item.wcag_primary_id;  // String (P.G.SC)
       this.wcag_related_ids    = rule_item.wcag_related_ids; // Array of Strings (P.G.SC)
       this.wcag_guideline_id   = getGuidelineId(rule_item.wcag_primary_id); // Integer
@@ -32395,6 +32535,10 @@
 
     get isScopeWebsite () {
       return this.rule_scope_id === RULE_SCOPE.WEBSITE;
+    }
+
+    get isFirstStep () {
+      return this.first_step === true;
     }
 
     /**
@@ -32824,54 +32968,69 @@
 
   }
 
-  function isFilter(ruleset, ruleFilter, ruleId) {
-    return (ruleset.toUpperCase() === 'FILTER') && ruleFilter.includes(ruleId);
-  }
-
   /**
    * @class EvaluateResult
    *
-   * @desc Creates an evaluation result object based on the ruleset and other rule filters
+   * @desc Creates an evaluation result object
    *
-   * @param  {Object} domCache    -
-   * @param  {String} title       -
-   * @param  {String} url         -
-   * @param  {String} level       -
-   * @param  {String} scopeFilter -
-   * @param  {Array}  ruleFilter  -
+   * @param  {Object} startingDoc  - A reference to a DOM element to start the evaluation
+   *                                 (typically body element)
+   * @param  {String} title        - A title of the evaluation
+   *                                 (typically the title of the document)
+   * @param  {String} url          - The URL to the document
    *
    * @return see @desc
    */
 
   class EvaluationResult {
-    constructor (domCache, title, url, ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter=[]) {
+    constructor (startingDoc, title, url) {
 
-      this.title = title;
-      this.url = url;
-      this.ruleset = ruleset;
-      this.level = level;
+      this.startingDoc = startingDoc;
+      this.title       = title;
+      this.url         = url;
+      this.ruleset     = '';
+      this.level       = '';
+      this.scopeFilter = '';
+
+      this.date           = getFormattedDate();
+      this.version        = VERSION;
+      this.allDomElements = [];
+      this.allRuleResults = [];
+
+    }
+
+    /**
+     * @method evaluateWCAG
+     *
+     * @desc Updates rule results array with results from a WCAG features
+     *
+     * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
+     * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
+     * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
+     */
+
+    evaluateWCAG (ruleset='WCAG21', level='AA', scopeFilter='ALL') {
+
+      const startTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][    ruleset]: ${ruleset}`);
+      debug$7.flag && debug$7.log(`[evaluateWCAG][      level]: ${level}`);
+      debug$7.flag && debug$7.log(`[evaluateWCAG][scopeFilter]: ${scopeFilter}`);
+
+      this.ruleset     =ruleset;
+      this.level       = level;
       this.scopeFilter = scopeFilter;
 
-      this.date = getFormattedDate();
-      this.version = VERSION;
+      const domCache      = new DOMCache(this.startingDoc);
       this.allDomElements = domCache.allDomElements;
       this.allRuleResults = [];
 
-      const startTime = new Date();
-      debug$7.flag && debug$7.log(`[    ruleset]: ${ruleset}`);
-      debug$7.flag && debug$7.log(`[      level]: ${level}`);
-      debug$7.flag && debug$7.log(`[scopeFilter]: ${scopeFilter}`);
-
       allRules.forEach (rule => {
-        debug$7.flag && debug$7.log(`[version]: ${rule.wcag_primary_id} ${rule.wcag_version} ${rule.isWCAG20} ${rule.isWCAG21} ${rule.isWCAG22}`);
 
-        if (isFilter(ruleset, ruleFilter, rule.getId()) ||
-            isWCAG(ruleset, level, rule)) {
+        if (isWCAG(ruleset, level, rule)) {
           if ((scopeFilter === 'ALL') ||
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
               ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
             const ruleResult = new RuleResult(rule);
-            debug$7.flag && debug$7.log(`[validate]: ${ruleResult.rule.getId()}`);
 
             ruleResult.validate(domCache);
             this.allRuleResults.push(ruleResult);
@@ -32879,15 +33038,69 @@
         }
       });
 
-      const json = this.toJSON(true);
-      debug$7.flag && debug$7.log(`[JSON]: ${json}`);
-
       const endTime = new Date();
-      debug$7.flag && debug$7.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
-
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
 
     }
 
+    /**
+     * @method evaluateRuleList
+     *
+     * @desc Updates rule results array with results from a specific set of rules
+     *
+     * @param  {Array}   ruleList  - Array of rule IDs to include in the evaluation
+     */
+
+    evaluateRuleList (ruleList) {
+      const startTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateRuleList][ruleList]: ${ruleList}`);
+
+      const domCache      = new DOMCache(this.startingDoc);
+      this.allDomElements = domCache.allDomElements;
+      this.allRuleResults = [];
+
+      allRules.forEach (rule => {
+
+        if (ruleList.includes(rule.getId())) {
+          const ruleResult = new RuleResult(rule);
+          ruleResult.validate(domCache);
+          this.allRuleResults.push(ruleResult);
+        }
+      });
+
+      const endTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+
+    }
+
+   /**
+     * @method evaluateFirstStepRules
+     *
+     * @desc Updates rule results array with results first step rules
+     */
+
+    evaluateFirstStepRules () {
+      const startTime = new Date();
+
+      const domCache      = new DOMCache(this.startingDoc);
+      this.allDomElements = domCache.allDomElements;
+      this.allRuleResults = [];
+
+      allRules.forEach (rule => {
+
+        debug$7.log(`[rule][id]: ${rule.getId()} (${rule.isFirstStep})`);
+
+        if (rule.isFirstStep) {
+          const ruleResult = new RuleResult(rule);
+          ruleResult.validate(domCache);
+          this.allRuleResults.push(ruleResult);
+        }
+      });
+
+      const endTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+
+    }
     /**
      * @method getTitle
      *
@@ -33116,26 +33329,104 @@
    */
 
   class EvaluationLibrary {
-    constructor (codeTags = false) {
+    constructor () {
       this.constants = new Constants();
     }
 
     /**
-     * @method evaluate
+     * @method evaluateRuleList
+     *
+     * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
+     *
+     * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
+     * @param  {String}  title       - Title of document being analyzed
+     * @param  {String}  url         - URL of document being analyzed
+     * @param  {Array}   ruleList    - Array of rule id to include in the evaluation
+     */
+
+    evaluateRuleList (startingDoc, title='', url='',  ruleList = []) {
+
+      debug$6.log(`[evaluateRuleList][startingDoc]: ${startingDoc}`);
+      debug$6.log(`[evaluateRuleList][      title]: ${title}`);
+      debug$6.log(`[evaluateRuleList][        url]: ${url}`);
+
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.evaluateRuleList(ruleList);
+
+      // Debug features
+      if (debug$6.flag) {
+        domCache.showDomElementTree();
+        domCache.controlInfo.showControlInfo();
+        domCache.iframeInfo.showIFrameInfo();
+        domCache.idInfo.showIdInfo();
+        domCache.imageInfo.showImageInfo();
+        domCache.linkInfo.showLinkInfo();
+        domCache.listInfo.showListInfo();
+        domCache.tableInfo.showTableInfo();
+        domCache.structureInfo.showStructureInfo();
+
+        debug$6.json && debug$6.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+      }
+      return evaluationResult;
+    }
+
+   /**
+     * @method evaluateRuleWCAG
      *
      * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
      *
      * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
      * @param  {String}  title       - Title of document being analyzed
      * @param  {String}  url         - url of document being analyzed
-     * @param  {String}  ruleset     - Set of rules to evaluate (values: "FIRST-STEP" | "A" | "AA" | "AAA")
+     * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
+     * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
      */
 
-    evaluate (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL', ruleFilter = []) {
+    evaluateWCAG (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL') {
 
-      let domCache = new DOMCache(startingDoc);
-      let evaluationResult = new EvaluationResult(domCache, title, url, ruleset, level, scopeFilter, ruleFilter);
+      debug$6.log(`[evaluateWCAG][startingDoc]: ${startingDoc}`);
+      debug$6.log(`[evaluateWCAG][      title]: ${title}`);
+      debug$6.log(`[evaluateWCAG][        url]: ${url}`);
+
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.evaluateWCAG(ruleset, level, scopeFilter);
+
+      // Debug features
+      if (debug$6.flag) {
+        domCache.showDomElementTree();
+        domCache.controlInfo.showControlInfo();
+        domCache.iframeInfo.showIFrameInfo();
+        domCache.idInfo.showIdInfo();
+        domCache.imageInfo.showImageInfo();
+        domCache.linkInfo.showLinkInfo();
+        domCache.listInfo.showListInfo();
+        domCache.tableInfo.showTableInfo();
+        domCache.structureInfo.showStructureInfo();
+
+        debug$6.json && debug$6.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+      }
+      return evaluationResult;
+    }
+
+   /**
+     * @method evaluateFirstStepRules
+     *
+     * @desc Evaluate a document using first step rules
+     *
+     * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
+     * @param  {String}  title       - Title of document being analyzed
+     * @param  {String}  url         - url of document being analyzed
+     */
+
+    evaluateFirstStepRules (startingDoc, title='', url='') {
+
+      debug$6.log(`[evaluateFirstStepRules][startingDoc]: ${startingDoc}`);
+      debug$6.log(`[evaluateFirstStepRules][      title]: ${title}`);
+      debug$6.log(`[evaluateFirstStepRules][        url]: ${url}`);
+
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.evaluateFirstStepRules();
 
       // Debug features
       if (debug$6.flag) {
@@ -33273,19 +33564,39 @@
   debug$5.flag = false;
 
 
-  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleFilter=[]) {
+  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleList=[]) {
 
     if (debug$5.flag) {
       debug$5.log(`[eveluate][    ruleset]: ${ruleset}`);
       debug$5.log(`[eveluate][      level]: ${level}`);
       debug$5.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
-      debug$5.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
+      debug$5.log(`[evaluate][ ruleFilter]: ${ruleList}`);
     }
 
     // evaluation script
-    let doc = window.document;
-    let evaluationLibrary = new EvaluationLibrary();
-    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href, ruleset, level, scopeFilter, ruleFilter);
+    const doc = window.document;
+    const evaluationLibrary = new EvaluationLibrary();
+    let evaluationResult;
+
+    switch (ruleset) {
+
+      case 'WCAG20':
+      case 'WCAG21':
+      case 'WCAG22':
+        evaluationResult = evaluationLibrary.evaluateWCAG(doc, doc.title, doc.location.href, ruleset, level, scopeFilter);
+        break;
+
+      case 'FILTER':
+      case 'LIST':
+        evaluationResult = evaluationLibrary.evaluateRuleList(doc, doc.title, doc.location.href, ruleList);
+        break;
+
+      case 'FIRSTSTEP':
+        evaluationResult = evaluationLibrary.evaluateFirstStepRules(doc, doc.title, doc.location.href);
+        break;
+
+    }
+
     return evaluationResult;
   }
 

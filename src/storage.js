@@ -12,35 +12,7 @@ export const defaultOptions = {
   ruleset: 'WCAG21',
   level : 'AA',
   scopeFilter: 'ALL',
-  firstStepRules: [
-    'AUDIO_1',      // Level A
-    'BYPASS_1',     // Level A
-    'COLOR_1',      // Level A
-    'COLOR_2',      // Level AA
-    'CONTROL_1',    // Level A
-    'CONTROL_2',    // Level A
-    'CONTROL_3',    // Level A
-    'CONTROL_10',   // Level AA
-    'CONTROL_12',   // Level A
-    'HEADING_1',    // Level A
-    'IMAGE_1',      // Level A
-    'KEYBOARD_1',   // Level A
-    'KEYBOARD_2',   // Level A
-    'KEYBOARD_3',   // Level A
-    'LANDMARK_1',   // Level A
-    'LINK_1',       // Level A
-    'NAVIGATION_1', // Level AA
-    'TABLE_1',      // Level A
-    'TABLE_2',      // Level AA
-    'TABLE_5',      // Level A
-    'TIMING_1',     // Level A
-    'VIDEO_2',      // Level A
-    'WIDGET_1',     // Level A
-    'WIDGET_3',     // Level A
-    'WIDGET_4',     // Level A
-    'WIDGET_5',     // Level A
-    'WIDGET_12'     // Level AA
-  ],
+  firstStepRules: [],  // Deprecated
   rerunDelayEnabled: true,
   rerunDelayValue: '5',
   resultsIncludePassNa: true,
