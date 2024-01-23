@@ -21561,7 +21561,7 @@
       },
       WIDGET_14: {
           ID:                    'Widget 14',
-          DEFINITION:            'ARIA attributes that are unsuppoorted or deprecated for a role should be removed.',
+          DEFINITION:            'ARIA attributes that are unsupported or deprecated for a role should be removed.',
           SUMMARY:               'Unsupported and deprecated ARIA attributes.',
           TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are unsupported or deprecated.',
           RULE_RESULT_MESSAGES: {
@@ -26493,7 +26493,7 @@
 
       dom_cache.controlInfo.allControlElements.forEach(ce1 => {
         const de1 = ce1.domElement;
-        if (de1.role === 'option') {
+        if (de1.ariaInfo.isDPUBRole || de1.role === 'option') {
           return;
         }
         let count;
