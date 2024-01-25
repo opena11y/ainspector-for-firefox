@@ -2,6 +2,10 @@
 
 import { getOptions, saveOptions, setScopeFilterToAll } from '../storage.js';
 import { getExportFileName } from './commonCSV.js';
+import {
+  addContentToElement,
+  removeTags
+} from './utils.js';
 
 // Classes for manipulating views
 import ViewAllRules          from './viewAllRules/viewAllRules.js';
@@ -630,8 +634,8 @@ function updateSidebar (info) {
       }
       else {
         if (info.infoRuleResult) {
-          viewTitle.textContent = msg.ruleLabel + ': ' + info.infoRuleResult.title;
-          viewTitle.title = info.infoRuleResult.title;
+          addContentToElement(viewTitle, msg.ruleLabel + ': ' + info.infoRuleResult.title, true);
+          viewTitle.title = removeTags(info.infoRuleResult.title);
           vRuleResult.update(info.infoRuleResult, info.scopeFilter);
           enableButtons();
         }
@@ -688,7 +692,7 @@ function updateSidebar (info) {
 */
 function runContentScripts (callerfn) {
 
-  console.log(`[runContentScripts]: ${callerfn}`);
+  if (logInfo) console.log(`[runContentScripts]: ${callerfn}`);
 
   if (!sidebarHighlightOnly) {
     updateSidebar (msg.tabIsLoading);
@@ -708,7 +712,6 @@ function runContentScripts (callerfn) {
       contentCode += `  ruleset: "${options.ruleset}",`;
       contentCode += `  level: "${options.level}",`;
       contentCode += `  scopeFilter: "${options.scopeFilter}",`;
-      contentCode += `  firstStepRules: ["${options.firstStepRules.join('","')}"],`;
       contentCode += `  highlight: "${options.highlight}",`;
       // note the following properties are number and boolean values
       contentCode += `  groupId: ${sidebarGroupId},`;

@@ -148,7 +148,7 @@
   /* constants.js */
 
   /* Constants */
-  const debug$15 = new DebugLogging('constants', false);
+  const debug$17 = new DebugLogging('constants', false);
 
   const VERSION = '2.0.beta3';
 
@@ -372,6 +372,7 @@
    * WCAG_GUIDELINE.G_2_2
    * WCAG_GUIDELINE.G_2_3
    * WCAG_GUIDELINE.G_2_4
+   * WCAG_GUIDELINE.G_2_5
    * WCAG_GUIDELINE.G_3_1
    * WCAG_GUIDELINE.G_3_2
    * WCAG_GUIDELINE.G_3_3
@@ -650,13 +651,13 @@
    */
 
   function getGuidelineId(sc) {
-    debug$15.flag && debug$15.log(`[getGuidelineId][sc]: ${sc}`);
+    debug$17.flag && debug$17.log(`[getGuidelineId][sc]: ${sc}`);
     const parts = sc.split('.');
     const gl = (parts.length === 3) ? `G_${parts[0]}_${parts[1]}` : ``;
     if (!gl) {
       return 0;
     }
-    debug$15.flag && debug$15.log(`[getGuidelineId][gl]: ${gl}`);
+    debug$17.flag && debug$17.log(`[getGuidelineId][gl]: ${gl}`);
     return WCAG_GUIDELINE[gl];
   }
 
@@ -924,7 +925,7 @@
 
   function cleanForUTF8 (str) {
     if (typeof str !== 'string') {
-      return "[cleanForUTF8]: Not a string";
+      return `[cleanForUTF8]: Not a string (${typeof str})`;
     }
     let nstr = '';
     str.split().forEach( c => {
@@ -966,8 +967,8 @@
   /* controlInfo.js */
 
   /* Constants */
-  const debug$14 = new DebugLogging('ControlInfo', false);
-  debug$14.flag = false;
+  const debug$16 = new DebugLogging('ControlInfo', false);
+  debug$16.flag = false;
 
   /**
    * @class ControlElement
@@ -1170,7 +1171,7 @@
         prefix = '';
       }
       this.childControlElements.forEach( ce => {
-        debug$14.domElement(ce.domElement, prefix);
+        debug$16.domElement(ce.domElement, prefix);
         ce.showControlInfo(prefix + '  ');
       });
     }
@@ -1292,6 +1293,7 @@
       this.allButtonElements = [];
       this.allRadioAndCheckboxElements = [];
       this.allLabelElements = [];
+      this.hasTextInput = false;
     }
 
     /**
@@ -1371,6 +1373,7 @@
           }
           else {
             ce = new ControlElement(domElement, parentControlElement);
+            this.hasTextInput = this.hasTextInput || ce.isInputTypeText;
           }
           break;
       }
@@ -1450,15 +1453,15 @@
      */
 
     showControlInfo () {
-      if (debug$14.flag) {
-        debug$14.log('== Control Tree ==', 1);
+      if (debug$16.flag) {
+        debug$16.log('== Control Tree ==', 1);
         this.childControlElements.forEach( ce => {
-          debug$14.domElement(ce.domElement);
+          debug$16.domElement(ce.domElement);
           ce.showControlInfo('  ');
         });
-        debug$14.log('== Forms ==', 1);
+        debug$16.log('== Forms ==', 1);
         this.allFormElements.forEach( ce => {
-          debug$14.domElement(ce.domElement);
+          debug$16.domElement(ce.domElement);
         });
       }
     }
@@ -6257,8 +6260,8 @@
   /* ariaInfo.js */
 
   /* Constants */
-  const debug$13 = new DebugLogging('AriaInfo', false);
-  debug$13.flag = false;
+  const debug$15 = new DebugLogging('AriaInfo', false);
+  debug$15.flag = false;
 
   /* Debug helper functions */
 
@@ -6284,6 +6287,26 @@
       }
     });
     return s;
+  }
+
+  function isInGrid (node) {
+    while (node.parentNode) {
+      if (node.role && (node.role.toLowerCase() === 'grid')) {
+        return true;
+      }
+      node = node.parentNode;
+    }
+    return false;
+  }
+
+  function isInTreegrid (node) {
+    while (node.parentNode) {
+      if (node.role && (node.role.toLowerCase() === 'treegrid')) {
+        return true;
+      }
+      node = node.parentNode;
+    }
+    return false;
   }
 
   /**
@@ -6331,6 +6354,8 @@
       }
 
       this.isValidRole  = typeof designPattern === 'object';
+      this.isDPUBRole = role.indexOf('doc-') >= 0;
+
       this.isAbstractRole = false;
 
 
@@ -6365,10 +6390,17 @@
       this.ownedByDomElements = [];
 
       this.isRange    = (designPattern.roleType.indexOf('range') >= 0);
-      this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
-                        (designPattern.roleType.indexOf('window') >= 0);
 
-      this.isLandark  = designPattern.roleType.indexOf('landmark') >= 0;     
+      if (role === 'row') {
+        this.inGrid     = isInGrid(node);
+        this.inTreegrid = isInTreegrid(node);
+        this.isWidget   = this.inGrid || this.inTreegrid;
+      }
+      else {
+        this.isWidget   = (designPattern.roleType.indexOf('widget') >= 0)  ||
+                          (designPattern.roleType.indexOf('window') >= 0);
+      }
+      this.isLandmark  = designPattern.roleType.indexOf('landmark') >= 0;
 
       this.isSection  = designPattern.roleType.indexOf('section') >= 0;     
       this.isAbstractRole  = designPattern.roleType.indexOf('abstract') >= 0;
@@ -6491,15 +6523,15 @@
       }
 
 
-      if (debug$13.flag) {
-        node.attributes.length && debug$13.log(`${node.outerHTML}`, 1);
-        debug$13.log(`[         isWidget]: ${this.isWidget}`);
-        debug$13.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
-        debug$13.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
-        debug$13.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
-        debug$13.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
-        debug$13.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
-        debug$13.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
+      if (debug$15.flag) {
+        node.attributes.length && debug$15.log(`${node.outerHTML}`, 1);
+        debug$15.log(`[         isWidget]: ${this.isWidget}`);
+        debug$15.log(`[invalidAttrValues]: ${debugAttrs(this.invalidAttrValues)}`);
+        debug$15.log(`[      invalidRefs]: ${debugRefs(this.invalidRefs)}`);
+        debug$15.log(`[ unsupportedAttrs]: ${debugAttrs(this.unsupportedAttrs)}`);
+        debug$15.log(`[  deprecatedAttrs]: ${debugAttrs(this.deprecatedAttrs)}`);
+        debug$15.log(`[    requiredAttrs]: ${debugAttrs(this.requiredAttrs)} (${Array.isArray(this.requiredAttrs)})`);
+        debug$15.log(`[     invalidAttrs]: ${debugAttrs(this.invalidAttrs)}`);
       }
     }
 
@@ -6704,8 +6736,8 @@
   /* colorContrast.js */
 
   /* Constants */
-  const debug$12 = new DebugLogging('colorContrast', false);
-  debug$12.flag = false;
+  const debug$14 = new DebugLogging('colorContrast', false);
+  debug$14.flag = false;
   const defaultFontSize = 16;    // In pixels (px)
   const biggerFontSize  = 18.66; // In pixels (px)
   const largeFontSize   = 24;    // In pixels (px)
@@ -6762,9 +6794,9 @@
       let parentColorContrast = parentDomElement ? parentDomElement.colorContrast : false;
       let style = window.getComputedStyle(elementNode, null);
 
-      if (debug$12.flag) {
-        debug$12.separator();
-        debug$12.tag(elementNode);
+      if (debug$14.flag) {
+        debug$14.separator();
+        debug$14.tag(elementNode);
       }
 
       this.opacity            = this.normalizeOpacity(style, parentColorContrast);
@@ -6786,13 +6818,13 @@
 
       this.colorContrastRatio = computeCCR(this.colorHex, this.backgroundColorHex);
 
-      if (debug$12.flag) {
-        debug$12.log(`[                      color]: ${this.color}`);
-        debug$12.log(`[           background color]: ${this.backgroundColor}`);
-        debug$12.log(`[                    opacity]: ${this.opacity}`);
-        debug$12.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
-        debug$12.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
-        debug$12.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
+      if (debug$14.flag) {
+        debug$14.log(`[                      color]: ${this.color}`);
+        debug$14.log(`[           background color]: ${this.backgroundColor}`);
+        debug$14.log(`[                    opacity]: ${this.opacity}`);
+        debug$14.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
+        debug$14.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
+        debug$14.color(`[   CCR for Color/Background]: ${this.colorContrastRatio} for #${this.colorHex}/#${this.backgroundColorHex}`, this.color, this.backgroundColor);
       }
     }
 
@@ -6879,10 +6911,10 @@
           (backgroundColor == 'transparent') ||
           (backgroundColor == 'inherit')) {
 
-        debug$12.flag && debug$12.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
+        debug$14.flag && debug$14.log(`[normalizeBackgroundColor][parentColorContrast]: ${parentColorContrast}`);
 
         if (parentColorContrast) {
-          debug$12.flag && debug$12.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
+          debug$14.flag && debug$14.log(`[normalizeBackgroundColor][backgroundColor]: ${parentColorContrast.backgroundColor}`);
           backgroundColor   = parentColorContrast.backgroundColor;
         }
         else {
@@ -7096,7 +7128,7 @@
   /* eventInfo.js */
 
   /* Constants */
-  const debug$11 = new DebugLogging('EventInfo', false);
+  const debug$13 = new DebugLogging('EventInfo', false);
 
   /**
    * @class EventInfo
@@ -7109,7 +7141,7 @@
       this.hasClick  = node.hasAttribute('onclick');
       this.hasChange = node.hasAttribute('onchange');
 
-      if (debug$11.flag) {
+      if (debug$13.flag) {
         console.log(`[hasClick ]: ${this.hasClick}`);
         console.log(`[hasChange]: ${this.hasChange}`);
       }
@@ -8709,7 +8741,7 @@
   /* ariaInHtml.js */
 
   /* Constants */
-  const debug$10 = new DebugLogging('ariaInHtml', false);
+  const debug$12 = new DebugLogging('ariaInHtml', false);
   const higherLevelElements = [
     'article',
     'aside',
@@ -8910,11 +8942,11 @@
       };
     }
 
-    if (debug$10.flag) {
+    if (debug$12.flag) {
       if (tagName === 'h2') {
-        debug$10.tag(node);
+        debug$12.tag(node);
       }
-      debug$10.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
+      debug$12.log(`[elemInfo][id]: ${elemInfo.id} (${tagName})`);
     }
 
     return elemInfo;
@@ -9034,7 +9066,7 @@
   /* visibility.js */
 
   /* Constants */
-  const debug$$ = new DebugLogging('visibility', false);
+  const debug$11 = new DebugLogging('visibility', false);
 
   /**
    * @class Visibility
@@ -9082,17 +9114,17 @@
         this.isVisibleToAT = false;
       }
 
-      if (debug$$.flag) {
-        debug$$.separator();
-        debug$$.tag(elementNode);
-        debug$$.log('[          isHidden]: ' + this.isHidden);
-        debug$$.log('[      isAriaHidden]: ' + this.isAriaHidden);
-        debug$$.log('[     isDisplayNone]: ' + this.isDisplayNone);
-        debug$$.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
-        debug$$.log('[     isSmallHeight]: ' + this.isSmallHeight);
-        debug$$.log('[       isSmallFont]: ' + this.isSmallFont);
-        debug$$.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
-        debug$$.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
+      if (debug$11.flag) {
+        debug$11.separator();
+        debug$11.tag(elementNode);
+        debug$11.log('[          isHidden]: ' + this.isHidden);
+        debug$11.log('[      isAriaHidden]: ' + this.isAriaHidden);
+        debug$11.log('[     isDisplayNone]: ' + this.isDisplayNone);
+        debug$11.log('[isVisibilityHidden]: ' + this.isVisibilityHidden);
+        debug$11.log('[     isSmallHeight]: ' + this.isSmallHeight);
+        debug$11.log('[       isSmallFont]: ' + this.isSmallFont);
+        debug$11.log('[ isVisibleOnScreen]: ' + this.isVisibleOnScreen);
+        debug$11.log('[     isVisibleToAT]: ' + this.isVisibleToAT);
       }
     }
 
@@ -9405,8 +9437,8 @@
   /*
   *   namefrom.js
   */
-  const debug$_ = new DebugLogging('nameFrom', false);
-  debug$_.flag = false;
+  const debug$10 = new DebugLogging('nameFrom', false);
+  debug$10.flag = false;
 
   /*
   *   @function getElementContents
@@ -9584,7 +9616,7 @@
                                    };
         }
       } catch (error) {
-        debug$_.log(`[nameFromLabelElement][error]: ${error}`);
+        debug$10.log(`[nameFromLabelElement][error]: ${error}`);
       }
     }
 
@@ -10031,16 +10063,16 @@
   'h6',
   'summary'
   ];
-  const debug$Z = new DebugLogging('getAccName', false);
-  debug$Z.flag = false;
+  const debug$$ = new DebugLogging('getAccName', false);
+  debug$$.flag = false;
   function debugAccName (accName) {
-    if (debug$Z.flag && accName.name) {
-      debug$Z.log(`====================`);
-      debug$Z.log(`[             name]: ${accName.name}`);
-      debug$Z.log(`[           source]: ${accName.source}`);
-      debug$Z.log(`[      includesAlt]: ${accName.includesAlt}`);
-      debug$Z.log(`[includesAriaLabel]: ${accName.includesAriaLabel}`);
-      debug$Z.log(`[ nameIsNotVisible]: ${accName.nameIsNotVisible}`);
+    if (debug$$.flag && accName.name) {
+      debug$$.log(`====================`);
+      debug$$.log(`[             name]: ${accName.name}`);
+      debug$$.log(`[           source]: ${accName.source}`);
+      debug$$.log(`[      includesAlt]: ${accName.includesAlt}`);
+      debug$$.log(`[includesAriaLabel]: ${accName.includesAriaLabel}`);
+      debug$$.log(`[ nameIsNotVisible]: ${accName.nameIsNotVisible}`);
     }
   }
 
@@ -10069,7 +10101,7 @@
     if (accName === null) accName = nameFromAttribute(element, 'aria-label');
     if (accName === null) accName = nameFromNativeSemantics(doc, element);
     if (accName === null) accName = noAccName;
-    debug$Z.flag && debugAccName(accName);
+    debug$$.flag && debugAccName(accName);
     return accName;
   }
 
@@ -10361,8 +10393,8 @@
   /* domElement.js */
 
   /* Constants */
-  const debug$Y = new DebugLogging('DOMElement', false);
-  debug$Y.flag = false;
+  const debug$_ = new DebugLogging('DOMElement', false);
+  debug$_.flag = false;
 
   const elementsWithContent = [
     'area',
@@ -10451,7 +10483,7 @@
       this.isInteractiveElement = checkForInteractiveElement(elementNode);
 
       this.isLink      = this.role === 'link';
-      this.isLandmark  = this.checkForLandamrk();
+      this.isLandmark  = this.checkIsLandamrk();
       this.isHeading   = this.role === 'heading';
       this.isInDialog  = this.tagName === 'dialog' ||
                          this.role === 'dialog' ||
@@ -10535,14 +10567,14 @@
     }
 
     /**
-     * @method checkForLandamrk
+     * @method checkIsLandamrk
      *
-     * @desc Tests if a domElement is a landmark
+     * @desc Returns true if the domElement has a landmark role, otherwise false
      *
-     * @param  {Object}  domElement - DOMElement object representing an element in the DOM
+     * @returns  {Boolean}  see @desc
      */
 
-    checkForLandamrk () {
+    checkIsLandamrk () {
       let flag = false;
       const role = this.role || this.defaultRole;
       const name = this.accName.name;
@@ -10724,12 +10756,12 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      if (debug$Y.flag) {
+      if (debug$_.flag) {
         this.children.forEach( domItem => {
           if (domItem.isDomText) {
-            debug$Y.domText(domItem, prefix);
+            debug$_.domText(domItem, prefix);
           } else {
-            debug$Y.domElement(domItem, prefix);
+            debug$_.domElement(domItem, prefix);
             domItem.showDomElementTree(prefix + '   ');
           }
         });
@@ -10822,7 +10854,7 @@
   /* domText.js */
 
   /* Constants */
-  const debug$X = new DebugLogging('domText', false);
+  const debug$Z = new DebugLogging('domText', false);
 
   /**
    * @class DOMText
@@ -10841,8 +10873,8 @@
     constructor (parentDomElement, textNode) {
       this.parentDomElement = parentDomElement;
       this.text = textNode.textContent.trim();
-      if (debug$X.flag) {
-        debug$X.log(`[text]: ${this.text}`);
+      if (debug$Z.flag) {
+        debug$Z.log(`[text]: ${this.text}`);
       }
     }
 
@@ -10905,7 +10937,7 @@
   /* iframeInfo.js */
 
   /* Constants */
-  const debug$W = new DebugLogging('iframeInfo', false);
+  const debug$Y = new DebugLogging('iframeInfo', false);
 
   /**
    * @class IFrameElement
@@ -10923,9 +10955,9 @@
     }
 
     showInfo () {
-      if (debug$W.flag) {
-        debug$W.log(`[          src]: ${this.src}`);
-        debug$W.log(`[isCrossDomain]: ${this.isCrossDomain}`);
+      if (debug$Y.flag) {
+        debug$Y.log(`[          src]: ${this.src}`);
+        debug$Y.log(`[isCrossDomain]: ${this.isCrossDomain}`);
       }
     }
   }
@@ -10961,8 +10993,8 @@
      */
 
     showIFrameInfo () {
-      if (debug$W.flag) {
-        debug$W.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
+      if (debug$Y.flag) {
+        debug$Y.log(`== ${this.allIFrameElements.length} IFrames ==`, 1);
         this.allIFrameElements.forEach( ife => {
           ife.showInfo();
         });
@@ -10973,7 +11005,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$V = new DebugLogging('idInfo', false);
+  const debug$X = new DebugLogging('idInfo', false);
 
   /**
    * @class idInfo
@@ -11016,10 +11048,10 @@
      */
 
     showIdInfo () {
-      if (debug$V.flag) {
-        debug$V.log('== All Links ==', 1);
+      if (debug$X.flag) {
+        debug$X.log('== All Links ==', 1);
         this.idCounts.for( id => {
-          debug$V.log(`[${id}]: ${this.idCounts[id]}`);
+          debug$X.log(`[${id}]: ${this.idCounts[id]}`);
         });
       }
     }
@@ -11028,7 +11060,7 @@
   /* imageInfo.js */
 
   /* Constants */
-  const debug$U = new DebugLogging('imageInfo', false);
+  const debug$W = new DebugLogging('imageInfo', false);
 
   /**
    * @class ImageElement
@@ -11221,22 +11253,22 @@
      */
 
     showImageInfo () {
-      if (debug$U.flag) {
-        debug$U.log('== All Image elements ==', 1);
+      if (debug$W.flag) {
+        debug$W.log('== All Image elements ==', 1);
         this.allImageElements.forEach( ie => {
-          debug$U.log(`[fileName]: ${ie.fileName}`, true);
-          debug$U.log(`[    role]: ${ie.domElement.role}`);
-          debug$U.log(`[    name]: ${ie.domElement.accName.name}`);
-          debug$U.log(`[  source]: ${ie.domElement.accName.source}`);
-          debug$U.log(`[  length]: ${ie.domElement.accName.name.length}`);
+          debug$W.log(`[fileName]: ${ie.fileName}`, true);
+          debug$W.log(`[    role]: ${ie.domElement.role}`);
+          debug$W.log(`[    name]: ${ie.domElement.accName.name}`);
+          debug$W.log(`[  source]: ${ie.domElement.accName.source}`);
+          debug$W.log(`[  length]: ${ie.domElement.accName.name.length}`);
         });
-        debug$U.log('== All SVG domElements  ==', 1);
+        debug$W.log('== All SVG domElements  ==', 1);
         this.allSVGDomElements.forEach( de => {
-          debug$U.domElement(de);
+          debug$W.domElement(de);
         });
-        debug$U.log('== All MapElements ==', 1);
+        debug$W.log('== All MapElements ==', 1);
         this.allMapElements.forEach( me => {
-          debug$U.domElement(me.domElement);
+          debug$W.domElement(me.domElement);
         });
       }
     }
@@ -11245,7 +11277,7 @@
   /* linkInfo.js */
 
   /* Constants */
-  const debug$T = new DebugLogging('linkInfo', false);
+  const debug$V = new DebugLogging('linkInfo', false);
 
   /**
    * @class LinkInfo
@@ -11294,10 +11326,10 @@
      */
 
     showLinkInfo () {
-      if (debug$T.flag) {
-        debug$T.log('== All Links ==', 1);
+      if (debug$V.flag) {
+        debug$V.log('== All Links ==', 1);
         this.allLinkDomElements.forEach( de => {
-          debug$T.domElement(de);
+          debug$V.domElement(de);
         });
       }
     }
@@ -11306,8 +11338,8 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$S = new DebugLogging('ListInfo', false);
-  debug$S.flag = false;
+  const debug$U = new DebugLogging('ListInfo', false);
+  debug$U.flag = false;
   const allListitemRoles = ['list', 'listitem', 'menu', 'menuitem', 'menuitemcheckbox', 'menuitemradio'];
   const listRoles = ['list', 'menu'];
 
@@ -11352,9 +11384,9 @@
       if (typeof prefix !== 'string') {
         prefix = '';
       }
-      debug$S.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
+      debug$U.log(`${prefix}[List Count]: ${this.childListElements.length} [Link Count]: ${this.linkCount}`);
       this.childListElements.forEach( le => {
-        debug$S.domElement(le.domElement, prefix);
+        debug$U.domElement(le.domElement, prefix);
         le.showListInfo(prefix + '  ');
       });
     }
@@ -11462,20 +11494,20 @@
      */
 
     showListInfo () {
-      if (debug$S.flag) {
-        debug$S.log('== All ListElements ==', 1);
-        debug$S.log(`[linkCount]: ${this.linkCount}`);
+      if (debug$U.flag) {
+        debug$U.log('== All ListElements ==', 1);
+        debug$U.log(`[linkCount]: ${this.linkCount}`);
         this.allListElements.forEach( le => {
-          debug$S.log(`[textContent]: ${le.textContent}`);
-          debug$S.log(`[linkTextContent]: ${le.linkTextContent}`);
-          debug$S.domElement(le.domElement);
+          debug$U.log(`[textContent]: ${le.textContent}`);
+          debug$U.log(`[linkTextContent]: ${le.linkTextContent}`);
+          debug$U.domElement(le.domElement);
         });
-        debug$S.log('== List Tree ==', 1);
-        debug$S.log(`[linkCount]: ${this.linkCount}`);
+        debug$U.log('== List Tree ==', 1);
+        debug$U.log(`[linkCount]: ${this.linkCount}`);
         this.childListElements.forEach( le => {
-          debug$S.log(`[textContent]: ${le.textContent}`);
-          debug$S.log(`[linkTextContent]: ${le.linkTextContent}`);
-          debug$S.domElement(le.domElement);
+          debug$U.log(`[textContent]: ${le.textContent}`);
+          debug$U.log(`[linkTextContent]: ${le.linkTextContent}`);
+          debug$U.domElement(le.domElement);
           le.showListInfo('  ');
         });
       }
@@ -11485,8 +11517,8 @@
   /* listInfo.js */
 
   /* Constants */
-  const debug$R = new DebugLogging('MediaInfo', false);
-  debug$R.flag = false;
+  const debug$T = new DebugLogging('MediaInfo', false);
+  debug$T.flag = false;
 
   /**
    * @class MediaElement
@@ -11498,17 +11530,35 @@
 
   class MediaElement {
     constructor (domElement) {
+      const node = domElement.node;
+      const type = node.getAttribute('type');
+
       this.domElement = domElement;
       this.tracks = [];
+      this.params = [];
+
       this.hasAutoPlay = domElement.node.hasAttribute('autoplay');
+      this.type = (typeof type === 'string') ? type.toLowerCase() : '';
+    }
+
+    get isAudio () {
+      return this.type.includes('audio') || this.domElement.tagName === 'audio';
+    }
+
+    get isVideo () {
+      return this.type.includes('video') || this.domElement.tagName === 'video';
     }
 
     get allowsTracks () {
-      return true;
+      return ['audio', 'video'].includes(this.domElement.tagName);
+    }
+
+    get isEmbed () {
+      return this.domElement.tagName === 'embed';
     }
 
     get isObject () {
-      return false;
+      return this.domElement.tagName === 'object';
     }
 
     get hasCaptionTrack () {
@@ -11517,14 +11567,6 @@
 
     get hasDescriptionTrack () {
       return this.checkForTrackKind('descriptions');
-    }
-
-    get hasSubtitleTrack () {
-      return this.checkForTrackKind('subtitles');
-    }
-
-    get hasChaptersTrack () {
-      return this.checkForTrackKind('chapters');
     }
 
     checkForTrackKind (type) {
@@ -11561,43 +11603,6 @@
     }
   }
 
-
-  /**
-   * @class ObjectElement
-   *
-   * @desc Identifies a DOM element as an object element.
-   *
-   * @param  {Object}  domElement   - DOM element object
-   */
-
-  class ObjectElement {
-    constructor (domElement) {
-      const node = domElement.node;
-      this.domElement = domElement;
-      this.params = [];
-      this.type = node.hasAttribute('type') ? node.type.toLowerCase() : '';
-    }
-    get allowsTracks () {
-      return false;
-    }
-
-    get isObject () {
-      return true;
-    }
-
-    get isAudio () {
-      return this.type.includes('audio');
-    }
-
-    get isVideo () {
-      return this.type.includes('video');
-    }
-
-    toString() {
-      return `[ObjectElement]: ${this.domElement}`;
-    }
-  }
-
   /**
    * @class ParamElement
    *
@@ -11617,41 +11622,6 @@
 
   }
 
-  /**
-   * @class EmbedElement
-   *
-   * @desc Identifies a DOM element as an embed element.
-   *
-   * @param  {Object}  domElement   - DOM element object
-   */
-
-  class EmbedElement {
-    constructor (domElement) {
-      const node = domElement.node;
-      this.domElement = domElement;
-      this.type = node.hasAttribute('type') ? node.type.toLowerCase() : '';
-    }
-
-    get allowsTracks () {
-      return false;
-    }
-
-    get isAudio () {
-      return this.type.includes('audio');
-    }
-
-   get isVideo () {
-      return this.type.includes('video');
-    }
-
-    get isObject () {
-      return false;
-    }
-
-    toString() {
-      return `[EmbedElement]: ${this.domElement}`;
-    }
-  }
 
   /**
    * @class MediaInfo
@@ -11662,10 +11632,6 @@
 
   class MediaInfo {
     constructor () {
-      this.audioElements  = [];
-      this.embedElements  = [];
-      this.objectElements = [];
-      this.videoElements  = [];
       this.allMediaElements = [];
     }
 
@@ -11675,19 +11641,16 @@
 
         case 'audio':
           mediaElement = new MediaElement(domElement);
-          this.audioElements.push(mediaElement);
           this.allMediaElements.push(mediaElement);
           break;
 
         case 'embed':
-          mediaElement = new EmbedElement(domElement);
-          this.embedElements.push(mediaElement);
+          mediaElement = new MediaElement(domElement);
           this.allMediaElements.push(mediaElement);
           break;
 
         case 'object':
-          mediaElement = new ObjectElement(domElement);
-          this.objectElements.push(mediaElement);
+          mediaElement = new MediaElement(domElement);
           this.allMediaElements.push(mediaElement);
           break;
 
@@ -11708,7 +11671,6 @@
 
         case 'video':
           mediaElement = new MediaElement(domElement);
-          this.videoElements.push(mediaElement);
           this.allMediaElements.push(mediaElement);
           break;
 
@@ -11724,27 +11686,11 @@
      */
 
     showListInfo () {
-      if (debug$R.flag) {
-        debug$R.log('== Audio Elements ==', 1);
-        this.audioElements.forEach( ae => {
-          debug$R.log(ae);
+      if (debug$T.flag) {
+        debug$T.log('== Media Elements ==', 1);
+        this.allElements.forEach( me => {
+          debug$T.log(me);
         });
-
-        debug$R.log('== Video Elements ==', 1);
-        this.videoElements.forEach( ve => {
-          debug$R.log(ve);
-        });
-
-        debug$R.log('== Object Elements ==', 1);
-        this.objectElements.forEach( oe => {
-          debug$R.log(oe);
-        });
-
-        debug$R.log('== Embed Elements ==', 1);
-        this.embedElements.forEach( ee => {
-          debug$R.log(ee);
-        });
-
 
       }
     }
@@ -11753,7 +11699,7 @@
   /* structureInfo.js */
 
   /* Constants */
-  const debug$Q = new DebugLogging('structureInfo', false);
+  const debug$S = new DebugLogging('structureInfo', false);
 
   /**
    * @class LandmarkElement
@@ -11792,11 +11738,11 @@
         prefix = '';
       }
       this.childLandmarkElements.forEach( le => {
-        debug$Q.domElement(le.domElement, prefix);
+        debug$S.domElement(le.domElement, prefix);
         le.showLandmarkInfo(prefix + '  ');
       });
       this.childHeadingDomElements.forEach( h => {
-        debug$Q.domElement(h, prefix);
+        debug$S.domElement(h, prefix);
       });
     }
 
@@ -11926,27 +11872,27 @@
      */
 
     showStructureInfo () {
-      if (debug$Q.flag) {
-        debug$Q.log('== All Headings ==', 1);
+      if (debug$S.flag) {
+        debug$S.log('== All Headings ==', 1);
         this.allHeadingDomElements.forEach( h => {
-          debug$Q.domElement(h);
+          debug$S.domElement(h);
         });
-        debug$Q.log('== All Landmarks ==', 1);
+        debug$S.log('== All Landmarks ==', 1);
         this.allLandmarkElements.forEach( le => {
-          debug$Q.domElement(le.domElement);
+          debug$S.domElement(le.domElement);
         });
-        debug$Q.log('== Landmarks By Doc ==', 1);
+        debug$S.log('== Landmarks By Doc ==', 1);
         this.landmarkElementsByDoc.forEach( (les, index) => {
-          debug$Q.log(`Document Index: ${index} (${Array.isArray(les)})`);
+          debug$S.log(`Document Index: ${index} (${Array.isArray(les)})`);
           if (Array.isArray(les)) {
             les.forEach(le => {
-              debug$Q.domElement(le.domElement);
+              debug$S.domElement(le.domElement);
             });
           }
         });
-        debug$Q.log('== Structure Tree ==', 1);
+        debug$S.log('== Structure Tree ==', 1);
         this.childLandmarkElements.forEach( le => {
-          debug$Q.domElement(le.domElement);
+          debug$S.domElement(le.domElement);
           le.showLandmarkInfo('  ');
         });
       }
@@ -11961,7 +11907,7 @@
     baseResultLong: ['undefined','Pass','Hidden','Manual Check','Warning','Violation'],
     resultType: ['base','element','page','website'],
     ruleResult: ['undefined', 'N/A', 'P', 'MC', 'W', 'V'],
-    ruleScopes: ['undefined', 'element', 'page', 'website'],
+    ruleScopes: ['undefined', 'Element', 'Page', 'undefined', 'Website'],
     allRuleResults: 'All Rule Results',
     allRules: 'All Rules',
     implementationValue: [
@@ -12002,10 +11948,10 @@
     rulesetLevelAA:  'Levels A and AA',
     rulesetLevelAAA: 'Levels A, AA and enhanced CCR',
 
-    rulesetFilter: 'First Step rules',
-    rulesetWCAG22: 'WCAG 2.2, ',
-    rulesetWCAG21: 'WCAG 2.1, ',
-    rulesetWCAG20: 'WCAG 2.0, ',
+    rulesetFirstStep: 'First Step Rules',
+    rulesetWCAG22:    'WCAG 2.2, ',
+    rulesetWCAG21:    'WCAG 2.1, ',
+    rulesetWCAG20:    'WCAG 2.0, ',
 
     scopeFilterElement: ', Element scope only',
     scopeFilterPage:    ', Page scope only',
@@ -13263,69 +13209,78 @@
     }
   };
 
-  /* audioRules.js */
+  /* video-onlyRules.js */
 
   /* --------------------------------------------------------------------------- */
-  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /*       OpenA11y Rules Localized Language Support (NLS): English              */
   /* --------------------------------------------------------------------------- */
 
   const audioRules$1 = {
     AUDIO_1: {
       ID:                    'Audio 1',
-      DEFINITION:            '@audio@ elements must have caption or text transcription of the audio content.',
-      SUMMARY:               '@audio@ must have alternative',
-      TARGET_RESOURCES_DESC: '@audio@ elements',
+      DEFINITION:            'For prerecorded audio-only media provide a text transcript that presents equivalent information of prerecorded content. Exception for when the audio is a media alternative for text and is clearly labeled as such.',
+      SUMMARY:               'Audio-only  (Prerecorded)',
+      TARGET_RESOURCES_DESC: '@audio@, @object@ and @embed@ elements',
       RULE_RESULT_MESSAGES: {
-        FAIL_S:         'Add caption or text transcript to @audio@ element',
-        FAIL_P:         'Add a caption or text transcript to each of the %N_F the @audio@ elements with out captions or transcripts.',
-        MANUAL_CHECK_S: 'Verify the @audio@ element has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P: 'Verify the %N_MC @audio@ elements are audio only have either a caption or text transcript of the audio.',
-        HIDDEN_S:       'The @audio@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P:       'The %N_H @audio@ elements that are hidden were not analyzed for accessible audio.',
-        NOT_APPLICABLE: 'No @audio@ elements found on this page.'
+        FAIL_S:         'Add a text transcript to the @audio@ element with out captions or transcripts',
+        FAIL_P:         'Add a  text transcript to each of the %N_F the audio-only elements with out a text transcript.',
+        MANUAL_CHECK_S: 'Verify if the media element is audio-only, if it is audio-only verify that it has a text transcript of the audio content.',
+        MANUAL_CHECK_P: 'Verify the if the %N_MC media elements are audio-only, if any are audio-only verify it has a text transcript of the audio content.',
+        HIDDEN_S:       'The media element that is hidden was not analyzed for accessible audio.',
+        HIDDEN_P:       'The %N_H media elements that are hidden were not analyzed for accessible audio.'
       },
       BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:    '@audio@ element has caption.',
-        ELEMENT_PASS_2:    '@audio@ element has a text transcript.',
-        ELEMENT_FAIL_1:    'Add caption or text transcript to @audio@ element.',
-        ELEMENT_MC_1:      'Verify the @audio@ element has captions or text transcript.',
-        ELEMENT_HIDDEN_1:  'The @audio@ element is hidden and was not evaluated.'
+        ELEMENT_PASS_1:    '@%1@ element has caption track.',
+        ELEMENT_PASS_2:    '@%1@ element has a text transcript.',
+        ELEMENT_FAIL_1:    'Provide a text transcript for @%1@ element content.',
+        ELEMENT_MC_1:      'Verify the audio media content has a text transcript.',
+        ELEMENT_MC_2:      'Verify the @%1@ element is providing audio-only content, and if it is audio-only that is has captions or text transcript.',
+        ELEMENT_HIDDEN_1:  'The @%1@ element is hidden and was not evaluated.'
       },
       PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
+        'People who are deaf, are hard of hearing, or who are having trouble understanding audio information for any reason can read the text transcripts.',
+        'People who are deaf-blind can read the text in braille.',
+        'Additionally, text transcripts support the ability to search for non-text content and to repurpose content in a variety of ways.'
       ],
       TECHNIQUES: [
-        'Use the @track@ element to add captioning to the audio content.',
+        'For the @audio@ eleemnt use the @track@ element to add captioning to the audio content.',
         'Use WebVTT to encode the timed stamped captioning information for the audio content.',
-        'Use @aria-describedby@ to reference a text transcript of the audio content.'
+        'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
       ],
       MANUAL_CHECKS: [
-        'When captions are enabled on the media player, check to make sure the captions visible.',
-        'If there is a caption make sure the captions accurately represents the audio content.',
-        'If there is a text transcript make sure the transcript accurately represents the audio content.'
       ],
       INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'Understanding SC 1.2.1: Audio-only and Video-only (Prerecorded) ',
+          url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html'
+        },
+        { type:  REFERENCES.SPECIFICATION,
           title: 'W3C: Making Audio and Video Media Accessible',
           url:   'https://www.w3.org/WAI/media/av/'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The audio element',
+          title: 'HMTL Specification: The audio element',
           url:   'https://html.spec.whatwg.org/multipage/media.html#the-audio-element'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The track element',
+          title: 'HMTL Specification: The track element',
           url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
         },
-        { type:  REFERENCES.SPECIFICATION,
+        { type:  REFERENCES.TECHNIQUE,
           title: 'WebVTT: The Web Video Text Tracks Format',
           url:   'https://www.w3.org/TR/webvtt1/'
         },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G158: Providing an alternative for time-based media for audio-only content',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G158'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F30: Failure of Success Criterion 1.1.1 and 1.2.1 due to using text alternatives that are not alternatives (e.g., filenames or placeholder text)',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F30'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F67: Failure of Success Criterion 1.1.1 and 1.2.1 due to providing long descriptions for non-text content that does not serve the same purpose or does not present the same information',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F67'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'University of Washington: Creating Accessible Videos',
@@ -13339,126 +13294,8 @@
     },
     AUDIO_2: {
       ID:                    'Audio 2',
-      DEFINITION:            '@object@ elements used for audio only must have caption or text transcription of the audio content.',
-      SUMMARY:               '@object@ for audio must have alternative',
-      TARGET_RESOURCES_DESC: '@object@ elements',
-      RULE_RESULT_MESSAGES: {
-        FAIL_S:   'Add caption or text transcript to @object@ element.',
-        FAIL_P:   'Add a caption or text transcript to each of the %N_F the @object@ elements with out captions or transcripts.',
-        MANUAL_CHECK_S:     'Check if the @object@ element is audio only content.  If it is audio only make sure it has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P:     'Check if any of the %N_MC @object@ elements are audio only. If any are audio only make sure they have either a caption or text transcript of the audio.',
-        HIDDEN_S: 'The @object@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P: 'The %N_H @object@ elements that are hidden were not analyzed for accessible audio.',
-        NOT_APPLICABLE:  'No @embed@ elements found on this page.'
-      },
-      BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:   '@object@ element references text transcript.',
-        ELEMENT_FAIL_1:   'Add captions or text transcript to @object@ element.',
-        ELEMENT_MC_1:     'Verify the @object@ element has synchronous captions.',
-        ELEMENT_MC_2:     'Verify the @object@ element only renders audio only, if it is audio only verify that it has captions or text transcript.',
-        ELEMENT_HIDDEN_1: 'The @object@ element is hidden and was not evaluated.'
-      },
-      PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
-      ],
-      TECHNIQUES: [
-        'Use the @audio@ element instead of the @object@ element for audio only content, since the @audio@ element provides better support for captions and text transcripts.',
-        'Use @aria-describedby@ attribute to point to a text description of the audio only content.'
-      ],
-      MANUAL_CHECKS: [
-        'Check the web page for a link to a text transcript of the audio, or if the transcript is part of the page rendering the audio.',
-        'Check the media player for a button to turn on and off captions.',
-        'When captions are enabled on the media player, check to make sure the captions visible and represent the speech and sounds heard on the audio.',
-        'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
-      ],
-      INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'W3C: Making Audio and Video Media Accessible',
-          url:   'https://www.w3.org/WAI/media/av/'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The object element',
-          url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'University of Washington: Creating Accessible Videos',
-          url:   'https://www.washington.edu/accessibility/videos/'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-          url:   'https://webaim.org/techniques/captions/'
-        }
-      ]
-    },
-    AUDIO_3: {
-      ID:                    'Audio 3',
-      DEFINITION:            '@embed@ elements used for audio only must have caption or text transcription of the audio content.',
-      SUMMARY:               '@embed@ for audio must have alternative',
-      TARGET_RESOURCES_DESC: '@embed@ elements',
-      RULE_RESULT_MESSAGES: {
-        FAIL_S:          'Add caption or text transcript to @embed@ element.',
-        FAIL_P:          'Add a caption or text transcript to each of the %N_F @embed@ elements without captions or transcripts.',
-        MANUAL_CHECK_S:  'Check if the @embed@ element is audio only content.  If it is audio only make sure it has either a caption or text transcript of the audio content.',
-        MANUAL_CHECK_P:  'Check if any of the %N_MC @embed@ elements are audio only. If any are audio only make sure they have either a caption or text transcript of the audio.',
-        HIDDEN_S:        'The @embed@ element that is hidden was not analyzed for accessible audio.',
-        HIDDEN_P:        'The %N_H @embed@ elements that are hidden were not analyzed for accessibile audio.',
-        NOT_APPLICABLE:  'No @embed@ elements found on this page'
-      },
-      BASE_RESULT_MESSAGES: {
-        ELEMENT_PASS_1:   '@embed@ element references text transcript.',
-        ELEMENT_FAIL_1:   'Add captions or text transcript to @embed@ element.',
-        ELEMENT_MC_1:     'Verify the @embed@ element has synchronous captions.',
-        ELEMENT_MC_2:     'Verify the @embed@ element only renders audio only, if it is audio only verify that it has captions or text transcript.',
-        ELEMENT_HIDDEN_1: 'The @object@ element is hidden and was not evaluated.'
-      },
-      PURPOSES: [
-        'Captions and text transcripts provide a means for people cannot hear the audio to understand the audio content.',
-        'Some types of learning disabilities affect speech perception, captions and text transcripts provide an alternative way to understand the audio content.',
-        'When the language of the audio is different than the native language of the listener, captions and text transcripts support the listener in understanding the audio content.'
-      ],
-      TECHNIQUES: [
-        'Use the @audio@ element instead of the @embed@ element for audio only content, since the @audio@ element provides better support for captions and text transcripts.',
-        'Use @aria-describedby@ attribute to point to a text description of the audio only content.'
-      ],
-      MANUAL_CHECKS: [
-        'Check the web page for a link to a text transcript of the audio, or if the transcript is part of the page rendering the audio.',
-        'Check the media player for a button to turn on and off captions',
-        'When captions are enabled on the media player, check to make sure the captions visible and represent the speech and sounds heard on the audio.',
-        'In some cases "open" captions might be used, this means the captions are always "on" as part of the video.'
-      ],
-      INFORMATIONAL_LINKS: [
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'W3C: Making Audio and Video Media Accessible',
-          url:   'https://www.w3.org/WAI/media/av/'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'HMTL: The embed element',
-          url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-        },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-          url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'University of Washington: Creating Accessible Videos',
-          url:   'https://www.washington.edu/accessibility/videos/'
-        },
-        { type:  REFERENCES.TECHNIQUE,
-          title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-          url:   'https://webaim.org/techniques/captions/'
-        }
-      ]
-    },
-    AUDIO_4: {
-      ID:                    'Audio 4',
       DEFINITION:            'Media content with audio that automatically starts playing when the page loads and lasts longer than 3 seconds must provide a means for the user able to stop, pause or mute the audio content.',
-      SUMMARY:               'Pause, stop or mute audio',
+      SUMMARY:               'Audio Control',
       TARGET_RESOURCES_DESC: 'Content that is used to auto play media that includes audio content',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:     'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.',
@@ -13467,26 +13304,45 @@
       BASE_RESULT_MESSAGES: {
         PAGE_MC_1:   'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.'
       },
-      PURPOSES:        [ 'Audio content interferes with people using speech based assistive technologies like screen readers.'
-                      ],
-      TECHNIQUES:     [ 'Remove or disable the auto playing of media that includes audio content.',
-                        'Provide a means to pause, stop or mute the audio content.',
-                        'Use cookies to preserve the user preference of pausing, stopping or muting the audio content.'
-                      ],
-      MANUAL_CHECKS:  [ 'Verify that there is no media content that plays automatically and includes audio content that lasts longer than 3 seconds.  If the audio content lasts longer than 3 seconds, verify the user can pause, stop or mute the audio.'
-                      ],
+      PURPOSES: [
+        'Individuals who use screen reading technologies can hear the screen reader without other sounds playing. This is especially important for those who are hard of hearing and for those whose screen readers use the system volume (so they cannot turn sound down and screen reader up).',
+        'People who have difficulty focusing on visual content (including text) benefit when audio is playing.'
+      ],
+      TECHNIQUES: [
+        'Remove or disable the auto playing of media that includes audio content.',
+        'Provide a means to pause, stop or mute the audio content.',
+        'Use cookies to preserve the user preference of pausing, stopping or muting the audio content.'
+      ],
+      MANUAL_CHECKS:  [
+      ],
       INFORMATIONAL_LINKS: [
+        { type:  REFERENCES.SPECIFICATION,
+          title: 'WCAG Understanding 1.4.2 Audio Control',
+          url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-control.html'
+        },
         { type:  REFERENCES.TECHNIQUE,
           title: 'W3C: Making Audio and Video Media Accessible',
           url:   'https://www.w3.org/WAI/media/av/'
         },
-        { type:  REFERENCES.SPECIFICATION,
-          title: 'WCAG 2.1 Success Criterion 1.4.2 Audio Control',
-          url:   'https://www.w3.org/TR/WCAG21/#audio-control'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G60: Playing a sound that turns off automatically within three seconds',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G60'
         },
-        { type:  REFERENCES.WCAG_TECHNIQUE,
-          title: 'How to meet Success Criterion 1.4.2 Audio Control',
-          url:   'https://www.w3.org/WAI/WCAG21/quickref/#audio-control'
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G170: Providing a control near the beginning of the Web page that turns off sounds that play automatically',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G170'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'G171: Playing sounds only on user request',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G171'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F23: Failure of 1.4.2 due to playing a sound longer than 3 seconds where there is no mechanism to turn it off',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F23'
+        },
+        { type:  REFERENCES.TECHNIQUE,
+          title: 'F93: Failure of Success Criterion 1.4.2 for absence of a way to pause or stop an HTML5 media element that autoplays',
+          url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F93'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'University of Washington: Creating Accessible Videos',
@@ -13497,6 +13353,61 @@
           url:   'https://webaim.org/techniques/captions/'
         }
       ]
+    }
+  };
+
+  /* authorizationRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /* --------------------------------------------------------------------------- */
+
+  const authorizationRules$1 = {
+    AUTHORIZATION_1: {
+          ID:                    'Authorization 1',
+          DEFINITION:            'A cognitive function test (such as remembering a password or solving a puzzle) is not required for any step in an authentication process unless that step provides at least one of four ways of completing the test.',
+          SUMMARY:               'Accessible Authorization (Minimum) ',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S:  'The evaluation cannot automatically verfiy if the page does not require remembering a password or solving a puzzle to login to an online resource. Verify the form controls on this page are for authentication, if they are make sure the authorization requirements are met.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1: 'Verify the form controls on this page are for authentication, if they are make sure the authorization requirements are met.'
+          },
+          PURPOSES: [
+            'People with cognitive issues relating to memory, reading (for example, dyslexia), numbers (for example, dyscalculia), or perception-processing limitations will be able to authenticate irrespective of the level of their cognitive abilities.'
+          ],
+          TECHNIQUES: [
+            'Email link authentication',
+            'Providing properly marked up email and password inputs',
+            'Providing WebAuthn as an alternative to username/password',
+            'Providing a 3rd party login using OAuth',
+            'Using two techniques to provide 2 factor authentication'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Accessible Authentication (Minimum)',
+              url:   'https://www.w3.org/WAI/WCAG22/Understanding/accessible-authentication-minimum.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G218: Email link authentication',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G218'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'H100: Providing properly marked up email and password inputs',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/html/H100'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F109: Failure of Success Criterion 3.3.8 and 3.3.9 due to preventing password or code re-entry in the same format',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F109'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'OAuth 2.0 Specficiation',
+              url:   'https://oauth.net/'
+            }
+          ]
     }
   };
 
@@ -13853,8 +13764,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-LABEL'
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/#the-label-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-invalid',
@@ -13941,8 +13852,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-LABEL'
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/#the-label-element'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: aria-invalid',
@@ -14144,7 +14055,7 @@
           HIDDEN_P: '%N_H form control elements that are hidden were not evaluated.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:   '@%1@ control has the label: \'%2\'',
+          ELEMENT_PASS_1:   '@%1@ control has the label: "%2"',
           ELEMENT_FAIL_1:   'Add label to @%1@ control.',
           ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
         },
@@ -14153,7 +14064,7 @@
         ],
         TECHNIQUES: [
           'The preferred technique for labeling form controls is by reference: First, include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.',
-          'NOTE: The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
+          '^NOTE:^ The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
           'In special cases, the @aria-labelledby@ attribute can be used on the form control element to reference the id(s) of the elements on the page that describe its purpose.',
           'In special cases, the @aria-label@ attribute can be used on the form control element to provide an explicit text description of its purpose.',
           'In special cases, the @title@ attribute on the form control element can be used to provide an explicit text description of its purpose.'
@@ -14229,8 +14140,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @input[type=image]@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#adef-type-INPUT'
+            title: 'HTML Specification: The @input[type=image]@ element',
+            url:   'https://html.spec.whatwg.org/#image-button-state-(type=image)'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -14241,8 +14152,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -14439,8 +14350,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @label@ element FOR attribute',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#adef-for'
+            title: 'HTML Specification: The @label@ element @for@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-label-for'
           },
           {type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'W3C WAI Accessibility Tutorials: Forms Concepts',
@@ -14801,8 +14712,8 @@
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @input[type="submit"]@ element',
-            url:   'https://www.w3.org/TR/html4/interact/forms.html#edef-INPUT'
+            title: 'HTML Specification: The @input[type="submit"]@ element',
+            url:   'https://html.spec.whatwg.org/#submit-button-state-(type=submit)'
           },
           { type:  REFERENCES.WCAG_TECHNIQUE,
             title: 'H32: Providing submit buttons',
@@ -14935,12 +14846,12 @@
 
       CONTROL_15: {
           ID:                    'Control 15',
-          DEFINITION:            'Verify labels that include images of text, @aria-label@ and/or references to hidden content contains the same text as the visually render label associated with the control.',
-          SUMMARY:               'Label in Name',
+          DEFINITION:            'The labels (e.g. accessible name) for controls and widgets that include text or images of text, the name contains the text that is presented visually.',
+          SUMMARY:               'Label in name for controls',
           TARGET_RESOURCES_DESC: '@input@, @output@, @select@, @textarea@ and widgets',
           RULE_RESULT_MESSAGES: {
             MANUAL_CHECK_S:  'Verify the control with images, @aria-label@ and/or references to hidden content contain the same text associated with the visually rendered label associated with the control.',
-            MANUAL_CHECK_P:  'Verify tha each of the %N_MC controls with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
+            MANUAL_CHECK_P:  'Verify that each of the %N_MC controls with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
             HIDDEN_S:  'One control with images, @aria-label@ and/or references to hidden content was not tested because it is hidden from assistive technologies',
             HIDDEN_P:  '%N_H controls with images, @aria-label@ and/or references were not tested because they are hidden from assistive technologies',
           },
@@ -14968,7 +14879,7 @@
           ],
           INFORMATIONAL_LINKS: [
             { type:  REFERENCES.SPECIFICATION,
-              title: 'W3C WCAG UNderstanding Label in Name',
+              title: 'W3C WCAG Understanding Label in Name',
               url:   'https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html'
             },
             { type:  REFERENCES.TECHNIQUE,
@@ -14996,7 +14907,7 @@
 
       CONTROL_16: {
           ID:                    'Control 16',
-          DEFINITION:            'Use @autocomplete@ attributes or other programmatic techniques that support auto-populating form controls with information previously entered by the user, unless the content meets one of the exceptions.',
+          DEFINITION:            'Use @autocomplete@ attributes or other programmatic techniques that support auto-populating form controls with information previously entered by the user, unless the content meets one of the exceptions related to gaming, security or data validity.',
           SUMMARY:               'Redundant Entry',
           TARGET_RESOURCES_DESC: '@input@, @output@, @select@, @textarea@ and widgets',
           RULE_RESULT_MESSAGES: {
@@ -15019,10 +14930,7 @@
           ],
           TECHNIQUES: [
             'Add an @autocomplete@ attribute to the form control that would support auto-populating the form control from previously entered information.',
-            'There are many other programmatic techniques to support auto-population, that are too numerous to discuss here.',
-            'EXCEPTION: Essential uses of input re-entry for things like memory games which would be invalidated if the previous answers were supplied.',
-            'EXCEPTION: Security measures such as preventing a password string from being shown or copied. When creating a password, it should be a unique and complex string and therefore cannot be validated by the author. If the system requires the user to manually create a password that is not displayed, having users re-validate their new string is allowed as an exception.',
-            'EXCEPTION: When the previously entered information is no longer valid, it can be requested that the user enter that information again.'
+            'There are many other programmatic techniques to support auto-population, including but not limited to the use of cookies, HTTP session variables and server side stored information.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -15040,8 +14948,49 @@
               url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G221'
             }
           ]
-      }
+      },
 
+    CONTROL_17: {
+        ID:                    'Control 17',
+        DEFINITION:            'Some assistive technologies, including speech input, do not reliably associate labels with the controls when only label encapsulation is used for labeling.',
+        SUMMARY:               'Avoid label encapsulation',
+        TARGET_RESOURCES_DESC: '@input@, @select@, @textarea@, @progress@, @meter@ and @output@ elements',
+        RULE_RESULT_MESSAGES: {
+          FAIL_S:   'Add a an @id@ to the control and use the @ a label to the form control element that is unlabelled.',
+          FAIL_P:   'Add labels to the %N_F form control elements that are unlabelled.',
+          HIDDEN_S: 'One form control element that is hidden was not evaluated.',
+          HIDDEN_P: '%N_H form control elements that are hidden were not evaluated.'
+        },
+        BASE_RESULT_MESSAGES: {
+          ELEMENT_PASS_1:   '@%1@ control is labeled using: %2',
+          ELEMENT_FAIL_1:   'Add a @for@ attribute to the @label@ element to reference an @id@ on the associated @%1@ control',
+          ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
+        },
+        PURPOSES: [
+          'Speech input and other assistive technologies cannot reliably use the label encapsulation method for identifying a label with it\'s associated form control.',
+          'Speech input uses the label as part of commands to move focus or change the state of form controls.  Examples of speech input commands include: "click first name" for moving focus to a textbox, "click thick crust" to select a radio button associated with a pizza crust selection.'
+        ],
+        TECHNIQUES: [
+          'When using the @label@ element include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.'
+        ],
+        MANUAL_CHECKS: [
+        ],
+        INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The @label@ element',
+            url:   'https://html.spec.whatwg.org/multipage/forms.html#the-label-element'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'H44: Using label elements to associate text labels with form controls',
+            url:   'https://www.w3.org/WAI/WCAG21/Techniques/html/H44'
+          },
+          { type:  REFERENCES.WCAG_TECHNIQUE,
+            title: 'W3C ARIA Authoring Practices Issue: Naming Form Controls with the Label Element',
+            url:   'https://github.com/w3c/aria-practices/issues/2870'
+          }
+
+        ]
+    }
   };
 
   /* headingRules.js */
@@ -15085,8 +15034,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @h1@ element',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15137,8 +15086,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @h1@ element',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.1 Specification: @main@ role',
@@ -15181,8 +15130,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15237,8 +15186,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G130: Providing descriptive headings',
@@ -15283,8 +15232,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H1, H2, H3, H4, H5, H6 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H1'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'C22: Using CSS to control visual presentation of text',
@@ -15331,8 +15280,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: Headings: The H2 elements',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#edef-H2'
+          title: 'HTML Specification: The h1, h2, h3, h4, h5, and h6 elements',
+          url:   'https://html.spec.whatwg.org/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'
         }
       ]
     },
@@ -15393,23 +15342,23 @@
   const helpRules$1 = {
     HELP_1: {
           ID:                    'Help 1',
-          DEFINITION:            'Verify the consistent placement of help and contact information on web pages within a website.',
-          SUMMARY:               'Consistent Help',
+          DEFINITION:            'Help and contact information occurs in the same order relative to other page content within a website.  Exceptions for websites that do not contain help or contact information or if the user initiated a change in ordering.',
+          SUMMARY:               'Consistent ordering of help',
           TARGET_RESOURCES_DESC: 'Pages in a website',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'Verify the consistent placement of help and contact information on web pages within a website.',
+            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if a page contains help or contact information and if it does, it\'s order on the page.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through inspection of the page if the ordering requirements have been met.',
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify the consistent placement of help and contact information on web pages within a website.',
+            PAGE_MC_1: 'The evaluation library can not automatically determine if a page contains help or contact information and if it does, it\'s order on the page.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through inspection of the page if the ordering requirements have been met.',
           },
           PURPOSES: [
             'The intent of this Success Criterion is to ensure users can find help for completing tasks on a Web site, when it is available. When the placement of the help mechanism is kept consistent across a set of pages, users looking for help will find it easier to identify. This is distinct from interface-level help, such as contextual help, features like spell checkers, and instructional text in a form. ',
             'ocating the help mechanism in a consistent location across pages makes it easier for users to find it.'
           ],
           TECHNIQUES: [
-            'Example: On-line job application: Some of the application questions may be hard for new job seekers to understand even after reading the contextual help. For example, the form may request their identification number, but they may have several and not know which one to enter. Consistently located contact information will enable them to use phone or email so they can get an answer to their question. ',
-            'Example: Medical appointment scheduling form: When the service a patient is trying to book is not easily findable within the interface, they may need human help. A consistently located messaging option (chat client) enables them to quickly interact with a staff person that can help, without requiring them to manage a second interface. ',
-            'Example: Finding a specific policy or procedure: An employee who needs to complete a work task may have difficulty locating the specific policy or procedure document on their employer\'s Web site. A consistently located "How Do I" page may include the information that enables them to independently complete this task. '
+            '^Example:^ On-line job application: Some of the application questions may be hard for new job seekers to understand even after reading the contextual help. For example, the form may request their identification number, but they may have several and not know which one to enter. Consistently located contact information will enable them to use phone or email so they can get an answer to their question. ',
+            '^Example:^ Medical appointment scheduling form: When the service a patient is trying to book is not easily findable within the interface, they may need human help. A consistently located messaging option (chat client) enables them to quickly interact with a staff person that can help, without requiring them to manage a second interface. ',
+            '^Example:^ Finding a specific policy or procedure: An employee who needs to complete a work task may have difficulty locating the specific policy or procedure document on their employer\'s Web site. A consistently located "How Do I" page may include the information that enables them to independently complete this task. '
           ],
           MANUAL_CHECKS: [
           ],
@@ -15503,7 +15452,7 @@
       },
       PURPOSES: [
         'A text alternative for an image, usually specified with an @alt@ attribute, provides a summary of the purpose of the image for people with visual impairments, enabling them to understand the content or purpose of the image on the page.',
-        'An image with a text alternative that is an empty string or that has @role="presentation"@ is ignored by assistive technologies. Such markup indicates that the image is being used for decoration, spacing or other stylistic purposes rather than meaningful content.'
+        'An image with a text alternative that is an empty string or that has @role="none"@ is ignored by assistive technologies. Such markup indicates that the image is being used for decoration, spacing or other stylistic purposes rather than meaningful content.'
       ],
       TECHNIQUES: [
         'A text alternative should summarize the purpose of an image as succinctly as possible (preferably with no more than 100 characters).',
@@ -15511,7 +15460,7 @@
         'The @aria-labelledby@ attribute can be used to provide a text alternative when an image can be described using text already associated with the image, or for elements with @role="img"@.',
         'The @aria-label@ attribute should only be used to provide a text alternative in the special case when an element has a @role="img"@ attribute. Use the @alt@ attribute for @img@ and @area@ elements.',
         'The @title@ attribute will be used by assistive technologies to provide a text alternative if no other specification technique is found.',
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and one that should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and one that should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
       ],
@@ -15533,8 +15482,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -15594,7 +15543,7 @@
         'The @aria-labelledby@ attribute can be used to provide a text alternative when images can be described using text already associated with the image, such as a visible caption, or for elements with @role="img"@.',
         'The @aria-label@ attribute should only be used to provide a text alternative in the special case when an element has a @role="img"@ attribute.',
         'The @title@ attribute will be used by assistive technologies to provide a text alternative if no other specification technique is found.  NOTE: Using the @title@ attribute will also generate a tooltip in some browsers.',
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
         'Find each image on the page and verify that it is only being used decoratively or is redundant with other information on the page.'
@@ -15617,8 +15566,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -15685,8 +15634,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G94: Providing text alternative for non-text content that serves the same purpose and presents the same information as the non-text content',
@@ -15704,7 +15653,7 @@
     },
 
     IMAGE_4_EN: {
-      ID:         'Image 4 (English)',
+      ID:         'Image 4',
       DEFINITION: 'The text alternative  for an image should be no more than 100 characters in length.',
       SUMMARY:    'Alt text no more than 100 characters',
       TARGET_RESOURCES_DESC: '@img@, @area@ and @[role="img"]@ elements',
@@ -15733,8 +15682,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'G94: Providing text alternative for non-text content that serves the same purpose and presents the same information as the non-text content',
@@ -15753,9 +15702,9 @@
 
     IMAGE_5: {
       ID:         'Image 5',
-      DEFINITION: 'Verify an image with @[alt=""]@ or @[role="presentation"]@ is only being used for purely decorative, spacing or stylistic purposes.',
-      SUMMARY:    'Verify image is decorative',
-      TARGET_RESOURCES_DESC: '@img[alt=""]@, @img[role="presentation"]@, @[role="img"]@ with an empty text alternative',
+      DEFINITION: 'Images with @[alt=""]@ or @[role="none"]@ must only be used to identify purely decorative images, spacing or stylistic purposes.',
+      SUMMARY:    'Image is decorative',
+      TARGET_RESOURCES_DESC: '@img[alt=""]@, @img[role="none"]@, @[role="img"]@ with an empty text alternative',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S: 'Verify the image is being used purely for decorative, spacing or styling purposes.',
         MANUAL_CHECK_P: 'Verify the %N_MC images are being used purely for decorative, spacing or styling purposes.',
@@ -15774,7 +15723,7 @@
         'If an image contains information, but is mistakenly identified as decorative, users of assistive technologies will not have access to the information.'
       ],
       TECHNIQUES: [
-        'Use the attributes @alt=""@, @role="presentation"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
+        'Use the attributes @alt=""@, @role="none"@ or include the image as a CSS @background-image@ to identify it as being used purely for stylistic or decorative purposes and that it should be ignored by people using assistive technologies.'
       ],
       MANUAL_CHECKS: [
       ],
@@ -15849,8 +15798,8 @@
           url:   'https://www.w3.org/TR/html-longdesc/'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 13.8 How to specify alternate text',
-          url:   'https://www.w3.org/TR/html4/struct/objects.html#adef-alt'
+          title: 'HTML Specification: IMG element ALT Attribute',
+          url:   'https://html.spec.whatwg.org/#attr-img-alt'
         },
         { type:  REFERENCES.TECHNIQUE,
           title: 'Web Accessibility Tutorials : Images',
@@ -15947,7 +15896,7 @@
     IMAGE_8: {
       ID:         'Image 8',
       DEFINITION: 'When an image is used to represent stylized text, replace the image with text content and use CSS to style text.',
-      SUMMARY:    'Use CSS to stylize text',
+      SUMMARY:    'Images of text',
       TARGET_RESOURCES_DESC: '@img@ and [role="img"]',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:   'If the image is used to stylize text, replace the image with text content styled with CSS.',
@@ -16008,7 +15957,7 @@
     KEYBOARD_1: {
       ID:                    'Keyboard 1',
       DEFINITION:            'Elements with ARIA widget roles must support the keyboard interactions required by those roles.',
-      SUMMARY:               'ARIA widget role requires specific keyboard support',
+      SUMMARY:               'ARIA widget keyboard support',
       TARGET_RESOURCES_DESC: 'Elements with ARIA widget roles',
       RULE_RESULT_MESSAGES: {
         MANUAL_CHECK_S:  'Verify the element with the ARIA widget role implements the keyboard interactions required by its role.',
@@ -16216,7 +16165,7 @@
     KEYBOARD_5: {
         ID:                    'Keyboard 5',
         DEFINITION:            'The element with keyboard focus must have a visible focus style that is different from the non-focus state.',
-        SUMMARY:               'Focus must be visible',
+        SUMMARY:               'Focus must be discernible',
         TARGET_RESOURCES_DESC: '@a@, @area@, @input@, @textarea@ and @select@ elements and elements with widget roles with @tabindex@ values',
         RULE_RESULT_MESSAGES: {
           MANUAL_CHECK_S:     'Use the "tab" key to move focus between links, form controls, embedded apps and widgets and check the visibility of focus styling for each element as it receives focus.',
@@ -16307,7 +16256,147 @@
             url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
           }
         ]
+    },
+    KEYBOARD_7: {
+          ID:                    'Keyboard 7',
+          DEFINITION:            'When pointer hover or keyboard focus triggers additional content to become visible and then hidden, the content is dismissible, hoverable and persistent, there are some exceptions.',
+          SUMMARY:               'Content on Hover or Focus',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S:  'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1: 'The evaluation library can not automatically determine if content becomes visible and then hidden based on pointer or keyboard actions.  Verification requires understanding the requirements, determining if the the requirement applies to a page and then verifying through interaction with the page if the requirements have been met.'
+          },
+          PURPOSES: [
+            'Users with low vision who view content under magnification will be better able to view content on hover or focus without reducing their desired magnification.',
+            'Users who increase the size of mouse cursors via platform settings or assistive technology will be able to employ a technique to view obscured content on hover.',
+            'Users with low vision or cognitive disabilities will have adequate time to perceive additional content appearing on hover or focus and to view the trigger content with less distraction.',
+            'Users with low pointer accuracy will be able to more easily dismiss unintentionally-triggered additional content.'
+          ],
+          TECHNIQUES: [
+            'Dismissible: Make sure content does not interfere with viewing other content on the page by making sure it does not obscure any other content or that the content can be easily dismissed using the pointer or a keyboard command like the escape key.',
+            'Hoverable: When content appears it remains visible if the user hovers over it with their pointer.',
+            'Persistent: COntent remains visible until the user removes hover or focus form the trigger and the additional content, the user activates a command to hide the information, or the information ois not longer vaild (e.g. a busy message).',
+            'Exceptions: There are some exceptions, for example error messages.  Please read the requirements carefully for exceptions.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Content on Hover or Focus',
+              url:   'https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'SCR39: Making content on focus or hover hoverable, dismissible, and persistent',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/client-side-script/SCR39'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F95: Failure of Success Criterion 1.4.13 due to content shown on hover not being hoverable',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F95'
+            }
+          ]
+    },
+    KEYBOARD_8: {
+          ID:                    'Keyboard 8',
+          DEFINITION:            'Focusable components receive focus in an order that preserves their meaning and operability.',
+          SUMMARY:               'Focus Order',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S: 'The evaluation library can not automatically verify logical focus order.  Verification requires understanding the requirements and then interacting with the page to make sure the focus order requirements are met.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1: 'The evaluation library can not automatically verify logical focus order.  Verification requires understanding the requirements and then interacting with the page to make sure the focus order requirements are met.'
+          },
+          PURPOSES: [
+            'People with mobility impairments who must rely on keyboard access for operating a page benefit from a logical, usable focus order.',
+            'People with disabilities that make reading difficult can become disoriented when tabbing takes focus someplace unexpected. They benefit from a logical focus order.',
+            'People with visual impairments can become disoriented when tabbing takes focus someplace unexpected or when they cannot easily find the content surrounding an interactive element.',
+            'Only a small portion of the page may be visible to an individual using a screen magnifier at a high level of magnification. Such a user may interpret a field in the wrong context if the focus order is not logical.'
+          ],
+          TECHNIQUES: [
+            '^Example:^ On a web page that contains a tree of interactive controls, the user can use the up and down arrow keys to move from tree node to tree node. Pressing the right arrow key expands a node, then using the down arrow key moves into the newly expanded nodes.',
+            '^Example:^ A Web page implements modeless dialogs via scripting. When the trigger button is activated, a dialog opens. The interactive elements in the dialog are inserted in the focus order immediately after the button. When the dialog is open, the focus order goes from the button to the elements of the dialog, then to the interactive element following the button. When the dialog is closed, the focus order goes from the button to the following element.',
+            '^Example:^ A Web page implements modal dialogs via scripting. When the trigger button is activated, a dialog opens and focus is set within the dialog. As long as the dialog is open, focus is limited to the elements of the dialog. When the dialog is dismissed, focus returns to the button or the element following the button.',
+            '^Example:^ An HTML Web page is created with the left hand navigation occurring in the HTML after the main body content, and styled with CSS to appear on the left hand side of the page. This is done to allow focus to move to the main body content first without requiring tabIndex attributes or JavaScript.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Focus Order',
+              url:   'https://www.w3.org/WAI/WCAG21/Understanding/focus-order.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G59: Placing the interactive elements in an order that follows sequences and relationships within the content',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G59'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C27: Making the DOM order match the visual order',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/css/C27'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'SCR26: Inserting dynamic content into the Document Object Model immediately following its trigger element',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/client-side-script/SCR26'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'SCR37: Creating Custom Dialogs in a Device Independent Way',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/client-side-script/SCR37'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'SCR27: Reordering page sections using the Document Object Model',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/client-side-script/SCR27'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F44: Failure of Success Criterion 2.4.3 due to using tabindex to create a tab order that does not preserve meaning and operability',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F44'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F85: Failure of Success Criterion 2.4.3 due to using dialogs or menus that are not adjacent to their trigger control in the sequential navigation order',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F85'
+            }
+          ]
+    },
+    KEYBOARD_9: {
+          ID:                    'Keyboard 9',
+          DEFINITION:            'When a user interface component receives keyboard focus, the component is not entirely hidden due to author-created content.',
+          SUMMARY:               'Focus is not obscured (Minimum)',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S: 'The evaluation library can not automatically verify verify if a control or link with keyboard focus is obscured.  Verification requires understanding the requirements and then interacting with the page to make sure that controls receive focus they are not obscured.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1: 'The evaluation library can not automatically verify verify if a control or link with keyboard focus is obscured.  Verification requires understanding the requirements and then interacting with the page to make sure that controls receive focus they are not obscured.'
+          },
+          PURPOSES: [
+            'Sighted users who rely on a keyboard interface to operate the page will be able to see the component which gets keyboard focus. Such users include those who rely on a keyboard or on devices which use the keyboard interface, including speech input, sip-and-puff software, onscreen keyboards, scanning software, and a variety of assistive technologies and alternate keyboards.',
+            'People with limited or low vision, who may primarily user a pointer for screen orientation and repositioning, nonetheless benefit from a visible indication of the current point of keyboard interaction, especially where magnification reduces the overall viewing portion of the screen.',
+            'People with attention limitations, short term memory limitations, or limitations in executive processes benefit by being able to discover where the focus is located.'
+          ],
+          TECHNIQUES: [
+            '^Example:^ A page has a sticky footer (attached to the bottom of the viewport). When tabbing down the page the focused item is not completely hidden by the footer because content in the viewport scrolls up to always display the item with keyboard focus using scroll padding.',
+            '^Example:^ A page has a full-width cookie approval dialog. The dialog is modal, preventing access to the other controls in the page until it has been dismissed. Focus is not obscured because the major portion of the cookie approval dialog remains on screen (until selections are made and submitted), and so the major portion of the keyboard focus indicator remains visible.',
+            '^Example:^ A notification is implemented as a sticky header and the keyboard focus is moved to the notification so at least part of the focus indicator is in view. The notification disappears when it loses focus so it does not obscure any other controls, and part of the prior keyboard focus indicator is visible.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Focus Not Obscured (Minimum)',
+              url:   'https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C43: Using CSS scroll-padding to un-obscure content',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C43'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F110: Failure of Success Criterion 2.4.12 Focus Not Obscured (Minimum) due to a sticky footer or header completely hiding focused elements',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F110'
+            }
+          ]
     }
+
+
 
   };
 
@@ -17829,7 +17918,7 @@
           'Use CSS and web standards techniques for the coding of content, and the graphical styling and positioning of content.',
           'Avoid using table markup for graphical layout, if you do use tables for layout make sure the content still is meaningful when the table markup is disabled.',
           'Avoid using nested tables for layout, the deeper the level of nesting the more chance there of having a confusing sequence of content.',
-          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="presentation"@ attribute to clearly indicate the table markup is being used for layout.'
+          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="none"@ attribute to clearly indicate the table markup is being used for layout.'
         ],
         MANUAL_CHECKS: [
           'Use browser developer tools to disable table markup or enable a user stylesheet to change table cells to be rendered as block level elements.',
@@ -17899,7 +17988,7 @@
           'Use CSS and web standards techniques for the coding of content, and the graphical styling and positioning of content.',
           'Avoid using table markup for graphical layout, if you do use tables for layout make sure the content still is meaningful when the table markup is disabled.',
           'Avoid using nested tables for layout, the deeper the level of nesting the more chance there of having a confusing sequence of content.',
-          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="presentation"@ attribute to clearly indicate the table markup is being used for layout.'
+          'Tables that are used for layout should use only @tr@ and @td@ elements, and the @table@, @tr@ and @td@ elements should have a @role="none"@ attribute to clearly indicate the table markup is being used for layout.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -17920,8 +18009,8 @@
     },
     LAYOUT_3: {
         ID:                    'Layout 3',
-        DEFINITION:            'Verify that the use of the @aria-flowto@ attribute supports the intended reading order of content on the page.',
-        SUMMARY:               'Verify @aria-flowto@ supports reading order',
+        DEFINITION:            'The @aria-flowto@ attribute changes the reading order of content on the page from the DOM order of content for screen readers.',
+        SUMMARY:               '@aria-flowto@ changes reading order',
         TARGET_RESOURCES_DESC: 'Elements with @aria-flowto@ attribute',
         RULE_RESULT_MESSAGES: {
           MANUAL_CHECK_S:    'Verify the element with the @aria-flowto@ attribute contributes to the intended reading order of content on the page.',
@@ -18025,8 +18114,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 12.2 The A element',
-          url:   'https://www.w3.org/TR/html4/struct/links.html#edef-A'
+          title: 'HTML Specification: The A element',
+          url:   'https://html.spec.whatwg.org/#the-a-element'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -18041,8 +18130,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @title@ attribute',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          title: 'HTML Specification: The @title@ attribute',
+          url:   'https://html.spec.whatwg.org/#attr-title'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'H30: Providing link text that describes the purpose of a link for anchor elements',
@@ -18084,8 +18173,8 @@
       ],
       INFORMATIONAL_LINKS: [
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: 12.2 The A element',
-          url:   'https://www.w3.org/TR/html4/struct/links.html#edef-A'
+          title: 'HTML Specification: The A element',
+          url:   'https://html.spec.whatwg.org/#the-a-element'
         },
         { type:  REFERENCES.SPECIFICATION,
           title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2: The @aria-label@ attribute',
@@ -18100,8 +18189,8 @@
           url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
         },
         { type:  REFERENCES.SPECIFICATION,
-          title: 'HTML 4.01 Specification: The @title@ attribute',
-          url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+          title: 'HTML Specification: The @title@ attribute',
+          url:   'https://html.spec.whatwg.org/#attr-title'
         },
         { type:  REFERENCES.WCAG_TECHNIQUE,
           title: 'H30: Providing link text that describes the purpose of a link for anchor elements',
@@ -18161,7 +18250,68 @@
             url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F52'
           }
         ]
-    }
+    },
+
+      LINK_4: {
+          ID:                    'Link 4',
+          DEFINITION:            'The labels (e.g. accessible name) for links that include text or images of text, the name contains the text that is presented visually.',
+          SUMMARY:               'Label in name for links',
+          TARGET_RESOURCES_DESC: '@a@',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S:  'Verify the link with images, @aria-label@ and/or references to hidden content contain the same text associated with the visually rendered label associated with the control.',
+            MANUAL_CHECK_P:  'Verify the %N_MC links with images, @aria-label@ and/or references to hidden content contain the same text associated with each of the visually rendered labels associated with each control.',
+            HIDDEN_S:  'One link with images, @aria-label@ and/or references to hidden content was not tested because it is hidden from assistive technologies',
+            HIDDEN_P:  '%N_H linkss with images, @aria-label@ and/or references were not tested because they are hidden from assistive technologies',
+          },
+          BASE_RESULT_MESSAGES: {
+            ELEMENT_MC_1: 'Verify the image @alt@ text contains any text represented in the image.',
+            ELEMENT_MC_2: 'Verify the @aria-label@ contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_MC_3: 'Verify the computed name of all the referenced content, contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_HIDDEN_1: 'The hidden control with an accessible name that includes image content was not tested.',
+            ELEMENT_HIDDEN_2: 'The hidden control with an accessible name with @aria-label@ content was not tested.',
+            ELEMENT_HIDDEN_3: 'The hidden control with an accessible name that includes references to hidden content was not tested.',
+            PAGE_MC_1: 'The pages contains '
+          },
+          PURPOSES: [
+            'Voice recognition users can directly activate controls on a page with fewer surprising changes of focus.',
+            'Screen reader users will have a better experience because the labels that they hear match the visible text labels that they see on the screen.',
+            'In general avoid using images and hidden text for defining accessible names whenever possible.'
+          ],
+          TECHNIQUES: [
+            'If images of text that are part of an accessible name (e.g. label), the alt text must be the same as the text of the image.',
+            'If @aria-label@ is used as part of an accessible name (e.g. label), the @aria-label@ contains the same text associated the visually rendered content associated with the control.',
+            'If a hidden @aria-labelledby@ reference is used as part of the accessible name (e.g. label), verify the computed name of all the referenced contain has the same text associated the visually rendered label associated with the control.',
+            'Accessible names may contain additional information useful to people using assistive technologies, but should start with the visible text associated with the control.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG Understanding Label in Name',
+              url:   'https://www.w3.org/WAI/WCAG21/Understanding/label-in-name.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'W3C Accessible Name and Description Computation 1.1',
+              url:   'https://www.w3.org/TR/accname-1.1/'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G208: Including the text of the visible label as part of the accessible name',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G208'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G211: Matching the accessible name to the visible label',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/general/G211'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G162: Positioning labels to maximize predictability of relationships',
+              url:   'https://www.w3.org/WAI/GL/2016/WD-WCAG20-TECHS-20160105/G162'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F96: Failure due to the accessible name not containing the visible label text',
+              url:   'https://www.w3.org/WAI/WCAG21/Techniques/failures/F96'
+            }
+          ]
+      }
   };
 
   /* listRules.js */
@@ -18305,8 +18455,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           }
         ]
     }
@@ -18321,7 +18471,7 @@
   const liveRules$1 = {
       LIVE_1: {
           ID:                    'Live 1',
-          DEFINITION:            'Verify the live regions have the appropriate ARIA markup to indicate whether or how the screen reader will interrupt the user with a change in a status or error message.',
+          DEFINITION:            'Live regions identify how and when regions on a page will be automatically announced when changes occur in content, for example status or error messages.',
           SUMMARY:               'Live regions for status and error messages',
           TARGET_RESOURCES_DESC: 'Elements with @alert@, @log@ or @status@ roles or the @aria-live@ attribute',
           RULE_RESULT_MESSAGES: {
@@ -18399,26 +18549,25 @@
   const motionRules$1 = {
     MOTION_1: {
           ID:                    'Motion 1',
-          DEFINITION:            'Verify there are alternatives to motion activation, unless the motion is essential for the function and doing so would invalidate the activity.',
+          DEFINITION:            'Functionality that can be operated by device motion or user motion can also be operated by user interface components and responding to the motion can be disabled to prevent accidental actuation.  There are some exceptions.',
           SUMMARY:               'Motion Actuation',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by motion, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page.'
+            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by motion, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the motions requirements apply to this page or if one of the exceptions is met.'
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify there are alternatives to motion activation, unless the motion is essential for the function and doing so would invalidate the activity.',
+            PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by motion, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the motions requirements apply to this page or if one of the exceptions is met.',
           },
           PURPOSES: [
-            'The intent of this success criterion is to ensure that functions triggered by moving a device (for example, shaking or tilting) or by gesturing towards the device (so that sensors like a camera can pick up and interpret the gesturing), can also be operated by more conventional user interface components.',
             'Alternatives to motion activation helps people who may be unable to perform particular motions (such as tilting, shaking, or gesturing) because the device may be mounted or users may be physically unable to perform the necessary movement. This success criterion ensures that users can still operate all functionality by other means such as touch or via assistive technologies. ',
             'All users benefit when they are in situations where they are unable to move their devices.'
           ],
           TECHNIQUES: [
-            'Example: A user can choose an application setting which turns off Shake to Undo and other motion-activated features. ',
-            'Example: After text is input in a field, shaking a device shows a dialog offering users to undo the input. A cancel button next to the text field offers the same functionality.',
-            'Example: A user can tilt a device to advance to the next or a previous page. Buttons are also provided to perform the same function. ',
-            'Example: A user can move or pan a device to change the view in an interactive photo. A control is also available to perform these same functions. ',
-            'Example: A user can gesture towards the device to navigate content. Controls are also available to navigate. '
+            '^Example:^ A user can choose an application setting which turns off Shake to Undo and other motion-activated features. ',
+            '^Example:^ After text is input in a field, shaking a device shows a dialog offering users to undo the input. A cancel button next to the text field offers the same functionality.',
+            '^Example:^ A user can tilt a device to advance to the next or a previous page. Buttons are also provided to perform the same function. ',
+            '^Example:^ A user can move or pan a device to change the view in an interactive photo. A control is also available to perform these same functions. ',
+            '^Example:^ A user can gesture towards the device to navigate content. Controls are also available to navigate. '
           ],
           MANUAL_CHECKS: [
           ],
@@ -18605,11 +18754,6 @@
           'If landmarks have labels, use consistent labeling of the landmarks across all pages within the website.'
         ],
         MANUAL_CHECKS: [
-          'Verify that the main content of the page is contained within the @main@ landmark.',
-          'Verify that recurring content at the top of each page is contained within a @banner@ landmark.',
-          'Verify that website navigational links are contained within @navigation@ landmarks.',
-          'Verify that recurring content at the bottom of each page is contained within a @contentinfo@ landmark.',
-          'Verify that if a landmark has a label and there are comparable landmarks on other pages in the website, the labels are the same on each page.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -18672,25 +18816,25 @@
   const pointerRules$1 = {
     POINTER_1: {
           ID:                    'Pointer 1',
-          DEFINITION:            'Verify all functionality that uses multi-touch or tracing a path with a pointer for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential.',
+          DEFINITION:            'All functionality that uses multipoint or path-based gestures for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential.',
           SUMMARY:               'Pointer Gestures',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by multi-touch or tracing a path with a pointer, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page.',
+            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by multi-touch or tracing a path with a pointer, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page or the exception is met.',
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify all functionality that uses multi-touch or tracing a path for operation can be operated with a single pointer without a path-based gesture, unless a multipoint or path-based gesture is essential.',
+            PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by multi-touch or tracing a path with a pointer, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page or the exception is met.',
           },
           PURPOSES: [
-            'Alternatives to multi-touch and path specific movements is required to ensure that content can be controlled with a range of pointing devices, abilities, and assistive technologies. Some people cannot perform gestures in a precise manner, or they may use a specialized or adapted input device such as a head pointer, eye-gaze system, or speech-controlled mouse emulator. Some pointing methods lack the capability or accuracy to perform multipoint or path-based gestures.',
-            'A path-based gesture involves an interaction where not just the endpoints matter. If going through an intermediate point (usually near the start of the gesture) also affects its meaning then it is a path-based gesture. The user engages a pointer (starting point), carries out a movement that goes through at least one intermediate-point before disengaging the pointer (end point). The intermediate point defines the gesture as requiring a specific path, even if the complete path is not defined.'
+            'Some people cannot perform gestures in a precise manner, or they may use a specialized or adapted input device such as a head pointer, eye-gaze system, or speech-controlled mouse emulator.',
+            'Some pointing methods lack the capability or accuracy to perform multipoint or path-based gestures.'
           ],
           TECHNIQUES: [
-            'Example: A web site includes a map view that supports the pinch gesture to zoom into the map content. User interface controls offer the operation using plus and minus buttons to zoom in and out. ',
-            'Example: A web site includes a map view that supports the pinch gesture to zoom into the map content. As an single-pointer alternative, the map also allows users to double-tap, hold, and then move the pointer up or down to zoom in or out. ',
-            'Example: A news site has a horizontal content slider with hidden news teasers that can moved into the viewport via a fast horizontal swipe/flicking motion. It also offers forward and backward arrow buttons for single-point activation to navigate to adjacent slider content. ',
-            'Example: A kanban widget with several vertical areas representing states in a defined process allows the user to right- or left-swipe elements to move them to an adjacent silo. The user can also accomplish this by selecting the element with a single tap or click, and then activating an arrow button to move the selected element. ',
-            'Example: A custom slider requires movement in a strict left/right direction when operated by dragging the thumb control. Buttons on both sides of the slider increment and decrement the selected value and update the thumb position. '        ],
+            '^Example:^ A web site includes a map view that supports the pinch gesture to zoom into the map content. User interface controls offer the operation using plus and minus buttons to zoom in and out. ',
+            '^Example:^ A web site includes a map view that supports the pinch gesture to zoom into the map content. As an single-pointer alternative, the map also allows users to double-tap, hold, and then move the pointer up or down to zoom in or out. ',
+            '^Example:^ A news site has a horizontal content slider with hidden news teasers that can moved into the viewport via a fast horizontal swipe/flicking motion. It also offers forward and backward arrow buttons for single-point activation to navigate to adjacent slider content. ',
+            '^Example:^ A kanban widget with several vertical areas representing states in a defined process allows the user to right- or left-swipe elements to move them to an adjacent silo. The user can also accomplish this by selecting the element with a single tap or click, and then activating an arrow button to move the selected element. ',
+            '^Example:^ A custom slider requires movement in a strict left/right direction when operated by dragging the thumb control. Buttons on both sides of the slider increment and decrement the selected value and update the thumb position. '        ],
           MANUAL_CHECKS: [
           ],
           INFORMATIONAL_LINKS: [
@@ -18715,14 +18859,14 @@
 
     POINTER_2: {
           ID:                    'Pointer 2',
-          DEFINITION:            'Verify users can cancel pointer events using either "No Down-Event", "abort or undo", "up Reversal" techniques, unless completing the function is essential.',
+          DEFINITION:            'For functionality that can be operated using a single pointer, at least one of the following is true: "No Down-Event", "abort or undo", "up Reversal" techniques, unless completing the function is essential.',
           SUMMARY:               'Pointer Cancellation',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by pointer interaction, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page.',
+            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by pointer interaction, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if using a single pointer requirements apply to this page, if they do verify at least one of the following is true: "No Down-Event", "abort or undo", "up Reversal" techniques; or the essential exception is met.',
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify users can cancel pointer events using either "No Down-Event", "abort or undo", "up Reversal" techniques, unless completing the function is essential.',
+            PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by pointer interaction, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if using a single pointer requirements apply to this page, if they do verify at least one of the following is true: "No Down-Event", "abort or undo", "up Reversal" techniques; or the essential exception is met.',
           },
           PURPOSES: [
             'Pointer events that can be cancelled make it easier for users to prevent accidental or erroneous pointer input. People with various disabilities can inadvertently initiate touch or mouse events with unwanted results.',
@@ -18731,12 +18875,12 @@
             'Individuals who are unable to detect changes of context are less likely to become disoriented while navigating a site. '
           ],
           TECHNIQUES: [
-            'No Down-Event: The down-event of the pointer is not used to execute any part of the function',
-            'Abort or Undo: Completion of the function is on the up-event, and a mechanism is available to abort the function before completion or to undo the function after completion.',
-            'Up Reversal: The up-event reverses any outcome of the preceding down-event.',
-            'Essential: Completing the function on the down-event is essential.',
-            'Example: For interface elements that have a single tap or long press as input, the corresponding event is triggered when the finger is lifted inside that element. ',
-            'Example: A drag-and-drop interface allows users to sort vertically stacked cards by picking up one card with the pointer (down-event), move it to a new position, and insert it at the new location when the pointer is released (up-event). Releasing the pointer outside the drop target area reverts the action, i.e., it moves the card back to the old position before the interaction started.'
+            '^No Down-Event:^ The down-event of the pointer is not used to execute any part of the function',
+            '^Abort or Undo:^ Completion of the function is on the up-event, and a mechanism is available to abort the function before completion or to undo the function after completion.',
+            '^Up Reversal:^ The up-event reverses any outcome of the preceding down-event.',
+            '^Essential:^ Completing the function on the down-event is essential.',
+            '^Example:^ For interface elements that have a single tap or long press as input, the corresponding event is triggered when the finger is lifted inside that element. ',
+            '^Example:^ A drag-and-drop interface allows users to sort vertically stacked cards by picking up one card with the pointer (down-event), move it to a new position, and insert it at the new location when the pointer is released (up-event). Releasing the pointer outside the drop target area reverts the action, i.e., it moves the card back to the old position before the interaction started.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -18756,6 +18900,46 @@
             { type:  REFERENCES.TECHNIQUE,
               title: 'F101: Failure of Success Criterion 2.5.2 due to activating a control on the down-event',
               url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F101'
+            }
+          ]
+    },
+
+    POINTER_3: {
+          ID:                    'Pointer 3',
+          DEFINITION:            'All functionality that uses a dragging movement for operation can be achieved by a single pointer without dragging, unless dragging is essential or the functionality is determined by the user agent and not modified by the author.',
+          SUMMARY:               'Dragging Movements',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S: 'The evaluation library cannot automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1: 'The evaluation library cannot automatically determine if any dragging operations exist on a page and if they do if the operation can be completed with a single pointer without dragging.  Verification requires understanding the requirements to see if they apply to the page and if they do interacting with the page with a single pointer to verify the requirement is met or that essential exception applies.'
+          },
+          PURPOSES: [
+            'Users who struggle with performing dragging movements can still operate an interface with a pointer interface.'
+          ],
+          TECHNIQUES: [
+            '^Example:^ A map allows users to drag the view of the map around, and the map has up/down/left/right buttons to move the view as well.',
+            '^Example:^ A sortable list of elements may, after tapping or clicking on a list element, provide adjacent controls for moving the element up or down in the list by simply tapping or clicking on those controls.',
+            '^Example:^ A taskboard that allows users to drag and drop items between columns also provides an additional pop-up menu after tapping or clicking on items for moving the selected element to another column by tapping or clicking on pop-up menu entries.',
+            '^Example:^ A radial control widget (color wheel) where the value can be set by dragging the marker for the currently selected color to another position, also allows picking another color value by tapping or clicking on another place in the color wheel.',
+            '^Example:^ A linear slider control widget, where the value can be set by dragging the visual indicator (thumb) showing the current value, allows tapping or clicking on any point of the slider track to change the value and set the thumb to that position.',
+            '^Example:^ A widget where you can drag a gift to one person in a photo of a group of people also has a menu alternative where users can select the person that should receive the gift from the menu.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Dragging Movements',
+              url:   'https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'G219: Ensuring that an alternative is available for dragging movements that operate on content',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G219'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F108: Failure of Success Criterion 2.5.7 Dragging Movements due to not providing a single pointer method for the user to operate a function that does not require a dragging movement',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F108'
             }
           ]
     }
@@ -18795,7 +18979,7 @@
         'Make sure related content moves as a block when repositioning content on a page.'
       ],
       MANUAL_CHECKS: [
-        'Disable layout tables (e.g. table[role="presentation"]) and CSS to make sure the content rendered has a meaningful sequence.'
+        'Disable layout tables (e.g. table[role="none"]) and CSS to make sure the content rendered has a meaningful sequence.'
       ],
       INFORMATIONAL_LINKS: [
         {
@@ -18957,14 +19141,14 @@
   const shortcutRules$1 = {
     SHORTCUT_1: {
           ID:                    'Shortcut 1',
-          DEFINITION:            'If the page has author defined keyboard shortcuts, verify the user has control over the use the shortcuts',
+          DEFINITION:            'When a keyboard shortcut is implemented in content using only letter, punctuation, number, or symbol characters, then users should be able to either turn off the shortcuts, change the characters or the shortcuts only activate in the context a specific widget.',
           SUMMARY:               'Character Key Shortcuts',
           TARGET_RESOURCES_DESC: 'Page',
           RULE_RESULT_MESSAGES: {
-            MANUAL_CHECK_S:  ' The evaluation can not automatically determine if their is any functionality activated by keyboard shortcuts defined by the page author, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if the requirements apply to this page.',
+            MANUAL_CHECK_S:  'The evaluation can not automatically determine if their is any functionality activated by keyboard shortcuts defined by the page author, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if there are any keyboard shortcut and if their are that the user can either turn off the shortcuts, change the characters or the shortcuts only activate in the context a specific widget.',
           },
           BASE_RESULT_MESSAGES: {
-            PAGE_MC_1: 'Verify if the page has author defined keyboard shortcuts, if the page does support shortcuts, verify the user can disable or remap each shortcut, or a shortcut is only available when a specific component has focus.',
+            PAGE_MC_1: 'The evaluation can not automatically determine if their is any functionality activated by keyboard shortcuts defined by the page author, but there is scripting on the page so it is possible.  Please review the WCAG requirements for accessibility and determine if there are any keyboard shortcut and if their are that the user can either turn off the shortcuts, change the characters or the shortcuts only activate in the context a specific widget.',
           },
           PURPOSES: [
             'Screen reader users will be able to turn off single-key shortcuts so they can avoid accidentally firing batches of them at once. This will allow speech users to make full use of programs that offer single-key shortcuts to keyboard users.',
@@ -19034,6 +19218,84 @@
           ]
     }
 
+  };
+
+  /* spacingRules.js */
+
+  /* --------------------------------------------------------------------------- */
+  /*       OpenA11y Rules Localized Language Support (NLS): English      */
+  /* --------------------------------------------------------------------------- */
+
+  const spacingRules$1 = {
+    SPACING_1: {
+          ID:                    'Spacing 1',
+          DEFINITION:            'No loss of content or functionality occurs by users adjusting any of the following text styling properties within a limited range: line height (line spacing), paragraph spacing, letter spacing and word spacing.  There are some exceptions for some languages and scripts.',
+          SUMMARY:               'Text Spacing',
+          TARGET_RESOURCES_DESC: 'Page',
+          RULE_RESULT_MESSAGES: {
+            MANUAL_CHECK_S:  'The evaluation can not automatically determine if the page supports text spacing requirements.  Use a browser add-on or assistive technology that supports changes in text spacing to verify support for this requirements.'
+          },
+          BASE_RESULT_MESSAGES: {
+            PAGE_MC_1:  'The evaluation can not automatically determine if the page supports text spacing requirements.  Use a browser add-on or assistive technology that supports changes in text spacing to verify support for this requirements.'
+          },
+          PURPOSES: [
+            'People with low vision who require increased space between lines, words, and letters are able to read text.',
+            'People with dyslexia may increase space between lines, words, and letters to increase reading speed.',
+            'White space between blocks of text can help people with cognitive disabilities discern sections and call out boxes.'
+          ],
+          TECHNIQUES: [
+            'This requirement does not require authors to set any of their content to a specified metric, nor does it intend to imply that all users will adjust the specified metrics. Rather, it specifies that should a user choose to set any of these metrics they can do so without any loss of content or functionality. The author requirement is both to not interfere with a user\'s ability to override the author settings, and to ensure that modified content is not visually distorted within the adjustment ranges of the requirement.',
+            '^Range:^ Line height (line spacing) to at least 1.5 times the font size.',
+            '^Range:^ Spacing following paragraphs to at least 2 times the font size.',
+            '^Range:^ Letter spacing (tracking) to at least 0.12 times the font size.',
+            '^Range:^ Word spacing to at least 0.16 times the font size.',
+            '^Test:^ Use a browser extension or bookmrklet to test your content.'
+          ],
+          MANUAL_CHECKS: [
+          ],
+          INFORMATIONAL_LINKS: [
+            { type:  REFERENCES.SPECIFICATION,
+              title: 'W3C WCAG: Understanding Text Spacing',
+              url:   'https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'Chrome Extension: Text Spacing Editor',
+              url:   'https://chromewebstore.google.com/detail/text-spacing-editor/amnelgbfbdlfjeaobejkfmjjnmeddaoj'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'Firefox Extension: Text Spacing Editor',
+              url:   'https://addons.mozilla.org/en-US/firefox/addon/text-spacing-editor-actum/'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'HOLISTICA11Y: Text Spacing Bookmarklet',
+              url:   'https://holistica11y.com/text-spacing-bookmarklet-for-accessibility-testing/'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C36:Allowing for text spacing override',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C36'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C35: Allowing for text spacing without wrapping',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C35'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C8: Using CSS letter-spacing to control spacing within a word ',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C8'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C21: Specifying line spacing in CSS',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C21'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'C28:Specifying the size of text containers using em units',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C21'
+            },
+            { type:  REFERENCES.TECHNIQUE,
+              title: 'F104: Failure of Success Criterion 1.4.12 due to clipped or overlapped content when text spacing is adjusted',
+              url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F104'
+            }
+          ]
+    }
   };
 
   /* tableRules.js */
@@ -19141,11 +19403,11 @@
           'Use @title@ attribute to provide an accessible name for a data table.',
           'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
-          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.'
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="none"@ on the @table@ element.'
         ],
         MANUAL_CHECKS: [
           'Make sure the the accessible name accurately and succinctly identifies the purpose of the data table.',
-          'If the table markup is actually being used for laying out content in rows or columns, use @role="presentation"@ on the @table@ element.'
+          'If the table markup is actually being used for laying out content in rows or columns, use @role="none"@ on the @table@ element.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19165,8 +19427,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-labelledby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19209,7 +19471,7 @@
         TECHNIQUES: [
           'Use the  @aria-describedby@ attribute to provide a reference to an accessible description of the information in a data table.',
           'Use the  @title@ attribute to provide a accessible description of the information in a data table.',
-          'NOTE: The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or descriptions.'
+          '^Note:^ The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or descriptions.'
         ],
         MANUAL_CHECKS: [
           'Verify the content of the accessible description accurately summarizes the organization, numerical information in the table or authors intended conclusions from viewing the table.'
@@ -19224,8 +19486,8 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: The @title@ attribute',
-            url:   'https://www.w3.org/TR/html4/struct/global.html#adef-title'
+            title: 'HTML Specification: The @title@ attribute',
+            url:   'https://html.spec.whatwg.org/#attr-title'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19259,11 +19521,10 @@
           'Use @aria-label@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @aria-labelledby@ attribute to provide an accessible name for a data table (NOTE: inconsistent browser/AT support).',
           'Use @title@ attribute to provide an accessible name for a data table.',
-          'If the table is not used for tabular data, but instead for layout of content, use the @role="presentation"@ on the @table@ element.',
-          'NOTE: The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or desciptions.'
+          'If the table is not used for tabular data, but instead for layout of content, use the @role="none"@ on the @table@ element.',
+          '^Note:^ The @summary@ attribute is no longer supported by HTML specifications, and there for should no longer be used for accessible names or desciptions.'
         ],
         MANUAL_CHECKS: [
-          'Verify the accessible names for tables are unique and identify the content in the data tables.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19310,8 +19571,8 @@
         SUMMARY:               'Identify table markup as data or layout',
         TARGET_RESOURCES_DESC: '@table@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'The table without headers or @role="none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
-          FAIL_P:   'For the %N_F tables without headers or @role=none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="presentation"@ on the table elements if the table is being used to layout content.',
+          FAIL_S:   'The table without headers or @role="none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="none"@ on the table elements if the table is being used to layout content.',
+          FAIL_P:   'For the %N_F tables without headers or @role=none"@, define the purpose of the table by adding header cells if the table is being used for tabular data or use @role="none"@ on the table elements if the table is being used to layout content.',
           MANUAL_CHECK_S: 'Verify the @table@ element that only has one row or column is used only only for layout.',
           MANUAL_CHECK_P: 'Verify the %N_H @table@ elements that only have one row or column are used only only for layout.',
           HIDDEN_S: 'One @table@ element that is hidden was not evaluated.',
@@ -19333,7 +19594,7 @@
         PURPOSES: [
           'The @table@ element is designed for representing tabular data in a web page, but table markup has also been used by web developers as a means to layout content in rows and columns.',
           'Users of assistive technology are confused when the purpose of table markup is not clearly identified (i.e. layout or for tabular data).',
-          'Use @role="presentation"@ on the @table@ element to clearly identify a table markup for layout.',
+          'Use @role="none"@ on the @table@ element to clearly identify a table markup for layout.',
           'Adding an accessible name and/or description to a @table@ element identifies table markup as a data table (e.g. layout tables must not have an accessible name or description).',
           'The use header cells (e.g. @th@ or @td[scope]@ elements) identifies a @table@ element as a data table.'
         ],
@@ -19341,12 +19602,10 @@
           'Use @th@ elements in the first row and/or first column to identify a table as a data table.',
           'Use @caption@ element; @aria-label@ or @aria-labelledby@ attribute to add an accessible name to a @table@ element.',
           'Use the @aria-describedby@ attribute to add an accessible description to a @table@ element.',
-          'Use @role="presentation"@ on the @table@ element to identify a table and its child table elements (e.g. @tr@ and @td@ elements) are being used for layout.',
+          'Use @role="none"@ on the @table@ element to identify a table and its child table elements (e.g. @tr@ and @td@ elements) are being used for layout.',
           'Layout tables must only use the @tr@ and @td@ table elements for layout content and must NOT have an accessible name or description.'
         ],
         MANUAL_CHECKS: [
-          'If a table is used for layout verify the order of content still makes sense when the table markup is disabled.',
-          'If a table is used for data tables, verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
@@ -19354,12 +19613,16 @@
             url:   'https://www.w3.org/TR/wai-aria-1.2/#presentation'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
           },
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.2 Table Captions: The CAPTION element',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#h-11.2.2'
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The CAPTION element',
+            url:   'https://html.spec.whatwg.org/#the-caption-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19406,12 +19669,15 @@
           'Use @th@ element for cells used as header cells in the table.'
         ],
         MANUAL_CHECKS: [
-          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19458,13 +19724,15 @@
           'Use @headers@ attribute on each @td@ element used as a data cell to identify header information in complex data tables.'
         ],
         MANUAL_CHECKS: [
-          'Verify the each data cell has header cells that clearly identify the meaning of the content of the data cell.',
-          'Verify that empty @td@ and @th@ elements and does not need table headers.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19504,16 +19772,18 @@
         TECHNIQUES: [
           'Accessible name is typically defined using the @caption@ element, but the @title@, @aria-label@ and @aria-labelledby@ attribute can also be used.',
           'Accessible description is typically defined using the @aria-describedby@ attribute, but the @title@ attribute can also be used.',
-          'NOTE: The @summary@ attribute is no longer supported in HTML.'
+          '^Note:^ The @summary@ attribute is no longer supported in HTML.'
         ],
         MANUAL_CHECKS: [
-          'Verify the accessible name clearly identifies the purpose of the table.',
-          'Verify the description summarizes the content of the table.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.SPECIFICATION,
-            title: 'HTML 4.01 Specification: 11.2.6 Table cells: The TH and TD elements',
-            url:   'https://www.w3.org/TR/html4/struct/tables.html#edef-TD'
+            title: 'HTML Specification: The TD elements',
+            url:   'https://html.spec.whatwg.org/#the-td-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HTML Specification: The TH elements',
+            url:   'https://html.spec.whatwg.org/#the-th-element'
           },
           { type:  REFERENCES.EXAMPLE,
             title: 'W3C Web Accessibility Tutorials: Tables',
@@ -19551,10 +19821,10 @@
         PURPOSES: [
           'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
-          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
-          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+          '^Exception (common) Inline:^ When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          '^Exception (common) User Agent Control:^ If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Equivalent Target Exception:^ If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Essential Exception:^ If the target is required to be a particular target size and cannot be provided in another way.'
         ],
         TECHNIQUES: [
           'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
@@ -19615,10 +19885,10 @@
         PURPOSES: [
           'The intent of this success criterion is to help users who may have trouble activating a small target because of hand tremors, limited dexterity or other reasons. If the target is too small, it may be difficult to aim at the target.',
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.',
-          'EXCEPTION (common) Inline: When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
-          'EXCEPTION (common) User Agent Control: If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Equivalent Target Exception: If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
-          'EXCEPTION (uncommon) Essential Exception: If the target is required to be a particular target size and cannot be provided in another way.'
+          '^Exception (common) Inline:^ When links are in sentences (e.g. part of a paragraph), the target size requirement does not apply, unless the author has specifically defined the width or height using CSS.',
+          '^Exception(common) User Agent Control:^ If the size of the target is not modified by the author through CSS or other size properties, then the target does not need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Equivalent Target Exception:^ If there is more than one target on a screen that performs the same action, only one of the targets need to meet the target size of 44 by 44 CSS pixels.',
+          '^Exception (uncommon) Essential Exception:^ If the target is required to be a particular target size and cannot be provided in another way.'
         ],
         TECHNIQUES: [
           'Remove author styling of the rendered size of the link, allowing the browser to render the link using the preferences of the user.',
@@ -19798,7 +20068,7 @@
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
         ],
         TECHNIQUES: [
-          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 24 by 24 pixels.'
+          'Use CSS to increase the dimensions of the radio buttons and/or checkbox or the associated label elements to at least 24 by 24 pixels.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -19858,7 +20128,7 @@
           'Mice and similar pointing devices can be hard to use for these users, and a larger target will help them greatly in having positive outcomes on the web page.'
         ],
         TECHNIQUES: [
-          'Use CSS to increase the dimensions of the radio buttons or checkbox or the associated label elements to at least 44 by 44 pixels.'
+          'Use CSS to increase the dimensions of the radio buttons and/or checkbox or the associated label elements to at least 44 by 44 pixels.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -19919,12 +20189,12 @@
           'Providing adjustable time periods in line with the persons capabilities makes it possible for people to complete the tasks associated with the website.'
         ],
         TECHNIQUES: [
-          'Turn off: The user is allowed to turn off the time limit before encountering it.',
-          'Adjust: The user is allowed to adjust the time limit before encountering it over a wide range that is at least ten times the length of the default setting.',
-          'Extend: The user is warned before time expires and given at least 20 seconds to extend the time limit with a simple action (for example, "press the space bar"), and the user is allowed to extend the time limit at least ten time.',
-          'Real-time Exception: The time limit is a required part of a real-time event (for example, an auction), and no alternative to the time limit is possible.',
-          'Essential Exception: The time limit is essential and extending it would invalidate the activity.',
-          '20 Hour Exception: The time limit is longer than 20 hours.'
+          '^Turn off:^ The user is allowed to turn off the time limit before encountering it.',
+          '^Adjust:^ The user is allowed to adjust the time limit before encountering it over a wide range that is at least ten times the length of the default setting.',
+          '^Extend:^ The user is warned before time expires and given at least 20 seconds to extend the time limit with a simple action (for example, "press the space bar"), and the user is allowed to extend the time limit at least ten time.',
+          '^Real-time Exception:^ The time limit is a required part of a real-time event (for example, an auction), and no alternative to the time limit is possible.',
+          '^Essential Exception:^ The time limit is essential and extending it would invalidate the activity.',
+          '^20 Hour Exception:^ The time limit is longer than 20 hours.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -19955,9 +20225,9 @@
           'People with visual impairments and visual processing learning disabilities may not be able to read or understand content that is blinking, scrolling or auto updating'
         ],
         TECHNIQUES: [
-          'Pause/Resume: Through configuration or controls on the page, enable the user to pause and resume the moving, blinking, scrolling or auto-updating content.',
-          'Stop: Through configuration or controls on the page, enable the user to stop the moving, blinking, scrolling or auto-updating content and see all of the content at one time.',
-          'Hide: Through configuration or controls on the page, enable the user to hide the moving, blinking, scrolling or auto-updating content if it is not essential for the activity.'
+          '^Pause/Resume:^ Through configuration or controls on the page, enable the user to pause and resume the moving, blinking, scrolling or auto-updating content.',
+          '^Stop:^ Through configuration or controls on the page, enable the user to stop the moving, blinking, scrolling or auto-updating content and see all of the content at one time.',
+          '^Hide:^ Through configuration or controls on the page, enable the user to hide the moving, blinking, scrolling or auto-updating content if it is not essential for the activity.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -19987,7 +20257,7 @@
         PURPOSES: [
           'People who have photosensitive seizure disorders can have a seizure triggered by content that flashes at certain frequencies for more than a few flashes.',
           'People are even more sensitive to red flashing than to other colors.',
-          'NOTE: The WCAG flashing requirements was adapted from the broadcasting industry standards (e.g. content is viewed from a closer distance and using a larger angle of vision).'
+          '^Note:^ The WCAG flashing requirements was adapted from the broadcasting industry standards (e.g. content is viewed from a closer distance and using a larger angle of vision).'
         ],
         TECHNIQUES: [
           'There is no remediation technique, the content must be removed or disabled from flashing.'
@@ -20032,9 +20302,6 @@
             'If the page is part of a sequence of web pages, include the sequence number and total number of steps in the @title@ element.'
           ],
           MANUAL_CHECKS: [
-            'If applicable, verify that the title of the page identifies the website to which it belongs.',
-            'Verify that the title of the page also identifies the page content.',
-            'If the page is part of a sequence of web pages, verify that the title describes which step it is in the sequence.'
           ],
           INFORMATIONAL_LINKS: [
             { type:  REFERENCES.SPECIFICATION,
@@ -20125,40 +20392,45 @@
   const videoRules$1 = {
     VIDEO_1: {
         ID:                    'Video 1',
-        DEFINITION:            '@video@ elements used for prerecorded video only content must have text or audio description of the video content.',
-        SUMMARY:               '@video@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@video@ elements',
+        DEFINITION:            'Prerecorded video-only media must have either a text based alternative or an audio description track that presents equivalent information for prerecorded video-only content.',
+        SUMMARY:               'Video-only (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @video@ element with the @aria-describedby@ attributes is used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements with the @aria-describedby@ attributes are used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
+          MANUAL_CHECK_S:     'Verify the media element with the @aria-describedby@ attributes is used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC media elements with the @aria-describedby@ attributes are used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
           HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
           HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
           NOT_APPLICABLE:  'No @video@ elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:    '@video@ element has audio description track',
-          ELEMENT_MC_1:      'Verify the @video@ element is used for video only content.   If so, verify the text description reference using the @aria-describedby@ describes the video only content.',
-          ELEMENT_MC_2:      'Verify the @video@ element is used for video only content provides an audio track to describe the video content or text description of the video.',
-          ELEMENT_HIDDEN_1:  'The @video@ element is hidden and therefore not evaluated.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video-only content.   If so, verify the text description reference using the @aria-describedby@ describes the video-only content.',
+          ELEMENT_MC_2: 'Verify the @%1@ element is used for video-only content provides an audio track to describe the video content or text description of the video.',
+          ELEMENT_MC_3: 'Verify the @%1@ element with @video@ in its @type@ attrbute is used for video-only content.  If so verify the @aria-describedby@ references a text description of the video-only content.',
+          ELEMENT_MC_4: 'Verify the @%1@ element with @video@ in its @type@ attrbute is used for video-only content.  If so verify the video-only content has a text or audio descriptions.',
+          ELEMENT_MC_5: 'Verify if the @%1@ element is used for video-only content.  If so verify the @aria-describedby@ references a text description of the video-only content.',
+          ELEMENT_MC_6: 'Verify if the @%1@ element is used for video-only content.  If so verify the video-only content has a text or audio description.',
+          ELEMENT_HIDDEN_1:  'The @%1@ element is hidden and therefore not evaluated.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+          'This Success Criterion helps people who have difficulty perceiving visual content.',
+          'Assistive technology can read text alternatives aloud, present them visually, or convert them to braille.',
+          'Alternatives for timed-based media that are text based may help some people who have difficulty understanding the meaning of prerecorded video content.',
+          'People who are deaf, are hard of hearing, or who are having trouble understanding audio information for any reason can read the text presentation. Research is ongoing regarding automatic translation of text into sign language.',
+          'People who are deaf-blind can read the text in braille.',
+          'Additionally, text supports the ability to search for non-text content and to re-purpose content in a variety of ways.'
         ],
         TECHNIQUES: [
-          'Use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.',
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.',
           'Include an audio sound track that describes the video content.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.1: Audio-only and Video-only (Prerecorded)',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/audio-only-and-video-only-prerecorded.html'
           },
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The video element',
@@ -20173,6 +20445,30 @@
             url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
+            title: 'G159: Providing an alternative for time-based media for video-only content',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G159'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G166: Providing audio that describes the important video content and describing it as such',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G166'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'H96: Using the track element to provide audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/html/H96'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'F30: Failure of Success Criterion 1.1.1 and 1.2.1 due to using text alternatives that are not alternatives (e.g., filenames or placeholder text)',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F30'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'F67: Failure of Success Criterion 1.1.1 and 1.2.1 due to providing long descriptions for non-text content that does not serve the same purpose or does not present the same information',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/failures/F67'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'W3C: Making Audio and Video Media Accessible',
+            url:   'https://www.w3.org/WAI/media/av/'
+          },
+          { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
             url:   'https://www.washington.edu/accessibility/videos/'
           },
@@ -20182,51 +20478,69 @@
           }
         ]
     },
+
     VIDEO_2: {
         ID:                    'Video 2',
-        DEFINITION:            '@object@ elements used for prerecorded video only content must have text or audio descriptions of the video content.',
-        SUMMARY:               '@object@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@object@ elements',
+        DEFINITION:            'Captions are provided for all prerecorded audio content in synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
+        SUMMARY:               'Captions (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for prerecorded video only content.  If it is used for video only, verify it has either a text or audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for prerecorded video only content.  If any are used for video only, verify they have either a text or audio description of the video content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page.'
+          MANUAL_CHECK_S:     'Verify that the media element has video with synchronized audio, if so verify the video includes captioning.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC media elements are video with synchronized audio, if so verify each video includes captioning.',
+          HIDDEN_S: 'The media element that is hidden was not evaluated for captions.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated for captions.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_2: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for video only content.  If so verify the video only content has a text or audio descriptions.',
-          ELEMENT_MC_3: 'Verify if the @object@ element is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_4: 'Verify if the @object@ element is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_HIDDEN_1:       'The @object@ element is hidden and cannot render video content.'
+          ELEMENT_PASS_1: '@%1@ element has caption track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes open captioning or a caption track.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has open captioning or support a caption track.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content provides open captioning or a caption track.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for captions.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
-        ],
+          'People who are deaf or have a hearing loss can access the auditory information in the synchronized media content through captions.'
+         ],
         TECHNIQUES: [
-          'Use the @video@ element instead of the @object@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
+          'For the @video@ element use the @track@ element to add a caption track to the video content.',
+          'Use WebVTT to encode the timed stamped captioning information for the audio content.',
+          'Use open captions to include the captions as part of the video.',
+          'If closed captions are not supported, use open captioning to include captions as part of the video.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+       { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.2: Captions (Prerecorded)',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded.html'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The video element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The track element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G93: Providing open (always visible) captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Understanding/captions-prerecorded'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G87: Providing closed captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G87'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G87: Providing closed captions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G87'
+          },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C: Making Audio and Video Media Accessible',
             url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20240,49 +20554,65 @@
     },
     VIDEO_3: {
         ID:                    'Video 3',
-        DEFINITION:            '@embed@ elements used for video only content must have caption or text transcription of the audio content.',
-        SUMMARY:               '@embed@ for video only must have alternative',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
+        DEFINITION:            'An audio description (preferred) or alternative for time-based media of the prerecorded video content is provided for synchronized media, except when the media is a media alternative for text and is clearly labeled as such.',
+        SUMMARY:               'Audio Description or Media Alternative (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for prerecorded video only content.  If it is used for video only, verify it has either a text or audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for prerecorded video only content.  If any are used for video only, verify they have either a text or audio description of the video content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page.'
+          MANUAL_CHECK_S:     'Verify the @video@ element is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description or media alternative of the video content.',
+          MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements are used for prerecorded video with synchronized audio.   If so, verify each of the videos includes an audio description or the media alternative of the video content.',
+          HIDDEN_S: 'The media element that is hidden was not evaluated.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attribute is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_2: 'Verify the @embed@ element with @video@ in its @type@ attribute is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_MC_3: 'Verify if the @embed@ element is used for video only content.  If so verify the @aria-describedby@ references a text description of the video only content.',
-          ELEMENT_MC_4: 'Verify if the @embed@ element is used for video only content.  If so verify the video only content has a text or audio description.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes audio descriptions or media alternative.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has audio descriptions or media alternative.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content has an audio description or media alternative.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for audio descriptions.'
         },
         PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+          'This Success Criterion may help some people who have difficulty watching video or other synchronized media content, including people who have difficulty perceiving or understanding moving images.'
         ],
         TECHNIQUES: [
-          'Use the @video@ element instead of the @embed@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
+          'For the @video@ element use the @track@ element to add audio descriptions to the video content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.',
+          '^Note:^ Audio descriptions are preferred over other alternatives since WCAG Success Criteria 1.2.5 (AA) requires the use of audio descriptions and legal requirements for accessibility include WCAG AA requirements.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'W3C WCAG Understanding SC 1.2.3: Audio Description or Media Alternative (Prerecorded)',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The video element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-video-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'HMTL: The track element',
+            url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G69: Providing an alternative for time based media',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G69'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'G78: Providing a second, user-selectable, audio track that includes audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G78'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'H96: Using the track element to provide audio descriptions',
+            url:   'https://www.w3.org/WAI/WCAG22/Techniques/html/H96'
+          },
           { type:  REFERENCES.TECHNIQUE,
             title: 'W3C: Making Audio and Video Media Accessible',
             url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20296,38 +20626,33 @@
     },
     VIDEO_4: {
         ID:                    'Video 4',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @video@ element must have synchronized captions.',
-        SUMMARY:               '@video@ must have caption',
-        TARGET_RESOURCES_DESC: '@video@ elements',
+        DEFINITION:            'Captions are provided for all live audio content in synchronized media.',
+        SUMMARY:               'Captions (Live)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add caption @track@ element to the @video@ element.',
-          FAIL_P:   'Add caption @track@ element to each of the %N_F @video@ elements with out caption tracks.',
-          MANUAL_CHECK_S:     'Verify that the @video@ element without a caption track has open captions.',
-          MANUAL_CHECK_P:     'Verify that the %N_MC @video@ elements without caption tracks have open captions.',
-          HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @video@ elements found on this page.'
+          MANUAL_CHECK_S: 'Verify that the media element has video with synchronized audio, if so verify the video includes captioning.',
+          MANUAL_CHECK_P: 'Verify if any of the %N_MC media elements are video with synchronized audio, if so verify each video includes captioning.',
+          HIDDEN_S:       'The media element that is hidden was not evaluated for captions.',
+          HIDDEN_P:       'The %N_H media elements that are hidden were not evaluated for captions.',
+          NOT_APPLICABLE: 'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:         '@video@ element has caption track.',
-          ELEMENT_FAIL_1:       'Add caption @track@ element to @video@ element.',
-          ELEMENT_MC_1: 'Verify the video content includes open captions.',
-          ELEMENT_HIDDEN_1:       'The @video@ element is hidden and cannot render content.'
+          ELEMENT_PASS_1: '@%1@ element has caption track.',
+          ELEMENT_MC_1:   'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes open captioning or a caption track.',
+          ELEMENT_MC_2:   'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has open captioning or support a caption track.',
+          ELEMENT_MC_3:   'Verify the @%1@ element is being used for video with synchronized audio content provides open captioning or a caption track.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for captions.'
         },
         PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to understand the audio content of the video.',
-          'Some types of learning disabilities affect auditory processing, captions provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded video content.'
-         ],
+          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
+          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'
+        ],
         TECHNIQUES: [
-          'Use the @track@ element to add a caption track to the video content.',
-          'Use open captions to include the captions as part of the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers connecting through wireless services.'
+          'For the @video@ element use the @track@ element to add audio descriptions to the video content.',
+          'Use WebVTT to encode the timed stamped captioning information for the audio content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.TECHNIQUE,
@@ -20341,6 +20666,18 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'HMTL: The track element',
             url:   'https://html.spec.whatwg.org/multipage/media.html#the-track-element'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
+          },
+          { type:  REFERENCES.TECHNIQUE,
+            title: 'WebVTT: The Web Video Text Tracks Format',
+            url:   'https://www.w3.org/TR/webvtt1/'
+          },
+          { type:  REFERENCES.SPECIFICATION,
+            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
+            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20354,139 +20691,31 @@
     },
     VIDEO_5: {
         ID:                    'Video 5',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @object@ element must have synchronized captions.',
-        SUMMARY:               '@object@ for video must have captions',
-        TARGET_RESOURCES_DESC: '@object@ elements',
+        DEFINITION:            'Audio description is provided for all prerecorded video content in synchronized media.',
+        SUMMARY:               'Audio Description (Prerecorded)',
+        TARGET_RESOURCES_DESC: '@video@, @object@ and @embed@ elements',
         RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for video content with synchronized audio (i.e movie, lecture).  If it is video with synchronized audio, verify it has open or closed captioning of the audio content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for video content with synchronized audio (i.e movie, lecture).  If any are used for video with synchronized audio, verify it has open or closed captioning of the audio content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attribute has synchronized audio (i.e. movie, lecture).  If so, verify there is open or closed captioning of the audio content.',
-          ELEMENT_MC_2: 'Verify the @object@ element renders video content with synchronized audio (i.e. movie, lecture).  If so, verify there is open or closed captioning of the audio content.',
-          ELEMENT_HIDDEN_1: 'The @object@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to have access to the speech and sounds of the video.',
-          'Some types of learning disabilities effect auditory processing, captions provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded content.'
-        ],
-        TECHNIQUES: [
-          'Consider using the @video@ element instead of the @object@ element for video containing synchronized audio.  The @video@ element has better support for adding caption tracks.',
-          'Use video authoring tools and player technologies that support captioning.  Use the features of the authoring system and player to add open or closed captions to the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers.'
-        ],
-        MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL 5: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_6: {
-        ID:                    'Video 6',
-        DEFINITION:            'Live and prerecorded video with synchronized audio (i.e. a movie, lecture) using the @embed@ element must have synchronized captions.',
-        SUMMARY:               '@embed@ for video must have captions',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for video content with synchronized audio (i.e movie, lecture).  If it is video with synchronized audio, verify it has captions of the audio content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for video content with synchronized audio (i.e movie, lecture).  If any are used for video with synchronized audio, verify it has captions of the audio content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attribute has synchronized audio (i.e. movie, lecture).  If so, verify their are captions avialble for the audio content.',
-          ELEMENT_MC_2: 'Verify the @embed@ element renders video content with synchronized audio (i.e. movie, lecture).  If so, verify their are captions avialble for the audio content.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Synchronized captions provide a means for people who cannot hear the audio content of a video to have access to the speech and sounds of the video.',
-          'Some types of learning disabilities effect auditory processing, captoins provide an alternative way to understand the audio content of a video.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.2 and 1.2.4, and therefore covers both live and prerecorded content.'
-        ],
-        TECHNIQUES: [
-          'Consider using the @video@ element instead of the @object@ element for video containing synchronized audio.  The @video@ element has better support for adding caption tracks.',
-          'Use video authoring tools and player technologies that support captioning.  Use the features of the authoring system and player to add open or closed captions to the video.',
-          'If closed captions are not support, use open captioning to include captions as part of the video.',
-          'Open captioning is the only way to insure that captions are available on most cells phones and tablet computers.'
-        ],
-        MANUAL_CHECKS: [
-          'When captions are enabled on the media player, verify the captions are visible.',
-          'Verify that the captions accurately represent and are synchronized with the speech and sounds in the video.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_7: {
-        ID:                    'Video 7',
-        DEFINITION:            '@video@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have an audio description of the video content.',
-        SUMMARY:               '@video@ element must have audio description.',
-        TARGET_RESOURCES_DESC: '@video@ elements.',
-        RULE_RESULT_MESSAGES: {
-          FAIL_S:   'Add audio description track to @video@ element without an audio description track.',
-          FAIL_P:   'Add audio description track to each of the %N_F the @video@ elements without audio description tracks.',
-          MANUAL_CHECK_S:     'Verify the @video@ element with is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description of the video content.',
+          MANUAL_CHECK_S:     'Verify the @video@ element is used for prerecorded video with synchronized audio.   If so, verify the video includes an audio description of the video content.',
           MANUAL_CHECK_P:     'Verify if any of the %N_MC @video@ elements are used for prerecorded video with synchronized audio.   If so, verify each of the videos includes an audio description of the video content.',
-          HIDDEN_S: 'The @video@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @video@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @video@ elements found on this page.'
+          HIDDEN_S: 'The media element that is hidden was not evaluated.',
+          HIDDEN_P: 'The %N_H media elements that are hidden were not evaluated.',
+          NOT_APPLICABLE:  'No media elements found on this page.'
         },
         BASE_RESULT_MESSAGES: {
-          ELEMENT_PASS_1:         '@video@ element has audio description track.',
-          ELEMENT_FAIL_1:       'Add audio description track to @video@ element.',
-          ELEMENT_MC_1: 'Verify an audio description of the video content is included in the audio track of the video.',
-          ELEMENT_HIDDEN_1:       'The @video@ element is hidden and cannot render content.'
+          ELEMENT_PASS_1: '@%1@ element has audio description track.',
+          ELEMENT_MC_1: 'Verify the @%1@ element is used for video with synchronized audio content.   If so, verify the the video includes audio descriptions.',
+          ELEMENT_MC_2: 'Verify the @%1@ element with @video@ in its @type@ attribute is used for video with synchronized audio content.  If so verify the video has audio descriptions.',
+          ELEMENT_MC_3: 'Verify the @%1@ element is being used for video with synchronized audio content has an audio description.',
+          ELEMENT_HIDDEN_1: 'The @%1@ element is hidden and is not tested for audio descriptions.'
         },
         PURPOSES: [
           'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
+          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.'      ],
         TECHNIQUES: [
-          'Use the @track@ element to add audio descriptions to the video content.',
-          'Use @aria-describedby@ to reference a text description of the video content.'
+          'For the @video@ eleemnt use the @track@ element to add audio descriptions to the video content.',
+          'For @object@ and @embed@ elements use @aria-describedby@ to reference a text description of the video content.'
         ],
         MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
         ],
         INFORMATIONAL_LINKS: [
           { type:  REFERENCES.TECHNIQUE,
@@ -20504,116 +20733,6 @@
           { type:  REFERENCES.SPECIFICATION,
             title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
             url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_8: {
-        ID:                    'Video 8',
-        DEFINITION:            '@object@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have an audio description of the video content.',
-        SUMMARY:               '@object@ for video must have audio description.',
-        TARGET_RESOURCES_DESC: '@object@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @object@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @object@ elements are used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so, verify each video includes an audio description of the video content.',
-          HIDDEN_S: 'The @object@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @object@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @object@ elements found on this page'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @object@ element with @video@ in its @type@ attrbute is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so verify an audio description of the video content is available.',
-          ELEMENT_MC_2: 'Verify if the @object@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).  If so verify an audio description of the video content is available.',
-          ELEMENT_HIDDEN_1:       'The @object@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
-        TECHNIQUES: [
-          'Use the @video@ element instead of the @object@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
-        ],
-        MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL 5: The object element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.0: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria-1.2/#aria-describedby'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'University of Washington: Creating Accessible Videos',
-            url:   'https://www.washington.edu/accessibility/videos/'
-          },
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'WebAIM: Captions, Transcripts, and Audio Descriptions',
-            url:   'https://webaim.org/techniques/captions/'
-          }
-        ]
-    },
-    VIDEO_9: {
-        ID:                    'Video 9',
-        DEFINITION:            '@embed@ elements used for prerecorded video with synchronized audio (i.e. a movie, archived lecture) must have audio description of the video content.',
-        SUMMARY:               '@embed@ for video must have audio description',
-        TARGET_RESOURCES_DESC: '@embed@ elements',
-        RULE_RESULT_MESSAGES: {
-          MANUAL_CHECK_S:     'Verify the @embed@ element is used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).   If so, verify the video includes an audio description of the video content.',
-          MANUAL_CHECK_P:     'Verify if any of the %N_MC @embed@ elements are used for prerecorded video with synchronized audio (i.e. a movie, archived lecture).   If so, verify each of the videos include an audio description of the video content.',
-          HIDDEN_S: 'The @embed@ element that is hidden was not evaluated.',
-          HIDDEN_P: 'The %N_H @embed@ elements that are hidden were not evaluated.',
-          NOT_APPLICABLE:  'No @embed@ elements found on this page.'
-        },
-        BASE_RESULT_MESSAGES: {
-          ELEMENT_MC_1: 'Verify the @embed@ element with @video@ in its @type@ attrbute is used for video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          ELEMENT_MC_2: 'Verify if the @embed@ element is used for video with synchronized audio (i.e. a movie, archived lecture).  If so, verify the video includes an audio description of the video content.',
-          ELEMENT_HIDDEN_1:       'The @embed@ element is hidden and cannot render video content.'
-        },
-        PURPOSES: [
-          'Text and audio descriptions provide a means for people who cannot see the video to understand the video content.',
-          'Some types of learning disabilities affect visual processing, text and audio descriptions provide an alternative way to understand the video content.',
-          'This rule covers the requirements of both WCAG 2.0 Success Criteria 1.2.3 and 1.2.5, that is why a text description of the video content cannot be used to satisfy this rule.'
-        ],
-        TECHNIQUES: [
-          'Use the @video@ element instead of the @embed@ element for video only content, since the @video@ element provides better support for audio description tracks.',
-          'Include an audio track in the video that describes the video content.',
-          'Use @aria-describedby@ attribute to point to a text description of the video only content.'
-        ],
-        MANUAL_CHECKS: [
-          'When audio descriptions are enabled on the media player, check to make sure the audio description can be heard.',
-          'If there is a audio description make sure the description accurately describes the video content.',
-          'If there is a text description make sure the description accurately describes the video content.'
-        ],
-        INFORMATIONAL_LINKS: [
-          { type:  REFERENCES.TECHNIQUE,
-            title: 'W3C: Making Audio and Video Media Accessible',
-            url:   'https://www.w3.org/WAI/media/av/'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'HMTL: The embed element',
-            url:   'https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element'
-          },
-          { type:  REFERENCES.SPECIFICATION,
-            title: 'Accessible Rich Internet Applications (ARIA) 1.2: aria-describedby',
-            url:   'https://www.w3.org/TR/wai-aria/#aria-describedby'
           },
           { type:  REFERENCES.TECHNIQUE,
             title: 'University of Washington: Creating Accessible Videos',
@@ -20779,11 +20898,14 @@
           RULE_RESULT_MESSAGES: {
             FAIL_S:   'Add a valid widget, section, landmark or live region role value to the element.',
             FAIL_P:   'Add a valid widget, section, landmark or live region role values to %N_F out of %N_T elements with @role@ attributes.',
+            MANUAL_CHECK_S:   'Verify the element with the DPUB role is valid and appropriate for the web page.',
+            MANUAL_CHECK_P:   'Verify the %N_MC elements with DPUB roles are valid and appropriate for the web page.',
             HIDDEN_S: 'The element with a role that is hidden and was not evaluated.',
             HIDDEN_P: '%N_H elements with a role that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No elements with @role@ attribute on this page'
           },
           BASE_RESULT_MESSAGES: {
+            ELEMENT_MC_1:     'Verify if the @%1@ role is a valid DPUB role, and add the functionality to the page that you intended by testing with assistive technologies that support DPUB.',
             ELEMENT_PASS_1:   '@%1@ is a widget role.',
             ELEMENT_PASS_2:   '@%1@ is a landmark role.',
             ELEMENT_PASS_3:   '@%1@ is a live region role.',
@@ -20798,7 +20920,8 @@
           ],
           TECHNIQUES: [
             'Use ARIA landmark roles to describe the sections of a web page.',
-            'Use ARIA widget roles to describe interactive elements on a web page'
+            'Use ARIA widget roles to describe interactive elements on a web page',
+            '^Note:^ DPUB roles are designed to be used for digital books and not the web. If you use DPUB roles on your web pages verify that they add the functionality you intend by testing with the assistive technologies that support DPUB.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -20810,6 +20933,10 @@
             { type: REFERENCES.SPECIFICATION,
               title: 'Accessible Rich Internet Applications (WAI-ARIA) 1.2 Specification: Landmark Roles',
               url:   'https://www.w3.org/TR/wai-aria-1.2/#landmark_roles'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'W3C Digital Publishing WAI-ARIA Module 1.1',
+              url:   'https://www.w3.org/TR/dpub-aria-1.1/'
             },
             { type: REFERENCES.WCAG_TECHNIQUE,
               title: 'G108: Using markup features to expose the name and role, allow user-settable properties to be directly set, and provide notification of changes',
@@ -20901,7 +21028,7 @@
     },
     WIDGET_5: {
           ID:                    'Widget 5',
-          DEFINITION:            'Elements with the attributes that start with @aria-@must be a valid ARIA property or state.',
+          DEFINITION:            'Elements with the attributes that start with @aria-@ must be a valid ARIA property or state.',
           SUMMARY:               'Attributes that start with @aria-@ must be defined.',
           TARGET_RESOURCES_DESC: 'Elements with aria attributes',
           RULE_RESULT_MESSAGES: {
@@ -21434,19 +21561,20 @@
       },
       WIDGET_14: {
           ID:                    'Widget 14',
-          DEFINITION:            'ARIA attributes that have been deprecated for a role should be removed.',
-          SUMMARY:               'Remove deprecated ARIA attributes.',
-          TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are deprecated.',
+          DEFINITION:            'ARIA attributes that are unsupported or deprecated for a role should be removed.',
+          SUMMARY:               'Unsupported and deprecated ARIA attributes.',
+          TARGET_RESOURCES_DESC: 'Roles where ARIA attributes are unsupported or deprecated.',
           RULE_RESULT_MESSAGES: {
-            FAIL_S:   'Remove the deprecated ARIA attribute from the element.',
-            FAIL_P:   'Remove the deprecated ARIA attributes from the %N_F elements.',
-            HIDDEN_S: 'The element with deprecated ARIA attribute that is hidden and was not evaluated.',
-            HIDDEN_P: '%N_H elements with deprecated ARIA attributes that are hidden were not evaluated.',
+            FAIL_S:   'Remove the unsupported or deprecated ARIA attribute from the element.',
+            FAIL_P:   'Remove the unsupported or deprecated ARIA attributes from the %N_F elements.',
+            HIDDEN_S: 'The element with unsupported or deprecated ARIA attribute that is hidden and was not evaluated.',
+            HIDDEN_P: '%N_H elements with unsupported or deprecated ARIA attributes that are hidden were not evaluated.',
             NOT_APPLICABLE:  'No elements with deprecated ARIA attributes found.'
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_FAIL_1:    'Remove @%1@ attribute from @%2@ element.',
-            ELEMENT_HIDDEN_1:  'The @%1@ attribute on the @%2@ element was not tested because it is hidden from assistive technologies.'
+            ELEMENT_FAIL_1:    'Remove the deprecated @%1@ attribute from @%2@ element.',
+            ELEMENT_FAIL_2:    'Remove the unsupported @%1@ attribute from @%2@ element.',
+            ELEMENT_HIDDEN_1:  'The @%1@ element was not tested because it is hidden from assistive technologies.'
           },
           PURPOSES: [
             'Not all ARIA properties and states are useful on every ARIA role and starting with ARIA 1.2 certain states and properties that were once considered global have been deprecated on specific roles.',
@@ -21454,7 +21582,7 @@
             'The same ARIA property and state restrictions on explicit roles apply to implicit roles.'
           ],
           TECHNIQUES: [
-            'Remove the deprecated ARIA attribute from the element.'
+            'Remove the unsupported or deprecated ARIA attribute from the element.'
           ],
           MANUAL_CHECKS: [
           ],
@@ -21544,6 +21672,7 @@
   };
 
   messages$1.rules = Object.assign(messages$1.rules, audioRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, authorizationRules$1);
   messages$1.rules = Object.assign(messages$1.rules, bypassRules$1);
   messages$1.rules = Object.assign(messages$1.rules, colorRules$1);
   messages$1.rules = Object.assign(messages$1.rules, errorRules$1);
@@ -21567,6 +21696,7 @@
   messages$1.rules = Object.assign(messages$1.rules, resizeRules$1);
   messages$1.rules = Object.assign(messages$1.rules, sensoryRules$1);
   messages$1.rules = Object.assign(messages$1.rules, shortcutRules$1);
+  messages$1.rules = Object.assign(messages$1.rules, spacingRules$1);
   messages$1.rules = Object.assign(messages$1.rules, tableRules$1);
   messages$1.rules = Object.assign(messages$1.rules, targetSizeRules$1);
   messages$1.rules = Object.assign(messages$1.rules, timingRules$1);
@@ -21577,9 +21707,9 @@
   /* locale.js */
 
   /* Constants */
-  const debug$P = new DebugLogging('locale', false);
+  const debug$R = new DebugLogging('locale', false);
 
-  var globalUseCodeTags = false;
+  // const globalUseCodeTags = true;
 
   const messages = {
     en: messages$1
@@ -21587,19 +21717,6 @@
 
   // Default language is 'en' for English
   var locale = 'en';
-
-  /**
-   * @function setUseCodeTags
-   *
-   * @desc Set the global default for transformating markup with code segments
-   *       identified with opening and closing '@' characters
-   *
-   * @param {Boolen} value - If true use code tags
-   */
-
-  function setUseCodeTags(value=false) {
-    globalUseCodeTags = (value === true) ? true : false;
-  }
 
   /**
    * @function getWCAG
@@ -21611,6 +21728,19 @@
 
   function getWCAG() {
     return messages[locale].wcag;
+  }
+
+  /**
+   * @function getWCAGLevel
+   *
+   * @desc Get string representing the WCAG Level
+   *
+   * @param {Object} @desc
+   */
+
+  function getWCAGLevel(primaryId) {
+    const csInfo = getSuccessCriterionInfo(primaryId);
+    return messages[locale].common.level[csInfo.level];
   }
 
   /**
@@ -21633,7 +21763,7 @@
     if (!message) {
       message = `[common][error]: id="${id}"`;
     }
-    debug$P.flag && debug$P.log(`[${id}][${value}]: ${message}`);
+    debug$R.flag && debug$R.log(`[${id}][${value}]: ${message}`);
     return message;
   }
 
@@ -21687,6 +21817,18 @@
       }
     }
     return null;
+  }
+
+  /**
+   * @function getRuleScopes
+   *
+   * @desc Gets localized rule scope object
+   *
+   * @return {Object}  see @desc
+   */
+
+  function getRuleScopes() {
+    return messages[locale].ruleScopes;
   }
 
   /**
@@ -21746,8 +21888,8 @@
 
       switch (rulesetId) {
 
-        case 'FILTER':
-          label = messages[locale].common.rulesetFilter;
+        case 'FIRSTSTEP':
+          label = messages[locale].common.rulesetFirstStep;
           break;
 
         case 'WCAG22':
@@ -21785,7 +21927,7 @@
       for (const g in principle.guidelines) {
         const guideline = principle.guidelines[g];
         if (guideline.id === guidelineId) {
-          debug$P.flag && debug$P.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
+          debug$R.flag && debug$R.log(`[getGuidelineInfo][${guidelineId}]: ${guideline.title}`);
           return {
             num: g,
             title: guideline.title,
@@ -21795,7 +21937,7 @@
         }
       }
     }
-    debug$P.flag && debug$P.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
+    debug$R.flag && debug$R.log(`[getGuidelineInfo][${guidelineId}][ERROR]: `);
     // Assume all rules
     return {
       title: messages[locale].common.allRules,
@@ -21828,7 +21970,7 @@
         for (const sc in guideline.success_criteria) {
           const success_criterion = guideline.success_criteria[sc];
           if (sc === successCriterionId) {
-            debug$P.flag && debug$P.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
+            debug$R.flag && debug$R.log(`[getSuccessCriterionInfo][${successCriterionId}]: ${success_criterion.title}`);
             return {
               id: successCriterionId,
               level: success_criterion.level,
@@ -21840,7 +21982,7 @@
         }
       }
     }
-    debug$P.flag && debug$P.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
+    debug$R.flag && debug$R.log(`[getSuccessCriterionInfo][${successCriterionId}]: ERROR`);
     return null;
   }
 
@@ -21860,7 +22002,7 @@
    */
 
   function getSuccessCriteriaInfo(successCriteriaIds) {
-    debug$P.flag && debug$P.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
+    debug$R.flag && debug$R.log(`[getSuccessCriteriaInfo]: ${successCriteriaIds.length}`);
     const scInfoArray = [];
     successCriteriaIds.forEach( sc => {
       scInfoArray.push(getSuccessCriterionInfo(sc));
@@ -21902,13 +22044,16 @@
    * @desc Gets a localize string for a rule definition
    *
    * @param {String} ruleId - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {String} see @desc
    */
 
-  function getRuleDefinition (ruleId) {
-    debug$P.flag && debug$P.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
-    return transformElementMarkup(messages[locale].rules[ruleId].DEFINITION);
+  function getRuleDefinition (ruleId, transform=false) {
+    debug$R.flag && debug$R.log(`[getRuleDefinition][${ruleId}]: ${messages[locale].rules[ruleId].DEFINITION}`);
+    let m = messages[locale].rules[ruleId].DEFINITION;
+    if (transform) m = transformToCode(m);
+    return m;
   }
 
   /**
@@ -21916,14 +22061,17 @@
    *
    * @desc Gets a localize string for a rule summary
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {String} see @desc
    */
 
-  function getRuleSummary (ruleId) {
-    debug$P.flag && debug$P.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
-    return transformElementMarkup(messages[locale].rules[ruleId].SUMMARY);
+  function getRuleSummary (ruleId, transform=false) {
+    debug$R.flag && debug$R.log(`[getRuleSummary][${ruleId}]: ${messages[locale].rules[ruleId].SUMMARY}`);
+    let m = messages[locale].rules[ruleId].SUMMARY;
+    if (transform) m = transformToCode(m);
+    return m;
   }
 
   /**
@@ -21931,14 +22079,17 @@
    *
    * @desc Gets a description of the target resources
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {String} see @desc
    */
 
-  function getTargetResourcesDesc (ruleId) {
-    debug$P.flag && debug$P.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
-    return transformElementMarkup(messages[locale].rules[ruleId].TARGET_RESOURCES_DESC);
+  function getTargetResourcesDesc (ruleId, transform=false) {
+    debug$R.flag && debug$R.log(`[getTargetResourcesDesc][${ruleId}]: ${messages[locale].rules[ruleId].TARGET_RESOURCES_DESC}`);
+    let m = messages[locale].rules[ruleId].TARGET_RESOURCES_DESC;
+    if (transform) m = transformToCode(m);
+    return m;
   }
 
   /**
@@ -21946,17 +22097,19 @@
    *
    * @desc Gets an array of localized strings describing the purpose of the rule
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String} ruleId     - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array of Strings} see @desc
    */
 
-  function getPurposes (ruleId) {
+  function getPurposes (ruleId, transform=false) {
     const purposes = [];
     messages[locale].rules[ruleId].PURPOSES.forEach ( p => {
-      purposes.push(transformElementMarkup(p));
+      if (transform) p = transformToCode(p);
+      purposes.push(p);
     });
-    debug$P.flag && debug$P.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
+    debug$R.flag && debug$R.log(`[getPurposes][${ruleId}]: ${purposes.join('; ')}`);
     return purposes;
   }
 
@@ -21965,17 +22118,19 @@
    *
    * @desc Gets an array of localized strings describing the techniques to implement the rule requirements
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array of Strings} see @desc
    */
 
-  function getTechniques (ruleId) {
+  function getTechniques (ruleId, transform=false) {
     const techniques = [];
     messages[locale].rules[ruleId].TECHNIQUES.forEach ( t => {
-      techniques.push(transformElementMarkup(t));
+      if (transform) t = transformToCode(t);
+      techniques.push(t);
     });
-    debug$P.flag && debug$P.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
+    debug$R.flag && debug$R.log(`[getTechniques][${ruleId}]: ${techniques.join('; ')}`);
     return techniques;
   }
 
@@ -21989,22 +22144,23 @@
    *       'url' : String
    *
    * @param {String} ruleId - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array} see @desc
    */
 
-  function getInformationLinks (ruleId) {
+  function getInformationLinks (ruleId, transform=false) {
     const infoLinks = [];
     messages[locale].rules[ruleId].INFORMATIONAL_LINKS.forEach( infoLink => {
       infoLinks.push(
         {
           type: infoLink.type,
-          title: transformElementMarkup(infoLink.title),
+          title: transform ? transformToCode(infoLink.title) : infoLink.title,
           url: infoLink.url
         }
       );
-      debug$P.flag && debug$P.log(`[infoLink][title]: ${infoLink.title}`);
-      debug$P.flag && debug$P.log(`[infoLink][  url]: ${infoLink.url}`);
+      debug$R.flag && debug$R.log(`[infoLink][title]: ${infoLink.title}`);
+      debug$R.flag && debug$R.log(`[infoLink][  url]: ${infoLink.url}`);
     });
     return infoLinks;
   }
@@ -22014,17 +22170,19 @@
    *
    * @desc Gets an array of localized strings describing manual checks for verifying rule requirements
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array of Strings} see @desc
    */
 
-  function getManualChecks (ruleId) {
+  function getManualChecks (ruleId, transform=false) {
     const manualChecks = [];
     messages[locale].rules[ruleId].MANUAL_CHECKS.forEach ( mc => {
-      manualChecks.push(transformElementMarkup(mc));
+      if (transform) mc = transformToCode(mc);
+      manualChecks.push(mc);
     });
-    debug$P.flag && debug$P.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
+    debug$R.flag && debug$R.log(`[getManualChecks][${ruleId}]: ${manualChecks.join('; ')}`);
     return manualChecks;
   }
 
@@ -22033,17 +22191,18 @@
    *
    * @desc Gets an array of localized strings for rule results
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array of Strings} see @desc
    */
 
-  function getRuleResultMessages (ruleId) {
+  function getRuleResultMessages (ruleId, transform=false) {
     const resultMessages = {};
     const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
     for ( const key in msgs ) {
-      resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$P.flag && debug$P.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      resultMessages[key] = transform ? transformToCode(msgs[key]) : msgs[key];
+      debug$R.flag && debug$R.log(`[getRuleResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -22053,17 +22212,18 @@
    *
    * @desc Gets an array of localized strings for element results
    *
-   * @param {String} ruleId - String id associated with the rule
+   * @param {String}  ruleId    - String id associated with the rule
+   * @param {Boolean} transform - Transform @ to <code> tags
    *
    * @returns {Array of Strings} see @desc
    */
 
-  function getBaseResultMessages (ruleId) {
+  function getBaseResultMessages (ruleId, transform=false) {
     const resultMessages = {};
     const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
     for ( const key in msgs ) {
-      resultMessages[key] = transformElementMarkup(msgs[key]);
-      debug$P.flag && debug$P.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
+      resultMessages[key] = transform ? transformToCode(msgs[key]) : msgs[key];
+      debug$R.flag && debug$R.log(`[getBaseResultMessages][${ruleId}][${key}]: ${resultMessages[key]}`);
     }
     return resultMessages;
   }
@@ -22094,40 +22254,58 @@
       }
       message = message.replace(argId, arg);
     });
-    return transformElementMarkup(message);
+    return message;
   }
 
-  /**
-   * @function transformElementMarkup
-   *
-   * @desc Converts element markup identified in strings with '@' characters will be capitalized text
-   *       or encapsulated within a code element.
-   *
-   * @param {String}   elemStr     - Element result message to convert content inside '@' to caps
-   * @param {Boolean}  useCodeTags - If true content between '@' characters will be encapsulated
-   *                                 in either a code element or if false or ommitted capitalized
-   * @return  String
-   */
-
-  function transformElementMarkup (elemStr, useCodeTags=globalUseCodeTags) {
-    let newStr = "";
-    let transform_flag = false;
-
-    if (typeof elemStr === 'string') {
-      for (let c of elemStr) {
-        if (c === '@') {
-          transform_flag = !transform_flag;
-          if (useCodeTags) {
-            newStr += (transform_flag ? '<code>' : '</code>');
-          }
-          continue;
-        }
-        newStr += (transform_flag && !useCodeTags) ? c.toUpperCase() : c;
+  function getHasManualChecks (ruleId) {
+    const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
+    for ( const key in msgs ) {
+      if (key.includes('_MC')) {
+        return true;
       }
     }
-    return newStr;
+    return false;
   }
 
+  function getHasFailures (ruleId) {
+    const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
+    for ( const key in msgs ) {
+      if (key.includes('_FAIL')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getHasPass (ruleId) {
+    const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
+    for ( const key in msgs ) {
+      if (key.includes('_PASS')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getHasHidden (ruleId) {
+    const msgs = messages[locale].rules[ruleId].BASE_RESULT_MESSAGES;
+    for ( const key in msgs ) {
+      if (key.includes('_HIDDEN')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getManualCheckMessage (ruleId) {
+    const msgs = messages[locale].rules[ruleId].RULE_RESULT_MESSAGES;
+    for ( const key in msgs ) {
+      if (key.includes('MANUAL_CHECK')) {
+        return messages[locale].rules[ruleId].RULE_RESULT_MESSAGES[key];
+      }
+    }
+    return 'not found';
+  }
 
   /* helper functions */
 
@@ -22141,15 +22319,60 @@
     return 'WCAG20';
   }
 
+  function transformToCode (content) {
+
+    let c = '';
+    let i = content.indexOf('@');
+    let k = content.indexOf('^');
+    let j = 0;
+
+    while ((i >= 0) || (k >= 0)) {
+      if (i > k) {
+        c += content.substring(j, i);
+
+        j = content.indexOf('@', (i+1));
+        if (j < 0) {
+          j = content.length - 1;
+        }
+        c += '<code>';
+        c += content.substring(i+1, j);
+        c += '</code>';
+        j += 1;
+
+        i = content.indexOf('@', j);
+      }
+      else {
+        c += content.substring(j, k);
+
+        j = content.indexOf('^', (k+1));
+        if (j < 0) {
+          j = content.length - 1;
+        }
+        c += '<b>';
+        c += content.substring(k+1, j);
+        c += '</b>';
+        j += 1;
+
+        k = content.indexOf('^', j);
+      }
+    }
+
+    if (j < content.length) {
+      c += content.substring(j);
+    }
+
+    return c;
+  }
+
   /* tableInfo.js */
 
   /* Constants */
-  const debug$O = new DebugLogging('tableInfo', false);
-  debug$O.flag = false;
-  debug$O.rows = false;
-  debug$O.cells = false;
-  debug$O.tableTree = false;
-  debug$O.headerCalc = false;
+  const debug$Q = new DebugLogging('tableInfo', false);
+  debug$Q.flag = false;
+  debug$Q.rows = false;
+  debug$Q.cells = false;
+  debug$Q.tableTree = false;
+  debug$Q.headerCalc = false;
 
   /**
    * @class TableElement
@@ -22286,13 +22509,13 @@
       const tableElement = this;
       this.rows.forEach( row => {
         row.cells.forEach( cell => {
-          debug$O.headerCalc && debug$O.log(`${cell}`, 1);
+          debug$Q.headerCalc && debug$Q.log(`${cell}`, 1);
           if (cell.headerSource === HEADER_SOURCE.HEADER_NONE) {
             if (!cell.isHeader) {
               const node = cell.domElement.node;
               if (node.hasAttribute('headers')) {
                 const ids = node.getAttribute('headers').split(' ');
-                debug$O.headesCalc && debug$O.log(`[headers]: ${ids.join(' ')}`);
+                debug$Q.headesCalc && debug$Q.log(`[headers]: ${ids.join(' ')}`);
                 for (let i = 0; i < ids.length; i += 1) {
                   const de = domCache.getDomElementById(ids[i]);
                   if (de && de.accName.name) {
@@ -22307,7 +22530,7 @@
                 // get Column Headers
                 for (let i = 1; i < row.rowNumber; i += 1) {
                   const hc = tableElement.getCell(i, cell.startColumn);
-                  debug$O.headerCalc && debug$O.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
+                  debug$Q.headerCalc && debug$Q.log(`[columnHeaders][${i}][${cell.startColumn}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeColumn) &&
                       hc.domElement.accName.name) {
@@ -22318,7 +22541,7 @@
                 // get Row Headers
                 for (let i = 1; i < cell.startColumn; i += 1) {
                   const hc = tableElement.getCell(row.rowNumber, i);
-                  debug$O.headerCalc && debug$O.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
+                  debug$Q.headerCalc && debug$Q.log(`[rowHeaders][${row.rowNumber}][${i}]: ${hc}`);
                   if (hc && hc.isHeader &&
                       (!hc.hasScope || hc.isScopeRow) &&
                       hc.domElement.accName.name) {
@@ -22330,7 +22553,7 @@
                   cell.headerSource = HEADER_SOURCE.ROW_COLUMN;
                 }
               }
-              debug$O.headerCalc && debug$O.log(`${cell}`);
+              debug$Q.headerCalc && debug$Q.log(`${cell}`);
             }
           }
         });
@@ -22377,7 +22600,7 @@
     }
 
     debugRowGroup (prefix, item) {
-      debug$O.log(`${prefix}${item}`);
+      debug$Q.log(`${prefix}${item}`);
       if (item.isGroup) {
         item.children.forEach( child => {
           if (child) {
@@ -22388,14 +22611,14 @@
     }
 
     debug () {
-      if (debug$O.flag) {
-        debug$O.log(`${this}`);
-        if (debug$O.tableTree) {
+      if (debug$Q.flag) {
+        debug$Q.log(`${this}`);
+        if (debug$Q.tableTree) {
           this.children.forEach( child => {
             this.debugRowGroup('  ', child);
           });
         }
-        debug$O.separator();
+        debug$Q.separator();
         for (let i = 0; i < this.rows.length; i += 1) {
           this.rows[i].debug('  ');
         }
@@ -22510,15 +22733,15 @@
     }
 
     debug (prefix='') {
-      if (debug$O.flag && debug$O.rows) {
-        debug$O.log(`${prefix}${this}`);
+      if (debug$Q.flag && debug$Q.rows) {
+        debug$Q.log(`${prefix}${this}`);
         for (let i = 0; i < this.cells.length; i += 1) {
           const cell = this.cells[i];
           if (cell) {
             cell.debug(prefix + '  ');
           }
           else {
-            debug$O.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
+            debug$Q.log(`${prefix}[${this.rowNumber}][${i+1}]: undefined`);
           }
         }
       }
@@ -22601,8 +22824,8 @@
     }
 
     debug (prefix='') {
-      if (debug$O.flag) {
-        debug$O.log(`${prefix}${this}`);
+      if (debug$Q.flag) {
+        debug$Q.log(`${prefix}${this}`);
       }
     }
 
@@ -22723,8 +22946,8 @@
      */
 
     showTableInfo () {
-      if (debug$O.flag) {
-        debug$O.log('== All Tables ==', 1);
+      if (debug$Q.flag) {
+        debug$Q.log('== All Tables ==', 1);
           this.allTableElements.forEach( te => {
             te.debug();
           });
@@ -22735,7 +22958,7 @@
   /* timingInfo.js */
 
   /* Constants */
-  const debug$N = new DebugLogging('TimingInfo', false);
+  const debug$P = new DebugLogging('TimingInfo', false);
 
   /**
    * @class TimingInfo
@@ -22786,10 +23009,10 @@
      */
 
     showTimingInfo () {
-      if (debug$N.flag) {
-        debug$N.log('== All Timing elements ==', 1);
+      if (debug$P.flag) {
+        debug$P.log('== All Timing elements ==', 1);
         this.allTimingDomElements.forEach( de => {
-          debug$N.log(`[fileName]: ${de.tagName}`, true);
+          debug$P.log(`[fileName]: ${de.tagName}`, true);
         });
       }
     }
@@ -22798,11 +23021,11 @@
   /* domCache.js */
 
   /* Constants */
-  const debug$M = new DebugLogging('domCache', false);
-  debug$M.flag = false;
-  debug$M.showDomTexts = false;
-  debug$M.showDomElems = false;
-  debug$M.showTree = false;
+  const debug$O = new DebugLogging('domCache', false);
+  debug$O.flag = false;
+  debug$O.showDomTexts = false;
+  debug$O.showDomElems = false;
+  debug$O.showTree = false;
 
   const skipableElements = [
     'base',
@@ -23069,6 +23292,8 @@
                   }
                   else {
                     domItem.isShadowClosed = true;
+                    // check for descendants of the custom element
+                    this.transverseDOM(newParentInfo, node);
                   }
                 } else {
                   // Check for iframe tag
@@ -23181,7533 +23406,33 @@
      */
 
     showDomElementTree () {
-      if (debug$M.flag) {
-        if (debug$M.showDomElems) {
-          debug$M.log(' === AllDomElements ===', true);
+      if (debug$O.flag) {
+        if (debug$O.showDomElems) {
+          debug$O.log(' === AllDomElements ===', true);
           this.allDomElements.forEach( de => {
-            debug$M.domElement(de);
+            debug$O.domElement(de);
           });
         }
 
-        if (debug$M.showDomTexts) {
-          debug$M.log(' === AllDomTexts ===', true);
+        if (debug$O.showDomTexts) {
+          debug$O.log(' === AllDomTexts ===', true);
           this.allDomTexts.forEach( dt => {
-            debug$M.domText(dt);
+            debug$O.domText(dt);
           });
         }
 
-        if (debug$M.showTree) {
-          debug$M.log(' === DOMCache Tree ===', true);
-          debug$M.domElement(this.startingDomElement);
+        if (debug$O.showTree) {
+          debug$O.log(' === DOMCache Tree ===', true);
+          debug$O.domElement(this.startingDomElement);
           this.startingDomElement.showDomElementTree(' ');
         }
       }
     }
   }
 
-  /* audioRules.js */
-
-  /* Constants */
-  const debug$L = new DebugLogging('Audio Rules', false);
-  debug$L.flag = false;
-
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Audio Rules
-   */
-
-  const audioRules = [
-
-    /**
-     * @object AUDIO_1
-     *
-     * @desc Audio elements must have captions or text transcripts
-     */
-
-    { rule_id             : 'AUDIO_1',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['audio', 'track'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.audioElements.forEach( ae => {
-          const de = ae.domElement;
-          if (de.visibility.isVisibleToAT || ae.hasAutoPlay) {
-            if (ae.tracks.length) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object AUDIO_2
-     *
-     * @desc If object element is used for audio only, object must have captions or text transcript
-     */
-
-    { rule_id             : 'AUDIO_2',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (de.accDescription.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (oe.type.includes('audio')) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object AUDIO_3
-     *
-     * @desc If embed element is used for audio only, embed  must have captions or text transcript
-     */
-
-    { rule_id             : 'AUDIO_3',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (de.accDescription.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (ee.type.includes('audio')) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-      /**
-       * @object AUDIO_4
-       *
-       * @desc  Audio automatically starts
-       */
-
-    { rule_id             : 'AUDIO_4',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.2',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate            : function (dom_cache, rule_result) {
-
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-
-      } // end validate function
-    }
-
-  ];
-
-  /* bypassRules.js */
-
-  /* Constants */
-  const debug$K = new DebugLogging('Bypass Rules', false);
-  debug$K.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Bypass Rules
-   */
-
-  const bypassRules = [
-
-    /**
-     * @object BYPASS_1
-     *
-     * @desc Looking for links or that support bypassing blocks of content
-    */
-
-    { rule_id             : 'BYPASS_1',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['2.4.4'],
-      target_resources    : ['a'],
-      validate            : function (dom_cache, rule_result) {
-
-        const bypassTargets = [
-          'content',
-          'content-main',
-          'main',
-          'maincontent',
-          'main-content',
-          'site-content'
-          ];
-
-        const domElements     = dom_cache.allDomElements;
-        const linkDomElements = dom_cache.linkInfo.allLinkDomElements;
-
-        let de;
-        let hasSkipToButton = false;
-        let hasBypassLink = false;
-        let linkDomElem = false;
-        let targetDomElem = false;
-
-        // Check for SkipTo.js page script button
-        for (let i = 0; (i < domElements.length) && !hasSkipToButton; i += 1) {
-          de = domElements[i];
-          if (de.id === 'id-skip-to') {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            hasSkipToButton = true;
-          }
-        }
-
-        // Check for bypass block links
-        for (let i = 0; (i < linkDomElements.length) && !hasSkipToButton && !hasBypassLink; i += 1) {
-          linkDomElem = linkDomElements[i];
-
-          let href = linkDomElem.node.href;
-
-          if ((typeof href === 'string') && href.indexOf('#') >= 0) {
-            let  targetId = href.slice(href.indexOf('#')+1);
-
-            if (bypassTargets.includes(targetId)) {
-              hasBypassLink = true;
-
-              for (let i = 0; (i < domElements.length) && (!targetDomElem); i += 1) {
-                de = domElements[i];
-                if ((de.id === targetId) || (de.name === targetId)) {
-                  targetDomElem = de;
-                }
-              }
-
-              if (targetDomElem) {
-                rule_result.addElementResult(TEST_RESULT.PASS, linkDomElem, 'ELEMENT_PASS_2', []);
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, targetDomElem, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, linkDomElem,   'ELEMENT_FAIL_1', []);
-              }
-
-            }
-
-          }
-
-        }
-
-        if (hasSkipToButton) {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-        }
-        else {
-          if (hasBypassLink) {
-            if (targetDomElem) {
-              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-            }
-            else {
-              rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-            }
-          }
-          else {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', []);
-          }
-        }
-      } // end validation function  }
-    }
-  ];
-
-  /* colorRules.js */
-
-  /* Constants */
-  const debug$J = new DebugLogging('Color Rules', false);
-  debug$J.flag = false;
-
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule Category: Color Rules
-   */
-
-  const colorRules = [
-    /**
-     * @object COLOR_1
-     *
-     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3 for large text
-     */
-
-    { rule_id             : 'COLOR_1',
-      last_updated        : '2022-04-21',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.3',
-      wcag_related_ids    : ['1.4.1','1.4.6'],
-      target_resources    : ['text content'],
-      validate            : function (dom_cache, rule_result) {
-
-        let index = 0;
-        function checkResult(domElement, result) {
-          const node    = domElement.node;
-          const tagName = node.tagName;
-          const id      = node.id ? `[id=${node.id}]` : '';
-          const cc      = domElement.colorContrast;
-          const crr     = cc.colorContrastRatio;
-          debug$J.flag && debug$J.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
-        }
-
-
-        const MIN_CCR_NORMAL_FONT = 4.5;
-        const MIN_CCR_LARGE_FONT  = 3;
-
-        debug$J.flag && debug$J.log(`===== COLOR 1 ====`);
-
-        dom_cache.allDomTexts.forEach( domText => {
-          const de  = domText.parentDomElement;
-          const cc  = de.colorContrast;
-          const ccr = cc.colorContrastRatio;
-
-          if (de.visibility.isVisibleOnScreen) {
-            if (cc.isLargeFont) {
-              if (ccr >= MIN_CCR_LARGE_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
-                }
-                else {
-                  checkResult(de, 'PASS');
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
-                }
-                else {
-                  checkResult(de, 'FAIL');
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
-                }
-              }
-            }
-            else {
-              if (ccr >= MIN_CCR_NORMAL_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
-                }
-                else {
-                  checkResult(de, 'PASS');
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
-                }
-                else {
-                  checkResult(de, 'FAIL');
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
-                }
-              }
-            }
-          } else {
-            checkResult(de, 'HIDDEN');
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object COLOR_2
-     *
-     * @desc  Use of color
-     */
-
-    { rule_id             : 'COLOR_2',
-      last_updated        : '2022-04-21',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.1',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate            : function (dom_cache, rule_result) {
-
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-
-      } // end validate function
-    },
-
-    /**
-     * @object COLOR_3
-     *
-     * @desc  Color contrast ratio must be >= 7 for normal text, or >= 4.5 for large text
-     */
-
-    { rule_id             : 'COLOR_3',
-      last_updated        : '2022-07-04',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required        : false,
-      wcag_primary_id     : '1.4.6',
-      wcag_related_ids    : ['1.4.1','1.4.3'],
-      target_resources    : ['text content'],
-      validate            : function (dom_cache, rule_result) {
-
-        let index = 0;
-        function checkResult(domElement, result) {
-          const node    = domElement.node;
-          const tagName = node.tagName;
-          const id      = node.id ? `[id=${node.id}]` : '';
-          const cc      = domElement.colorContrast;
-          const crr     = cc.colorContrastRatio;
-          debug$J.flag && debug$J.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
-        }
-
-
-        const MIN_CCR_NORMAL_FONT = 7;
-        const MIN_CCR_LARGE_FONT  = 4.5;
-
-        debug$J.flag && debug$J.log(`===== COLOR 3 ====`);
-
-        dom_cache.allDomTexts.forEach( domText => {
-          const de  = domText.parentDomElement;
-          const cc  = de.colorContrast;
-          const ccr = cc.colorContrastRatio;
-
-          if (de.visibility.isVisibleOnScreen) {
-            if (cc.isLargeFont || cc.isBoldedFont) {
-              if (ccr >= MIN_CCR_LARGE_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
-                }
-                else {
-                  checkResult(de, 'PASS');
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
-                }
-                else {
-                  checkResult(de, 'FAIL');
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
-                }
-              }
-            }
-            else {
-              if (ccr >= MIN_CCR_NORMAL_FONT) {
-                // Passes color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
-                }
-                else {
-                  checkResult(de, 'PASS');
-                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
-                }
-              }
-              else {
-                // Fails color contrast requirements
-                if (cc.hasBackgroundImage) {
-                  checkResult(de, 'MC');
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
-                }
-                else {
-                  checkResult(de, 'FAIL');
-                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
-                }
-              }
-            }
-          } else {
-            checkResult(de, 'HIDDEN');
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object COLOR_4
-     *
-     * @desc  Non-text Contrast for user interface controls
-     */
-
-    { rule_id             : 'COLOR_4',
-      last_updated        : '2023-09-19',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.11',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allControlElements.forEach( ce => {
-          const de = ce.domElement;
-          if (!ce.isDisabled && de.ariaInfo.isWidget) {
-            if (de.visibility.isVisibleOnScreen) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-
-      } // end validate function
-    },
-
-    /**
-     * @object COLOR_5
-     *
-     * @desc  Non-text Contrast for graphical object
-     */
-
-    { rule_id             : 'COLOR_5',
-      last_updated        : '2023-09-19',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.11',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.imageInfo.allImageElements.forEach( ie => {
-          const de = ie.domElement;
-          // check if image is decorative
-          if (de.accName.name) {
-            if (de.visibility.isVisibleOnScreen) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-        dom_cache.imageInfo.allSVGDomElements.forEach( de => {
-          if (de.visibility.isVisibleOnScreen) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-
-      } // end validate function
-    }
-  ];
-
-  /* errorRules.js */
-
-  /* Constants */
-  const debug$I = new DebugLogging('Error Rules', false);
-  debug$I.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Error Rules
-   */
-
-  const errorRules = [
-
-    /**
-     * @object ERROR_1
-     *
-     * @desc Identify form controls with invalid values
-     *
-     */
-
-    { rule_id             : 'ERROR_1',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '3.3.1',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type="checkbox"]',
-                             'input[type="date"]',
-                             'input[type="file"]',
-                             'input[type="radio"]',
-                             'input[type="number"]',
-                             'input[type="password"]',
-                             'input[type="tel"]' ,
-                             'input[type="text"]',
-                             'input[type="url"]',
-                             'select',
-                             'textarea',
-                             'meter',
-                             'progress',
-                             'widgets'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allControlElements.forEach( ce => {
-
-          if (ce.isInteractive) {
-            const de = ce.domElement;
-
-            if (de.visibility.isVisibleToAT) {
-              if (ce.hasValidityState) {
-                if (!ce.isValid) {
-                  if (ce.hasAriaInvalid) {
-                    if (ce.ariaInvalid) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-                    }
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-                  }
-                }
-                else {
-                   if (ce.hasAriaInvalid) {
-                    if (de.ariaInvalid) {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.elemName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
-                    }
-                  }
-                  else {
-                    if (ce.hasPattern) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
-                    }
-                  }
-                }
-              }
-              else {
-                if (ce.hasAriaInvalid) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.elemName]);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object ERROR_2
-     *
-     * @desc Use required attribute on required standard form controls
-     *
-     */
-
-    { rule_id             : 'ERROR_2',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '3.3.3',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea'],
-      validate            : function (dom_cache, rule_result) {
-
-          dom_cache.controlInfo.allControlElements.forEach( ce => {
-
-          if (ce.isInteractive) {
-            const de = ce.domElement;
-            if (ce.hasRequired || ce.hasAriaRequired) {
-              if (de.visibility.isVisibleToAT) {
-                if (ce.hasRequired && ce.hasAriaRequired && !ce.ariaRequired) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-                }
-                else {
-                  if (de.hasRequired) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
-                  }
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-              }
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object ERROR_3
-     *
-     * @desc Provide correction suggestions
-     *
-     */
-
-    { rule_id             : 'ERROR_3',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '3.3.3',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        const suggestionRoles = ['textbox', 'select', 'slider', 'spinbutton'];
-
-          dom_cache.controlInfo.allControlElements.forEach( ce => {
-            const de = ce.domElement;
-
-            if (suggestionRoles.includes(de.role)) {
-              if (de.visibility.isVisibleToAT) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-              }
-            }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object ERROR_4
-     *
-     * @desc Provide error prevention
-     *
-     */
-
-    { rule_id             : 'ERROR_4',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '3.3.4',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        const excludeRoles = ['group',
-                              'listitem',
-                              'menuitem',
-                              'menuitemradio',
-                              'menuitemcheckbox',
-                              'option',
-                              'scrollbar'];
-
-        let count = 0;
-
-        dom_cache.controlInfo.allControlElements.forEach( ce => {
-          const de = ce.domElement;
-
-          if (ce.isInteractive && !excludeRoles.includes(de.role)) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-              count += 1;
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-        if (count) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-      } // end validate function
-    }
-  ];
-
-  /* frameRules.js */
-
-  /* Constants */
-  const debug$H = new DebugLogging('Frame Rules', false);
-  debug$H.flag = false;
-
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Frame Rules
-   */
-
-  const frameRules = [
-
-    /**
-     * @object FRAME_1
-     *
-     * @desc  Evaluate frame elements for a title attribute
-     */
-
-    { rule_id             : 'FRAME_1',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : [],
-      target_resources    : ['frame'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.allDomElements.forEach( de => {
-          if (de.tagName === 'frame' && de.node.src && !de.hasRole) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-            }
-            else {
-             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object FRAME_2
-     *
-     * @desc  Evaluate iframe elements for an accessible name
-     */
-
-    { rule_id             : 'FRAME_2',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : [],
-      target_resources    : ['iframe'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.iframeInfo.allIFrameElements.forEach( ife => {
-          const de = ife.domElement;
-          if ((de.tagName === 'iframe') &&
-               !de.hasRole &&
-              de.node.src) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-            }
-            else {
-             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-      } // end validate function
-    }
-
-  ];
-
-  /* controlRules.js */
-
-  /* Constants */
-  const debug$G = new DebugLogging('Control Rules', false);
-  debug$G.flag = false;
-
-  const autoFillValues = [
-    'name',
-    'honorific-prefix',
-    'given-name',
-    'additional-name',
-    'family-name',
-    'honorific-suffix',
-    'nickname',
-    'organization-title',
-    'username',
-    'new-password',
-    'current-password',
-    'organization',
-    'street-address',
-    'address-line1',
-    'address-line2',
-    'address-line3',
-    'address-level4',
-    'address-level3',
-    'address-level2',
-    'address-level1',
-    'country',
-    'country-name',
-    'postal-code',
-    'cc-name',
-    'cc-given-name',
-    'cc-additional-name',
-    'cc-family-name',
-    'cc-number',
-    'cc-exp',
-    'cc-exp-month',
-    'cc-exp-year',
-    'cc-csc',
-    'cc-type',
-    'transaction-currency',
-    'transaction-amount',
-    'language',
-    'bday',
-    'bday-day',
-    'bday-month',
-    'bday-year',
-    'sex',
-    'url',
-    'photo',
-    'tel',
-    'tel-country-code',
-    'tel-national',
-    'tel-area-code',
-    'tel-local',
-    'tel-local-prefix',
-    'tel-local-suffix',
-    'tel-extension',
-    'email',
-    'impp',
-  ];
-
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule Category: Form Control Rules
-   */
-
-  const controlRules = [
-
-  /**
-   * @object CONTROL_1
-   *
-   * @desc textarea, select and input elements of type text,
-   *       password, checkbox, radio and file must have an
-   *       accessible name using label elements
-   *
-   */
-
-  { rule_id             : 'CONTROL_1',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (!ce.isInputTypeImage) {
-          if (de.isLabelable) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_2
-   *
-   * @desc Every input type image must have an accessible name attribute with content
-   */
-
-  { rule_id             : 'CONTROL_2',
-    last_updated        : '2022-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="image"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeImage) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.source !== 'none') {
-              if (de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object CONTROL_3
-   *
-   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
-   */
-  { rule_id             : 'CONTROL_3',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['input[type="radio"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeRadio) {
-          if (de.visibility.isVisibleToAT) {
-            const gce = ce.getGroupControlElement(); 
-            if (gce) {
-              const gde = gce.domElement;
-              if (gde.tagName === 'fieldset') {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
-                }
-              }
-              else {
-                if (gde.accName.name) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_4
-   *
-   * @desc Button elements must have text content and input type button must have a value attribute with content
-   */
-  { rule_id             : 'CONTROL_4',
-    last_updated        : '2022-07-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : false,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['button'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.role === 'button') {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
-            }
-              else {
-              if (de.tagName === 'input') {
-                if (de.accName.source === 'value') {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
-                }            
-              }
-              else {
-                if (de.tagName === 'button') {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                    }
-                  }            
-                }
-                else {
-                  if (ce.hasTextContent) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
-                  }
-                  else {
-                    if (ce.hasSVGContent) {
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
-                    }
-                  }                          
-                }
-              }
-            }
-          }
-          else {
-            if (de.tagName === 'input' || ce.isInputTypeImage) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
-            }
-            else {
-              if (de.tagName === 'button') {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
-              }
-            }
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_5
-   *
-   * @desc Ids on form controls must be unique
-   *
-   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
-   */
-  { rule_id             : 'CONTROL_5',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.1',
-    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.id) {
-          const docIndex = de.parentInfo.documentIndex;
-          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_6
-   *
-   * @desc Label element with a for attribute reference does not reference a form control
-   */
-  { rule_id             : 'CONTROL_6',
-    last_updated        : '2022-07-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel && ce.labelForAttr) {
-          if (de.visibility.isVisibleToAT) {
-            if (ce.isLabelForAttrValid) {
-              if (ce.labelforTargetUsesAriaLabeling) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_7
-   *
-   * @desc Label or legend element must contain text content
-   */
-
-  { rule_id             : 'CONTROL_7',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6'],
-    target_resources    : ['label', 'legend'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isLabel || ce.isLegend) {
-          if (de.visibility.isVisibleOnScreen) {
-            if (ce.hasTextContent) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              if (ce.hasSVGContent) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL 8
-   *
-   * @desc Fieldset must contain exactly one legend element
-   */
-
-  { rule_id             : 'CONTROL_8',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
-    target_resources    : ['fieldset'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        let le;
-        if (ce.isFieldset) {
-          if (de.visibility.isVisibleToAT) {
-
-            const legendCount = ce.legendElements.length;
-
-            switch (legendCount) {
-              case 0:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                break;
-
-              case 1:
-                le = ce.legendElements[0];
-                if (le.domElement.visibility.isVisibleToAT) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-                }
-                break;
-              
-              default:
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
-                break;  
-            }
-
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_9
-   *
-   * @desc Check form controls labeled using the TITLE attribute for accessible name
-   */
-
-  { rule_id             : 'CONTROL_9',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.2',
-    wcag_related_ids    : ['4.1.1'],
-    target_resources    : ['input', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (de.accName.source === 'title') {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-          }
-          else {      
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_10
-   *
-   * @desc Accessible labels must be unique for every textarea,
-   *       select and input element of type text, password, radio,
-   *       and checkbox on a page
-   */
-
-  { rule_id             : 'CONTROL_10',
-    last_updated        : '2022-06-10',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
-        const de1 = ce1.domElement;
-        if (de1.role === 'option') {
-          return;
-        }
-        let count;
-        if (de1.ariaInfo.isNameRequired) {
-          if (de1.visibility.isVisibleToAT) {
-            count = 0;
-            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
-              const de2 = ce2.domElement;
-              if ((ce1 !== ce2) && 
-                  ((de1.ariaInfo.requiredParents.length === 0) || 
-                   (ce1.parentControlElement === ce2.parentControlElement)) &&
-                  de2.ariaInfo.isNameRequired && 
-                  de2.visibility.isVisibleToAT) {
-                if ((de1.role === de2.role) && 
-                    (ce1.nameForComparision === ce2.nameForComparision)) {
-                  count += 1;
-                }
-              }
-            });
-            if (count === 0){
-              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
-            } 
-            else {
-              // Since their ar often duplicate button on pages, when two or more buttons share the same
-              // name it should be a manual check
-              if (de1.role === 'button') {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
-                }
-              }
-              else {
-                if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
-                }
-              }
-            }
-          }
-          else {
-            if (de1.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
-            }
-          }
-        }
-      });  
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_11
-   *
-   * @desc If there is more than one form on page, input element of type
-   *       submit and reset must have unique labels in each form using the value attribute
-   *
-   */
-
-  { rule_id             : 'CONTROL_11',
-    last_updated        : '2022-08-08',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      let de1, de2, count;
-
-      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
-        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
-          const sb1 = fe1.getButtonControl('submit');
-          if (sb1) {
-            de1 = sb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const sb2 = fe2.getButtonControl('submit');
-                  if (sb1 && sb2) {
-                    de2 = sb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (sb1.nameForComparision === sb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-
-          const rb1 = fe1.getButtonControl('reset');
-          if (rb1) {
-            de1 = rb1.domElement;
-            count = 0;
-            if (de1.visibility.isVisibleToAT) {
-              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
-                if (fe1 !== fe2) {
-                  const rb2 = fe2.getButtonControl('reset');
-                  if (rb1 && rb2) {
-                    de2 = rb2.domElement;
-                    if (de2.visibility.isVisibleToAT && 
-                        (rb1.nameForComparision === rb2.nameForComparision)) {
-                      count += 1;
-                    }
-                  }
-                }
-              });
-              if (count) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
-              }          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
-            }
-          }
-        });
-      }
-    } // end validate function
-  },
-
-  /**
-   * @object CONTROL_12
-   *
-   * @desc Form include a submit button
-   *
-   */
-
-  { rule_id             : 'CONTROL_12',
-    last_updated        : '2023-08-22',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.2.2',
-    wcag_related_ids    : [],
-    target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      function getChildButtonDomElements (ce) {
-        let buttonDomElements = [];
-
-        ce.childControlElements.forEach( cce => {
-          const de = cce.domElement;
-          if (de.role === 'button') {
-            buttonDomElements.push(de);
-          }
-          buttonDomElements = buttonDomElements.concat(getChildButtonDomElements(cce));
-        });
-
-        return buttonDomElements;
-      }
-
-      dom_cache.controlInfo.allFormElements.forEach( fce => {
-        const de = fce.domElement;
-        if (de.visibility.isVisibleOnScreen) {
-          const buttonDomElements = getChildButtonDomElements(fce);
-          let submitButtons = 0;
-          let otherButtons  = 0;
-
-          buttonDomElements.forEach( b => {
-            if (b.tagName === 'input') {
-              const type = b.node.getAttribute('type');
-              if (type === 'submit') {
-                if (b.visibility.isVisibleOnScreen) {
-                  submitButtons += 1;
-                  rule_result.addElementResult(TEST_RESULT.PASS, b, 'ELEMENT_PASS_2', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_2', []);
-                }
-              }
-              else {
-                if ((type === 'button') || (type === "image")) {
-                 if (b.visibility.isVisibleOnScreen) {
-                    otherButtons += 1;
-                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_3', [type]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_3', [type]);
-                  }
-                }
-              }
-            }
-            else {
-              if (b.tagName === 'button') {
-               if (b.visibility.isVisibleOnScreen) {
-                  otherButtons += 1;
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_4', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_4', []);
-                }
-              } else {
-                if (b.role === 'button') {
-                 if (b.visibility.isVisibleOnScreen) {
-                    otherButtons += 1;
-                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_5', [b.tagName]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_5', [b.tagName]);
-                  }
-                }
-              }
-            }
-          });
-
-          if (submitButtons > 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-          }
-          else {
-            if (otherButtons > 0) {
-              if (otherButtons === 1) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [otherButtons]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-        }
-      });
-
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_13
-   *
-   * @desc Use names that support autocomplete
-   *
-   */
-
-  { rule_id             : 'CONTROL_13',
-    last_updated        : '2023-09-18',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.5',
-    wcag_related_ids    : ['3.3.2', '2.4.6'],
-    target_resources    : ['input[type="text"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.controlInfo.allControlElements.forEach(ce => {
-        const de = ce.domElement;
-        if (ce.isInputTypeText) {
-          if (de.visibility.isVisibleToAT) {
-            if (autoFillValues.includes(ce.nameAttr)) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, ce.nameAttr]);
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_14
-   *
-   * @desc   HTML form controls must use native properties and states
-   */
-  { rule_id             : 'CONTROL_14',
-    last_updated        : '2023-09-30',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : [],
-    target_resources    : ["input", "option", "select", "textarea"],
-    validate          : function (dom_cache, rule_result) {
-
-      function checkForNativeStates (domElement, ariaAttr, htmlAttr, result='fail') {
-
-        if (domElement.node.hasAttribute(ariaAttr)) {
-          if (domElement.visibility.isVisibleToAT) {
-            if (result === 'fail') {
-              rule_result.addElementResult(TEST_RESULT.FAIL, domElement, 'ELEMENT_FAIL_1', [htmlAttr, ariaAttr, domElement.elemName]);
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domElement, 'ELEMENT_MC_1', [htmlAttr, ariaAttr, domElement.elemName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, domElement, 'ELEMENT_HIDDEN_1', [ariaAttr, domElement.elemName]);
-          }
-        }
-      }
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        switch (de.tagName) {
-          case 'button':
-            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
-            break;
-
-          case 'fieldset':
-            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
-            break;
-
-          case 'input':
-            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
-            checkForNativeStates(de, 'aria-invalid',  'invalid');
-            checkForNativeStates(de, 'aria-required', 'required');
-            if ((de.typeAttr === 'checkbox') || (de.typeAttr === 'radio')) {
-              checkForNativeStates(de, 'aria-checked', 'checked');
-            }
-            break;
-
-          case 'option':
-            checkForNativeStates(de, 'aria-disabled', 'disabled');
-            checkForNativeStates(de, 'aria-selected', 'selected');
-            break;
-
-          case 'select':
-            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
-            checkForNativeStates(de, 'aria-invalid',  'invalid');
-            checkForNativeStates(de, 'aria-required', 'required');
-            checkForNativeStates(de, 'aria-multiselectable', 'multiple');
-            break;
-
-          case 'textarea':
-            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
-            checkForNativeStates(de, 'aria-invalid',  'invalid');
-            checkForNativeStates(de, 'aria-required', 'required');
-            break;
-        }
-      });
-
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_15
-   *
-   * @desc   Label in Name
-   */
-
-  { rule_id             : 'CONTROL_15',
-    last_updated        : '2023-12-01',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '2.5.3',
-    wcag_related_ids    : [],
-    target_resources    : ["input", "output", "select", "textarea", "widgets"],
-    validate          : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-
-        if (ce.isInteractive) {
-          if (de.accName.includesAlt) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-          else {
-            if (de.accName.includesAriaLabel) {
-              if (de.visibility.isVisibleToAT) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.elemName]);
-              }
-            }
-            else {
-              if (de.accName.nameIsNotVisible) {
-                if (de.visibility.isVisibleToAT) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.elemName]);
-                }
-              }
-
-            }
-          }
-        }
-
-      });
-
-    } // end validation function
-  },
-
-  /**
-   * @object CONTROL_16
-   *
-   * @desc   Redundant Entry
-   */
-
-  { rule_id             : 'CONTROL_16',
-    last_updated        : '2023-12-01',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.FORMS,
-    rule_required       : true,
-    wcag_primary_id     : '3.3.7',
-    wcag_related_ids    : [],
-    target_resources    : ["input", "select", "textarea"],
-    validate          : function (dom_cache, rule_result) {
-
-      const includeTags = ['form', 'input', 'select', 'textarea'];
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        if (includeTags.includes(de.tagName)) {
-          if (de.visibility.isVisibleToAT) {
-            if (autoFillValues.includes(ce.autocomplete)) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, ce.autocomplete]);
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-        else {
-          if (de.isInteractive && (de.ariaInfo.equiredParents.length === 0)) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        }
-     });
-
-    } // end validation function
-  }
-
-
-
-  ];
-
-  /* headingRules.js */
-
-  /* Constants */
-  const debug$F = new DebugLogging('Heading Rules', false);
-  debug$F.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Heading Rules
-   */
-
-  const headingRules = [
-
-    /**
-     * @object HEADING_1
-     *
-     * @desc Page contains at least one H1 element and each H1 element has content
-     */
-     { rule_id            : 'HEADING_1',
-      last_updated        : '2022-05-19',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.HEADINGS,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
-      target_resources    : ['h1'],
-      validate            : function (dom_cache, rule_result) {
-        let h1Count = 0;
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.ariaInfo.ariaLevel === 1) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName && de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                h1Count++;
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-        if (h1Count === 0) {
-          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object HEADING_2
-     *
-     * @desc If there are main and/or banner landmarks and H1 elements,
-     *       H1 elements should be children of main or banner landmarks
-     *
-     */
-    { rule_id             : 'HEADING_2',
-      last_updated        : '2022-05-19',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.HEADINGS,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.6',
-      wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
-      target_resources    : ['h1'],
-      validate            : function (dom_cache, rule_result) {
-
-        function checkForAnscetorLandmarkRole(de, role) {
-          let ple = de.parentInfo.landmarkElement;
-          while (ple) {
-             if (ple.domElement.role === role) return true;
-             ple = ple.parentLandmarkElement;
-          }
-          return false;
-        }
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.ariaInfo.ariaLevel === 1) {
-            if (de.visibility.isVisibleToAT) {
-              if (checkForAnscetorLandmarkRole(de, 'main')) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-              }
-              else {
-                if (checkForAnscetorLandmarkRole(de, 'banner')) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-  /**
-   * @object HEADING_3
-   *
-   * @desc Sibling headings of the same level that share the same parent heading should be unique
-   *       This rule applies only when there are no main landmarks on the page and at least one
-   *       sibling heading
-   *
-   */
-  { rule_id             : 'HEADING_3',
-    last_updated        : '2014-11-25',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    rule_required       : false,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-
-      const visibleHeadings = [];
-      const lastHeadingNamesAtLevel = ['', '', '', '', '', '', ''];
-      const headingNameForComparison = [];
-
-      function updateLastHeadingNamesAtLevel (level, name) {
-        if ((level > 0) && (level < 7)) {
-          lastHeadingNamesAtLevel[level] = name;
-          for (let i = level + 1; i < 7; i += 1) {
-            // clear lower level names, since a new heading context
-            lastHeadingNamesAtLevel[i] = '';
-          }
-        }
-      }
-
-      function getParentHeadingName (level) {
-        let name = '';
-        while (level > 0) {
-          name = lastHeadingNamesAtLevel[level];
-          if (name.length) {
-            break;
-          }
-          level -= 1;
-        }
-        return name;
-      }
-
-      dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-        if (de.visibility.isVisibleToAT) {
-          visibleHeadings.push(de);
-        } else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-
-
-      visibleHeadings.forEach( (de, index) => {
-
-        const name = de.accName.name.toLowerCase();
-
-        // save the name of the last heading of each level
-        switch (de.ariaInfo.ariaLevel) {
-          case 1:
-            updateLastHeadingNamesAtLevel(1, name);
-            headingNameForComparison[index] = name;
-            break;
-
-          case 2:
-            updateLastHeadingNamesAtLevel(2, name);
-            headingNameForComparison[index] = getParentHeadingName(1) + name;
-            break;
-
-          case 3:
-            updateLastHeadingNamesAtLevel(3, name);
-            headingNameForComparison[index] = getParentHeadingName(2) + name;
-            break;
-
-          case 4:
-            updateLastHeadingNamesAtLevel(4, name);
-            headingNameForComparison[index] = getParentHeadingName(3) + name;
-            break;
-
-          case 5:
-            updateLastHeadingNamesAtLevel(5, name);
-            headingNameForComparison[index] = getParentHeadingName(4) + name;
-            break;
-
-          case 6:
-            updateLastHeadingNamesAtLevel(6, name);
-            headingNameForComparison[index] = getParentHeadingName(5) + name;
-            break;
-        }
-      });
-
-      visibleHeadings.forEach( (de1, index1) => {
-        let duplicate = false;
-        visibleHeadings.forEach( (de2, index2) => {
-          if ((index1 !== index2) &&
-            (headingNameForComparison[index1] ===  headingNameForComparison[index2])) {
-            duplicate = true;
-          }
-        });
-        if (duplicate) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName]);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName]);
-        }
-      });
-
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_5
-   *
-   * @desc Headings must be properly nested
-   *
-   */
-  { rule_id             : 'HEADING_5',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    rule_required       : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-      let nestingErrors = 0;
-      let manualChecks = 0;
-
-      if (dom_cache.structureInfo.hasMainLandmark) {
-        dom_cache.structureInfo.allLandmarkElements.forEach ( le => {
-          nestingErrors += checkHeadingNesting(dom_cache, rule_result, le.childHeadingDomElements, le.domElement.role);
-        });
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach ( de => {
-          if (!de.parentInfo.landmarkElement) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name.length === 0) {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-                manualChecks += 1;
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } else {
-        nestingErrors = checkHeadingNesting(dom_cache, rule_result, dom_cache.structureInfo.allHeadingDomElements);
-      }
-
-      if (nestingErrors > 0) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [nestingErrors]);
-      }
-      else {
-        if (manualChecks > 0) {
-          if (manualChecks === 1) {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-          }
-          else {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
-          }
-        } else {
-          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-        }
-      }
-
-
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_6
-   *
-   * @desc Headings should not consist only of image content
-   *
-   */
-  { rule_id             : 'HEADING_6',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    rule_required       : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6', '2.4.10'],
-    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.structureInfo.allHeadingDomElements.forEach( (de) => {
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length) {
-            if (de.hasTextContent()) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-    } // end validate function
-  },
-
-  /**
-   * @object HEADING_7
-   *
-   * @desc First heading in contentinfo, complementary, form, navigation and search landmark must be an h2, except main landmark h1
-   */
-  { rule_id             : 'HEADING_7',
-    last_updated        : '2022-05-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.HEADINGS,
-    rule_required        : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-    target_resources    : ['h2', '[role="contentinfo"]', '[role="complementary"]', '[role="form"]', '[role="navigation"]', '[role="search"]'],
-    validate            : function (dom_cache, rule_result) {
-
-      const testRoles = ['contentinfo', 'complementary', 'form', 'navigation', 'search'];
-
-      dom_cache.structureInfo.allLandmarkElements.forEach( le => {
-        const role = le.domElement.role;
-
-        if (testRoles.indexOf(role) >= 0) {
-
-          const de = le.getFirstVisibleHeadingDomElement();
-          if (de) {
-            const ariaLevel = de.ariaInfo.ariaLevel;
-            if (ariaLevel === 2) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role, ariaLevel]);
-            }
-          }
-        }
-      });
-    } // end validate function
-  }
-
-  ];
-
-  /*
-   * Heading Rule Helper Functions
-   */
-
-  function checkHeadingNesting(dom_cache, rule_result, headingDomElements) {
-    const visibleHeadings = [];
-
-    headingDomElements.forEach( de => {
-      if (de.visibility.isVisibleToAT) {
-        if (de.accName.name.length) {
-          visibleHeadings.push(de);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-        }
-      }
-      else {
-        rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-      }
-    });
-
-    let nestingErrors = 0;
-    let lastLevel = visibleHeadings.length ? visibleHeadings[0].ariaInfo.ariaLevel : 1;
-    visibleHeadings.forEach( de => {
-      const level = de.ariaInfo.ariaLevel;
-      if ( level <= (lastLevel + 1)) {
-        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-        // Only update lastLevel when you get a pass
-        lastLevel = level;
-      }
-      else {
-        nestingErrors += 1;
-        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-      }
-    });
-
-    return nestingErrors;
-  }
-
-  /* helpRules.js */
-
-  /* Constants */
-  const debug$E = new DebugLogging('Help Rules', false);
-  debug$E.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Help Rules
-   */
-
-  const helpRules = [
-
-    /**
-     * @object HELP_1
-     *
-     * @desc
-    */
-
-    { rule_id             : 'HELP_1',
-      last_updated        : '2023-12-03',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.6',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate            : function (dom_cache, rule_result) {
-
-        rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-
-     } // end validation function  }
-    }
-
-  ];
-
-  /* htmlRules.js */
-
-  /* Constants */
-  const debug$D = new DebugLogging('HTML Rules', false);
-  debug$D.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: HTML Rules
-   */
-
-  const htmlRules = [
-
-    /**
-     * @object HTML_1
-     *
-     * @desc Change marquee elements to use accessible techniques
-     */
-
-    { rule_id             : 'HTML_1',
-      last_updated        : '2023-09-01',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '2.3.1',
-      wcag_related_ids    : ['2.2.2', '4.1.1'],
-      target_resources    : ['marquee'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.allDomElements.forEach( de => {
-
-          if (de.tagName === 'marquee') {
-            if (de.visibility.isVisibleToAT) {
-               rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-  /*
-
-        var TEST_RESULT    = TEST_RESULT;
-        var VISIBILITY     = VISIBILITY;
-
-        var dom_elements     = dom_cache.element_cache.dom_elements;
-        var dom_elements_len = dom_elements.length;
-
-        for (var i = 0; i < dom_elements_len; i++) {
-          var de = dom_elements[i];
-
-          if (de.tag_name === 'marquee') {
-            if (de.computed_style.is_visible_to_at === VISIBILITY.VISIBLE ) {
-               rule_result.addResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, de.lang]);
-            }
-            else {
-              rule_result.addResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tag_name, de.lang]);
-            }
-          }
-        }
-  */
-      } // end validate function
-    }
-  ];
-
-  /* imageRules.js */
-
-  /* Constants */
-  const debug$C = new DebugLogging('Image Rules', false);
-  debug$C.flag = false;
-
-  /*
-   * OpenA11y Alliance Rules
-   * Rule Category: Image Rules
-   */
-
-  const imageRules = [
-
-  /**
-   * @object IMAGE_1
-   *
-   * @desc Images must have a source for an accessible name or be identified as decorative
-   */
-
-  { rule_id             : 'IMAGE_1',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach(ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.accName.source]);
-          }
-          else {
-            if ((de.role === 'none') ||
-                (de.role === 'presentation')) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
-            }
-            else {
-              if ((de.tagName === 'img') || (de.tagName === 'area')) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-              }
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_2
-   *
-   * @desc Text alternatives accurately describe images
-   */
-  { rule_id             : 'IMAGE_2',
-    last_updated        : '2015-09-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
-            }
-          } else {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_3
-   *
-   * @desc The file name of the image should not be part of the accessible name content (it must have an image file extension)
-   */
-  { rule_id             : 'IMAGE_3',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        if (ie.fileName) {
-          const de = ie.domElement;
-          if (de.visibility.isVisibleToAT) {
-            const name = de.accName.name.toLowerCase();
-            if (name.indexOf(ie.fileName) < 0) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object IMAGE_4_EN (English)
-   *
-   * @desc If the accessible name contains content, it should be less than 100 characters long, longer descriptions should use long description techniques (English only)
-   */
-  { rule_id             : 'IMAGE_4_EN',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            const length = de.accName.name.length;
-            if (length <= 100) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [length]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [length]);
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_5
-   *
-   * @desc Verify the image is decorative
-   */
-  { rule_id             : 'IMAGE_5',
-    last_updated        : '2015-09-11',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de = ie.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if (de.accName.name.length === 0) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
-            }
-          }
-        } else {
-          if (de.tagName === 'img') {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_6
-   *
-   * @desc For complex images, charts or graphs provide long description
-   */
-  { rule_id             : 'IMAGE_6',
-    last_updated        : '2014-11-28',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de   = ie.domElement;
-        const accName = de.accName;
-        const accDesc = de.accDescription;
-        if (accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (accDesc.name.length) {
-             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
-            }
-            else {
-              if (de.node.hasAttribute('longdesc')) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);                                
-              } else {
-               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);                                
-              }
-            }
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_7
-   *
-   * @desc MathML for mathematical expressions
-   */
-  { rule_id             : 'IMAGE_7',
-    last_updated        : '2015-09-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.1.1',
-    wcag_related_ids    : [],
-    target_resources    : ['img', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach( ie => {
-        const de   = ie.domElement;
-        const accName = de.accName;
-        if (accName.name.length > 0) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);                    
-            } else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);                    
-            }
-          } 
-          else {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);                    
-            }
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object IMAGE_8
-   *
-   * @desc Images of text
-   */
-
-  { rule_id             : 'IMAGE_8',
-    last_updated        : '2023-10-17',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.IMAGES,
-    rule_required       : true,
-    wcag_primary_id     : '1.4.5',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area', '[role="img"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach(ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length) {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.accName.source]);
-            }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-  ];
-
-  /* keyboardRules.js */
-
-  /* Constants */
-  const debug$B = new DebugLogging('Keyboard Rules', false);
-  debug$B.flag = true;
-
-  /* helper functions */
-
-
-  function isNativeTabStop (domElement) {
-    return domElement.isLabelable || ['a', 'area', 'button'].includes(domElement.tagName);
-  }
-
-  function isTabStop (domElement) {
-    return isNativeTabStop(domElement) ||
-           ((typeof domElement.tabIndex === 'number') && (domElement.tabIndex >= 0));
-  }
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Keyboard Rules
-   */
-
-  const keyboardRules = [
-
-    /**
-     * @object KEYBOARD_1
-     *
-     * @desc Widget elements on non-interactive elements or that override the default role of an interactive element
-     *       need keyboard event handlers on the widget element or a parent element of the widget
-     */
-
-    { rule_id             : 'KEYBOARD_1',
-      last_updated        : '2023-06-10',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.1.1',
-      wcag_related_ids    : ['4.1.2'],
-      target_resources    : ['widgets'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.allDomElements.forEach( de => {
-          if (de.hasRole && de.ariaInfo.isWidget) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-            }
-          }
-        });
-
-      } // end validation function
-
-    },
-    /**
-     * @object KEYBOARD_2
-     *
-     * @desc Sequential keyboard navigation
-     */
-
-    { rule_id             : 'KEYBOARD_2',
-      last_updated        : '2023-10-08',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.3',
-      wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
-      target_resources    : ['links', 'controls', 'widgets'],
-      validate            : function (dom_cache, rule_result) {
-
-        let mcCount = 0;
-        let passCount = 0;
-
-        dom_cache.allDomElements.forEach( de => {
-          if (isTabStop(de)) {
-            if (de.visibility.isVisibleToAT) {
-              if (de.tabIndex > 0 ) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-                mcCount += 1;
-              }
-              else {
-                if (de.tabIndex === 0) {
-                  if (isNativeTabStop(de)) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-                    passCount += 1;
-                  }
-                  else {
-                    if (de.hasRole && de.isWidget) {
-                      // widget roles with tabindex=0
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
-                      mcCount += 1;
-                    }
-                    else {
-                      // non-interactive elements with tabindex=0
-                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.elemName]);
-                      mcCount += 1;
-                    }
-                  }
-                }
-                else {
-                  if (isNativeTabStop(de) && (de.tabindex === 0)) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-                    passCount += 1;
-                  }
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-        if (mcCount) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-        else {
-          if (passCount) {
-            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-          }
-        }
-
-      } // end validation function
-    },
-
-    /**
-     * @object KEYBOARD_3
-     *
-     * @desc No keyboard trap
-     */
-
-    { rule_id             : 'KEYBOARD_3',
-      last_updated        : '2023-08-17',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.1.2',
-      wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
-      target_resources    : ['object'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.allMediaElements.forEach( mediaElement => {
-          const de = mediaElement.domElement;
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-       } // end validation function
-    },
-
-    /**
-     * @object KEYBOARD_4
-     *
-     * @desc Check elements with tabindex > 0
-     */
-
-    { rule_id             : 'KEYBOARD_4',
-      last_updated        : '2023-08-21',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.1.2',
-      wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
-      target_resources    : ['object'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.allDomElements.forEach( de => {
-          if (isTabStop(de) && de.tabIndex > 0) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.tabIndex]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.tabIndex]);
-            }
-          }
-        });
-       } // end validation function
-    },
-
-    /**
-     * @object KEYBOARD_5
-     *
-     * @desc Focus style
-     */
-
-    { rule_id             : 'KEYBOARD_5',
-      last_updated        : '2023-08-22',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.7',
-      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
-      target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
-      validate            : function (dom_cache, rule_result) {
-
-        let controlCount = 0;
-        let hiddenCount = 0;
-
-        dom_cache.allDomElements.forEach( de => {
-          if (de.ariaInfo.isWidget) {
-            if (de.visibility.isVisibleToAT) {
-              controlCount += 1;
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-            else {
-              hiddenCount += 1;
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-        if (controlCount > 1) {
-          if (hiddenCount == 0) {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
-          }
-          else {
-            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
-          }
-        }
-
-      } // end validation function
-    },
-
-    /**
-     * @object KEYBOARD_6
-     *
-     * @desc Select elements with onchange events
-     */
-
-    { rule_id             : 'KEYBOARD_6',
-      last_updated        : '2023-08-22',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.2',
-      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-      target_resources    : ['select'],
-      validate            : function (dom_cache, rule_result) {
-
-       dom_cache.controlInfo.allControlElements.forEach(ce => {
-          const de = ce.domElement;
-          if (de.tagName === 'select') {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-      } // end validation function
-    }
-
-  ];
-
-  /* landmarkRules.js */
-
-  /* Constants */
-  const debug$A = new DebugLogging('Landmark Rules', false);
-  debug$A.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Landmark Rules
-   */
-
-  const landmarkRules = [
-
-    /**
-     * @object LANDMARK_1
-     *
-     * @desc Each page should have at least one main landmark
-     */
-
-    { rule_id             : 'LANDMARK_1',
-      last_updated        : '2022-05-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['main', '[role="main"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'main', true);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_2
-     *
-     * @desc All rendered content should be contained in a landmark
-     */
-    { rule_id             : 'LANDMARK_2',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['Page', 'all'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.allDomElements.forEach ( de => {
-          const parentLandmark = de.parentInfo.landmarkElement;
-          const isLandmark = de.isLandmark;
-          if (!de.isInDialog && (de.hasContent || de.mayHaveContent)) {
-            if (de.visibility.isVisibleToAT) {
-              if ( isLandmark || parentLandmark ) {
-                const role = isLandmark ? de.role : parentLandmark.domElement.role;
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, role]);
-              }
-              else {
-                if (de.mayHaveContent) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_3
-     *
-     * @desc Each page within a website should have at least one navigation landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_3',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['nav', '[role="navigation"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        const MINIMUM_LINKS = 4;
-        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-        let navigationCount = 0;
-
-        allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (de.role === 'navigation') {
-            if (de.visibility.isVisibleToAT) {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-              }
-              navigationCount += 1;
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-
-        if (navigationCount === 0) {
-          // See if there are any lists of links greater than the MINIMUM_LINKS
-          const allListElements = dom_cache.listInfo.allListElements;
-          let listWithLinksCount = 0;
-          allListElements.forEach ( le => {
-            const de = le.domElement;
-            if (le.linkCount > MINIMUM_LINKS) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, le.linkCount]);
-              listWithLinksCount += 1;
-            }
-          });
-
-          if (listWithLinksCount > 0) {
-            rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
-          }
-        } else {
-          if (navigationCount === 1) {
-            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_1', []);
-          } else {
-            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_2', [navigationCount]);
-          }
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_4
-     *
-     * @desc Each page may have at least one banner landmark
-     *
-     */
-
-    { rule_id             : 'LANDMARK_4',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'banner', false);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_5
-     *
-     * @desc Each page should not have more than one banner landmark
-     *
-     */
-
-    { rule_id             : 'LANDMARK_5',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateNoMoreThanOne(dom_cache, rule_result, 'banner');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_6
-     *
-     * @desc Each page may have one contentinfo landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_6',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateAtLeastOne(dom_cache, rule_result, 'contentinfo', false);
-     } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_7
-     *
-     * @desc Each page may have only one contentinfo landmark
-     *
-     */
-    { rule_id             : 'LANDMARK_7',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.1',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateNoMoreThanOne(dom_cache, rule_result, 'contentinfo');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_8
-     *
-     * @desc banner landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_8',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      required            : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'banner');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_9
-     *
-     * @desc Banner landmark should only contain only region, navigation and search landmarks
-     */
-    { rule_id             : 'LANDMARK_9',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-       validateLandmarkDescendants(dom_cache, rule_result, 'banner', ['navigation', 'region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_10
-     *
-     * @desc Navigation landmark should only contain only region and search landmarks
-     */
-    { rule_id             : 'LANDMARK_10',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['nav', '[role="naviation"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'navigation', ['region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_11
-     *
-     * @desc Main landmark must be a top level lanmark
-     */
-    { rule_id             : 'LANDMARK_11',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', '[role="main"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'main');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_12
-     *
-     * @desc Contentinfo landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_12',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['footer', '[role="contentinfo"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'contentinfo');
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_13
-     *
-     * @desc Contentinfo landmark should only contain only search, region and navigation landmarks
-     */
-    { rule_id             : 'LANDMARK_13',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['header', '[role="banner"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'contentinfo', ['navigation', 'region', 'search']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_14
-     *
-     * @desc Search landmark should only contain only region landmarks
-     */
-    { rule_id             : 'LANDMARK_14',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'search', ['region']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_15
-     *
-     * @desc Form landmark should only contain only region landmarks
-     */
-    { rule_id             : 'LANDMARK_15',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="form"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateLandmarkDescendants(dom_cache, rule_result, 'form', ['region']);
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_16
-     *
-     * @desc Elements with the role=region must have accessible name to be considered a landmark
-     */
-    { rule_id             : 'LANDMARK_16',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['[role="region"]'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.allDomElements.forEach( de => {
-          if (de.hasRole && de.role === 'region') {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name.length) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-            }
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_17
-     *
-     * @desc Landmark must have unique labels
-     */
-
-    { rule_id             : 'LANDMARK_17',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        const landmarkRoles = ['banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region', 'search'];
-        landmarkRoles.forEach( role => {
-          validateUniqueAccessibleNames(dom_cache, rule_result, role);
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_18
-     *
-     * @desc Landmark must identify content regions
-     */
-
-    { rule_id             : 'LANDMARK_18',
-      last_updated        : '2015-08-07',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
-      validate            : function (dom_cache, rule_result) {
-        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-        allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role, de.accName.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
-          }
-        });
-      } // end validate function
-    },
-
-    /**
-     * @object LANDMARK_19
-     *
-     * @desc Complementary landmark must be a top level landmark
-     */
-    { rule_id             : 'LANDMARK_19',
-      last_updated        : '2022-05-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LANDMARKS,
-      rule_required       : false,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
-      target_resources    : ['aside', '[role="complementary"]'],
-      validate            : function (dom_cache, rule_result) {
-        validateTopLevelLandmark(dom_cache, rule_result, 'complementary');
-      } // end validate function
-    }
-  ];
-
-  /* Helper Functions for Landmarks */
-
-
-  /**
-   * @function validateTopLevelLandmark
-   *
-   * @desc Evaluate if a landmark role is top level (e.g. not contained in other landmarks)
-   *
-   * @param  {DOMCache}    dom_cache   - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result - RuleResult object
-   * @param  {String}      role        - Landmark role to check
-   */
-
-  function validateTopLevelLandmark(dom_cache, rule_result, role) {
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-
-          if (de.parentInfo.landmarkElement === null) {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', []);
-            }
-          }
-          else {
-            // Check to see if the two elements with the role share the same DOM (e.g. iframe check)
-            // If in a different DOM, allow it to be the top level in that DOM
-            const de1 = de.parentInfo.landmarkElement.domElement;
-
-            if (de1 && (de.parentInfo.document !== de1.parentInfo.document)) {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', []);
-              }
-            }
-            else {
-              // Fails if they are in the same DOM
-              const landmarkRole = de.parentInfo.landmarkElement.domElement.role;
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, landmarkRole]);
-              } else  {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [landmarkRole]);
-              }
-            }
-          }
-        }
-        else {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * @function validateAtLeastOne
-   *
-   * @desc Evaluate if the the landmark region role exists in the page.
-   *       The required parameter determines if the landamrk is missing whether
-   *       a failure or manual check is required
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark role
-   * @oaram  {Boolean}     roleRequired - Is the landamrk region role required
-   */
-
-  function validateAtLeastOne(dom_cache, rule_result, role, roleRequired) {
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let roleCount = 0;
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-          }
-          roleCount += 1;
-        }
-        else {
-          if (de.hasRole) {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          } else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-          }
-        }
-      }
-    });
-
-    if (roleCount === 0) {
-      if (roleRequired) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-      }
-      else {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      }
-    } else {
-      if (roleCount === 1) {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-      } else {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', [roleCount]);
-      }
-    }
-  }
-
-
-  /**
-   * @function validateNoMoreThanOne
-   *
-   * @desc Evaluate if the the landmark region role exists more than once on the page.
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark region role
-   */
-
-  function validateNoMoreThanOne(dom_cache, rule_result, role) {
-
-    const landmarkElementsByDoc = dom_cache.structureInfo.landmarkElementsByDoc;
-    let totalRoleCount = 0;
-    let anyMoreThanOne = false;
-
-    landmarkElementsByDoc.forEach( les => {
-      let visibleDomElements = [];
-      if (Array.isArray(les)) {
-        les.forEach( le => {
-          const de = le.domElement;
-          if (de.role === role) {
-            if (de.visibility.isVisibleToAT) {
-              visibleDomElements.push(de);
-              totalRoleCount += 1;
-            }
-            else {
-              if (de.hasRole) {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
-              }
-            }
-          }
-        });
-
-        visibleDomElements.forEach( de => {
-          if (visibleDomElements.length === 1) {
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-            }
-          } else {
-            anyMoreThanOne = true;
-            if (de.hasRole) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-            }
-          }
-        });
-      }
-    });
-
-    if (totalRoleCount > 0) {
-      if (anyMoreThanOne) {
-        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [totalRoleCount]);
-      }
-      else {
-        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-      }
-    }
-  }
-
-  /**
-   * @function validateLandmarkDescendants
-   *
-   * @desc Evaluate if the descendant landmark roles are a certain type
-   *
-   * @param  {DOMCache}    dom_cache             - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result           - RuleResult object
-   * @param  {String}      role                  - Landmark region role
-   * @param  {Array}       allowedLandmarkRoles  - An array of allowed descendant roles
-   */
-
-  function validateLandmarkDescendants(dom_cache, rule_result, role, allowedLandmarkRoles) {
-
-    function checkForDescendantLandmarks(landmarkElement) {
-      const result = {
-        failedCount: 0,
-        failedRoles : [],
-        passedCount: 0,
-        passedRoles : []
-      };
-
-      landmarkElement.descendantLandmarkElements.forEach( le => {
-        const de   = le.domElement;
-        const role = de.role;
-
-        if (de.visibility.isVisibleToAT) {
-          if (allowedLandmarkRoles.includes(role)) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
-            result.passedCount += 1;
-            result.passedRoles.push(role);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role]);
-            result.failedCount += 1;
-            result.failedRoles.push(role);
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, role]);
-        }
-      });
-
-      return result;
-    }
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let visibleLandmarkElements = [];
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          visibleLandmarkElements.push(le);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-        }
-      }
-    });
-
-    visibleLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      const result = checkForDescendantLandmarks(le);
-      const failedRoles = result.failedRoles.join(', ');
-      const passedRoles = result.passedRoles.join(', ');
-
-      if (result.failedCount === 1) {
-        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [failedRoles]);
-      } else {
-        if (result.failedCount > 1) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [result.failedCount, failedRoles]);
-        }
-        else {
-          if (result.passedCount === 0) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-          }
-          else {
-            if (result.passedCount === 1) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [passedRoles]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [result.passedCount, passedRoles]);
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * @function validateUniqueAccessibleNames
-   *
-   * @desc Evaluate if the accessible names for the landmark role are unique.
-   *
-   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
-   * @param  {RuleResult}  rule_result  - RuleResult object
-   * @param  {String}      role         - Landmark region role
-   */
-
-  function validateUniqueAccessibleNames(dom_cache, rule_result, role) {
-
-    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
-    let visibleDomElements = [];
-
-    allLandmarkElements.forEach( le => {
-      const de = le.domElement;
-      if (de.role === role) {
-        if (de.visibility.isVisibleToAT) {
-          visibleDomElements.push(de);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-        }
-      }
-    });
-
-    if (visibleDomElements.length > 1) {
-      visibleDomElements.forEach( (de1, index1) => {
-        let duplicate = false;
-        visibleDomElements.forEach( (de2, index2) => {
-          if ((index1 !== index2) &&
-              (accNamesTheSame(de1.accName, de2.accName))) {
-            duplicate = true;
-          }
-        });
-        if (duplicate) {
-          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.accName.name, role]);
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [role]);
-        }
-      });
-    }
-  }
-
-  /* languageRules.js */
-
-  /* Constants */
-  const debug$z = new DebugLogging('Language Rules', false);
-  debug$z.flag = false;
-
-  const LANGUAGE_CODES = {
-    subtags : "aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik in io is it iu iw ja ji jv jw ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mo mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg sh si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu aaa aab aac aad aae aaf aag aah aai aak aal aam aan aao aap aaq aas aat aau aav aaw aax aaz aba abb abc abd abe abf abg abh abi abj abl abm abn abo abp abq abr abs abt abu abv abw abx aby abz aca acb acd ace acf ach aci ack acl acm acn acp acq acr acs act acu acv acw acx acy acz ada adb add ade adf adg adh adi adj adl adn ado adp adq adr ads adt adu adw adx ady adz aea aeb aec aed aee aek ael aem aen aeq aer aes aeu aew aey aez afa afb afd afe afg afh afi afk afn afo afp afs aft afu afz aga agb agc agd age agf agg agh agi agj agk agl agm agn ago agp agq agr ags agt agu agv agw agx agy agz aha ahb ahg ahh ahi ahk ahl ahm ahn aho ahp ahr ahs aht aia aib aic aid aie aif aig aih aii aij aik ail aim ain aio aip aiq air ais ait aiw aix aiy aja ajg aji ajn ajp ajt aju ajw ajz akb akc akd ake akf akg akh aki akj akk akl akm ako akp akq akr aks akt aku akv akw akx aky akz ala alc ald ale alf alg alh ali alj alk all alm aln alo alp alq alr als alt alu alv alw alx aly alz ama amb amc ame amf amg ami amj amk aml amm amn amo amp amq amr ams amt amu amv amw amx amy amz ana anb anc and ane anf ang anh ani anj ank anl anm ann ano anp anq anr ans ant anu anv anw anx any anz aoa aob aoc aod aoe aof aog aoh aoi aoj aok aol aom aon aor aos aot aou aox aoz apa apb apc apd ape apf apg aph api apj apk apl apm apn apo app apq apr aps apt apu apv apw apx apy apz aqa aqc aqd aqg aql aqm aqn aqp aqr aqz arb arc ard are arh ari arj ark arl arn aro arp arq arr ars art aru arv arw arx ary arz asa asb asc asd ase asf asg ash asi asj ask asl asn aso asp asq asr ass ast asu asv asw asx asy asz ata atb atc atd ate atg ath ati atj atk atl atm atn ato atp atq atr ats att atu atv atw atx aty atz aua aub auc aud aue auf aug auh aui auj auk aul aum aun auo aup auq aur aus aut auu auw aux auy auz avb avd avi avk avl avm avn avo avs avt avu avv awa awb awc awd awe awg awh awi awk awm awn awo awr aws awt awu awv aww awx awy axb axe axg axk axl axm axx aya ayb ayc ayd aye ayg ayh ayi ayk ayl ayn ayo ayp ayq ayr ays ayt ayu ayx ayy ayz aza azb azc azd azg azj azm azn azo azt azz baa bab bac bad bae baf bag bah bai baj bal ban bao bap bar bas bat bau bav baw bax bay baz bba bbb bbc bbd bbe bbf bbg bbh bbi bbj bbk bbl bbm bbn bbo bbp bbq bbr bbs bbt bbu bbv bbw bbx bby bbz bca bcb bcc bcd bce bcf bcg bch bci bcj bck bcl bcm bcn bco bcp bcq bcr bcs bct bcu bcv bcw bcy bcz bda bdb bdc bdd bde bdf bdg bdh bdi bdj bdk bdl bdm bdn bdo bdp bdq bdr bds bdt bdu bdv bdw bdx bdy bdz bea beb bec bed bee bef beg beh bei bej bek bem beo bep beq ber bes bet beu bev bew bex bey bez bfa bfb bfc bfd bfe bff bfg bfh bfi bfj bfk bfl bfm bfn bfo bfp bfq bfr bfs bft bfu bfw bfx bfy bfz bga bgb bgc bgd bge bgf bgg bgi bgj bgk bgl bgm bgn bgo bgp bgq bgr bgs bgt bgu bgv bgw bgx bgy bgz bha bhb bhc bhd bhe bhf bhg bhh bhi bhj bhk bhl bhm bhn bho bhp bhq bhr bhs bht bhu bhv bhw bhx bhy bhz bia bib bic bid bie bif big bij bik bil bim bin bio bip biq bir bit biu biv biw bix biy biz bja bjb bjc bjd bje bjf bjg bjh bji bjj bjk bjl bjm bjn bjo bjp bjq bjr bjs bjt bju bjv bjw bjx bjy bjz bka bkb bkc bkd bkf bkg bkh bki bkj bkk bkl bkm bkn bko bkp bkq bkr bks bkt bku bkv bkw bkx bky bkz bla blb blc bld ble blf blg blh bli blj blk bll blm bln blo blp blq blr bls blt blv blw blx bly blz bma bmb bmc bmd bme bmf bmg bmh bmi bmj bmk bml bmm bmn bmo bmp bmq bmr bms bmt bmu bmv bmw bmx bmy bmz bna bnb bnc bnd bne bnf bng bni bnj bnk bnl bnm bnn bno bnp bnq bnr bns bnt bnu bnv bnw bnx bny bnz boa bob boe bof bog boh boi boj bok bol bom bon boo bop boq bor bot bou bov bow box boy boz bpa bpb bpd bpg bph bpi bpj bpk bpl bpm bpn bpo bpp bpq bpr bps bpt bpu bpv bpw bpx bpy bpz bqa bqb bqc bqd bqf bqg bqh bqi bqj bqk bql bqm bqn bqo bqp bqq bqr bqs bqt bqu bqv bqw bqx bqy bqz bra brb brc brd brf brg brh bri brj brk brl brm brn bro brp brq brr brs brt bru brv brw brx bry brz bsa bsb bsc bse bsf bsg bsh bsi bsj bsk bsl bsm bsn bso bsp bsq bsr bss bst bsu bsv bsw bsx bsy bta btb btc btd bte btf btg bth bti btj btk btl btm btn bto btp btq btr bts btt btu btv btw btx bty btz bua bub buc bud bue buf bug buh bui buj buk bum bun buo bup buq bus but buu buv buw bux buy buz bva bvb bvc bvd bve bvf bvg bvh bvi bvj bvk bvl bvm bvn bvo bvp bvq bvr bvt bvu bvv bvw bvx bvy bvz bwa bwb bwc bwd bwe bwf bwg bwh bwi bwj bwk bwl bwm bwn bwo bwp bwq bwr bws bwt bwu bww bwx bwy bwz bxa bxb bxc bxd bxe bxf bxg bxh bxi bxj bxk bxl bxm bxn bxo bxp bxq bxr bxs bxu bxv bxw bxx bxz bya byb byc byd bye byf byg byh byi byj byk byl bym byn byo byp byq byr bys byt byv byw byx byy byz bza bzb bzc bzd bze bzf bzg bzh bzi bzj bzk bzl bzm bzn bzo bzp bzq bzr bzs bzt bzu bzv bzw bzx bzy bzz caa cab cac cad cae caf cag cah cai caj cak cal cam can cao cap caq car cas cau cav caw cax cay caz cba cbb cbc cbd cbe cbg cbh cbi cbj cbk cbl cbn cbo cbr cbs cbt cbu cbv cbw cby cca ccc ccd cce ccg cch ccj ccl ccm ccn cco ccp ccq ccr ccs cda cdc cdd cde cdf cdg cdh cdi cdj cdm cdn cdo cdr cds cdy cdz cea ceb ceg cek cel cen cet cfa cfd cfg cfm cga cgc cgg cgk chb chc chd chf chg chh chj chk chl chm chn cho chp chq chr cht chw chx chy chz cia cib cic cid cie cih cik cim cin cip cir ciw ciy cja cje cjh cji cjk cjm cjn cjo cjp cjr cjs cjv cjy cka ckb ckh ckl ckn cko ckq ckr cks ckt cku ckv ckx cky ckz cla clc cld cle clh cli clj clk cll clm clo clt clu clw cly cma cmc cme cmg cmi cmk cml cmm cmn cmo cmr cms cmt cna cnb cnc cng cnh cni cnk cnl cno cns cnt cnu cnw cnx coa cob coc cod coe cof cog coh coj cok col com con coo cop coq cot cou cov cow cox coy coz cpa cpb cpc cpe cpf cpg cpi cpn cpo cpp cps cpu cpx cpy cqd cqu cra crb crc crd crf crg crh cri crj crk crl crm crn cro crp crq crr crs crt crv crw crx cry crz csa csb csc csd cse csf csg csh csi csj csk csl csm csn cso csq csr css cst csu csv csw csy csz cta ctc ctd cte ctg cth ctl ctm ctn cto ctp cts ctt ctu ctz cua cub cuc cug cuh cui cuj cuk cul cum cuo cup cuq cur cus cut cuu cuv cuw cux cvg cvn cwa cwb cwd cwe cwg cwt cya cyb cyo czh czk czn czo czt daa dac dad dae daf dag dah dai daj dak dal dam dao dap daq dar das dau dav daw dax day daz dba dbb dbd dbe dbf dbg dbi dbj dbl dbm dbn dbo dbp dbq dbr dbt dbu dbv dbw dby dcc dcr dda ddd dde ddg ddi ddj ddn ddo ddr dds ddw dec ded dee def deg deh dei dek del dem den dep deq der des dev dez dga dgb dgc dgd dge dgg dgh dgi dgk dgl dgn dgo dgr dgs dgt dgu dgw dgx dgz dha dhd dhg dhi dhl dhm dhn dho dhr dhs dhu dhv dhw dhx dia dib dic did dif dig dih dii dij dik dil dim din dio dip diq dir dis dit diu diw dix diy diz dja djb djc djd dje djf dji djj djk djl djm djn djo djr dju djw dka dkk dkl dkr dks dkx dlg dlk dlm dln dma dmb dmc dmd dme dmg dmk dml dmm dmn dmo dmr dms dmu dmv dmw dmx dmy dna dnd dne dng dni dnj dnk dnn dnr dnt dnu dnv dnw dny doa dob doc doe dof doh doi dok dol don doo dop doq dor dos dot dov dow dox doy doz dpp dra drb drc drd dre drg drh dri drl drn dro drq drr drs drt dru drw dry dsb dse dsh dsi dsl dsn dso dsq dta dtb dtd dth dti dtk dtm dto dtp dtr dts dtt dtu dty dua dub duc dud due duf dug duh dui duj duk dul dum dun duo dup duq dur dus duu duv duw dux duy duz dva dwa dwl dwr dws dww dya dyb dyd dyg dyi dym dyn dyo dyu dyy dza dzd dze dzg dzl dzn eaa ebg ebk ebo ebr ebu ecr ecs ecy eee efa efe efi ega egl ego egx egy ehu eip eit eiv eja eka ekc eke ekg eki ekk ekl ekm eko ekp ekr eky ele elh eli elk elm elo elp elu elx ema emb eme emg emi emk emm emn emo emp ems emu emw emx emy ena enb enc end enf enh enm enn eno enq enr enu env enw eot epi era erg erh eri erk ero err ers ert erw ese esh esi esk esl esm esn eso esq ess esu esx etb etc eth etn eto etr ets ett etu etx etz euq eve evh evn ewo ext eya eyo eza eze faa fab fad faf fag fah fai faj fak fal fam fan fap far fat fau fax fay faz fbl fcs fer ffi ffm fgr fia fie fil fip fir fit fiu fiw fkk fkv fla flh fli fll fln flr fly fmp fmu fng fni fod foi fom fon for fos fox fpe fqs frc frd frk frm fro frp frq frr frs frt fse fsl fss fub fuc fud fue fuf fuh fui fuj fum fun fuq fur fut fuu fuv fuy fvr fwa fwe gaa gab gac gad gae gaf gag gah gai gaj gak gal gam gan gao gap gaq gar gas gat gau gav gaw gax gay gaz gba gbb gbc gbd gbe gbf gbg gbh gbi gbj gbk gbl gbm gbn gbo gbp gbq gbr gbs gbu gbv gbw gbx gby gbz gcc gcd gce gcf gcl gcn gcr gct gda gdb gdc gdd gde gdf gdg gdh gdi gdj gdk gdl gdm gdn gdo gdq gdr gds gdt gdu gdx gea geb gec ged geg geh gei gej gek gel gem geq ges gew gex gey gez gfk gft gfx gga ggb ggd gge ggg ggk ggl ggn ggo ggr ggt ggu ggw gha ghc ghe ghh ghk ghl ghn gho ghr ghs ght gia gib gic gid gig gih gil gim gin gio gip giq gir gis git giu giw gix giy giz gji gjk gjm gjn gju gka gke gkn gko gkp glc gld glh gli glj glk gll glo glr glu glw gly gma gmb gmd gme gmh gml gmm gmn gmq gmu gmv gmw gmx gmy gmz gna gnb gnc gnd gne gng gnh gni gnk gnl gnm gnn gno gnq gnr gnt gnu gnw gnz goa gob goc god goe gof gog goh goi goj gok gol gom gon goo gop goq gor gos got gou gow gox goy goz gpa gpe gpn gqa gqi gqn gqr gqu gra grb grc grd grg grh gri grj grk grm gro grq grr grs grt gru grv grw grx gry grz gse gsg gsl gsm gsn gso gsp gss gsw gta gti gtu gua gub guc gud gue guf gug guh gui guk gul gum gun guo gup guq gur gus gut guu guv guw gux guz gva gvc gve gvf gvj gvl gvm gvn gvo gvp gvr gvs gvy gwa gwb gwc gwd gwe gwf gwg gwi gwj gwm gwn gwr gwt gwu gww gwx gxx gya gyb gyd gye gyf gyg gyi gyl gym gyn gyr gyy gza gzi gzn haa hab hac had hae haf hag hah hai haj hak hal ham han hao hap haq har has hav haw hax hay haz hba hbb hbn hbo hbu hca hch hdn hds hdy hea hed heg heh hei hem hgm hgw hhi hhr hhy hia hib hid hif hig hih hii hij hik hil him hio hir hit hiw hix hji hka hke hkk hks hla hlb hld hle hlt hlu hma hmb hmc hmd hme hmf hmg hmh hmi hmj hmk hml hmm hmn hmp hmq hmr hms hmt hmu hmv hmw hmx hmy hmz hna hnd hne hnh hni hnj hnn hno hns hnu hoa hob hoc hod hoe hoh hoi hoj hok hol hom hoo hop hor hos hot hov how hoy hoz hpo hps hra hrc hre hrk hrm hro hrp hrr hrt hru hrw hrx hrz hsb hsh hsl hsn hss hti hto hts htu htx hub huc hud hue huf hug huh hui huj huk hul hum huo hup huq hur hus hut huu huv huw hux huy huz hvc hve hvk hvn hvv hwa hwc hwo hya hyx iai ian iap iar iba ibb ibd ibe ibg ibi ibl ibm ibn ibr ibu iby ica ich icl icr ida idb idc idd ide idi idr ids idt idu ifa ifb ife iff ifk ifm ifu ify igb ige igg igl igm ign igo igs igw ihb ihi ihp ihw iin iir ijc ije ijj ijn ijo ijs ike iki ikk ikl iko ikp ikr ikt ikv ikw ikx ikz ila ilb ilg ili ilk ill ilo ils ilu ilv ilw ima ime imi iml imn imo imr ims imy inb inc ine ing inh inj inl inm inn ino inp ins int inz ior iou iow ipi ipo iqu iqw ira ire irh iri irk irn iro irr iru irx iry isa isc isd ise isg ish isi isk ism isn iso isr ist isu itb itc ite iti itk itl itm ito itr its itt itv itw itx ity itz ium ivb ivv iwk iwm iwo iws ixc ixl iya iyo iyx izh izi izr izz jaa jab jac jad jae jaf jah jaj jak jal jam jan jao jaq jar jas jat jau jax jay jaz jbe jbi jbj jbk jbn jbo jbr jbt jbu jbw jcs jct jda jdg jdt jeb jee jeg jeh jei jek jel jen jer jet jeu jgb jge jgk jgo jhi jhs jia jib jic jid jie jig jih jii jil jim jio jiq jit jiu jiv jiy jjr jkm jko jkp jkr jku jle jls jma jmb jmc jmd jmi jml jmn jmr jms jmw jmx jna jnd jng jni jnj jnl jns job jod jor jos jow jpa jpr jpx jqr jra jrb jrr jrt jru jsl jua jub juc jud juh jui juk jul jum jun juo jup jur jus jut juu juw juy jvd jvn jwi jya jye jyy kaa kab kac kad kae kaf kag kah kai kaj kak kam kao kap kaq kar kav kaw kax kay kba kbb kbc kbd kbe kbf kbg kbh kbi kbj kbk kbl kbm kbn kbo kbp kbq kbr kbs kbt kbu kbv kbw kbx kby kbz kca kcb kcc kcd kce kcf kcg kch kci kcj kck kcl kcm kcn kco kcp kcq kcr kcs kct kcu kcv kcw kcx kcy kcz kda kdc kdd kde kdf kdg kdh kdi kdj kdk kdl kdm kdn kdo kdp kdq kdr kdt kdu kdv kdw kdx kdy kdz kea keb kec ked kee kef keg keh kei kej kek kel kem ken keo kep keq ker kes ket keu kev kew kex key kez kfa kfb kfc kfd kfe kff kfg kfh kfi kfj kfk kfl kfm kfn kfo kfp kfq kfr kfs kft kfu kfv kfw kfx kfy kfz kga kgb kgc kgd kge kgf kgg kgh kgi kgj kgk kgl kgm kgn kgo kgp kgq kgr kgs kgt kgu kgv kgw kgx kgy kha khb khc khd khe khf khg khh khi khj khk khl khn kho khp khq khr khs kht khu khv khw khx khy khz kia kib kic kid kie kif kig kih kii kij kil kim kio kip kiq kis kit kiu kiv kiw kix kiy kiz kja kjb kjc kjd kje kjf kjg kjh kji kjj kjk kjl kjm kjn kjo kjp kjq kjr kjs kjt kju kjx kjy kjz kka kkb kkc kkd kke kkf kkg kkh kki kkj kkk kkl kkm kkn kko kkp kkq kkr kks kkt kku kkv kkw kkx kky kkz kla klb klc kld kle klf klg klh kli klj klk kll klm kln klo klp klq klr kls klt klu klv klw klx kly klz kma kmb kmc kmd kme kmf kmg kmh kmi kmj kmk kml kmm kmn kmo kmp kmq kmr kms kmt kmu kmv kmw kmx kmy kmz kna knb knc knd kne knf kng kni knj knk knl knm knn kno knp knq knr kns knt knu knv knw knx kny knz koa koc kod koe kof kog koh koi koj kok kol koo kop koq kos kot kou kov kow kox koy koz kpa kpb kpc kpd kpe kpf kpg kph kpi kpj kpk kpl kpm kpn kpo kpp kpq kpr kps kpt kpu kpv kpw kpx kpy kpz kqa kqb kqc kqd kqe kqf kqg kqh kqi kqj kqk kql kqm kqn kqo kqp kqq kqr kqs kqt kqu kqv kqw kqx kqy kqz kra krb krc krd kre krf krh kri krj krk krl krm krn kro krp krr krs krt kru krv krw krx kry krz ksa ksb ksc ksd kse ksf ksg ksh ksi ksj ksk ksl ksm ksn kso ksp ksq ksr kss kst ksu ksv ksw ksx ksy ksz kta ktb ktc ktd kte ktf ktg kth kti ktj ktk ktl ktm ktn kto ktp ktq ktr kts ktt ktu ktv ktw ktx kty ktz kub kuc kud kue kuf kug kuh kui kuj kuk kul kum kun kuo kup kuq kus kut kuu kuv kuw kux kuy kuz kva kvb kvc kvd kve kvf kvg kvh kvi kvj kvk kvl kvm kvn kvo kvp kvq kvr kvs kvt kvu kvv kvw kvx kvy kvz kwa kwb kwc kwd kwe kwf kwg kwh kwi kwj kwk kwl kwm kwn kwo kwp kwq kwr kws kwt kwu kwv kww kwx kwy kwz kxa kxb kxc kxd kxe kxf kxh kxi kxj kxk kxl kxm kxn kxo kxp kxq kxr kxs kxt kxu kxv kxw kxx kxy kxz kya kyb kyc kyd kye kyf kyg kyh kyi kyj kyk kyl kym kyn kyo kyp kyq kyr kys kyt kyu kyv kyw kyx kyy kyz kza kzb kzc kzd kze kzf kzg kzh kzi kzj kzk kzl kzm kzn kzo kzp kzq kzr kzs kzt kzu kzv kzw kzx kzy kzz laa lab lac lad lae laf lag lah lai laj lak lal lam lan lap laq lar las lau law lax lay laz lba lbb lbc lbe lbf lbg lbi lbj lbk lbl lbm lbn lbo lbq lbr lbs lbt lbu lbv lbw lbx lby lbz lcc lcd lce lcf lch lcl lcm lcp lcq lcs lda ldb ldd ldg ldh ldi ldj ldk ldl ldm ldn ldo ldp ldq lea leb lec led lee lef leg leh lei lej lek lel lem len leo lep leq ler les let leu lev lew lex ley lez lfa lfn lga lgb lgg lgh lgi lgk lgl lgm lgn lgq lgr lgt lgu lgz lha lhh lhi lhl lhm lhn lhp lhs lht lhu lia lib lic lid lie lif lig lih lii lij lik lil lio lip liq lir lis liu liv liw lix liy liz lja lje lji ljl ljp ljw ljx lka lkb lkc lkd lke lkh lki lkj lkl lkm lkn lko lkr lks lkt lku lky lla llb llc lld lle llf llg llh lli llj llk lll llm lln llo llp llq lls llu llx lma lmb lmc lmd lme lmf lmg lmh lmi lmj lmk lml lmm lmn lmo lmp lmq lmr lmu lmv lmw lmx lmy lmz lna lnb lnd lng lnh lni lnj lnl lnm lnn lno lns lnu lnw lnz loa lob loc loe lof log loh loi loj lok lol lom lon loo lop loq lor los lot lou lov low lox loy loz lpa lpe lpn lpo lpx lra lrc lre lrg lri lrk lrl lrm lrn lro lrr lrt lrv lrz lsa lsd lse lsg lsh lsi lsl lsm lso lsp lsr lss lst lsy ltc ltg lti ltn lto lts ltu lua luc lud lue luf lui luj luk lul lum lun luo lup luq lur lus lut luu luv luw luy luz lva lvk lvs lvu lwa lwe lwg lwh lwl lwm lwo lwt lwu lww lya lyg lyn lzh lzl lzn lzz maa mab mad mae maf mag mai maj mak mam man map maq mas mat mau mav maw max maz mba mbb mbc mbd mbe mbf mbh mbi mbj mbk mbl mbm mbn mbo mbp mbq mbr mbs mbt mbu mbv mbw mbx mby mbz mca mcb mcc mcd mce mcf mcg mch mci mcj mck mcl mcm mcn mco mcp mcq mcr mcs mct mcu mcv mcw mcx mcy mcz mda mdb mdc mdd mde mdf mdg mdh mdi mdj mdk mdl mdm mdn mdp mdq mdr mds mdt mdu mdv mdw mdx mdy mdz mea meb mec med mee mef meg meh mei mej mek mel mem men meo mep meq mer mes met meu mev mew mey mez mfa mfb mfc mfd mfe mff mfg mfh mfi mfj mfk mfl mfm mfn mfo mfp mfq mfr mfs mft mfu mfv mfw mfx mfy mfz mga mgb mgc mgd mge mgf mgg mgh mgi mgj mgk mgl mgm mgn mgo mgp mgq mgr mgs mgt mgu mgv mgw mgx mgy mgz mha mhb mhc mhd mhe mhf mhg mhh mhi mhj mhk mhl mhm mhn mho mhp mhq mhr mhs mht mhu mhw mhx mhy mhz mia mib mic mid mie mif mig mih mii mij mik mil mim min mio mip miq mir mis mit miu miw mix miy miz mja mjc mjd mje mjg mjh mji mjj mjk mjl mjm mjn mjo mjp mjq mjr mjs mjt mju mjv mjw mjx mjy mjz mka mkb mkc mke mkf mkg mkh mki mkj mkk mkl mkm mkn mko mkp mkq mkr mks mkt mku mkv mkw mkx mky mkz mla mlb mlc mld mle mlf mlh mli mlj mlk mll mlm mln mlo mlp mlq mlr mls mlu mlv mlw mlx mlz mma mmb mmc mmd mme mmf mmg mmh mmi mmj mmk mml mmm mmn mmo mmp mmq mmr mmt mmu mmv mmw mmx mmy mmz mna mnb mnc mnd mne mnf mng mnh mni mnj mnk mnl mnm mnn mno mnp mnq mnr mns mnt mnu mnv mnw mnx mny mnz moa moc mod moe mof mog moh moi moj mok mom moo mop moq mor mos mot mou mov mow mox moy moz mpa mpb mpc mpd mpe mpg mph mpi mpj mpk mpl mpm mpn mpo mpp mpq mpr mps mpt mpu mpv mpw mpx mpy mpz mqa mqb mqc mqe mqf mqg mqh mqi mqj mqk mql mqm mqn mqo mqp mqq mqr mqs mqt mqu mqv mqw mqx mqy mqz mra mrb mrc mrd mre mrf mrg mrh mrj mrk mrl mrm mrn mro mrp mrq mrr mrs mrt mru mrv mrw mrx mry mrz msb msc msd mse msf msg msh msi msj msk msl msm msn mso msp msq msr mss mst msu msv msw msx msy msz mta mtb mtc mtd mte mtf mtg mth mti mtj mtk mtl mtm mtn mto mtp mtq mtr mts mtt mtu mtv mtw mtx mty mua mub muc mud mue mug muh mui muj muk mul mum mun muo mup muq mur mus mut muu muv mux muy muz mva mvb mvd mve mvf mvg mvh mvi mvk mvl mvm mvn mvo mvp mvq mvr mvs mvt mvu mvv mvw mvx mvy mvz mwa mwb mwc mwd mwe mwf mwg mwh mwi mwj mwk mwl mwm mwn mwo mwp mwq mwr mws mwt mwu mwv mww mwx mwy mwz mxa mxb mxc mxd mxe mxf mxg mxh mxi mxj mxk mxl mxm mxn mxo mxp mxq mxr mxs mxt mxu mxv mxw mxx mxy mxz myb myc myd mye myf myg myh myi myj myk myl mym myn myo myp myq myr mys myt myu myv myw myx myy myz mza mzb mzc mzd mze mzg mzh mzi mzj mzk mzl mzm mzn mzo mzp mzq mzr mzs mzt mzu mzv mzw mzx mzy mzz naa nab nac nad nae naf nag nah nai naj nak nal nam nan nao nap naq nar nas nat naw nax nay naz nba nbb nbc nbd nbe nbf nbg nbh nbi nbj nbk nbm nbn nbo nbp nbq nbr nbs nbt nbu nbv nbw nbx nby nca ncb ncc ncd nce ncf ncg nch nci ncj nck ncl ncm ncn nco ncp ncr ncs nct ncu ncx ncz nda ndb ndc ndd ndf ndg ndh ndi ndj ndk ndl ndm ndn ndp ndq ndr nds ndt ndu ndv ndw ndx ndy ndz nea neb nec ned nee nef neg neh nei nej nek nem nen neo neq ner nes net neu nev new nex ney nez nfa nfd nfl nfr nfu nga ngb ngc ngd nge ngf ngg ngh ngi ngj ngk ngl ngm ngn ngo ngp ngq ngr ngs ngt ngu ngv ngw ngx ngy ngz nha nhb nhc nhd nhe nhf nhg nhh nhi nhk nhm nhn nho nhp nhq nhr nht nhu nhv nhw nhx nhy nhz nia nib nic nid nie nif nig nih nii nij nik nil nim nin nio niq nir nis nit niu niv niw nix niy niz nja njb njd njh nji njj njl njm njn njo njr njs njt nju njx njy njz nka nkb nkc nkd nke nkf nkg nkh nki nkj nkk nkm nkn nko nkp nkq nkr nks nkt nku nkv nkw nkx nkz nla nlc nle nlg nli nlj nlk nll nln nlo nlq nlr nlu nlv nlw nlx nly nlz nma nmb nmc nmd nme nmf nmg nmh nmi nmj nmk nml nmm nmn nmo nmp nmq nmr nms nmt nmu nmv nmw nmx nmy nmz nna nnb nnc nnd nne nnf nng nnh nni nnj nnk nnl nnm nnn nnp nnq nnr nns nnt nnu nnv nnw nnx nny nnz noa noc nod noe nof nog noh noi noj nok nol nom non noo nop noq nos not nou nov now noy noz npa npb npg nph npi npl npn npo nps npu npy nqg nqk nqm nqn nqo nqq nqy nra nrb nrc nre nrg nri nrk nrl nrm nrn nrp nrr nrt nru nrx nrz nsa nsc nsd nse nsf nsg nsh nsi nsk nsl nsm nsn nso nsp nsq nsr nss nst nsu nsv nsw nsx nsy nsz nte ntg nti ntj ntk ntm nto ntp ntr nts ntu ntw ntx nty ntz nua nub nuc nud nue nuf nug nuh nui nuj nuk nul num nun nuo nup nuq nur nus nut nuu nuv nuw nux nuy nuz nvh nvm nvo nwa nwb nwc nwe nwg nwi nwm nwo nwr nwx nwy nxa nxd nxe nxg nxi nxk nxl nxm nxn nxq nxr nxu nxx nyb nyc nyd nye nyf nyg nyh nyi nyj nyk nyl nym nyn nyo nyp nyq nyr nys nyt nyu nyv nyw nyx nyy nza nzb nzi nzk nzm nzs nzu nzy nzz oaa oac oar oav obi obk obl obm obo obr obt obu oca och oco ocu oda odk odt odu ofo ofs ofu ogb ogc oge ogg ogo ogu oht ohu oia oin ojb ojc ojg ojp ojs ojv ojw oka okb okd oke okg okh oki okj okk okl okm okn oko okr oks oku okv okx ola old ole olk olm olo olr oma omb omc ome omg omi omk oml omn omo omp omq omr omt omu omv omw omx ona onb one ong oni onj onk onn ono onp onr ons ont onu onw onx ood oog oon oor oos opa opk opm opo opt opy ora orc ore org orh orn oro orr ors ort oru orv orw orx ory orz osa osc osi oso osp ost osu osx ota otb otd ote oti otk otl otm otn oto otq otr ots ott otu otw otx oty otz oua oub oue oui oum oun owi owl oyb oyd oym oyy ozm paa pab pac pad pae paf pag pah pai pak pal pam pao pap paq par pas pat pau pav paw pax pay paz pbb pbc pbe pbf pbg pbh pbi pbl pbn pbo pbp pbr pbs pbt pbu pbv pby pbz pca pcb pcc pcd pce pcf pcg pch pci pcj pck pcl pcm pcn pcp pcr pcw pda pdc pdi pdn pdo pdt pdu pea peb ped pee pef peg peh pei pej pek pel pem peo pep peq pes pev pex pey pez pfa pfe pfl pga pgg pgi pgk pgl pgn pgs pgu pgy pha phd phg phh phi phk phl phm phn pho phq phr pht phu phv phw pia pib pic pid pie pif pig pih pii pij pil pim pin pio pip pir pis pit piu piv piw pix piy piz pjt pka pkb pkc pkg pkh pkn pko pkp pkr pks pkt pku pla plb plc pld ple plf plg plh plj plk pll pln plo plp plq plr pls plt plu plv plw ply plz pma pmb pmc pmd pme pmf pmh pmi pmj pmk pml pmm pmn pmo pmq pmr pms pmt pmu pmw pmx pmy pmz pna pnb pnc pne png pnh pni pnj pnk pnl pnm pnn pno pnp pnq pnr pns pnt pnu pnv pnw pnx pny pnz poc pod poe pof pog poh poi pok pom pon poo pop poq pos pot pov pow pox poy poz ppa ppe ppi ppk ppl ppm ppn ppo ppp ppq ppr pps ppt ppu pqa pqe pqm pqw pra prb prc prd pre prf prg prh pri prk prl prm prn pro prp prq prr prs prt pru prw prx pry prz psa psc psd pse psg psh psi psl psm psn pso psp psq psr pss pst psu psw psy pta pth pti ptn pto ptp ptr ptt ptu ptv ptw pty pua pub puc pud pue puf pug pui puj puk pum puo pup puq pur put puu puw pux puy puz pwa pwb pwg pwi pwm pwn pwo pwr pww pxm pye pym pyn pys pyu pyx pyy pzn qaa..qtz qua qub quc qud quf qug quh qui quk qul qum qun qup quq qur qus quv quw qux quy quz qva qvc qve qvh qvi qvj qvl qvm qvn qvo qvp qvs qvw qvy qvz qwa qwc qwe qwh qwm qws qwt qxa qxc qxh qxl qxn qxo qxp qxq qxr qxs qxt qxu qxw qya qyp raa rab rac rad raf rag rah rai raj rak ral ram ran rao rap raq rar ras rat rau rav raw rax ray raz rbb rbk rbl rbp rcf rdb rea reb ree reg rei rej rel rem ren rer res ret rey rga rge rgk rgn rgr rgs rgu rhg rhp ria rie rif ril rim rin rir rit riu rjg rji rjs rka rkb rkh rki rkm rkt rkw rma rmb rmc rmd rme rmf rmg rmh rmi rmk rml rmm rmn rmo rmp rmq rmr rms rmt rmu rmv rmw rmx rmy rmz rna rnd rng rnl rnn rnp rnr rnw roa rob roc rod roe rof rog rol rom roo rop ror rou row rpn rpt rri rro rrt rsb rsi rsl rtc rth rtm rtw rub ruc rue ruf rug ruh rui ruk ruo rup ruq rut ruu ruy ruz rwa rwk rwm rwo rwr rxd rxw ryn rys ryu saa sab sac sad sae saf sah sai saj sak sal sam sao sap saq sar sas sat sau sav saw sax say saz sba sbb sbc sbd sbe sbf sbg sbh sbi sbj sbk sbl sbm sbn sbo sbp sbq sbr sbs sbt sbu sbv sbw sbx sby sbz sca scb sce scf scg sch sci sck scl scn sco scp scq scs scu scv scw scx sda sdb sdc sde sdf sdg sdh sdj sdk sdl sdm sdn sdo sdp sdr sds sdt sdu sdv sdx sdz sea seb sec sed see sef seg seh sei sej sek sel sem sen seo sep seq ser ses set seu sev sew sey sez sfb sfe sfm sfs sfw sga sgb sgc sgd sge sgg sgh sgi sgj sgk sgl sgm sgn sgo sgp sgr sgs sgt sgu sgw sgx sgy sgz sha shb shc shd she shg shh shi shj shk shl shm shn sho shp shq shr shs sht shu shv shw shx shy shz sia sib sid sie sif sig sih sii sij sik sil sim sio sip siq sir sis sit siu siv siw six siy siz sja sjb sjd sje sjg sjk sjl sjm sjn sjo sjp sjr sjs sjt sju sjw ska skb skc skd ske skf skg skh ski skj skk skm skn sko skp skq skr sks skt sku skv skw skx sky skz sla slc sld sle slf slg slh sli slj sll slm sln slp slq slr sls slt slu slw slx sly slz sma smb smc smd smf smg smh smi smj smk sml smm smn smp smq smr sms smt smu smv smw smx smy smz snb snc sne snf sng snh sni snj snk snl snm snn sno snp snq snr sns snu snv snw snx sny snz soa sob soc sod soe sog soh soi soj sok sol son soo sop soq sor sos sou sov sow sox soy soz spb spc spd spe spg spi spk spl spm spo spp spq spr sps spt spu spv spx spy sqa sqh sqj sqk sqm sqn sqo sqq sqr sqs sqt squ sra srb src sre srf srg srh sri srk srl srm srn sro srq srr srs srt sru srv srw srx sry srz ssa ssb ssc ssd sse ssf ssg ssh ssi ssj ssk ssl ssm ssn sso ssp ssq ssr sss sst ssu ssv ssx ssy ssz sta stb std ste stf stg sth sti stj stk stl stm stn sto stp stq str sts stt stu stv stw sty sua sub suc sue sug sui suj suk sul sum suq sur sus sut suv suw sux suy suz sva svb svc sve svk svm svr svs svx swb swc swf swg swh swi swj swk swl swm swn swo swp swq swr sws swt swu swv sww swx swy sxb sxc sxe sxg sxk sxl sxm sxn sxo sxr sxs sxu sxw sya syb syc syd syi syk syl sym syn syo syr sys syw syy sza szb szc szd sze szg szl szn szp szv szw taa tab tac tad tae taf tag tai taj tak tal tan tao tap taq tar tas tau tav taw tax tay taz tba tbb tbc tbd tbe tbf tbg tbh tbi tbj tbk tbl tbm tbn tbo tbp tbq tbr tbs tbt tbu tbv tbw tbx tby tbz tca tcb tcc tcd tce tcf tcg tch tci tck tcl tcm tcn tco tcp tcq tcs tct tcu tcw tcx tcy tcz tda tdb tdc tdd tde tdf tdg tdh tdi tdj tdk tdl tdn tdo tdq tdr tds tdt tdu tdv tdx tdy tea teb tec ted tee tef teg teh tei tek tem ten teo tep teq ter tes tet teu tev tew tex tey tfi tfn tfo tfr tft tga tgb tgc tgd tge tgf tgg tgh tgi tgj tgn tgo tgp tgq tgr tgs tgt tgu tgv tgw tgx tgy tgz thc thd the thf thh thi thk thl thm thn thp thq thr ths tht thu thv thw thx thy thz tia tic tid tie tif tig tih tii tij tik til tim tin tio tip tiq tis tit tiu tiv tiw tix tiy tiz tja tjg tji tjl tjm tjn tjo tjs tju tjw tka tkb tkd tke tkf tkg tkk tkl tkm tkn tkp tkq tkr tks tkt tku tkw tkx tkz tla tlb tlc tld tlf tlg tlh tli tlj tlk tll tlm tln tlo tlp tlq tlr tls tlt tlu tlv tlw tlx tly tma tmb tmc tmd tme tmf tmg tmh tmi tmj tmk tml tmm tmn tmo tmp tmq tmr tms tmt tmu tmv tmw tmy tmz tna tnb tnc tnd tne tnf tng tnh tni tnk tnl tnm tnn tno tnp tnq tnr tns tnt tnu tnv tnw tnx tny tnz tob toc tod toe tof tog toh toi toj tol tom too top toq tor tos tou tov tow tox toy toz tpa tpc tpe tpf tpg tpi tpj tpk tpl tpm tpn tpo tpp tpq tpr tpt tpu tpv tpw tpx tpy tpz tqb tql tqm tqn tqo tqp tqq tqr tqt tqu tqw tra trb trc trd tre trf trg trh tri trj trk trl trm trn tro trp trq trr trs trt tru trv trw trx try trz tsa tsb tsc tsd tse tsf tsg tsh tsi tsj tsk tsl tsm tsp tsq tsr tss tst tsu tsv tsw tsx tsy tsz tta ttb ttc ttd tte ttf ttg tth tti ttj ttk ttl ttm ttn tto ttp ttq ttr tts ttt ttu ttv ttw tty ttz tua tub tuc tud tue tuf tug tuh tui tuj tul tum tun tuo tup tuq tus tut tuu tuv tuw tux tuy tuz tva tvd tve tvk tvl tvm tvn tvo tvs tvt tvu tvw tvy twa twb twc twd twe twf twg twh twl twm twn two twp twq twr twt twu tww twx twy txa txb txc txe txg txh txi txm txn txo txq txr txs txt txu txx txy tya tye tyh tyi tyj tyl tyn typ tyr tys tyt tyu tyv tyx tyz tza tzh tzj tzl tzm tzn tzo tzx uam uan uar uba ubi ubl ubr ubu uby uda ude udg udi udj udl udm udu ues ufi uga ugb uge ugn ugo ugy uha uhn uis uiv uji uka ukg ukh ukl ukp ukq uks uku ukw uky ula ulb ulc ule ulf uli ulk ull ulm uln ulu ulw uma umb umc umd umg umi umm umn umo ump umr ums umu una und une ung unk unm unn unp unr unu unx unz uok upi upv ura urb urc ure urf urg urh uri urj urk url urm urn uro urp urr urt uru urv urw urx ury urz usa ush usi usk usp usu uta ute utp utr utu uum uun uur uuu uve uvh uvl uwa uya uzn uzs vaa vae vaf vag vah vai vaj val vam van vao vap var vas vau vav vay vbb vbk vec ved vel vem veo vep ver vgr vgt vic vid vif vig vil vin vis vit viv vka vki vkj vkk vkl vkm vko vkp vkt vku vlp vls vma vmb vmc vmd vme vmf vmg vmh vmi vmj vmk vml vmm vmp vmq vmr vms vmu vmv vmw vmx vmy vmz vnk vnm vnp vor vot vra vro vrs vrt vsi vsl vsv vto vum vun vut vwa waa wab wac wad wae waf wag wah wai waj wak wal wam wan wao wap waq war was wat wau wav waw wax way waz wba wbb wbe wbf wbh wbi wbj wbk wbl wbm wbp wbq wbr wbt wbv wbw wca wci wdd wdg wdj wdk wdu wdy wea wec wed weg weh wei wem wen weo wep wer wes wet weu wew wfg wga wgb wgg wgi wgo wgu wgw wgy wha whg whk whu wib wic wie wif wig wih wii wij wik wil wim win wir wit wiu wiv wiw wiy wja wji wka wkb wkd wkl wku wkw wky wla wlc wle wlg wli wlk wll wlm wlo wlr wls wlu wlv wlw wlx wly wma wmb wmc wmd wme wmh wmi wmm wmn wmo wms wmt wmw wmx wnb wnc wnd wne wng wni wnk wnm wnn wno wnp wnu wnw wny woa wob woc wod woe wof wog woi wok wom won woo wor wos wow woy wpc wra wrb wrd wrg wrh wri wrk wrl wrm wrn wro wrp wrr wrs wru wrv wrw wrx wry wrz wsa wsi wsk wsr wss wsu wsv wtf wth wti wtk wtm wtw wua wub wud wuh wul wum wun wur wut wuu wuv wux wuy wwa wwb wwo wwr www wxa wxw wya wyb wyi wym wyr wyy xaa xab xac xad xae xag xai xal xam xan xao xap xaq xar xas xat xau xav xaw xay xba xbb xbc xbd xbe xbg xbi xbj xbm xbn xbo xbp xbr xbw xbx xby xcb xcc xce xcg xch xcl xcm xcn xco xcr xct xcu xcv xcw xcy xda xdc xdk xdm xdy xeb xed xeg xel xem xep xer xes xet xeu xfa xga xgb xgd xgf xgg xgi xgl xgm xgn xgr xgu xgw xha xhc xhd xhe xhr xht xhu xhv xia xib xii xil xin xip xir xiv xiy xjb xjt xka xkb xkc xkd xke xkf xkg xkh xki xkj xkk xkl xkn xko xkp xkq xkr xks xkt xku xkv xkw xkx xky xkz xla xlb xlc xld xle xlg xli xln xlo xlp xls xlu xly xma xmb xmc xmd xme xmf xmg xmh xmj xmk xml xmm xmn xmo xmp xmq xmr xms xmt xmu xmv xmw xmx xmy xmz xna xnb xnd xng xnh xni xnk xnn xno xnr xns xnt xnu xny xnz xoc xod xog xoi xok xom xon xoo xop xor xow xpa xpc xpe xpg xpi xpj xpk xpm xpn xpo xpp xpq xpr xps xpt xpu xpy xqa xqt xra xrb xrd xre xrg xri xrm xrn xrq xrr xrt xru xrw xsa xsb xsc xsd xse xsh xsi xsj xsl xsm xsn xso xsp xsq xsr xss xsu xsv xsy xta xtb xtc xtd xte xtg xth xti xtj xtl xtm xtn xto xtp xtq xtr xts xtt xtu xtv xtw xty xtz xua xub xud xug xuj xul xum xun xuo xup xur xut xuu xve xvi xvn xvo xvs xwa xwc xwd xwe xwg xwj xwk xwl xwo xwr xwt xww xxb xxk xxm xxr xxt xya xyb xyj xyk xyl xyt xyy xzh xzm xzp yaa yab yac yad yae yaf yag yah yai yaj yak yal yam yan yao yap yaq yar yas yat yau yav yaw yax yay yaz yba ybb ybd ybe ybh ybi ybj ybk ybl ybm ybn ybo ybx yby ych ycl ycn ycp yda ydd yde ydg ydk yds yea yec yee yei yej yel yen yer yes yet yeu yev yey yga ygi ygl ygm ygp ygr ygu ygw yha yhd yhl yia yif yig yih yii yij yik yil yim yin yip yiq yir yis yit yiu yiv yix yiy yiz yka ykg yki ykk ykl ykm ykn yko ykr ykt yku yky yla ylb yle ylg yli yll ylm yln ylo ylr ylu yly yma ymb ymc ymd yme ymg ymh ymi ymk yml ymm ymn ymo ymp ymq ymr yms ymt ymx ymz yna ynd yne yng ynh ynk ynl ynn yno ynq yns ynu yob yog yoi yok yol yom yon yos yot yox yoy ypa ypb ypg yph ypk ypm ypn ypo ypp ypz yra yrb yre yri yrk yrl yrm yrn yrs yrw yry ysc ysd ysg ysl ysn yso ysp ysr yss ysy yta ytl ytp ytw yty yua yub yuc yud yue yuf yug yui yuj yuk yul yum yun yup yuq yur yut yuu yuw yux yuy yuz yva yvt ywa ywg ywl ywn ywq ywr ywt ywu yww yxa yxg yxl yxm yxu yxy yyr yyu yyz yzg yzk zaa zab zac zad zae zaf zag zah zai zaj zak zal zam zao zap zaq zar zas zat zau zav zaw zax zay zaz zbc zbe zbl zbt zbw zca zch zdj zea zeg zeh zen zga zgb zgh zgm zgn zgr zhb zhd zhi zhn zhw zhx zia zib zik zil zim zin zir ziw ziz zka zkb zkd zkg zkh zkk zkn zko zkp zkr zkt zku zkv zkz zle zlj zlm zln zlq zls zlw zma zmb zmc zmd zme zmf zmg zmh zmi zmj zmk zml zmm zmn zmo zmp zmq zmr zms zmt zmu zmv zmw zmx zmy zmz zna znd zne zng znk zns zoc zoh zom zoo zoq zor zos zpa zpb zpc zpd zpe zpf zpg zph zpi zpj zpk zpl zpm zpn zpo zpp zpq zpr zps zpt zpu zpv zpw zpx zpy zpz zqe zra zrg zrn zro zrp zrs zsa zsk zsl zsm zsr zsu zte ztg ztl ztm ztn ztp ztq zts ztt ztu ztx zty zua zuh zum zun zuy zwa zxx zyb zyg zyj zyn zyp zza zzj aao abh abv acm acq acw acx acy adf ads aeb aec aed aen afb afg ajp apc apd arb arq ars ary arz ase asf asp asq asw auz avl ayh ayl ayn ayp bbz bfi bfk bjn bog bqn bqy btj bve bvl bvu bzs cdo cds cjy cmn coa cpx csc csd cse csf csg csl csn csq csr czh czo doq dse dsl dup ecs esl esn eso eth fcs fse fsl fss gan gds gom gse gsg gsm gss gus hab haf hak hds hji hks hos hps hsh hsl hsn icl ils inl ins ise isg isr jak jax jcs jhs jls jos jsl jus kgi knn kvb kvk kvr kxd lbs lce lcf liw lls lsg lsl lso lsp lst lsy ltg lvs lzh max mdl meo mfa mfb mfs min mnp mqg mre msd msi msr mui mzc mzg mzy nan nbs ncs nsi nsl nsp nsr nzs okl orn ors pel pga pks prl prz psc psd pse psg psl pso psp psr pys rms rsi rsl sdl sfb sfs sgg sgx shu slf sls sqk sqs ssh ssp ssr svk swc swh swl syy tmw tse tsm tsq tss tsy tza ugn ugy ukl uks urk uzn uzs vgt vkk vkt vsi vsl vsv wuu xki xml xmm xms yds ysl yue zib zlm zmi zsl zsm afak aghb arab armi armn avst bali bamu bass batk beng blis bopo brah brai bugi buhd cakm cans cari cham cher cirt copt cprt cyrl cyrs deva dsrt dupl egyd egyh egyp elba ethi geok geor glag goth gran grek gujr guru hang hani hano hans hant hebr hira hluw hmng hrkt hung inds ital java jpan jurc kali kana khar khmr khoj knda kore kpel kthi lana laoo latf latg latn lepc limb lina linb lisu loma lyci lydi mahj mand mani maya mend merc mero mlym mong moon mroo mtei mymr narb nbat nkgb nkoo nshu ogam olck orkh orya osma palm perm phag phli phlp phlv phnx plrd prti qaaa..qabx rjng roro runr samr sara sarb saur sgnw shaw shrd sind sinh sora sund sylo syrc syre syrj syrn tagb takr tale talu taml tang tavt telu teng tfng tglg thaa thai tibt tirh ugar vaii visp wara wole xpeo xsux yiii zinh zmth zsym zxxx zyyy zzzz aa ac ad ae af ag ai al am an ao aq ar as at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bu bv bw by bz ca cc cd cf cg ch ci ck cl cm cn co cp cr cs cu cv cw cx cy cz dd de dg dj dk dm do dz ea ec ee eg eh er es et eu fi fj fk fm fo fr fx ga gb gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nt nu nz om pa pe pf pg ph pk pl pm pn pr ps pt pw py qa qm..qz re ro rs ru rw sa sb sc sd se sg sh si sj sk sl sm sn so sr ss st su sv sx sy sz ta tc td tf tg th tj tk tl tm tn to tp tr tt tv tw tz ua ug um us uy uz va vc ve vg vi vn vu wf ws xa..xz yd ye yt yu za zm zr zw zz 001 002 003 005 009 011 013 014 015 017 018 019 021 029 030 034 035 039 053 054 057 061 142 143 145 150 151 154 155 419 1606nict 1694acad 1901 1959acad 1994 1996 alalc97 aluku arevela arevmda baku1926 bauddha biscayan biske bohoric boont dajnko emodeng fonipa fonupa fonxsamp hepburn heploc hognorsk itihasa jauer jyutping kkcor kscor laukika lipaw luna1918 metelko monoton ndyuka nedis njiva nulik osojs pamaka petr1708 pinyin polyton puter rigik rozaj rumgr scotland scouse solba surmiran sursilv sutsilv tarask uccor ucrcor ulster unifon vaidika valencia vallader wadegile ",
-    tags : "art-lojban cel-gaulish en-gb-oed i-ami i-bnn i-default i-enochian i-hak i-klingon i-lux i-mingo i-navajo i-pwn i-tao i-tay i-tsu no-bok no-nyn sgn-be-fr sgn-be-nl sgn-ch-de zh-guoyu zh-hakka zh-min zh-min-nan zh-xiang az-arab az-cyrl az-latn be-latn bs-cyrl bs-latn de-1901 de-1996 de-at-1901 de-at-1996 de-ch-1901 de-ch-1996 de-de-1901 de-de-1996 en-boont en-scouse es-419 iu-cans iu-latn mn-cyrl mn-mong sgn-br sgn-co sgn-de sgn-dk sgn-es sgn-fr sgn-gb sgn-gr sgn-ie sgn-it sgn-jp sgn-mx sgn-ni sgn-nl sgn-no sgn-pt sgn-se sgn-us sgn-za sl-nedis sl-rozaj sr-cyrl sr-latn tg-arab tg-cyrl uz-cyrl uz-latn yi-latn zh-cmn zh-cmn-hans zh-cmn-hant zh-gan zh-hans zh-hans-cn zh-hans-hk zh-hans-mo zh-hans-sg zh-hans-tw zh-hant zh-hant-cn zh-hant-hk zh-hant-mo zh-hant-sg zh-hant-tw zh-wuu zh-yue "
-  };
-
-  /* shared functions */
-
-  /**
-   * @function validLanguageCode
-   *
-   * @memberOf OpenAjax.a11y.util
-   *
-   * @desc Identifies if a language code is valid
-   *
-   * @param  {String}  language code -  INAN language code
-   *
-   * @return {Boolean}  If a valid language code return true, otherwsie false
-   */
-
-   function validLanguageCode(code) {
-
-    code = code.toLowerCase();
-
-    if ((typeof code === 'string') || code.length) {
-
-      const parts = code.split("-");
-
-      if (parts.length > 1) {
-        for (let i = 0; i < parts.length; i += 1) {
-          if (LANGUAGE_CODES.subtags.indexOf(parts[i]) < 0) return false;
-        }
-        return true;
-      }
-      else {
-        if (LANGUAGE_CODES.subtags.indexOf(code) >= 0) return true;
-        if (LANGUAGE_CODES.tags.indexOf(code) >= 0) return true;
-      }
-    }
-    return false;
-  }
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Language Rules
-   */
-
-  const languageRules = [
-
-    /**
-     * @object LANGUAGE_1
-     *
-     * @desc HTML element must have a lang attribute
-     */
-
-    { rule_id             : 'LANGUAGE_1',
-      last_updated        : '2023-09-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '3.1.1',
-      wcag_related_ids    : [],
-      target_resources    : ['html'],
-      validate            : function (dom_cache, rule_result) {
-        if (dom_cache.lang) {
-          if (validLanguageCode(dom_cache.lang)) {
-            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', [dom_cache.lang]);
-          }
-          else {
-            rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', [dom_cache.lang]);
-          }
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        }
-      } // end validation function
-    },
-
-    /**
-     * @object LANGUAGE_2
-     *
-     * @desc Identify the elements on the page where the text content is different language from the primary content
-     */
-
-    { rule_id             : 'LANGUAGE_2',
-      last_updated        : '2023-09-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '3.1.2',
-      wcag_related_ids    : ['3.1.1'],
-      target_resources    : ['[lang]'],
-      validate            : function (dom_cache, rule_result) {
-
-        let passCount = 0;
-        let failCount = 0;
-
-        dom_cache.allDomElements.forEach( de => {
-          if (de.lang) {
-            if (de.visibility.isVisibleToAT) {
-              if (validLanguageCode(de.lang)) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.lang]);
-                passCount += 1;
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, de.lang]);
-                failCount += 1;
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-        });
-
-        if (failCount === 1) rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        else if (failCount > 1) rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', [failCount]);
-        else if (passCount === 1) rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        else if (passCount > 1) rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [passCount]);
-        else rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_3', []);
-
-      } // end validation function
-    }
-
-  ];
-
-  /* layoutRules.js */
-
-  /* Constants */
-
-
-  const debug$y = new DebugLogging('Layout Rules', false);
-  debug$y.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Layout Rules
-   */
-
-  const layoutRules = [
-
-    /**
-     * @object LAYOUT_1
-     *
-     * @desc     Make sure content is in a meaningful sequence
-     *           tables used for layout must be checked for
-     *           maintaining meaningful sequence
-     */
-    { rule_id             : 'LAYOUT_1',
-      last_updated        : '2023-09-06',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.2',
-      wcag_related_ids    : ['1.3.1'],
-      target_resources    : ['Page', 'table'],
-      validate            : function (dom_cache, rule_result) {
-
-        let layoutPass = 0;
-        let layoutManualCheck = 0;
-
-        dom_cache.tableInfo.allTableElements.forEach( te => {
-          const de = te.domElement;
-
-          if (te.tableType === TABLE_TYPE.LAYOUT) {
-            if (de.visibility.isVisibleToAT) {
-              if (te.colCount === 1)  {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                layoutPass += 1;
-              }
-              else {
-                if (te.nestinglevel === 0) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [te.rowCount, te.colCount]);
-                  layoutManualCheck += 1;
-                }
-                else {
-                   rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [te.nestingLevel]);
-                   layoutManualCheck += 1;
-                }
-              }
-            }
-            else {
-             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-        if (layoutManualCheck) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [layoutManualCheck]);
-        }
-        else {
-          if (layoutPass) {
-            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-          }
-        }
-      }  // end validation function
-    },
-
-    /**
-     * @object LAYOUT_2
-     *
-     * @desc     Do not use nested tables more than 1 column wide for positioning content
-     *           Fails with one or more one levels of nesting.
-     */
-    { rule_id             : 'LAYOUT_2',
-      last_updated        : '2023-09-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.2',
-      wcag_related_ids    : [],
-      target_resources    : ['table'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.tableInfo.allTableElements.forEach( te => {
-          const de = te.domElement;
-
-          if (te.tableType === TABLE_TYPE.LAYOUT) {
-            if (de.visibility.isVisibleToAT) {
-
-              if (te.colCount > 1) {
-                if (te.nestingLevel > 0) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [te.rowCount, te.colCount, te.nestingLevel]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
-              }
-            }
-            else {
-             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          }
-        });
-
-      } // end validation function
-    },
-
-    /**
-     * @object LAYOUT_3
-     *
-     * @desc    Verify if the aria-flow to property ordering makes sense to AT users.
-     */
-    { rule_id             : 'LAYOUT_3',
-      last_updated        : '2023-09-06',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.2',
-      wcag_related_ids    : [],
-      target_resources    : ['[aria_flowto]'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.allDomElements.forEach( de => {
-
-          if (de.ariaInfo.flowTo) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.flowTo]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.flowTo]);
-            }
-          }
-
-        });
-      } // end validation function
-    },
-
-    /**
-     * @object LAYOUT_4
-     *
-     * @desc    Verify if the page support both port
-     */
-    { rule_id             : 'LAYOUT_4',
-      last_updated        : '2023-09-14',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.4',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate          : function (dom_cache, rule_result) {
-
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-
-      } // end validate function
-    }
-  ];
-
-  /* linkRules.js */
-
-  /* Constants */
-  const debug$x = new DebugLogging('Link Rules', false);
-  debug$x.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Link Rules
-   */
-
-  const linkRules = [
-
-    /**
-     * @object LINK_1
-     *
-     * @desc Link should describe the target of a link
-     */
-
-    { rule_id             : 'LINK_1',
-      last_updated        : '2022-05-23',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.4',
-      wcag_related_ids    : ['2.4.9'],
-      target_resources    : ['a', 'area', '[role=link]'],
-      validate            : function (dom_cache, rule_result) {
-        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
-          if (de.visibility.isVisibleToAT) {
-            const name = de.accName.name;
-            const desc = de.accDescription.name;
-            if (name.length) {
-              if (desc.length) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName, name, desc]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, name]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        });
-      } // end valifdation function
-    },
-
-    /**
-     * @object LINK_2
-     *
-     * @desc Links with the different HREFs should have the unique accessible names
-     */
-
-    { rule_id             : 'LINK_2',
-      last_updated        : '2022-05-23',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : false,
-      wcag_primary_id     : '2.4.4',
-      wcag_related_ids    : ['2.4.9'],
-      target_resources    : ['a', 'area', '[role=link]'],
-      validate            : function (dom_cache, rule_result) {
-
-        // array of visible DOM elements identified as links
-        const visibleLinks = [];
-
-        dom_cache.linkInfo.allLinkDomElements.forEach ( de => {
-          if (de.visibility.isVisibleToAT) {
-            visibleLinks.push(de);
-          }
-        });
-
-        visibleLinks.forEach( (de1, index1) => {
-          let differentHrefSameDescription      = 0;
-          let differentHrefDifferentDescription = 0;
-          let sameHref = 0;
-          visibleLinks.forEach( (de2, index2) => {
-            if (index1 !== index2) {
-              if (accNamesTheSame(de1.accName, de2.accName)) {
-                if (de1.node.href === de2.node.href) {
-                  sameHref += 1;
-                }
-                else {
-                  if (accNamesTheSame(de1.accDescription, de2.accDescription)) {
-                    differentHrefSameDescription += 1;
-                  }
-                  else {
-                    differentHrefDifferentDescription += 1;
-                  }
-                }
-              }
-            }
-          });
-
-          if (differentHrefSameDescription) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de1,  'ELEMENT_FAIL_1', [(differentHrefSameDescription + 1)]);
-          } else {
-            if (differentHrefDifferentDescription) {
-              if (differentHrefDifferentDescription === 1) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_3', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_4', [differentHrefDifferentDescription]);
-              }
-            } else {
-              if (sameHref) {
-                if (sameHref === 1) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_2', [sameHref]);
-                }
-              }
-            }
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object LINK_3
-     *
-     * @desc Target of a link does not go to a page with popup windows
-     */
-
-    { rule_id             : 'LINK_3',
-      last_updated        : '2023-08-22',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.1',
-      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
-      target_resources    : ['a', 'area', 'select'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-      } // end validation function
-    },
-  ];
-
-  /* listRules.js */
-
-  /* Constants */
-  const debug$w = new DebugLogging('List Rules', false);
-  debug$w.flag = false;
-
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: List Rules
-   */
-
-  const listRules = [
-
-    /**
-     * @object LIST_1
-     *
-     * @desc Verify list elements are used semantically
-    */
-
-    { rule_id             : 'LIST_1',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.1',
-      wcag_related_ids    : [],
-      target_resources    : ['ul', 'ol', 'li', '[role="list"]', '[role="listitem"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        let listCount = 0;
-
-        dom_cache.listInfo.allListElements.forEach ( le => {
-          const de = le.domElement;
-
-          if (de.role === 'list') {
-            if (de.visibility.isVisibleToAT) {
-              listCount += 1;
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-
-         if (de.role === 'listitem') {
-            if (de.visibility.isVisibleToAT) {
-              listCount += 1;
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-
-        });
-
-        if (listCount) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [listCount]);
-        }
-
-      } // end validate function
-    },
-    /**
-     * @object LIST_2
-     *
-     * @desc Verify list benefits from an accessible name
-    */
-
-    { rule_id             : 'LIST_2',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.6',
-      wcag_related_ids    : ['1.3.1'],
-      target_resources    : ['ul', 'ol', '[role="list"]'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.listInfo.allListElements.forEach ( le => {
-          const de = le.domElement;
-
-          if (de.role === 'list') {
-            if (de.visibility.isVisibleToAT) {
-              if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.accName.name]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-
-        });
-      } // end validate function
-    }
-  ];
-
-  /* liveRules.js */
-
-  /* Constants */
-  const debug$v = new DebugLogging('Live Region Rules', false);
-  debug$v.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Sensory Rules
-   */
-
-  const liveRules = [
-
-  /**
-   * @object LIVE_1
-   *
-   * @desc  Verify live regions are being used properly
-   */
-  { rule_id             : 'LIVE_1',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.PAGE,
-    rule_category       : RULE_CATEGORIES.TIMING_LIVE,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.3',
-    wcag_related_ids    : [],
-    target_resources    : ['[role="alert"]','[role="log"]','[role="status"]','[aria-live]'],
-    validate          : function (dom_cache, rule_result) {
-
-      let liveCount = 0;
-
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.isLive) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.ariaInfo.ariaLive) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.ariaInfo.ariaLive]);
-            }
-            else {
-              if (de.role === 'alert') {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-              else {
-                if (de.role === 'log') {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', []);
-                }
-                else {
-                  // Status role
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', []);
-                }
-              }
-            }
-          }
-          else {
-            if (de.ariaInfo.ariaLive) {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.ariaInfo.ariaLive]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, de.role]);
-            }
-          }
-        }
-      });
-
-      if (dom_cache.hasScripting || liveCount) {
-        {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', []);
-        }
-      }
-    } // end validation function
-  }
-
-  ];
-
-  /* motionRules.js */
-
-  /* Constants */
-  const debug$u = new DebugLogging('Motion Rules', false);
-  debug$u.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Motion Rules
-   */
-
-  const motionRules = [
-
-    /**
-     * @object MOTION_1
-     *
-     * @desc
-    */
-
-    { rule_id             : 'MOTION_1',
-      last_updated        : '2023-12-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.4',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate            : function (dom_cache, rule_result) {
-
-        if (dom_cache.hasScripting) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-
-     } // end validation function  }
-    }
-
-  ];
-
-  /* navigationRules.js */
-
-  /* Constants */
-  const debug$t = new DebugLogging('Navigation Rules', false);
-  debug$t.flag = false;
-
-
-  /* Helper Functions */
-
-  function isHeadingLevelOne (domElement) {
-    return ((domElement.tagName == 'h1')  ||
-            ((domElement.role='heading') &&
-            (domElement.ariaInfo.ariaLevel === 1)));
-  }
-
-  function isHeadingLevelTwo (domElement) {
-    return ((domElement.tagName == 'h2')  ||
-            ((domElement.role='heading') &&
-            (domElement.ariaInfo.ariaLevel === 2)));
-  }
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: List Rules
-   */
-
-  const navigationRules = [
-
-    /**
-     * @object NAVIGATION_1
-     *
-     * @desc Page has at least two of the following resources: table of contents, site map,
-     *       search, navigation links, sand trail
-     */
-
-    { rule_id             : 'NAVIGATION_1',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.5',
-      wcag_related_ids    : [],
-      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\''],
-      validate            : function (dom_cache, rule_result) {
-
-        let navigationCount = 0;
-        let searchCount = 0;
-
-        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (de.role === 'navigation') {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              navigationCount += 1;
-            }
-          }
-
-          if (de.role === 'search') {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              searchCount += 1;
-            }
-          }
-        });
-
-        if ((navigationCount > 0) && (searchCount > 0)) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
-        }
-        else {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_2', []);
-        }
-
-      } // end validation function
-    },
-
-    /**
-     * @object NAVIGATION_2
-     *
-     * @desc  Landmarks are in the same relative order when used to identify sections of web pages within the same website
-     *
-     */
-
-    { rule_id             : 'NAVIGATION_2',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.3',
-      wcag_related_ids    : ['3.2.4'],
-      target_resources    : ['Website', 'role=\'main\'', 'role=\'navigation\'', 'role=\'banner\'', 'role=\'contentinfo\'','role=\'search\''],
-      validate            : function (dom_cache, rule_result) {
-
-        const landmarkRoles = [
-          'banner',
-          'complementary',
-          'contentinfo',
-          'main',
-          'navigation',
-          'search'];
-
-        let landmarks = [];
-
-        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (landmarkRoles.includes(de.role)) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
-              landmarks.push(de.role);
-            }
-          }
-        });
-
-        if ((landmarks.length > 0)) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', [landmarks.join(', ')]);
-        }
-      } // end validation function
-    },
-
-    /**
-     * @object NAVIGATION_3
-     *
-     * @desc  h2 elements are in the same relative order when used to identify sections of web pages within the same website
-     *
-     */
-
-    { rule_id             : 'NAVIGATION_3',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.3',
-      wcag_related_ids    : ['3.2.4'],
-      target_resources    : ['Website', 'h2'],
-      validate            : function (dom_cache, rule_result) {
-
-        let headingCount = 0;
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.visibility.isVisibleToAT) {
-            if (isHeadingLevelOne(de)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              headingCount += 1;
-            }
-
-            if (isHeadingLevelTwo(de)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              headingCount += 1;
-            }
-          }
-        });
-
-        if ((headingCount > 0)) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
-        }
-        else {
-          rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
-        }
-
-      } // end validation function
-    },
-
-    /**
-     * @object NAVIGATION_4
-     *
-     * @desc  landmarks identifying the same sections in a website have the same accessible name
-     *
-     */
-
-    { rule_id             : 'NAVIGATION_4',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.4',
-      wcag_related_ids    : ['3.2.3'],
-      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\'', 'role=\'main\'', 'role=\'banner\'', 'role=\'contentinfo\'', 'h2'],
-      validate            : function (dom_cache, rule_result) {
-
-        const landmarkRoles = [
-          'banner',
-          'complementary',
-          'contentinfo',
-          'main',
-          'navigation',
-          'search'];
-
-        let landmarks = [];
-
-        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
-          const de = le.domElement;
-          if (landmarkRoles.includes(de.role)) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
-              landmarks.push(de.role);
-            }
-          }
-        });
-
-        if ((landmarks.length > 0)) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', [landmarks.join(', ')]);
-        }
-
-      } // end validation function
-    },
-
-    /**
-     * @object NAVIGATION_5
-     *
-     * @desc  h2 elements used to identify sections of web pages within the same accessible name
-     *
-     */
-
-    { rule_id             : 'NAVIGATION_5',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.WEBSITE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '3.2.4',
-      wcag_related_ids    : ['3.2.3'],
-      target_resources    : ['Website', 'h2'],
-      validate            : function (dom_cache, rule_result) {
-
-        let headingCount = 0;
-
-        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
-          if (de.visibility.isVisibleToAT) {
-            if (isHeadingLevelOne(de)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              headingCount += 1;
-            }
-
-            if (isHeadingLevelTwo(de)) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              headingCount += 1;
-            }
-          }
-        });
-
-        if ((headingCount > 0)) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
-        }
-        else {
-          rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
-        }
-
-      } // end validation function
-    }
-  ];
-
-  /* pointerRules.js */
-
-  /* Constants */
-  const debug$s = new DebugLogging('Pointer Rules', false);
-  debug$s.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Pointer Rules
-   */
-
-  const pointerRules = [
-
-    /**
-     * @object POINTER_1
-     *
-     * @desc
-    */
-
-    { rule_id             : 'POINTER_1',
-      last_updated        : '2023-12-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.1',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate            : function (dom_cache, rule_result) {
-
-        if (dom_cache.hasScripting) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-
-     } // end validation function  }
-    },
-
-    /**
-     * @object POINTER_2
-     *
-     * @desc Pointer Cancellation
-    */
-
-    { rule_id             : 'POINTER_2',
-      last_updated        : '2023-12-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.2',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate            : function (dom_cache, rule_result) {
-
-        if (dom_cache.hasScripting) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-
-     } // end validation function  }
-    },
-
-  ];
-
-  /* readingOrderRules.js */
-
-  /* Constants */
-  const debug$r = new DebugLogging('Reading Order Rules', false);
-  debug$r.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Reading Order Rules
-   */
-
-  const readingOrderRules = [
-
-      /**
-       * @object ORDER_1
-       *
-       * @desc Reading order is meaningful when content is positioned using CSS
-       */
-
-    { rule_id             : 'ORDER_1',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.2',
-      wcag_related_ids    : [],
-      target_resources    : [],
-      validate          : function (dom_cache, rule_result) {
-
-        const positionValues = [
-          'absolute',
-          'relative',
-          'fixed'];
-
-        dom_cache.allDomElements.forEach( de => {
-          if (positionValues.includes(de.cssPosition)) {
-            if (de.visibility.isVisibleToAT) {
-               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.cssPosition]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.cssPosition]);
-            }
-          }
-        });
-      } // end validate function
-    }
-  ];
-
-  /* resizeRules.js */
-
-  /* Constants */
-  const debug$q = new DebugLogging('Resize Rules', false);
-  debug$q.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Resize Rules
-   */
-
-  const resizeRules = [
-
-    /**
-     * @object RESIZE_1
-     *
-     * @desc Resize content
-     */
-
-    { rule_id             : 'RESIZE_1',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.4',
-      wcag_related_ids    : [],
-      target_resources    : ['content'],
-      validate          : function (dom_cache, rule_result) {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      } // end validate function
-    },
-
-   /**
-     * @object RESIZE_1
-     *
-     * @desc Resize content
-     */
-
-    { rule_id             : 'RESIZE_2',
-      last_updated        : '2023-09-19',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-      rule_required       : true,
-      wcag_primary_id     : '1.4.10',
-      wcag_related_ids    : [],
-      target_resources    : ['content'],
-      validate          : function (dom_cache, rule_result) {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      } // end validate function
-    }
-
-  ];
-
-  /* sensoryRules.js */
-
-  /* Constants */
-  const debug$p = new DebugLogging('Sensory Rules', false);
-  debug$p.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Sensory Rules
-   */
-
-  const sensoryRules = [
-
-      /**
-       * @object SENSORY_1
-       *
-       * @desc Content does not rely solely on sensory characteristics
-       */
-
-    { rule_id             : 'SENSORY_1',
-      last_updated        : '2023-08-25',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
-      rule_required       : true,
-      wcag_primary_id     : '1.3.3',
-      wcag_related_ids    : [],
-      target_resources    : ['button', 'link'],
-      validate          : function (dom_cache, rule_result) {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      } // end validate function
-    }
-
-  ];
-
-  /* shortcutRules.js */
-
-  /* Constants */
-  const debug$o = new DebugLogging('Shortcut Rules', false);
-  debug$o.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Shortcut Rules
-   */
-
-  const shortcutRules = [
-
-    /**
-     * @object SHORTCUT_1
-     *
-     * @desc Ability to adjust author defined keyboard shortcuts if they exist
-    */
-
-    { rule_id             : 'SHORTCUT_1',
-      last_updated        : '2023-12-03',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.1.4',
-      wcag_related_ids    : [],
-      target_resources    : ['page'],
-      validate            : function (dom_cache, rule_result) {
-
-        if (dom_cache.hasScripting) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-
-     } // end validation function  }
-    },
-
-    /**
-     * @object SHORTCUT_2
-     *
-     * @desc Avoid using accesskey attribute
-    */
-
-    { rule_id             : 'SHORTCUT_2',
-      last_updated        : '2023-12-04',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
-      rule_required       : true,
-      wcag_primary_id     : '2.1.4',
-      wcag_related_ids    : [],
-      target_resources    : ['a', 'input', 'output', 'select', 'textarea'],
-      validate            : function (dom_cache, rule_result) {
-
-        dom_cache.allDomElements.forEach( de => {
-          if (de.accesskey) {
-            if (de.visibility.isVisibleToAT) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.accesskey]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.accesskey]);
-            }
-          }
-        });
-
-     } // end validation function  }
-    }
-
-  ];
-
-  /* tableRules.js */
-
-  /* Constants */
-  const debug$n = new DebugLogging('Table Rules', false);
-  debug$n.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Table Rules
-   */
-
-  const tableRules = [
-
-  /**
-   * @object TABLE_1
-   *
-   * @desc If a table is a data table, if each data cell has headers
-   */
-  { rule_id             : 'TABLE_1',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['td'],
-    validate          : function (dom_cache, rule_result) {
-
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        te.cells.forEach( cell => {
-          const de = cell.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (cell.isHeader) {
-              if (!de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-              }
-            }
-            else {
-              if (de.accName.name) {
-                const headerCount = cell.headers.length;
-                const headerStr = cell.headers.join (' | ');
-                if (headerCount) {
-                  if (cell.headerSource === HEADER_SOURCE.ROW_COLUMN) {
-                    if (headerCount === 1) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, headerStr]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, headerCount, headerStr]);
-                    }
-                  }
-                  else {
-                    if (headerCount === 1) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName, headerStr]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName, headerCount, headerStr]);
-                    }
-                  }
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object TABLE_2
-   *
-   * @desc Data table have an accessible name
-   */
-  { rule_id             : 'TABLE_2',
-    last_updated        : '2023-05-03',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1'],
-    target_resources    : ['table', 'caption'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if ((te.tableType === TABLE_TYPE.DATA) ||
-              (te.tableType === TABLE_TYPE.COMPLEX)) {
-            if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.accName.source]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object TABLE_3
-   *
-   * @desc  Complex data tables should have a text description or summary of data in the table
-   */
-
-  { rule_id             : 'TABLE_3',
-    last_updated        : '2023-05-03',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['table'],
-    validate          : function (dom_cache, rule_result) {
-
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if ((te.tableType === TABLE_TYPE.DATA) || (te.tableType === TABLE_TYPE.COMPLEX)) {
-            if (de.accDescription.name) {
-              if (de.accDescription.source === 'aria-describedby') {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
-              }
-            }
-            else {
-              if (te.tableType === TABLE_TYPE.DATA){
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-              }
-            }
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object TABLE_4
-   *
-   * @desc   Data tables with accessible names must be unique
-   */
-
-  { rule_id             : 'TABLE_4',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['table'],
-    validate          : function (dom_cache, rule_result) {
-
-      const visibleDataTables = [];
-
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (de.visibility.isVisibleToAT) {
-          if (te.tableType > TABLE_TYPE.LAYOUT) {
-            visibleDataTables.push(te);
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-        }
-      });
-
-      visibleDataTables.forEach(te1 => {
-        let count = 0;
-        const de = te1.domElement;
-        const accName1 = te1.domElement.accName.name;
-        if (accName1) {
-          visibleDataTables.forEach(te2 => {
-            if (te1 !== te2) {
-              const accName2 = te2.domElement.accName.name;
-              if (accName2) {
-                if (accName1.toLowerCase() === accName2.toLowerCase()) {
-                  count += 1;
-                }
-              }
-            }
-          });
-          if (count) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [accName1, de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [accName1, de.elemName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object TABLE_5
-   *
-   * @desc  Identifies a table is being used for layout or tabular data, or cannot be determined form markup
-   */
-
-   { rule_id             : 'TABLE_5',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['table'],
-    validate          : function (dom_cache, rule_result) {
-
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (de.visibility.isVisibleToAT) {
-          switch (te.tableType) {
-            case TABLE_TYPE.LAYOUT:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.role]);
-              break;
-
-            case TABLE_TYPE.DATA:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
-              break;
-
-            case TABLE_TYPE.COMPLEX:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
-              break;
-
-            case TABLE_TYPE.ARIA_TABLE:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName]);
-              break;
-
-            case TABLE_TYPE.ARIA_GRID:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.elemName]);
-              break;
-
-            case TABLE_TYPE.ARIA_TREEGRID:
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_6', [de.elemName]);
-              break;
-
-            default:
-
-              if (te.rowCount === 1) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-              }
-              else {
-                if (te.colCount === 1) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-                }
-              }
-              break;
-          }
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-        }
-      });
-    } // end validation function
-   },
-
-  /**
-   * @object TABLE_6
-   *
-   * @desc    Tests if table headers use TH elements instead of TD with SCOPE
-   */
-
-  { rule_id             : 'TABLE_6',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : false,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['td[scope]'],
-    validate          : function (dom_cache, rule_result) {
-
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (de.visibility.isVisibleToAT) {
-          te.cells.forEach( cell => {
-            const cde = cell.domElement;
-            if (cde.visibility.isVisibleToAT) {
-              if (cell.isHeader) {
-                if (cde.tagName === 'td') {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cde.elemName]);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
-            }
-          });
-        }
-        else {
-          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object TABLE_7
-   *
-   * @desc  Spanned data cells in complex table must use headers attributes
-   */
-
-  { rule_id             : 'TABLE_7',
-    last_updated        : '2023-05-08',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['td'],
-    validate          : function (dom_cache, rule_result) {
-      dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (te.tableType > TABLE_TYPE.DATA) {
-          if (de.visibility.isVisibleToAT) {
-            te.cells.forEach( cell => {
-              const cde = cell.domElement;
-              if (cde.visibility.isVisibleToAT) {
-                if (!cell.isHeader &&
-                   ((cell.rowSpan > 1) || (cell.columnSpan > 1))) {
-                  if (cell.headerSource === HEADER_SOURCE.HEADERS_ATTR) {
-                    if (cell.headers.length == 1) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cell.headers[0]]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_2', [cell.headers.length, cell.headers.join(' | ')]);
-                    }
-                  }
-                  else {
-                    if (cell.hasContent) {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
-                    }
-                  }
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
-              }
-            });
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-    }
-  },
-
-  /**
-   * @object TABLE_8
-   *
-   * @desc  Accessible name and description must be different, description longer than name
-   */
-
-  { rule_id             : 'TABLE_8',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
-    rule_required       : true,
-    wcag_primary_id     : '1.3.1',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : ['caption', 'table[aria-label]', 'table[aria-labelledby]', 'table[aria-describedby]', 'table[title]'],
-    validate          : function (dom_cache, rule_result) {
-
-     dom_cache.tableInfo.allTableElements.forEach(te => {
-        const de = te.domElement;
-        if (te.tableType >= TABLE_TYPE.DATA) {
-          if (de.visibility.isVisibleToAT) {
-            const de = te.domElement;
-            if (de.accName.name && de.accDescription.name) {
-              if (de.accName.name.toLowerCase() ===  de.accDescription.name.toLowerCase()) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-              }
-              else {
-                if (de.accName.name.length < de.accDescription.name.length) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-                }
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-    } // end validation function
-  }
-  ];
-
-  /* targetSizeRules.js */
-
-  /* Constants */
-  const debug$m = new DebugLogging('Size', false);
-  debug$m.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Target Size Rules
-   */
-
-  const targetSizeRules = [
-
-    /**
-     * @object TARGET_SIZE_1
-     *
-     * @desc Link target size minimum
-     */
-
-    { rule_id             : 'TARGET_SIZE_1',
-      last_updated        : '2023-10-26',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.8',
-      wcag_related_ids    : [],
-      target_resources    : ['links'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
-          const h = de.height;
-          const w = de.width;
-
-          if (!de.parentInfo.inParagraph && de.authorSizing) {
-            if ((w < 24) || (h < 24)) {
-              if (de.visibility.isVisibleOnScreen) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
-            }
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object TARGET_SIZE_2
-     *
-     * @desc Link target size enhanced
-     */
-
-    { rule_id             : 'TARGET_SIZE_2',
-      last_updated        : '2023-10-26',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.LINKS,
-      rule_required       : false,
-      wcag_primary_id     : '2.5.5',
-      wcag_related_ids    : [],
-      target_resources    : ['links'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
-          const h = de.height;
-          const w = de.width;
-          if (!de.parentInfo.inParagraph && de.authorSizing) {
-            if ((w < 44) || (h < 44)) {
-              if (de.visibility.isVisibleOnScreen) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
-            }
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object TARGET_SIZE_3
-     *
-     * @desc button target size minimum
-     */
-
-    { rule_id             : 'TARGET_SIZE_3',
-      last_updated        : '2023-10-29',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.8',
-      wcag_related_ids    : [],
-      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allButtonElements.forEach( be => {
-          const de = be.domElement;
-          const h = de.height;
-          const w = de.width;
-          if ((w < 24) || (h < 24)) {
-            if (de.visibility.isVisibleOnScreen) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object TARGET_SIZE_4
-     *
-     * @desc Button target size enhanced
-     */
-
-    { rule_id             : 'TARGET_SIZE_4',
-      last_updated        : '2023-10-29',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : false,
-      wcag_primary_id     : '2.5.5',
-      wcag_related_ids    : [],
-      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allButtonElements.forEach( be => {
-          const de = be.domElement;
-          const h = de.height;
-          const w = de.width;
-
-          if (debug$m.flag) {
-            debug$m.log(`[${de.accName.name}] h: ${h}  w: ${w}`);
-            debug$m.log(`[       width]: ${de.authorWidth}`);
-            debug$m.log(`[      height]: ${de.authorHeight}`);
-            debug$m.log(`[      inLink]: ${de.parentInfo.inLink}`);
-            debug$m.log(`[      inPara]: ${de.parentInfo.inParagraph}`);
-            debug$m.log(`[authorSizing]: ${de.authorSizing}`);
-            debug$m.log(`[     top]: ${de.authorTop}`);
-            debug$m.log(`[  bottom]: ${de.authorBottom}`);
-            debug$m.log(`[    left]: ${de.authorLeft}`);
-            debug$m.log(`[   right]: ${de.authorRight}`);
-            debug$m.log(`[ display]: ${de.authorDisplay}`);
-            debug$m.log(`[position]: ${de.authorPosition}`);
-          }
-
-          if ((w < 44) || (h < 44)) {
-            if (de.visibility.isVisibleOnScreen) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.eleName, h, w]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
-          }
-        });
-
-      } // end validate function
-    },
-
-   /**
-     * @object TARGET_SIZE_5
-     *
-     * @desc Checkbox and radio button target size minimum
-     */
-
-    { rule_id             : 'TARGET_SIZE_5',
-      last_updated        : '2023-11-17',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : true,
-      wcag_primary_id     : '2.5.8',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allControlElements.forEach( ce => {
-          const de = ce.domElement;
-
-          if (de.role === 'radio' || de.role === 'checkbox') {
-            if (de.visibility.isVisibleOnScreen) {
-              let h = de.height;
-              let w = de.width;
-              if (( h < 24) || ( w < 24)) {
-                if (ce.hasLabel) {
-                  h = ce.labelHeight;
-                  w = ce.labelWidth;
-                  if (( h < 24) || (w < 24)) {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
-                  }
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-
-
-        });
-
-      } // end validate function
-    },
-
-   /**
-     * @object TARGET_SIZE_6
-     *
-     * @desc Checkbox and radio button target size enhanced
-     */
-
-    { rule_id             : 'TARGET_SIZE_6',
-      last_updated        : '2023-11-17',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.FORMS,
-      rule_required       : false,
-      wcag_primary_id     : '2.5.5',
-      wcag_related_ids    : [],
-      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.controlInfo.allControlElements.forEach( ce => {
-          const de = ce.domElement;
-
-          if (de.role === 'radio' || de.role === 'checkbox') {
-            if (de.visibility.isVisibleOnScreen) {
-              let h = de.height;
-              let w = de.width;
-              if (( h < 44) || ( w < 44)) {
-                if (ce.hasLabel) {
-                  h = ce.labelHeight;
-                  w = ce.labelWidth;
-                  if (( h < 44) || (w < 44)) {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
-                  }
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-            }
-          }
-
-
-        });
-
-      } // end validate function
-    }
-
-
-
-  ];
-
-  /* timingRules.js */
-
-  /* Constants */
-  const debug$l = new DebugLogging('Timing Rules', false);
-  debug$l.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Timing Rules
-   */
-
-  const timingRules = [
-
-    /**
-     * @object TIMING_1
-     *
-     * @desc Timing adjustable for pages with interactive elements
-     */
-
-    { rule_id             : 'TIMING_1',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
-      rule_required       : true,
-      wcag_primary_id     : '2.2.1',
-      wcag_related_ids    : [],
-      target_resources    : ['a', 'input', 'button', 'wdiget'],
-      validate          : function (dom_cache, rule_result) {
-
-      if (dom_cache.controlInfo.allControlElements.length) {
-        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-      }
-
-      } // end validate function
-    },
-
-    /**
-     * @object TIMING_2
-     *
-     * @desc Stop, pause or hide content that is moving, scrolling, flashing or auto updating
-     */
-
-    { rule_id             : 'TIMING_2',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
-      rule_required       : true,
-      wcag_primary_id     : '2.2.2',
-      wcag_related_ids    : [],
-      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.timingInfo.allTimingDomElements.forEach( de => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-
-        if (dom_cache.timingInfo.allTimingDomElements.length > 0) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object TIMING_3
-     *
-     * @desc Web pages do not contain anything that flashes more than three times in any one second period
-     */
-
-    { rule_id             : 'TIMING_3',
-      last_updated        : '2023-08-24',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
-      rule_required       : true,
-      wcag_primary_id     : '2.3.1',
-      wcag_related_ids    : [],
-      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.timingInfo.allTimingDomElements.forEach( de => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        });
-
-        if (dom_cache.timingInfo.allTimingDomElements.length > 0) {
-          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-        }
-
-      } // end validate function
-    }
-  ];
-
-  /* titleRules.js */
-
-  /* Constants */
-  const debug$k = new DebugLogging('Title Rules', false);
-  debug$k.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Title Rules
-   */
-
-  const titleRules = [
-
-    /**
-     * @object TITLE_1
-     *
-     * @desc the title element text content must describe the purpose or content of the page
-     */
-
-    { rule_id             : 'TITLE_1',
-      last_updated        : '2023-09-04',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.2',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['Page', 'title'],
-      validate            : function (dom_cache, rule_result) {
-        if (dom_cache.hasTitle) {
-          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [dom_cache.title]);
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        }
-      } // end validate function
-    },
-
-    /**
-     * @object TITLE_2
-     *
-     * @desc The words in the @h1@ content must be part of the title element text content.
-     *
-     */
-
-    { rule_id             : 'TITLE_2',
-      last_updated        : '2023-09-04',
-      rule_scope          : RULE_SCOPE.PAGE,
-      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
-      rule_required       : true,
-      wcag_primary_id     : '2.4.2',
-      wcag_related_ids    : ['1.3.1', '2.4.6'],
-      target_resources    : ['Page', 'title', 'h1'],
-      validate            : function (dom_cache, rule_result) {
-
-        function similiarContent (title, h1) {
-          if (typeof title !== 'string') {
-            title = '';
-          }
-          if (typeof h1 !== 'string') {
-            h1 = '';
-          }
-          // Replace special characters and '_' with spaces
-          title = title.toLowerCase().replace(/\W+/g, ' ').replace('_', ' ');
-          h1 = h1.toLowerCase().replace(/\W+/g, ' ').replace('_', ' ');
-
-          const wordsTitle = title.split(' ');
-          const wordsH1 = h1.split(' ');
-
-          let count = 0;
-          wordsH1.forEach( word => {
-            if (wordsTitle.includes(word)) {
-              count += 1;
-            }
-          });
-
-          return count > ((wordsH1.length * 8) / 10);
-        }
-
-        const visibleH1Elements = [];
-        let passedH1Count = 0;
-
-        if (dom_cache.hasTitle) {
-
-          // Get h1s visible to AT
-          dom_cache.structureInfo.allH1DomElements.forEach( de => {
-            if (de.visibility.isVisibleToAT) {
-              visibleH1Elements.push(de);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-            }
-          });
-
-          const visibleH1Count = visibleH1Elements.length;
-
-          visibleH1Elements.forEach( de => {
-            if (de.accName.name) {
-              if (similiarContent(dom_cache.title, de.accName.name)) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-                passedH1Count += 1;
-              }
-              else {
-                if (visibleH1Count > 2) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-                }
-              }
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
-            }
-          });
-
-          if (visibleH1Count === 0) {
-            rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', []);
-          }
-          else {
-            if (visibleH1Count > 2) {
-              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
-            }
-            else {
-              if (visibleH1Count !== passedH1Count) {
-                rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_4', []);
-              }
-              else {
-                if (visibleH1Count === 1) {
-                  rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
-                }
-                else {
-                  rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', []);
-                }
-              }
-            }
-          }
-        }
-        else {
-          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
-        }
-
-      } // end validate function
-    }
-  ];
-
-  /* videoRules.js */
-
-  /* Constants */
-  const debug$j = new DebugLogging('Audio Rules', false);
-  debug$j.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Video Rules
-   */
-
-  const videoRules = [
-
-    /**
-     * @object VIDEO_1
-     *
-     * @desc Video elements used for prerecorded video only content using the video element must have text or audio description
-     */
-
-    { rule_id             : 'VIDEO_1',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['video', 'track'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT || ve.hasAutoPlay) {
-            if (ve.tracks.length) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_2
-     *
-     * @desc Video elements used for prerecorded video only content using the object element must have text or audio description
-     */
-
-    { rule_id             : 'VIDEO_2',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-              }
-            }
-            else {
-              if (de.accDescription.name) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', []);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', []);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_3
-     *
-     * @desc Video elements used for prerecorded video only content using the embed element must have text or audio description
-     */
-
-    { rule_id             : 'VIDEO_3',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.1',
-      wcag_related_ids    : ['1.2.2', '1.2.4'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_4
-     *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the video element must have captions
-     */
-
-    { rule_id             : 'VIDEO_4',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.4'],
-      target_resources    : ['video', 'track'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ve.hasCaptionTrack || ve.hasSubtitleTrack) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_5
-     *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the object element must have captions
-     */
-
-    { rule_id             : 'VIDEO_5',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.4'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_6
-     *
-     * @desc Live and prerecorded video with synchronized audio (i.e. movie, lecture) using the embed element must have captions
-     */
-
-    { rule_id             : 'VIDEO_6',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.2',
-      wcag_related_ids    : ['1.2.1', '1.2.4'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_7
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the video element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_7',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.5'],
-      target_resources    : ['video', 'track'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.videoElements.forEach( ve => {
-          const de = ve.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ve.hasDescriptionTrack) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_8
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the object element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_8',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.1', '1.2.5'],
-      target_resources    : ['object', 'param'],
-      validate          : function (dom_cache, rule_result) {
-
-
-        dom_cache.mediaInfo.objectElements.forEach( oe => {
-          const de = oe.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (oe.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    },
-
-    /**
-     * @object VIDEO_9
-     *
-     * @desc Prerecorded video with synchronized audio (i.e. movie) using the embed element must have audio description
-     */
-
-    { rule_id             : 'VIDEO_9',
-      last_updated        : '2023-08-11',
-      rule_scope          : RULE_SCOPE.ELEMENT,
-      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
-      rule_required       : true,
-      wcag_primary_id     : '1.2.3',
-      wcag_related_ids    : ['1.2.1', '1.2.5'],
-      target_resources    : ['embed'],
-      validate          : function (dom_cache, rule_result) {
-
-        dom_cache.mediaInfo.embedElements.forEach( ee => {
-          const de = ee.domElement;
-          if (de.visibility.isVisibleToAT) {
-            if (ee.isVideo) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-        });
-
-      } // end validate function
-    }
-  ];
-
-  /* widgetRules.js */
-
-  /* Constants */
-  const debug$i = new DebugLogging('Widget Rules', false);
-  debug$i.flag = false;
-
-  /*
-   * OpenA11y Rules
-   * Rule Category: Widget Rules
-   */
-
-  const widgetRules = [
-  /**
-   * @object WIDGET_1
-   *
-   * @desc ARIA Widgets must have accessible names
-   */
-
-  { rule_id             : 'WIDGET_1',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['ARIA Widget roles'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        const ai = de.ariaInfo;
-        // There are other rules that check for accessible name for labelable controls, landmarks, headings and links
-        // Ignore option role, since web developers are very sloppy about giving them content before they are made visible
-        if (ai.isWidget && !de.isLabelable && !de.isLink && (de.role !== 'option')) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role, de.accName.name]);
-            }
-            else {
-              if (ai.isNameRequired) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);              
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }
-        }
-      });
-
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_2
-   *
-   * @desc Elements with onClick event handlers event handlers need role
-   */
-
-  { rule_id             : 'WIDGET_2',
-    last_updated        : '2022-08-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['Elements with onclick events'],
-    validate            : function (dom_cache, rule_result) {
-
-      function hasDecendantWidgetRole (domElement) {
-        for (let i = 0; i < domElement.children.length; i += 1) {
-          const cde = domElement.children[i];
-          if (cde.isDomElement) {
-            if (cde.ariaInfo.isWidget) {
-              return true;
-            }
-            if (hasDecendantWidgetRole(cde)) {
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-
-      dom_cache.allDomElements.forEach(de => {
-        if (de.eventInfo.hasClick) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.ariaInfo.isWidget) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
-            }
-            else {
-              if (hasDecendantWidgetRole(de)) {
-                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
-              }
-              else {
-                if (de.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
-                }
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_3
-   *
-   * @desc Elements with role values must have valid widget or landmark roles
-   */
-
-  { rule_id             : 'WIDGET_3',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[role]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        if (de.hasRole) {
-          if (de.visibility.isVisibleToAT) {
-            if (!de.ariaInfo.isValidRole) {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
-            }
-            else {
-              if (de.ariaInfo.isAbstractRole) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.role]);
-              } else {
-                if (de.ariaInfo.isWidget) {
-                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role]);
-                }
-                else {
-                  if (de.ariaInfo.isLandmark) {
-                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.role]);
-                  }
-                  else {
-                    if (de.ariaInfo.isLive) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.role]);
-                    }
-                    else {
-                      if (de.ariaInfo.isSection) {
-                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.role]);
-                      }
-                      else {
-                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.role]);
-                      }
-                    }
-                  }
-                }            
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
-          }        
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_4
-   *
-   * @desc Elements with ARIA attributes have valid values
-   */
-
-  { rule_id             : 'WIDGET_4',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-atomic]',
-                           '[aria-autocomplete]',
-                           '[aria-busy]',
-                           '[aria-checked]',
-                           '[aria-colcount]',
-                           '[aria-colindex]',
-                           '[aria-colspan]',
-                           '[aria-current]',
-                           '[aria-disabled]',
-                           '[aria-dropeffect]',
-                           '[aria-expanded]',
-                           '[aria-grabbed]',
-                           '[aria-haspopup]',
-                           '[aria-hidden]',
-                           '[aria-invalid]',
-                           '[aria-label]',
-                           '[aria-labelledby]',
-                           '[aria-live]',
-                           '[aria-modal]',
-                           '[aria-multiline]',
-                           '[aria-multiselectable]',
-                           '[aria-orientation]',
-                           '[aria-pressed]',
-                           '[aria-readonly]',
-                           '[aria-relevant]',
-                           '[aria-required]',
-                           '[aria-rowcount]',
-                           '[aria-rowindex]',
-                           '[aria-rowspan]',
-                           '[aria-selected]',
-                           '[aria-sort]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        de.ariaInfo.validAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            const allowedValues = attr.values ? attr.values.join(' | ') : '';
-            if (de.ariaInfo.invalidAttrValues.includes(attr)) {
-              if (attr.type === 'nmtoken' || attr.type === 'boolean' || attr.type === 'tristate') {
-                if (attr.value === '') {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, allowedValues]);
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, attr.value, allowedValues]);
-                }
-              }
-              else {
-                if (attr.type === 'nmtokens') {
-                  if (attr.value === '') {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [attr.name, allowedValues]);
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [attr.name, attr.value, allowedValues]);
-                  }
-                }
-                else {
-                  if (attr.type === 'integer') {
-                    if (attr.value === '') {
-                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_5', [attr.name]);
-                    }
-                    else {
-                      if (attr.allowUndeterminedValue) {
-                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_6', [attr.name, attr.value]);
-                      }
-                      else {
-                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_7', [attr.name, attr.value]);
-                      }
-                    }
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_8', [attr.name, attr.value, attr.type]);
-                  }  
-                }
-              }
-            }
-            else {
-              if (attr.type === 'boolean' || 
-                  attr.type === 'nmtoken' || 
-                  attr.type === 'nmtokens' || 
-                  attr.type === 'tristate') {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [attr.name, attr.value, attr.type]);
-              }
-            }
-          }
-          else {
-            if (attr.value === '') {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [attr.name, attr.value]);
-            }
-          }
-        });
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_5
-   *
-   * @desc ARIA attributes must be defined
-   */
-
-  { rule_id             : 'WIDGET_5',
-    last_updated        : '2022-08-15',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-atomic]',
-                           '[aria-autocomplete]',
-                           '[aria-busy]',
-                           '[aria-checked]',
-                           '[aria-controls]',
-                           '[aria-describedby]',
-                           '[aria-disabled]',
-                           '[aria-dropeffect]',
-                           '[aria-expanded]',
-                           '[aria-flowto]',
-                           '[aria-grabbed]',
-                           '[aria-haspopup]',
-                           '[aria-hidden]',
-                           '[aria-invalid]',
-                           '[aria-label]',
-                           '[aria-labelledby]',
-                           '[aria-level]',
-                           '[aria-live]',
-                           '[aria-multiline]',
-                           '[aria-multiselectable]',
-                           '[aria-orientation]',
-                           '[aria-owns]',
-                           '[aria-pressed]',
-                           '[aria-readonly]',
-                           '[aria-relevant]',
-                           '[aria-required]',
-                           '[aria-selected]',
-                           '[aria-sort]',
-                           '[aria-valuemax]',
-                           '[aria-valuemin]',
-                           '[aria-valuenow]',
-                           '[aria-valuetext]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach(de => {
-        de.ariaInfo.invalidAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-          }
-        });
-        de.ariaInfo.validAttrs.forEach( attr => {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
-          }
-        });
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_6
-   *
-   * @desc Widgets must have required properties
-   */
-
-  { rule_id             : 'WIDGET_6',
-    last_updated        : '2021-07-07',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[checkbox]',
-                           '[combobox]',
-                           '[menuitemcheckbox]',
-                           '[menuitemradio]',
-                           '[meter]',
-                           '[option]',
-                           '[separator]',
-                           '[scrollbar]',
-                           '[slider]',
-                           '[switch]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.controlInfo.allControlElements.forEach( ce => {
-        const de = ce.domElement;
-        de.ariaInfo.requiredAttrs.forEach( reqAttrInfo => {
-          if (de.visibility.isVisibleToAT) {
-            if (reqAttrInfo.isDefined) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, reqAttrInfo.name, reqAttrInfo.value]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, reqAttrInfo.name]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, reqAttrInfo.name]);
-          }
-        });
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_7
-   *
-   * @desc Widgets must have required owned elements
-   */
-
-  { rule_id             : 'WIDGET_7',
-    last_updated        : '2023-03-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[feed]',
-                           '[grid]',
-                           '[list]',
-                           '[listbox]',
-                           '[menu]',
-                           '[menubar]',
-                           '[radiogroup]',
-                           '[row]',
-                           '[rowgroup]',
-                           '[table]',
-                           '[tablist]',
-                           '[tree]',
-                           '[treegrid]'],
-    validate            : function (dom_cache, rule_result) {
-
-      function getRequiredChildrenCount(domElement, requiredChildren) {
-        let count = 0;
-        let i;
-        const ai = domElement.ariaInfo;
-        const cdes = domElement.children;
-        const odes = ai.ownedDomElements;
-        for(i = 0; i < cdes.length; i += 1) {
-          const cde = cdes[i];
-          if (cde.isDomElement) {
-            if (requiredChildren.includes(cde.role)) {
-              return 1;
-            }
-            count += getRequiredChildrenCount(cde, requiredChildren);
-          }
-        }
-
-        for(i = 0; i < odes.length; i += 1) {
-          const ode = odes[i];
-          if (requiredChildren.includes(ode.role)) {
-            return 1;
-          }
-          count += getRequiredChildrenCount(ode, requiredChildren);
-        }
-        return count;
-      }
-
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.hasRequiredChildren) {
-          const rc = de.ariaInfo.requiredChildren;
-          if (de.visibility.isVisibleToAT) {
-            if (de.ariaInfo.isBusy) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
-            }
-            else {
-              const count = getRequiredChildrenCount(de, rc);
-              if (count > 0) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, rc.join(', ')]);
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rc.join(', ')]);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rc.join(', ')]);
-          }
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_8
-   *
-   * @desc Widgets must have required parent roles
-   */
-
-  { rule_id             : 'WIDGET_8',
-    last_updated        : '2023-03-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : [ "caption",
-                            "cell",
-                            "columnheader",
-                            "gridcell",
-                            "listitem",
-                            "menuitem",
-                            "menuitemcheckbox",
-                            "menuitemradio",
-                            "option",
-                            "row",
-                            "rowgroup",
-                            "rowheader",
-                            "tab",
-                            "treeitem"
-                        ],
-    validate            : function (dom_cache, rule_result) {
-
-
-      function checkForRequiredParent(domElement, requiredParents) {
-        if (!domElement || !domElement.ariaInfo) {
-          return '';
-        }
-        const ai = domElement.ariaInfo;
-        const obdes = ai.ownedByDomElements;
-        const pde = domElement.parentInfo.domElement;
-
-        // Check first for aria-owns relationships
-        for (let i = 0; i < obdes.length; i += 1) {
-          const obde = obdes[i];
-          if (requiredParents.includes(obde.role)) {
-            return obde.role;
-          }
-          else {
-            return checkForRequiredParent(obde.parentInfo.domElement, requiredParents);
-          }
-        }
-
-        // Check parent domElement
-        if (pde) {
-          if (requiredParents.includes(pde.role)) {
-            return pde.role;
-          }
-          else {
-            return checkForRequiredParent(pde, requiredParents);
-          }
-        }
-        return '';
-      }
-
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.hasRequiredParents) {
-          const rp = [...(de.ariaInfo.requiredParents)];
-          if (de.tagName === 'option') {
-            rp.push('combobox');
-          }
-          if (de.visibility.isVisibleToAT) {
-            const result = checkForRequiredParent(de, rp);
-            if (result) {
-              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, result]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rp.join(', ')]);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rp.join(', ')]);
-          }
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_9
-   *
-   * @desc Widgets cannot be owned by more than one widget
-   */
-
-  { rule_id             : 'WIDGET_9',
-    last_updated        : '2023-04-05',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[aria-owns]'],
-    validate            : function (dom_cache, rule_result) {
-
-      dom_cache.allDomElements.forEach( de => {
-        const ownedByCount = de.ariaInfo.ownedByDomElements.length;
-        if (ownedByCount > 0) {
-          if (ownedByCount === 1) {
-            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, ownedByCount]);
-          }
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_10
-   *
-   * @desc Range widgets with aria-valuenow must be in range of aria-valuemin and aria-valuemax
-   */
-
-  { rule_id             : 'WIDGET_10',
-    last_updated        : '2023-04-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[role="meter"]',
-                           '[role="progress"]',
-                           '[role="scrollbar"]',
-                           '[role="separator"][tabindex=0]',
-                           '[role="slider"]',
-                           '[role="spinbutton"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.isRange) {
-          const ai = de.ariaInfo;
-          if (de.visibility.isVisibleToAT) {
-            const now  = ai.valueNow;
-            const min  = ai.valueMin;
-            const max  = ai.valueMax;
-            const text = ai.valueText;
-            if (ai.hasValueNow) {
-              if (ai.validValueNow) {
-                if (ai.validValueMin && ai.validValueMax) {
-                  if ((now >= min) && (now <= max)) {
-                    if (text) {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, text, now]);
-                    }
-                    else {
-                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, now, min, max]);
-                    }
-                  }
-                  else {
-                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [now, min, max]);
-                  }
-                }
-                else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [min, max]);
-                }
-              }
-              else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [now]);
-              }
-            }
-            else {
-              if (ai.isValueNowRequired) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [de.elemName]);
-              } else {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-
-
-        }
-      });
-   } // end validation function
-  },
-
-  /**
-   * @object WIDGET_11
-   *
-   * @desc Verify range elements with aria-valuetext attribute
-   */
-
-  { rule_id             : 'WIDGET_11',
-    last_updated        : '2023-04-20',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[role="meter"]',
-                           '[role="progress"]',
-                           '[role="scrollbar"]',
-                           '[role="separator"][tabindex=0]',
-                           '[role="slider"]',
-                           '[role="spinbutton"]'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.isRange && de.ariaInfo.valueText) {
-          const ai = de.ariaInfo;
-          if (de.visibility.isVisibleToAT) {
-            const now  = ai.valueNow;
-            const text = ai.valueText;
-            if (ai.hasValueNow) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [text, now]);
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-    }
-  },
-  /**
-   * @object WIDGET_12
-   *
-   * @desc Element with widget role label should describe the purpose of the widget
-   *
-   */
-
-  { rule_id             : 'WIDGET_12',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '2.4.6',
-    wcag_related_ids    : ['1.3.1', '3.3.2'],
-    target_resources    : ['[ARIA widget roles'],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.isWidget) {
-          if (de.visibility.isVisibleToAT) {
-            if (de.accName.name) {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.accName.name, de.elemName]);
-            }
-            else {
-              if (de.ariaInfo.isNameRequired) {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, de.role]);
-              }
-              else {
-               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName, de.role]);
-
-              }
-            }
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_13
-   *
-   * @desc Roles that prohibit accessible names
-   */
-
-  { rule_id             : 'WIDGET_13',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.2',
-    wcag_related_ids    : ['2.4.6'],
-    target_resources    : [ "caption",
-                            "code",
-                            "deletion",
-                            "emphasis",
-                            "generic",
-                            "insertion",
-                            "none",
-                            "paragraph",
-                            "presentation",
-                            "strong",
-                            "subscript",
-                            "superscript"],
-    validate            : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.isNameProhibited &&
-            de.accName.name &&
-            de.accName.source.includes('aria-label')) {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
-          }
-        }
-      });
-     } // end validation function
-  },
-
-  /**
-   * @object WIDGET_14
-   *
-   * @desc     Roles with deprecated ARIA attributes
-   */
-  { rule_id             : 'WIDGET_14',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '4.1.1',
-    wcag_related_ids    : ['4.1.2'],
-    target_resources    : [
-          "alert",
-          "alertdialog",
-          "article",
-          "banner",
-          "blockquote",
-          "button",
-          "caption",
-          "cell",
-          "checkbox",
-          "code",
-          "command",
-          "complementary",
-          "composite",
-          "contentinfo",
-          "definition",
-          "deletion",
-          "dialog",
-          "directory",
-          "document",
-          "emphasis",
-          "feed",
-          "figure",
-          "form",
-          "generic",
-          "grid",
-          "group",
-          "heading",
-          "img",
-          "input",
-          "insertion",
-          "landmark",
-          "link",
-          "list",
-          "listbox",
-          "listitem",
-          "log",
-          "main",
-          "marquee",
-          "math",
-          "meter",
-          "menu",
-          "menubar",
-          "menuitem",
-          "menuitemcheckbox",
-          "menuitemradio",
-          "navigation",
-          "note",
-          "option",
-          "paragraph",
-          "presentation",
-          "progressbar",
-          "radio",
-          "radiogroup",
-          "range",
-          "region",
-          "row",
-          "rowgroup",
-          "scrollbar",
-          "search",
-          "section",
-          "sectionhead",
-          "select",
-          "separator",
-          "spinbutton",
-          "status",
-          "strong",
-          "structure",
-          "subscript",
-          "superscript",
-          "switch",
-          "tab",
-          "table",
-          "tablist",
-          "tabpanel",
-          "term",
-          "time",
-          "timer",
-          "toolbar",
-          "tooltip",
-          "tree",
-          "treegrid",
-          "treeitem",
-          "widget",
-          "window"
-      ],
-    validate : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.ariaInfo.deprecatedAttrs) {
-          if (de.visibility.isVisibleToAT) {
-            de.ariaInfo.deprecatedAttrs.forEach( attr => {
-              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, de.elemName]);
-            });
-          }
-          else {
-            de.ariaInfo.deprecatedAttrs.forEach( attr => {
-              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name, de.elemName]);
-            });
-          }
-        }
-      });
-    } // end validation function
-  },
-
-  /**
-   * @object WIDGET_15
-   *
-   * @desc     Web components require manual check
-   */
-  { rule_id             : 'WIDGET_15',
-    last_updated        : '2023-04-21',
-    rule_scope          : RULE_SCOPE.ELEMENT,
-    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
-    rule_required       : true,
-    wcag_primary_id     : '2.1.1',
-    wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
-    target_resources    : ["Custom elements using web component APIs"],
-    validate          : function (dom_cache, rule_result) {
-      dom_cache.allDomElements.forEach( de => {
-        if (de.tagName.includes('-') && de.isShadowClosed) {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
-          }
-        }
-      });
-    } // end validation function
-  }
-  ];
-
-  /* rule.js */
-
-  /* Constants */
-  const debug$h = new DebugLogging('Rule', false);
-  debug$h.flag = false;
-
-  /* ----------------------------------------------------------------   */
-  /*                             Rule                                   */
-  /* ----------------------------------------------------------------   */
-
-  /**
-   * @constructor Rule
-   *
-   * @desc Creates and validates a rule used to evaluate an accessibility feature
-   *       of a document
-   *
-   * @param {Object}    rule_item          - Object containing rule information
-   */
-
-  class Rule {
-    constructor (rule_item) {
-
-      // Rule information that is NOT dependent on locale
-      this.rule_id             = rule_item.rule_id; // String
-      this.rule_required       = rule_item.rule_required; // Boolean
-      this.rule_scope_id       = rule_item.rule_scope; // Integer
-      this.rule_category_id    = rule_item.rule_category; // Integer
-      this.last_updated        = rule_item.last_updated; // String
-      this.target_resources    = rule_item.target_resources; // array of strings
-      this.wcag_primary_id     = rule_item.wcag_primary_id;  // String (P.G.SC)
-      this.wcag_related_ids    = rule_item.wcag_related_ids; // Array of Strings (P.G.SC)
-      this.wcag_guideline_id   = getGuidelineId(rule_item.wcag_primary_id); // Integer
-      this.validate            = rule_item.validate;  // function
-
-      // Rule information that is locale dependent
-      this.rule_category_info  = getRuleCategoryInfo(this.rule_category_id); // Object with keys to strings
-      this.guideline_info      = getGuidelineInfo(this.wcag_guideline_id); // Object with keys to strings
-      this.rule_scope          = getScope(this.rule_scope_id); // String
-      this.wcag_primary        = getSuccessCriterionInfo(this.wcag_primary_id);
-      this.wcag_related        = getSuccessCriteriaInfo(this.wcag_related_ids);
-      this.wcag_level          = getCommonMessage('level', this.wcag_primary.level);
-      this.wcag_version        = getWCAGVersion(this.wcag_primary_id);
-
-      this.rule_nls_id           = getRuleId(this.rule_id); // String
-      this.summary               = getRuleSummary(this.rule_id); // String
-      this.definition            = getRuleDefinition(this.rule_id); // String
-      this.target_resources_desc = getTargetResourcesDesc(this.rule_id); // String
-      this.purposes              = getPurposes(this.rule_id);  // Array of strings
-      this.techniques            = getTechniques(this.rule_id);  // Array of strings
-      this.manual_checks         = getManualChecks(this.rule_id);  // Array of strings
-      this.informational_links   = getInformationLinks(this.rule_id);  // Array of objects with keys to strings
-
-      // Localized messsages for evaluation results
-      this.rule_result_msgs = getRuleResultMessages(this.rule_id); // Object with keys to strings
-      this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
-
-      debug$h.flag && this.toJSON();
-    }
-
-    get isWCAG20 () {
-      return this.wcag_version === 'WCAG20';
-    }
-
-    get isWCAG21 () {
-      return this.isWCAG20 || this.wcag_version === 'WCAG21';
-    }
-
-    get isWCAG22 () {
-      return this.isWCAG20 || this.isWCAG21 || this.wcag_version === 'WCAG22';
-    }
-
-    get isLevelA () {
-      return this.wcag_level === 'A';
-    }
-
-    get isLevelAA () {
-      return this.wcag_level === 'AA';
-    }
-
-    get isLevelAAA () {
-      return this.wcag_level === 'AAA';
-    }
-
-    get isScopeElement () {
-      return this.rule_scope_id === RULE_SCOPE.ELEMENT;
-    }
-
-    get isScopePage () {
-      return this.rule_scope_id === RULE_SCOPE.PAGE;
-    }
-
-    get isScopeWebsite () {
-      return this.rule_scope_id === RULE_SCOPE.WEBSITE;
-    }
-
-    /**
-     * @method getId
-     *
-     * @desc Get the programmatic id that uniquely identifies the rule
-     *
-     * @return {String} The rule id
-     */
-
-    getId () {
-      return this.rule_id;
-    }
-
-    /**
-     * @method getIdNLS
-     *
-     * @desc Get a localized human readable id for uniquely identifying the rule
-     *
-     * @return {String} Localized string of the rule id
-     */
-
-    getIdNLS () {
-      return this.rule_nls_id;
-    }
-
-    /**
-     * @method getGuideline
-     *
-     * @desc Get number of the associated guideline
-     *
-     * @return  {Integer} see description
-     */
-
-    getGuideline () {
-     return this.wcag_guideline_id;
-    }
-
-    /**
-     * @method getGuidelineInfo
-     *
-     * @desc Get information about the WCAG Guideline associated with the rule
-     *
-     * @return  {GuidelineInfo}  see description
-     */
-
-    getGuidelineInfo () {
-     return this.guideline_info;
-    }
-
-    /**
-     * @method getCategoryInfo
-     *
-     * @desc Get a numerical constant representing the rule category
-     *
-     * @return {Integer}  see @desc
-     */
-
-    getCategory () {
-      return this.rule_category_id;
-    }
-
-    /**
-     * @method getCategoryInfo
-     *
-     * @desc Get a localized title, url and description of the rule category
-     *
-     * @return {RuleCategoryInfoItem}  see @desc
-     */
-
-    getCategoryInfo () {
-      return this.rule_category_info;
-    }
-
-    /**
-     * @method getScope
-     *
-     * @desc Get the rule scope constant of the rule
-     *
-     * @return {Integer} rule scope constant
-     */
-
-    getScope () {
-      return this.rule_scope_id;
-    }
-
-
-    /**
-     * @method getScopeNLS
-     *
-     * @desc Get a localized string of the rule scope (i.e. 'element' or 'page')
-     *
-     * @return {String} Localized string of the rule scope
-     */
-
-    getScopeNLS () {
-      return this.rule_scope;
-    }
-
-
-    /**
-     * @method getDefinition
-     *
-     * @desc Gets the definition of the rule
-     *
-     * @return {String} Localized string of the rule definition
-     */
-    getDefinition () {
-      return this.definition;
-    }
-
-    /**
-     * @method getSummary
-     *
-     * @desc Gets the summary of the rule
-     *
-     * @return {String} Localized string of the rule summary
-     */
-    getSummary () {
-      return this.summary;
-    }
-
-    /**
-     * @method getPurposes
-     *
-     * @desc Gets an array strings representing the purpose, basically
-     *       how does the rule help people with disabilities
-     *
-     * @return  {Array}  Returns an array of localized string describing the purpose
-     */
-
-    getPurposes () {
-      return this.purposes;
-    }
-
-    /**
-     * @method getTargetResourcesDescription
-     *
-     * @desc Get a description of the markup or page feature the rule is evaluates
-     *
-     * @return  {String}  Localized string representing the markup or page feature
-     *                    tested by the rule
-     */
-
-    getTargetResourcesDescription () {
-      return this.target_resources_desc;
-    }
-
-    /**
-     * @method getTargetResources
-     *
-     * @desc Returns an localized array strings representing target resources of
-     *       the rule
-     *
-     * @return  {Array}  Returns an array of strings identifying the elements and/or
-     *                    attributes that the rule evaluates
-     */
-
-    getTargetResources () {
-      return this.target_resources;
-    }
-
-    /**
-     * @method getTechniques
-     *
-     * @desc Get the techniques to implement the requirements of the rule
-     *
-     * @return  {Array}  Array of InformationalLinkInfo objects
-     */
-    getTechniques () {
-      return this.techniques;
-    }
-
-    /**
-     * @method getManualCheckProcedures
-     *
-     * @desc Gets manual checking proceedures for evaluating the rule
-     *       requirements
-     *
-     * @return  {Array}  Array of InformationalLinkInfo objects
-     */
-
-    getManualCheckProcedures () {
-      return this.manual_checks;
-    }
-
-    /**
-     * @method getInformationalLinks
-     *
-     * @desc Get information links related to understanding or implementation of the rule
-     *
-     * @return  {Array}  Returns an array of InformationalLinkInfo objects
-     *
-     * @example
-     *
-     * var node_list = [];
-     * var info_links = rule.getInformationalLinks();
-     *
-     * for(var i = 0; i < info_links.length; i++) {
-     *   var info_link = info_links[i];
-     *
-     *   // Using object properties to create a link element
-     *   var node = document.createElement('a');
-     *   node.appendChild(document.createTextNode(info_link.title));
-     *   node.setAttribute('href',  info_link.url);
-     *   node.setAttribute('class', info_link.type_const.toString());
-     *
-     *   node_list.push(node);
-     * }
-     */
-
-    getInformationalLinks () {
-      return this.informational_links;
-    }
-
-    /**
-     * @method getPrimarySuccessCriterionId
-     *
-     * @desc Get id of the primary WCAG Success Criteria for the rule
-     *
-     * @return  {Integer}  see description
-     */
-
-    getPrimarySuccessCriterionId () {
-      return this.wcag_primary_id;
-    }
-
-    /**
-     * @method getPrimarySuccessCriterionInfo
-     *
-     * @desc Get information about primary WCAG Success Criteria for the rule
-     *
-     * @return  {SuccessCriterionInfo}  Object representing information about the SC
-     */
-
-    getPrimarySuccessCriterionInfo () {
-      return this.wcag_primary;
-    }
-
-    /**
-     * @method getRelatedSuccessCriteriaInfo
-     *
-     * @desc Get information about the related WCAG Success Criteria for the rule
-     *
-     * @return  {Array}  Array of SuccessCriterionInfo objects
-     */
-
-    getRelatedSuccessCriteriaInfo () {
-      return this.wcag_related;
-    }
-
-    /**
-     * @method getWCAGLevel
-     *
-     * @desc Get the string representation of the the WCAG Success Criterion Level
-     *       based on the primary id of the rule
-     *
-     * @return  {String}  String representing the WCAG success criterion level
-     *                    (i.e. A, AA or AAA)
-     */
-
-    getWCAGLevel () {
-      return this.wcag_level;
-    }
-
-    /**
-     * @method toJSON
-     *
-     * @desc Returns a JSON representation of the rule
-     *
-     * @return  {String}  Returns a JSON representation of the rule
-     */
-
-    toJSON () {
-
-      const ruleInfo = {
-        last_updated: this.last_updated,
-
-        rule_id:      this.rule_id,
-        rule_nls_id:  this.rule_nls_id,
-        summary:      this.summary,
-        definition:   this.definition,
-
-        rule_required:  this.rule_required,
-
-        target_resources_desc:  this.target_resources_desc,
-
-        rule_scope_id:  this.rule_scope_id,
-        rule_scope:     this.rule_scope,
-
-        rule_category_id:   this.rule_category_id,
-        rule_category_info: this.rule_category_info,
-        
-        wcag_guideline_id:  this.wcag_guideline_id,
-        guideline_info:     this.guideline_info,
-
-        target_resources:  this.target_resources,
-
-        wcag_primary_id:  this.wcag_primary_id,
-        wcag_primary:     this.wcag_primary,
-        wcag_level:       this.wcag_level,
-
-        wcag_related_ids: this.wcag_related_ids,
-        wcag_related:     this.wcag_related,
-
-        purposes:       this.purposes,
-        techniques:     this.techniques,
-        manual_checks:  this.manual_checks,
-
-        informational_links:    this.informational_links
-      };
-
-      const json = JSON.stringify(ruleInfo, null, '  ');
-      debug$h.flag && debug$h.log(`[JSON]: ${json}`);
-      return json;
-
-    }
-  }
-
-  /* allRules.js */
-
-  /* Constants */
-  const debug$g = new DebugLogging('All Rules', false);
-
-  const allRules = [];
-
-  function addToArray (ruleArray) {
-    ruleArray.forEach( r => {
-      allRules.push(new Rule(r));
-    });
-  }
-
-  addToArray(audioRules);
-  addToArray(bypassRules);
-  addToArray(colorRules);
-  addToArray(errorRules);
-  addToArray(frameRules);
-  addToArray(controlRules);
-  addToArray(headingRules);
-  addToArray(helpRules);
-  addToArray(htmlRules);
-  addToArray(imageRules);
-  addToArray(keyboardRules);
-  addToArray(landmarkRules);
-  addToArray(languageRules);
-  addToArray(layoutRules);
-  addToArray(linkRules);
-  addToArray(listRules);
-  addToArray(liveRules);
-  addToArray(motionRules);
-  addToArray(navigationRules);
-  addToArray(pointerRules);
-  addToArray(readingOrderRules);
-  addToArray(resizeRules);
-  addToArray(sensoryRules);
-  addToArray(shortcutRules);
-  addToArray(tableRules);
-  addToArray(targetSizeRules);
-  addToArray(titleRules);
-  addToArray(timingRules);
-  addToArray(videoRules);
-  addToArray(widgetRules);
-
-
-  if (debug$g.flag) {
-    console.log('All rules loaded');
-  }
-
   /* resultSummary.js */
 
-  const debug$f = new DebugLogging('ruleResultSummary', false);
+  const debug$N = new DebugLogging('ruleResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             RuleResultsSummary                        */
@@ -30749,7 +23474,7 @@
       this.is  = -1;  // implementation score for group
       this.iv  = IMPLEMENTATION_VALUE.UNDEFINED; // implementation value for the group
 
-      debug$f.flag && debug$f.log(`[RuleResultsSummary]: ${this.toString()}`);
+      debug$N.flag && debug$N.log(`[RuleResultsSummary]: ${this.toString()}`);
     }
 
      get violations()     { return this.v;  }
@@ -30843,7 +23568,7 @@
   /* ruleGroupResult.js */
 
   /* Constants */
-  const debug$e = new DebugLogging('ruleGroupResult', false);
+  const debug$M = new DebugLogging('ruleGroupResult', false);
 
   /**
    * @class RuleGroupResult
@@ -30887,7 +23612,7 @@
       this.rule_results = [];
       this.rule_results_summary = new RuleResultsSummary();
 
-      debug$e.flag && debug$e.log(`[title]: ${this.title} (${ruleset})`);
+      debug$M.flag && debug$M.log(`[title]: ${this.title} (${ruleset})`);
     }
 
     /**
@@ -31055,7 +23780,7 @@
       };
 
       const json = JSON.stringify(ruleGroupResultInfo);
-      debug$e.flag && debug$e.log(`[JSON]: ${json}`);
+      debug$M.flag && debug$M.log(`[JSON]: ${json}`);
       return json;
     }
   }
@@ -31063,7 +23788,7 @@
   /* baseResult.js */
 
   /* constants */
-  const debug$d = new DebugLogging('baseResult', false);
+  const debug$L = new DebugLogging('baseResult', false);
 
   /**
    * @class baseResult
@@ -31094,9 +23819,9 @@
       this.result_type       = RESULT_TYPE.BASE;
       this.rule_result       = ruleResult;
       this.result_value      = resultValue;
-      debug$d.flag && debug$d.log(`[  msgId]: ${msgId}`);
-      debug$d.flag && debug$d.log(`[    msg]: ${msg}`);
-      debug$d.flag && debug$d.log(`[msgArgs]: ${msgArgs}`);
+      debug$L.flag && debug$L.log(`[  msgId]: ${msgId}`);
+      debug$L.flag && debug$L.log(`[    msg]: ${msg}`);
+      debug$L.flag && debug$L.log(`[msgArgs]: ${msgArgs}`);
       this.result_message    = getBaseResultMessage(msg, msgArgs);
       this.result_identifier = result_identifier;
 
@@ -31273,8 +23998,8 @@
 
   /* Constants */
 
-  const debug$c = new DebugLogging('ElementResult', false);
-  debug$c.flag = false;
+  const debug$K = new DebugLogging('ElementResult', false);
+  debug$K.flag = false;
 
   /**
    * @class ElementResult
@@ -31313,8 +24038,8 @@
       this.domElement = domElement;
       this.result_type    = RESULT_TYPE.ELEMENT;
 
-      if (debug$c.flag) {
-        debug$c.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$K.flag) {
+        debug$K.log(`${this.result_value}: ${this.result_message}`);
       }
     }
     /**
@@ -31411,7 +24136,16 @@
      */
 
     getRole () {
-      return this.domElement.role;
+      let role =this.domElement.role;
+      if (this.domElement.role === 'row') {
+        if (this.domElement.ariaInfo.inGrid) {
+          role += ' (in grid)';
+        }
+        if (this.domElement.ariaInfo.inTreegrid) {
+          role += ' (in treerid)';
+        }
+      }
+      return role;
     }
 
     /**
@@ -31601,7 +24335,7 @@
 
   /* elementResultSummary.js */
 
-  const debug$b = new DebugLogging('ElementResultSummary', false);
+  const debug$J = new DebugLogging('ElementResultSummary', false);
 
   /* ---------------------------------------------------------------- */
   /*                             ResultSummary                        */
@@ -31632,7 +24366,7 @@
       this.mc  = 0;
       this.h   = 0;
 
-      debug$b.flag && debug$b.log(`[ElementResultsSummary]: ${this.toString()}`);
+      debug$J.flag && debug$J.log(`[ElementResultsSummary]: ${this.toString()}`);
     }
 
     get violations()     { return this.v;   }
@@ -31743,7 +24477,7 @@
 
   /* Constants */
 
-  const debug$a = new DebugLogging('PageResult', false);
+  const debug$I = new DebugLogging('PageResult', false);
 
   /**
    * @class PageResult
@@ -31778,8 +24512,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.PAGE;
 
-      if (debug$a.flag) {
-        debug$a.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$I.flag) {
+        debug$I.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -31789,7 +24523,7 @@
 
   /* Constants */
 
-  const debug$9 = new DebugLogging('PageResult', false);
+  const debug$H = new DebugLogging('PageResult', false);
 
   /**
    * @class WebsiteResult
@@ -31824,8 +24558,8 @@
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.WEBSITE;
 
-      if (debug$9.flag) {
-        debug$9.log(`${this.result_value}: ${this.result_message}`);
+      if (debug$H.flag) {
+        debug$H.log(`${this.result_value}: ${this.result_message}`);
       }
     }
 
@@ -31835,8 +24569,8 @@
 
 
   /* constants */
-  const debug$8 = new DebugLogging('ruleResult', false);
-  debug$8.flag = false;
+  const debug$G = new DebugLogging('ruleResult', false);
+  debug$G.flag = false;
 
    /**
    * @class RuleResult
@@ -32061,7 +24795,6 @@
         message = replaceAll(message, "%N_T",  (total + summary.manual_checks).toString());
         message = replaceAll(message, "%N_MC", summary.manual_checks.toString());
         message = replaceAll(message, "%N_H",  summary.hidden.toString());
-        message = transformElementMarkup(message);
       }
       return message;
     }
@@ -32427,6 +25160,7755 @@
 
   }
 
+  /* audioRules.js */
+
+  /* Constants */
+  const debug$F = new DebugLogging('Audio Rules', false);
+  debug$F.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Audio Rules
+   */
+
+  const audioRules = [
+
+    /**
+     * @object AUDIO_1
+     *
+     * @desc Provide text alternative for audio only
+     */
+
+    { rule_id             : 'AUDIO_1',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '1.2.1',
+      wcag_related_ids    : ['1.2.2', '1.2.4', '1.2.9'],
+      target_resources    : ['audio', 'embed', 'object', 'track'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+
+          if (me.isAudio || !me.isVideo) {
+            const de = me.domElement;
+
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.tracks.length) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+                  }
+                }
+              }
+              else {
+                if (de.accDescription.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+                }
+                else {
+                  if (me.isAudio) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                  }
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+      /**
+       * @object AUDIO_2
+       *
+       * @desc  Audio automatically starts
+       */
+
+    { rule_id             : 'AUDIO_2',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.2',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    }
+
+  ];
+
+  /* authorizationRules.js */
+
+  /* Constants */
+  const debug$E = new DebugLogging('Authorization Rules', false);
+  debug$E.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Autyhorizatiom Rules
+   */
+
+  const authorizationRules = [
+
+    /**
+     * @object AUTHORIZATION_1
+     *
+     * @desc ccessible Authorization (Minimum)
+     */
+
+    { rule_id             : 'AUTHORIZATION_1',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.3.8',
+      wcag_related_ids    : [],
+      target_resources    : ['widgets'],
+      validate          : function (dom_cache, rule_result) {
+
+        if (dom_cache.controlInfo.hasTextInput) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+      } // end validate function
+    }
+  ];
+
+  /* bypassRules.js */
+
+  /* Constants */
+  const debug$D = new DebugLogging('Bypass Rules', false);
+  debug$D.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Bypass Rules
+   */
+
+  const bypassRules = [
+
+    /**
+     * @object BYPASS_1
+     *
+     * @desc Looking for links or that support bypassing blocks of content
+    */
+
+    { rule_id             : 'BYPASS_1',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['2.4.4'],
+      target_resources    : ['a'],
+      validate            : function (dom_cache, rule_result) {
+
+        const bypassTargets = [
+          'content',
+          'content-main',
+          'main',
+          'maincontent',
+          'main-content',
+          'site-content'
+          ];
+
+        const domElements     = dom_cache.allDomElements;
+        const linkDomElements = dom_cache.linkInfo.allLinkDomElements;
+
+        let de;
+        let hasSkipToButton = false;
+        let hasBypassLink = false;
+        let linkDomElem = false;
+        let targetDomElem = false;
+
+        // Check for SkipTo.js page script button
+        for (let i = 0; (i < domElements.length) && !hasSkipToButton; i += 1) {
+          de = domElements[i];
+          if (de.id === 'id-skip-to') {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+            hasSkipToButton = true;
+          }
+        }
+
+        // Check for bypass block links
+        for (let i = 0; (i < linkDomElements.length) && !hasSkipToButton && !hasBypassLink; i += 1) {
+          linkDomElem = linkDomElements[i];
+
+          let href = linkDomElem.node.href;
+
+          if ((typeof href === 'string') && href.indexOf('#') >= 0) {
+            let  targetId = href.slice(href.indexOf('#')+1);
+
+            if (bypassTargets.includes(targetId)) {
+              hasBypassLink = true;
+
+              for (let i = 0; (i < domElements.length) && (!targetDomElem); i += 1) {
+                de = domElements[i];
+                if ((de.id === targetId) || (de.name === targetId)) {
+                  targetDomElem = de;
+                }
+              }
+
+              if (targetDomElem) {
+                rule_result.addElementResult(TEST_RESULT.PASS, linkDomElem, 'ELEMENT_PASS_2', []);
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, targetDomElem, 'ELEMENT_MC_1', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, linkDomElem,   'ELEMENT_FAIL_1', []);
+              }
+
+            }
+
+          }
+
+        }
+
+        if (hasSkipToButton) {
+          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+        }
+        else {
+          if (hasBypassLink) {
+            if (targetDomElem) {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+            }
+            else {
+              rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+            }
+          }
+          else {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', []);
+          }
+        }
+      } // end validation function  }
+    }
+  ];
+
+  /* colorRules.js */
+
+  /* Constants */
+  const debug$C = new DebugLogging('Color Rules', false);
+  debug$C.flag = false;
+
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule Category: Color Rules
+   */
+
+  const colorRules = [
+    /**
+     * @object COLOR_1
+     *
+     * @desc  Color contrast ratio must be > 4.5 for normal text, or > 3 for large text
+     */
+
+    { rule_id             : 'COLOR_1',
+      last_updated        : '2022-04-21',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '1.4.3',
+      wcag_related_ids    : ['1.4.1','1.4.6'],
+      target_resources    : ['text content'],
+      validate            : function (dom_cache, rule_result) {
+
+        let index = 0;
+        function checkResult(domElement, result) {
+          const node    = domElement.node;
+          const tagName = node.tagName;
+          const id      = node.id ? `[id=${node.id}]` : '';
+          const cc      = domElement.colorContrast;
+          const crr     = cc.colorContrastRatio;
+          debug$C.flag && debug$C.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+        }
+
+
+        const MIN_CCR_NORMAL_FONT = 4.5;
+        const MIN_CCR_LARGE_FONT  = 3;
+
+        debug$C.flag && debug$C.log(`===== COLOR 1 ====`);
+
+        dom_cache.allDomTexts.forEach( domText => {
+          const de  = domText.parentDomElement;
+          const cc  = de.colorContrast;
+          const ccr = cc.colorContrastRatio;
+
+          if (de.visibility.isVisibleOnScreen) {
+            if (cc.isLargeFont) {
+              if (ccr >= MIN_CCR_LARGE_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
+                }
+              }
+            }
+            else {
+              if (ccr >= MIN_CCR_NORMAL_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
+                }
+              }
+            }
+          } else {
+            checkResult(de, 'HIDDEN');
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_2
+     *
+     * @desc  Use of color
+     */
+
+    { rule_id             : 'COLOR_2',
+      last_updated        : '2022-04-21',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '1.4.1',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_3
+     *
+     * @desc  Color contrast ratio must be >= 7 for normal text, or >= 4.5 for large text
+     */
+
+    { rule_id             : 'COLOR_3',
+      last_updated        : '2022-07-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required        : false,
+      first_step          : false,
+      wcag_primary_id     : '1.4.6',
+      wcag_related_ids    : ['1.4.1','1.4.3'],
+      target_resources    : ['text content'],
+      validate            : function (dom_cache, rule_result) {
+
+        let index = 0;
+        function checkResult(domElement, result) {
+          const node    = domElement.node;
+          const tagName = node.tagName;
+          const id      = node.id ? `[id=${node.id}]` : '';
+          const cc      = domElement.colorContrast;
+          const crr     = cc.colorContrastRatio;
+          debug$C.flag && debug$C.log(`[${index += 1}][${result}][${tagName}]${id}: ${crr}`);
+        }
+
+
+        const MIN_CCR_NORMAL_FONT = 7;
+        const MIN_CCR_LARGE_FONT  = 4.5;
+
+        debug$C.flag && debug$C.log(`===== COLOR 3 ====`);
+
+        dom_cache.allDomTexts.forEach( domText => {
+          const de  = domText.parentDomElement;
+          const cc  = de.colorContrast;
+          const ccr = cc.colorContrastRatio;
+
+          if (de.visibility.isVisibleOnScreen) {
+            if (cc.isLargeFont || cc.isBoldedFont) {
+              if (ccr >= MIN_CCR_LARGE_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_3', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_2', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_4', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_2', [ccr]);
+                }
+              }
+            }
+            else {
+              if (ccr >= MIN_CCR_NORMAL_FONT) {
+                // Passes color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_1', [ccr]);
+                }
+                else {
+                  checkResult(de, 'PASS');
+                  rule_result.addElementResult(TEST_RESULT.PASS, domText, 'ELEMENT_PASS_1', [ccr]);
+                }
+              }
+              else {
+                // Fails color contrast requirements
+                if (cc.hasBackgroundImage) {
+                  checkResult(de, 'MC');
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domText, 'ELEMENT_MC_2', [ccr]);
+                }
+                else {
+                  checkResult(de, 'FAIL');
+                  rule_result.addElementResult(TEST_RESULT.FAIL, domText, 'ELEMENT_FAIL_1', [ccr]);
+                }
+              }
+            }
+          } else {
+            checkResult(de, 'HIDDEN');
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domText, 'ELEMENT_HIDDEN_1', []);
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_4
+     *
+     * @desc  Non-text Contrast for user interface controls
+     */
+
+    { rule_id             : 'COLOR_4',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.11',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+          if (!ce.isDisabled && de.ariaInfo.isWidget) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+
+      } // end validate function
+    },
+
+    /**
+     * @object COLOR_5
+     *
+     * @desc  Non-text Contrast for graphical object
+     */
+
+    { rule_id             : 'COLOR_5',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.11',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.imageInfo.allImageElements.forEach( ie => {
+          const de = ie.domElement;
+          // check if image is decorative
+          if (de.accName.name) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        dom_cache.imageInfo.allSVGDomElements.forEach( de => {
+          if (de.visibility.isVisibleOnScreen) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+
+      } // end validate function
+    }
+  ];
+
+  /* errorRules.js */
+
+  /* Constants */
+  const debug$B = new DebugLogging('Error Rules', false);
+  debug$B.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Error Rules
+   */
+
+  const errorRules = [
+
+    /**
+     * @object ERROR_1
+     *
+     * @desc Identify form controls with invalid values
+     *
+     */
+
+    { rule_id             : 'ERROR_1',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.3.1',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type="checkbox"]',
+                             'input[type="date"]',
+                             'input[type="file"]',
+                             'input[type="radio"]',
+                             'input[type="number"]',
+                             'input[type="password"]',
+                             'input[type="tel"]' ,
+                             'input[type="text"]',
+                             'input[type="url"]',
+                             'select',
+                             'textarea',
+                             'meter',
+                             'progress',
+                             'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+
+          if (ce.isInteractive) {
+            const de = ce.domElement;
+
+            if (de.visibility.isVisibleToAT) {
+              if (ce.hasValidityState) {
+                if (!ce.isValid) {
+                  if (ce.hasAriaInvalid) {
+                    if (ce.ariaInvalid) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+                  }
+                }
+                else {
+                   if (ce.hasAriaInvalid) {
+                    if (de.ariaInvalid) {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.elemName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+                    }
+                  }
+                  else {
+                    if (ce.hasPattern) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                    }
+                  }
+                }
+              }
+              else {
+                if (ce.hasAriaInvalid) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.elemName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object ERROR_2
+     *
+     * @desc Use required attribute on required standard form controls
+     *
+     */
+
+    { rule_id             : 'ERROR_2',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.3.3',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea'],
+      validate            : function (dom_cache, rule_result) {
+
+          dom_cache.controlInfo.allControlElements.forEach( ce => {
+
+          if (ce.isInteractive) {
+            const de = ce.domElement;
+            if (ce.hasRequired || ce.hasAriaRequired) {
+              if (de.visibility.isVisibleToAT) {
+                if (ce.hasRequired && ce.hasAriaRequired && !ce.ariaRequired) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                }
+                else {
+                  if (de.hasRequired) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+                  }
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+              }
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object ERROR_3
+     *
+     * @desc Provide correction suggestions
+     *
+     */
+
+    { rule_id             : 'ERROR_3',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.3.3',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        const suggestionRoles = ['textbox', 'select', 'slider', 'spinbutton'];
+
+          dom_cache.controlInfo.allControlElements.forEach( ce => {
+            const de = ce.domElement;
+
+            if (suggestionRoles.includes(de.role)) {
+              if (de.visibility.isVisibleToAT) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+              }
+            }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object ERROR_4
+     *
+     * @desc Provide error prevention
+     *
+     */
+
+    { rule_id             : 'ERROR_4',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.3.4',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type="text"]', 'input[type="date"]', 'input[type="file"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', '[role="textbox"]', '[role="combobox"]', '[role="gridcell"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        const excludeRoles = ['group',
+                              'listitem',
+                              'menuitem',
+                              'menuitemradio',
+                              'menuitemcheckbox',
+                              'option',
+                              'scrollbar'];
+
+        let count = 0;
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+
+          if (ce.isInteractive && !excludeRoles.includes(de.role)) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              count += 1;
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        if (count) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+      } // end validate function
+    }
+  ];
+
+  /* frameRules.js */
+
+  /* Constants */
+  const debug$A = new DebugLogging('Frame Rules', false);
+  debug$A.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Frame Rules
+   */
+
+  const frameRules = [
+
+    /**
+     * @object FRAME_1
+     *
+     * @desc  Evaluate frame elements for a title attribute
+     */
+
+    { rule_id             : 'FRAME_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : [],
+      target_resources    : ['frame'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.allDomElements.forEach( de => {
+          if (de.tagName === 'frame' && de.node.src && !de.hasRole) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object FRAME_2
+     *
+     * @desc  Evaluate iframe elements for an accessible name
+     */
+
+    { rule_id             : 'FRAME_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : [],
+      target_resources    : ['iframe'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.iframeInfo.allIFrameElements.forEach( ife => {
+          const de = ife.domElement;
+          if ((de.tagName === 'iframe') &&
+               !de.hasRole &&
+              de.node.src) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+      } // end validate function
+    }
+
+  ];
+
+  /* controlRules.js */
+
+  /* Constants */
+  const debug$z = new DebugLogging('Control Rules', false);
+  debug$z.flag = false;
+
+  const autoFillValues = [
+    'name',
+    'honorific-prefix',
+    'given-name',
+    'additional-name',
+    'family-name',
+    'honorific-suffix',
+    'nickname',
+    'organization-title',
+    'username',
+    'new-password',
+    'current-password',
+    'organization',
+    'street-address',
+    'address-line1',
+    'address-line2',
+    'address-line3',
+    'address-level4',
+    'address-level3',
+    'address-level2',
+    'address-level1',
+    'country',
+    'country-name',
+    'postal-code',
+    'cc-name',
+    'cc-given-name',
+    'cc-additional-name',
+    'cc-family-name',
+    'cc-number',
+    'cc-exp',
+    'cc-exp-month',
+    'cc-exp-year',
+    'cc-csc',
+    'cc-type',
+    'transaction-currency',
+    'transaction-amount',
+    'language',
+    'bday',
+    'bday-day',
+    'bday-month',
+    'bday-year',
+    'sex',
+    'url',
+    'photo',
+    'tel',
+    'tel-country-code',
+    'tel-national',
+    'tel-area-code',
+    'tel-local',
+    'tel-local-prefix',
+    'tel-local-suffix',
+    'tel-extension',
+    'email',
+    'impp',
+  ];
+
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule Category: Form Control Rules
+   */
+
+  const controlRules = [
+
+  /**
+   * @object CONTROL_1
+   *
+   * @desc textarea, select and input elements of type text,
+   *       password, checkbox, radio and file must have an
+   *       accessible name using label elements
+   *
+   */
+
+  { rule_id             : 'CONTROL_1',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="date"]', 'input[type="file"]', 'input[type="radio"]', 'input[type="number"]', 'input[type="password"]', 'input[type="tel"]' , 'input[type="text"]', 'input[type="url"]', 'select', 'textarea', 'meter', 'progress'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (!ce.isInputTypeImage) {
+          if (de.isLabelable) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_2
+   *
+   * @desc Every input type image must have an accessible name attribute with content
+   */
+
+  { rule_id             : 'CONTROL_2',
+    last_updated        : '2022-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="image"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeImage) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.source !== 'none') {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object CONTROL_3
+   *
+   * @desc Groups of radio buttons should be contained in fieldset/legend or have some other group label
+   */
+  { rule_id             : 'CONTROL_3',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['input[type="radio"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeRadio) {
+          if (de.visibility.isVisibleToAT) {
+            const gce = ce.getGroupControlElement(); 
+            if (gce) {
+              const gde = gce.domElement;
+              if (gde.tagName === 'fieldset') {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);              
+                }
+              }
+              else {
+                if (gde.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [gde.tagName, gde.role, gde.accName.name]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [gde.tagName, gde.role]);              
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);              
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_4
+   *
+   * @desc Button elements must have text content and input type button must have a value attribute with content
+   */
+  { rule_id             : 'CONTROL_4',
+    last_updated        : '2022-07-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : false,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['button'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.role === 'button') {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [ce.typeAttr]);              
+            }
+              else {
+              if (de.tagName === 'input') {
+                if (de.accName.source === 'value') {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.typeAttr]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.typeAttr]);              
+                }            
+              }
+              else {
+                if (de.tagName === 'button') {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                    }
+                  }            
+                }
+                else {
+                  if (ce.hasTextContent) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.tagName]);
+                  }
+                  else {
+                    if (ce.hasSVGContent) {
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.tagName]);
+                    }
+                  }                          
+                }
+              }
+            }
+          }
+          else {
+            if (de.tagName === 'input' || ce.isInputTypeImage) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [ce.typeAttr]);
+            }
+            else {
+              if (de.tagName === 'button') {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.tagName]);            
+              }
+            }
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_5
+   *
+   * @desc Ids on form controls must be unique
+   *
+   * @note Do not need to test for invisible elements, since getElementById searches all elements int he DOM
+   */
+  { rule_id             : 'CONTROL_5',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.1',
+    wcag_related_ids    : ['3.3.2', '1.3.1', '2.4.6'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.id) {
+          const docIndex = de.parentInfo.documentIndex;
+          if (dom_cache.idInfo.idCountsByDoc[docIndex][de.id] > 1) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.id]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName, de.id]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.id]);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_6
+   *
+   * @desc Label element with a for attribute reference does not reference a form control
+   */
+  { rule_id             : 'CONTROL_6',
+    last_updated        : '2022-07-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel && ce.labelForAttr) {
+          if (de.visibility.isVisibleToAT) {
+            if (ce.isLabelForAttrValid) {
+              if (ce.labelforTargetUsesAriaLabeling) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [ce.labelForAttr]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [ce.labelForAttr]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [ce.labelForAttr]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_7
+   *
+   * @desc Label or legend element must contain text content
+   */
+
+  { rule_id             : 'CONTROL_7',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6'],
+    target_resources    : ['label', 'legend'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isLabel || ce.isLegend) {
+          if (de.visibility.isVisibleOnScreen) {
+            if (ce.hasTextContent) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              if (ce.hasSVGContent) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              }
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL 8
+   *
+   * @desc Fieldset must contain exactly one legend element
+   */
+
+  { rule_id             : 'CONTROL_8',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['1.3.1', '2.4.6', '4.1.1'],
+    target_resources    : ['fieldset'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        let le;
+        if (ce.isFieldset) {
+          if (de.visibility.isVisibleToAT) {
+
+            const legendCount = ce.legendElements.length;
+
+            switch (legendCount) {
+              case 0:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                break;
+
+              case 1:
+                le = ce.legendElements[0];
+                if (le.domElement.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+                }
+                break;
+              
+              default:
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [legendCount]);
+                break;  
+            }
+
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_9
+   *
+   * @desc Check form controls labeled using the TITLE attribute for accessible name
+   */
+
+  { rule_id             : 'CONTROL_9',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : ['4.1.1'],
+    target_resources    : ['input', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (de.accName.source === 'title') {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+          }
+          else {      
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_10
+   *
+   * @desc Accessible labels must be unique for every textarea,
+   *       select and input element of type text, password, radio,
+   *       and checkbox on a page
+   */
+
+  { rule_id             : 'CONTROL_10',
+    last_updated        : '2022-06-10',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="checkbox"]', 'input[type="radio"]', 'input[type="text"]', 'input[type="password"]', 'input[type="file"]', 'select', 'textarea'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach(ce1 => {
+        const de1 = ce1.domElement;
+        if (de1.ariaInfo.isDPUBRole || de1.role === 'option') {
+          return;
+        }
+        let count;
+        if (de1.ariaInfo.isNameRequired) {
+          if (de1.visibility.isVisibleToAT) {
+            count = 0;
+            dom_cache.controlInfo.allControlElements.forEach(ce2 => {
+              const de2 = ce2.domElement;
+              if ((ce1 !== ce2) && 
+                  ((de1.ariaInfo.requiredParents.length === 0) || 
+                   (ce1.parentControlElement === ce2.parentControlElement)) &&
+                  de2.ariaInfo.isNameRequired && 
+                  de2.visibility.isVisibleToAT) {
+                if ((de1.role === de2.role) && 
+                    (ce1.nameForComparision === ce2.nameForComparision)) {
+                  count += 1;
+                }
+              }
+            });
+            if (count === 0){
+              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
+            } 
+            else {
+              // Since their ar often duplicate button on pages, when two or more buttons share the same
+              // name it should be a manual check
+              if (de1.role === 'button') {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
+                }
+              }
+              else {
+                if (de1.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
+                }
+              }
+            }
+          }
+          else {
+            if (de1.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_2', [de1.tagName]);
+            }
+          }
+        }
+      });  
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_11
+   *
+   * @desc If there is more than one form on page, input element of type
+   *       submit and reset must have unique labels in each form using the value attribute
+   *
+   */
+
+  { rule_id             : 'CONTROL_11',
+    last_updated        : '2022-08-08',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['input[type="submit"]', 'input[type="reset"]','button[type="submit"]', 'button[type="reset"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      let de1, de2, count;
+
+      if (dom_cache.controlInfo.allFormElements.length > 1 ) {
+        dom_cache.controlInfo.allFormElements.forEach(fe1 => {
+          const sb1 = fe1.getButtonControl('submit');
+          if (sb1) {
+            de1 = sb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const sb2 = fe2.getButtonControl('submit');
+                  if (sb1 && sb2) {
+                    de2 = sb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (sb1.nameForComparision === sb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+
+          const rb1 = fe1.getButtonControl('reset');
+          if (rb1) {
+            de1 = rb1.domElement;
+            count = 0;
+            if (de1.visibility.isVisibleToAT) {
+              dom_cache.controlInfo.allFormElements.forEach(fe2 => {
+                if (fe1 !== fe2) {
+                  const rb2 = fe2.getButtonControl('reset');
+                  if (rb1 && rb2) {
+                    de2 = rb2.domElement;
+                    if (de2.visibility.isVisibleToAT && 
+                        (rb1.nameForComparision === rb2.nameForComparision)) {
+                      count += 1;
+                    }
+                  }
+                }
+              });
+              if (count) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.typeAttr, de1.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName, de1.typeAttr, de1.accName.name]);                
+              }          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de1, 'ELEMENT_HIDDEN_1', [de1.tagName, de1.typeAttr]);
+            }
+          }
+        });
+      }
+    } // end validate function
+  },
+
+  /**
+   * @object CONTROL_12
+   *
+   * @desc Form include a submit button
+   *
+   */
+
+  { rule_id             : 'CONTROL_12',
+    last_updated        : '2023-08-22',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '3.2.2',
+    wcag_related_ids    : [],
+    target_resources    : ['form', 'input[type="submit"]', 'input[type="button"]', 'input[type="image"]', 'button', '[role="button"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      function getChildButtonDomElements (ce) {
+        let buttonDomElements = [];
+
+        ce.childControlElements.forEach( cce => {
+          const de = cce.domElement;
+          if (de.role === 'button') {
+            buttonDomElements.push(de);
+          }
+          buttonDomElements = buttonDomElements.concat(getChildButtonDomElements(cce));
+        });
+
+        return buttonDomElements;
+      }
+
+      dom_cache.controlInfo.allFormElements.forEach( fce => {
+        const de = fce.domElement;
+        if (de.visibility.isVisibleOnScreen) {
+          const buttonDomElements = getChildButtonDomElements(fce);
+          let submitButtons = 0;
+          let otherButtons  = 0;
+
+          buttonDomElements.forEach( b => {
+            if (b.tagName === 'input') {
+              const type = b.node.getAttribute('type');
+              if (type === 'submit') {
+                if (b.visibility.isVisibleOnScreen) {
+                  submitButtons += 1;
+                  rule_result.addElementResult(TEST_RESULT.PASS, b, 'ELEMENT_PASS_2', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_2', []);
+                }
+              }
+              else {
+                if ((type === 'button') || (type === "image")) {
+                 if (b.visibility.isVisibleOnScreen) {
+                    otherButtons += 1;
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_3', [type]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_3', [type]);
+                  }
+                }
+              }
+            }
+            else {
+              if (b.tagName === 'button') {
+               if (b.visibility.isVisibleOnScreen) {
+                  otherButtons += 1;
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_4', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_4', []);
+                }
+              } else {
+                if (b.role === 'button') {
+                 if (b.visibility.isVisibleOnScreen) {
+                    otherButtons += 1;
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, b, 'ELEMENT_MC_5', [b.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.HIDDEN, b, 'ELEMENT_HIDDEN_5', [b.tagName]);
+                  }
+                }
+              }
+            }
+          });
+
+          if (submitButtons > 0) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+          }
+          else {
+            if (otherButtons > 0) {
+              if (otherButtons === 1) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [otherButtons]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+        }
+      });
+
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_13
+   *
+   * @desc Use names that support autocomplete
+   *
+   */
+
+  { rule_id             : 'CONTROL_13',
+    last_updated        : '2023-09-18',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.3.5',
+    wcag_related_ids    : ['3.3.2', '2.4.6'],
+    target_resources    : ['input[type="text"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (ce.isInputTypeText) {
+          if (de.visibility.isVisibleToAT) {
+            if (autoFillValues.includes(ce.nameAttr)) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, ce.nameAttr]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_14
+   *
+   * @desc   HTML form controls must use native properties and states
+   */
+  { rule_id             : 'CONTROL_14',
+    last_updated        : '2023-09-30',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : [],
+    target_resources    : ["input", "option", "select", "textarea"],
+    validate          : function (dom_cache, rule_result) {
+
+      function checkForNativeStates (domElement, ariaAttr, htmlAttr, result='fail') {
+
+        if (domElement.node.hasAttribute(ariaAttr)) {
+          if (domElement.visibility.isVisibleToAT) {
+            if (result === 'fail') {
+              rule_result.addElementResult(TEST_RESULT.FAIL, domElement, 'ELEMENT_FAIL_1', [htmlAttr, ariaAttr, domElement.elemName]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, domElement, 'ELEMENT_MC_1', [htmlAttr, ariaAttr, domElement.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, domElement, 'ELEMENT_HIDDEN_1', [ariaAttr, domElement.elemName]);
+          }
+        }
+      }
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        switch (de.tagName) {
+          case 'button':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            break;
+
+          case 'fieldset':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            break;
+
+          case 'input':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            if ((de.typeAttr === 'checkbox') || (de.typeAttr === 'radio')) {
+              checkForNativeStates(de, 'aria-checked', 'checked');
+            }
+            break;
+
+          case 'option':
+            checkForNativeStates(de, 'aria-disabled', 'disabled');
+            checkForNativeStates(de, 'aria-selected', 'selected');
+            break;
+
+          case 'select':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            checkForNativeStates(de, 'aria-multiselectable', 'multiple');
+            break;
+
+          case 'textarea':
+            checkForNativeStates(de, 'aria-disabled', 'disabled', 'mc');
+            checkForNativeStates(de, 'aria-invalid',  'invalid');
+            checkForNativeStates(de, 'aria-required', 'required');
+            break;
+        }
+      });
+
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_15
+   *
+   * @desc   Label in Name
+   */
+
+  { rule_id             : 'CONTROL_15',
+    last_updated        : '2023-12-01',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '2.5.3',
+    wcag_related_ids    : [],
+    target_resources    : ["input", "output", "select", "textarea", "widgets"],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+
+        if (ce.isInteractive) {
+          if (de.accName.includesAlt) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            if (de.accName.includesAriaLabel) {
+              if (de.visibility.isVisibleToAT) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.elemName]);
+              }
+            }
+            else {
+              if (de.accName.nameIsNotVisible) {
+                if (de.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.elemName]);
+                }
+              }
+
+            }
+          }
+        }
+
+      });
+
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_16
+   *
+   * @desc   Redundant Entry
+   */
+
+  { rule_id             : 'CONTROL_16',
+    last_updated        : '2023-12-01',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.7',
+    wcag_related_ids    : [],
+    target_resources    : ["input", "select", "textarea"],
+    validate          : function (dom_cache, rule_result) {
+
+      const includeTags = ['form', 'input', 'select', 'textarea'];
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        if (includeTags.includes(de.tagName)) {
+          if (de.visibility.isVisibleToAT) {
+            if (autoFillValues.includes(ce.autocomplete)) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, ce.autocomplete]);
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+        else {
+          if (de.isInteractive && (de.ariaInfo.requiredParents.length === 0)) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        }
+     });
+
+    } // end validation function
+  },
+
+  /**
+   * @object CONTROL_17
+   *
+   * @desc   Avoid label encapsulation
+   */
+
+  { rule_id             : 'CONTROL_17',
+    last_updated        : '2023-12-16',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.FORMS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '3.3.2',
+    wcag_related_ids    : [],
+    target_resources    : ["input", 'output', "select", "textarea"],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach(ce => {
+        const de = ce.domElement;
+        if (!ce.isInputTypeImage) {
+          if (de.isLabelable) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.source.indexOf('encapsulation') < 0) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.accName.source]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  }
+
+
+
+  ];
+
+  /* headingRules.js */
+
+  /* Constants */
+  const debug$y = new DebugLogging('Heading Rules', false);
+  debug$y.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Heading Rules
+   */
+
+  const headingRules = [
+
+    /**
+     * @object HEADING_1
+     *
+     * @desc Page contains at least one H1 element and each H1 element has content
+     */
+     { rule_id            : 'HEADING_1',
+      last_updated        : '2022-05-19',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.HEADINGS,
+      rule_required       : false,
+      first_step          : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.2', '2.4.6', '2.4.10'],
+      target_resources    : ['h1'],
+      validate            : function (dom_cache, rule_result) {
+        let h1Count = 0;
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.ariaInfo.ariaLevel === 1) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName && de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                h1Count++;
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+        if (h1Count === 0) {
+          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object HEADING_2
+     *
+     * @desc If there are main and/or banner landmarks and H1 elements,
+     *       H1 elements should be children of main or banner landmarks
+     *
+     */
+    { rule_id             : 'HEADING_2',
+      last_updated        : '2022-05-19',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.HEADINGS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '2.4.6',
+      wcag_related_ids    : ['1.3.1', '2.4.1', '2.4.2', '2.4.10'],
+      target_resources    : ['h1'],
+      validate            : function (dom_cache, rule_result) {
+
+        function checkForAnscetorLandmarkRole(de, role) {
+          let ple = de.parentInfo.landmarkElement;
+          while (ple) {
+             if (ple.domElement.role === role) return true;
+             ple = ple.parentLandmarkElement;
+          }
+          return false;
+        }
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.ariaInfo.ariaLevel === 1) {
+            if (de.visibility.isVisibleToAT) {
+              if (checkForAnscetorLandmarkRole(de, 'main')) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+              }
+              else {
+                if (checkForAnscetorLandmarkRole(de, 'banner')) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+  /**
+   * @object HEADING_3
+   *
+   * @desc Sibling headings of the same level that share the same parent heading should be unique
+   *       This rule applies only when there are no main landmarks on the page and at least one
+   *       sibling heading
+   *
+   */
+  { rule_id             : 'HEADING_3',
+    last_updated        : '2014-11-25',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    rule_required       : false,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+
+      const visibleHeadings = [];
+      const lastHeadingNamesAtLevel = ['', '', '', '', '', '', ''];
+      const headingNameForComparison = [];
+
+      function updateLastHeadingNamesAtLevel (level, name) {
+        if ((level > 0) && (level < 7)) {
+          lastHeadingNamesAtLevel[level] = name;
+          for (let i = level + 1; i < 7; i += 1) {
+            // clear lower level names, since a new heading context
+            lastHeadingNamesAtLevel[i] = '';
+          }
+        }
+      }
+
+      function getParentHeadingName (level) {
+        let name = '';
+        while (level > 0) {
+          name = lastHeadingNamesAtLevel[level];
+          if (name.length) {
+            break;
+          }
+          level -= 1;
+        }
+        return name;
+      }
+
+      dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+        if (de.visibility.isVisibleToAT) {
+          visibleHeadings.push(de);
+        } else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+
+
+      visibleHeadings.forEach( (de, index) => {
+
+        const name = de.accName.name.toLowerCase();
+
+        // save the name of the last heading of each level
+        switch (de.ariaInfo.ariaLevel) {
+          case 1:
+            updateLastHeadingNamesAtLevel(1, name);
+            headingNameForComparison[index] = name;
+            break;
+
+          case 2:
+            updateLastHeadingNamesAtLevel(2, name);
+            headingNameForComparison[index] = getParentHeadingName(1) + name;
+            break;
+
+          case 3:
+            updateLastHeadingNamesAtLevel(3, name);
+            headingNameForComparison[index] = getParentHeadingName(2) + name;
+            break;
+
+          case 4:
+            updateLastHeadingNamesAtLevel(4, name);
+            headingNameForComparison[index] = getParentHeadingName(3) + name;
+            break;
+
+          case 5:
+            updateLastHeadingNamesAtLevel(5, name);
+            headingNameForComparison[index] = getParentHeadingName(4) + name;
+            break;
+
+          case 6:
+            updateLastHeadingNamesAtLevel(6, name);
+            headingNameForComparison[index] = getParentHeadingName(5) + name;
+            break;
+        }
+      });
+
+      visibleHeadings.forEach( (de1, index1) => {
+        let duplicate = false;
+        visibleHeadings.forEach( (de2, index2) => {
+          if ((index1 !== index2) &&
+            (headingNameForComparison[index1] ===  headingNameForComparison[index2])) {
+            duplicate = true;
+          }
+        });
+        if (duplicate) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName]);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [de1.tagName]);
+        }
+      });
+
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_5
+   *
+   * @desc Headings must be properly nested
+   *
+   */
+  { rule_id             : 'HEADING_5',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.PAGE,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    rule_required       : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+      let nestingErrors = 0;
+      let manualChecks = 0;
+
+      if (dom_cache.structureInfo.hasMainLandmark) {
+        dom_cache.structureInfo.allLandmarkElements.forEach ( le => {
+          nestingErrors += checkHeadingNesting(dom_cache, rule_result, le.childHeadingDomElements, le.domElement.role);
+        });
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach ( de => {
+          if (!de.parentInfo.landmarkElement) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name.length === 0) {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                manualChecks += 1;
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } else {
+        nestingErrors = checkHeadingNesting(dom_cache, rule_result, dom_cache.structureInfo.allHeadingDomElements);
+      }
+
+      if (nestingErrors > 0) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [nestingErrors]);
+      }
+      else {
+        if (dom_cache.structureInfo.allHeadingDomElements.length > 0) {
+          if (manualChecks > 0) {
+            if (manualChecks === 1) {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+            }
+            else {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [manualChecks]);
+            }
+          } else {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+          }
+        }
+      }
+
+
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_6
+   *
+   * @desc Headings should not consist only of image content
+   *
+   */
+  { rule_id             : 'HEADING_6',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    rule_required       : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6', '2.4.10'],
+    target_resources    : ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.structureInfo.allHeadingDomElements.forEach( (de) => {
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length) {
+            if (de.hasTextContent()) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+    } // end validate function
+  },
+
+  /**
+   * @object HEADING_7
+   *
+   * @desc First heading in contentinfo, complementary, form, navigation and search landmark must be an h2, except main landmark h1
+   */
+  { rule_id             : 'HEADING_7',
+    last_updated        : '2022-05-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.HEADINGS,
+    rule_required        : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+    target_resources    : ['h2', '[role="contentinfo"]', '[role="complementary"]', '[role="form"]', '[role="navigation"]', '[role="search"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      const testRoles = ['contentinfo', 'complementary', 'form', 'navigation', 'search'];
+
+      dom_cache.structureInfo.allLandmarkElements.forEach( le => {
+        const role = le.domElement.role;
+
+        if (testRoles.indexOf(role) >= 0) {
+
+          const de = le.getFirstVisibleHeadingDomElement();
+          if (de) {
+            const ariaLevel = de.ariaInfo.ariaLevel;
+            if (ariaLevel === 2) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role, ariaLevel]);
+            }
+          }
+        }
+      });
+    } // end validate function
+  }
+
+  ];
+
+  /*
+   * Heading Rule Helper Functions
+   */
+
+  function checkHeadingNesting(dom_cache, rule_result, headingDomElements) {
+    const visibleHeadings = [];
+
+    headingDomElements.forEach( de => {
+      if (de.visibility.isVisibleToAT) {
+        if (de.accName.name.length) {
+          visibleHeadings.push(de);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+        }
+      }
+      else {
+        rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+      }
+    });
+
+    let nestingErrors = 0;
+    let lastLevel = visibleHeadings.length ? visibleHeadings[0].ariaInfo.ariaLevel : 1;
+    visibleHeadings.forEach( de => {
+      const level = de.ariaInfo.ariaLevel;
+      if ( level <= (lastLevel + 1)) {
+        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+        // Only update lastLevel when you get a pass
+        lastLevel = level;
+      }
+      else {
+        nestingErrors += 1;
+        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+      }
+    });
+
+    return nestingErrors;
+  }
+
+  /* helpRules.js */
+
+  /* Constants */
+  const debug$x = new DebugLogging('Help Rules', false);
+  debug$x.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Help Rules
+   */
+
+  const helpRules = [
+
+    /**
+     * @object HELP_1
+     *
+     * @desc
+    */
+
+    { rule_id             : 'HELP_1',
+      last_updated        : '2023-12-03',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.6',
+      wcag_related_ids    : [],
+      target_resources    : ['page'],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+     } // end validation function  }
+    }
+
+  ];
+
+  /* htmlRules.js */
+
+  /* Constants */
+  const debug$w = new DebugLogging('HTML Rules', false);
+  debug$w.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: HTML Rules
+   */
+
+  const htmlRules = [
+
+    /**
+     * @object HTML_1
+     *
+     * @desc Change marquee elements to use accessible techniques
+     */
+
+    { rule_id             : 'HTML_1',
+      last_updated        : '2023-09-01',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.3.1',
+      wcag_related_ids    : ['2.2.2', '4.1.1'],
+      target_resources    : ['marquee'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+
+          if (de.tagName === 'marquee') {
+            if (de.visibility.isVisibleToAT) {
+               rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+      } // end validate function
+    }
+  ];
+
+  /* imageRules.js */
+
+  /* Constants */
+  const debug$v = new DebugLogging('Image Rules', false);
+  debug$v.flag = false;
+
+  /*
+   * OpenA11y Alliance Rules
+   * Rule Category: Image Rules
+   */
+
+  const imageRules = [
+
+  /**
+   * @object IMAGE_1
+   *
+   * @desc Images must have a source for an accessible name or be identified as decorative
+   */
+
+  { rule_id             : 'IMAGE_1',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach(ie => {
+        const de = ie.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.accName.source]);
+          }
+          else {
+            if ((de.role === 'none') ||
+                (de.role === 'presentation')) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
+            }
+            else {
+              if ((de.tagName === 'img') || (de.tagName === 'area')) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+              }
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_2
+   *
+   * @desc Text alternatives accurately describe images
+   */
+  { rule_id             : 'IMAGE_2',
+    last_updated        : '2015-09-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+            }
+          } else {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_3
+   *
+   * @desc The file name of the image should not be part of the accessible name content (it must have an image file extension)
+   */
+  { rule_id             : 'IMAGE_3',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        if (ie.fileName) {
+          const de = ie.domElement;
+          if (de.visibility.isVisibleToAT) {
+            const name = de.accName.name.toLowerCase();
+            if (name.indexOf(ie.fileName) < 0) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object IMAGE_4_EN (English)
+   *
+   * @desc If the accessible name contains content, it should be less than 100 characters long, longer descriptions should use long description techniques (English only)
+   */
+  { rule_id             : 'IMAGE_4_EN',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            const length = de.accName.name.length;
+            if (length <= 100) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [length]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [length]);
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_5
+   *
+   * @desc Verify the image is decorative
+   */
+  { rule_id             : 'IMAGE_5',
+    last_updated        : '2015-09-11',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de = ie.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (de.accName.name.length === 0) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
+            }
+          }
+        } else {
+          if (de.tagName === 'img') {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_6
+   *
+   * @desc For complex images, charts or graphs provide long description
+   */
+  { rule_id             : 'IMAGE_6',
+    last_updated        : '2014-11-28',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de   = ie.domElement;
+        const accName = de.accName;
+        const accDesc = de.accDescription;
+        if (accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (accDesc.name.length) {
+             rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
+            }
+            else {
+              if (de.node.hasAttribute('longdesc')) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);                                
+              } else {
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);                                
+              }
+            }
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_7
+   *
+   * @desc MathML for mathematical expressions
+   */
+  { rule_id             : 'IMAGE_7',
+    last_updated        : '2015-09-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.1.1',
+    wcag_related_ids    : [],
+    target_resources    : ['img', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach( ie => {
+        const de   = ie.domElement;
+        const accName = de.accName;
+        if (accName.name.length > 0) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);                    
+            } else {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);                    
+            }
+          } 
+          else {
+            if (de.tagName === 'img') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);                    
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object IMAGE_8
+   *
+   * @desc Images of text
+   */
+
+  { rule_id             : 'IMAGE_8',
+    last_updated        : '2023-10-17',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.IMAGES,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.4.5',
+    wcag_related_ids    : [],
+    target_resources    : ['img', 'area', '[role="img"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.imageInfo.allImageElements.forEach(ie => {
+        const de = ie.domElement;
+        if (de.accName.name.length) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.accName.source]);
+            }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+  ];
+
+  /* keyboardRules.js */
+
+  /* Constants */
+  const debug$u = new DebugLogging('Keyboard Rules', false);
+  debug$u.flag = true;
+
+  /* helper functions */
+
+
+  function isNativeTabStop (domElement) {
+    return domElement.isLabelable || ['a', 'area', 'button'].includes(domElement.tagName);
+  }
+
+  function isTabStop (domElement) {
+    return isNativeTabStop(domElement) ||
+           ((typeof domElement.tabIndex === 'number') && (domElement.tabIndex >= 0));
+  }
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Keyboard Rules
+   */
+
+  const keyboardRules = [
+
+    /**
+     * @object KEYBOARD_1
+     *
+     * @desc Widget elements on non-interactive elements or that override the default role of an interactive element
+     *       need keyboard event handlers on the widget element or a parent element of the widget
+     */
+
+    { rule_id             : 'KEYBOARD_1',
+      last_updated        : '2023-06-10',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.1.1',
+      wcag_related_ids    : ['4.1.2'],
+      target_resources    : ['widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.hasRole && de.ariaInfo.isWidget && !de.ariaInfo.isDPUBRole) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+            }
+          }
+        });
+
+      } // end validation function
+
+    },
+    /**
+     * @object KEYBOARD_2
+     *
+     * @desc Sequential keyboard navigation
+     */
+
+    { rule_id             : 'KEYBOARD_2',
+      last_updated        : '2023-10-08',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.4.3',
+      wcag_related_ids    : ['2.1.1', '2.1.2', '2.4.7', '3.2.1'],
+      target_resources    : ['links', 'controls', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        let mcCount = 0;
+        let passCount = 0;
+
+        dom_cache.allDomElements.forEach( de => {
+          if (isTabStop(de)) {
+            if (de.visibility.isVisibleToAT) {
+              if (de.tabIndex > 0 ) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+                mcCount += 1;
+              }
+              else {
+                if (de.tabIndex === 0) {
+                  if (isNativeTabStop(de)) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                    passCount += 1;
+                  }
+                  else {
+                    if (de.hasRole && de.isWidget) {
+                      // widget roles with tabindex=0
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                      mcCount += 1;
+                    }
+                    else {
+                      // non-interactive elements with tabindex=0
+                      rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.elemName]);
+                      mcCount += 1;
+                    }
+                  }
+                }
+                else {
+                  if (isNativeTabStop(de) && (de.tabindex === 0)) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+                    passCount += 1;
+                  }
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        if (mcCount) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+        else {
+          if (passCount) {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+          }
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_3
+     *
+     * @desc No keyboard trap
+     */
+
+    { rule_id             : 'KEYBOARD_3',
+      last_updated        : '2023-08-17',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.1.2',
+      wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
+      target_resources    : ['object'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.mediaInfo.allMediaElements.forEach( mediaElement => {
+          const de = mediaElement.domElement;
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+       } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_4
+     *
+     * @desc Check elements with tabindex > 0
+     */
+
+    { rule_id             : 'KEYBOARD_4',
+      last_updated        : '2023-08-21',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.1.2',
+      wcag_related_ids    : ['2.1.1', '2.4.3',  '2.4.7', '3.2.1'],
+      target_resources    : ['object'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (isTabStop(de) && de.tabIndex > 0) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.tabIndex]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.tabIndex]);
+            }
+          }
+        });
+       } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_5
+     *
+     * @desc Focus style
+     */
+
+    { rule_id             : 'KEYBOARD_5',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.7',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '3.2.1'],
+      target_resources    : ['Page', 'a', 'applet', 'area', 'button', 'input', 'object', 'select', 'area', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        let controlCount = 0;
+        let hiddenCount = 0;
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.ariaInfo.isWidget) {
+            if (de.visibility.isVisibleToAT) {
+              controlCount += 1;
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              hiddenCount += 1;
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        if (controlCount > 1) {
+          if (hiddenCount == 0) {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [controlCount]);
+          }
+          else {
+            rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [controlCount, hiddenCount]);
+          }
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_6
+     *
+     * @desc Select elements with onchange events
+     */
+
+    { rule_id             : 'KEYBOARD_6',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.2',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+      target_resources    : ['select'],
+      validate            : function (dom_cache, rule_result) {
+
+       dom_cache.controlInfo.allControlElements.forEach(ce => {
+          const de = ce.domElement;
+          if (de.tagName === 'select') {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_7
+     *
+     * @desc Content on Hover or Focus
+     */
+
+    { rule_id             : 'KEYBOARD_7',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.13',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_8
+     *
+     * @desc Focus Order
+     */
+
+    { rule_id             : 'KEYBOARD_8',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.3',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validation function
+    },
+
+    /**
+     * @object KEYBOARD_9
+     *
+     * @desc Focus Not Obscured (Minimum)
+     */
+
+    { rule_id             : 'KEYBOARD_9',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.11',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input', 'links', 'output', 'textarea', 'widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validation function
+    }
+
+  ];
+
+  /* landmarkRules.js */
+
+  /* Constants */
+  const debug$t = new DebugLogging('Landmark Rules', false);
+  debug$t.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Landmark Rules
+   */
+
+  const landmarkRules = [
+
+    /**
+     * @object LANDMARK_1
+     *
+     * @desc Each page should have at least one main landmark
+     */
+
+    { rule_id             : 'LANDMARK_1',
+      last_updated        : '2022-05-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['main', '[role="main"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'main', true);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_2
+     *
+     * @desc All rendered content should be contained in a landmark
+     */
+    { rule_id             : 'LANDMARK_2',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['Page', 'all'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.allDomElements.forEach ( de => {
+          const parentLandmark = de.parentInfo.landmarkElement;
+          const isLandmark = de.isLandmark;
+          if (!de.isInDialog && (de.hasContent || de.mayHaveContent)) {
+            if (de.visibility.isVisibleToAT) {
+              if ( isLandmark || parentLandmark ) {
+                const role = isLandmark ? de.role : parentLandmark.domElement.role;
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, role]);
+              }
+              else {
+                if (de.mayHaveContent) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_3
+     *
+     * @desc Each page within a website should have at least one navigation landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_3',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['nav', '[role="navigation"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        const MINIMUM_LINKS = 4;
+        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+        let navigationCount = 0;
+
+        allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (de.role === 'navigation') {
+            if (de.visibility.isVisibleToAT) {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+              }
+              navigationCount += 1;
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+        if (navigationCount === 0) {
+          // See if there are any lists of links greater than the MINIMUM_LINKS
+          const allListElements = dom_cache.listInfo.allListElements;
+          let listWithLinksCount = 0;
+          allListElements.forEach ( le => {
+            const de = le.domElement;
+            if (le.linkCount > MINIMUM_LINKS) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tag_name, le.linkCount]);
+              listWithLinksCount += 1;
+            }
+          });
+
+          if (listWithLinksCount > 0) {
+            rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
+          }
+        } else {
+          if (navigationCount === 1) {
+            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_1', []);
+          } else {
+            rule_result.addWebsiteResult(TEST_RESULT.PASS, dom_cache, 'WEBSITE_PASS_2', [navigationCount]);
+          }
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_4
+     *
+     * @desc Each page may have at least one banner landmark
+     *
+     */
+
+    { rule_id             : 'LANDMARK_4',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'banner', false);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_5
+     *
+     * @desc Each page should not have more than one banner landmark
+     *
+     */
+
+    { rule_id             : 'LANDMARK_5',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateNoMoreThanOne(dom_cache, rule_result, 'banner');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_6
+     *
+     * @desc Each page may have one contentinfo landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_6',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateAtLeastOne(dom_cache, rule_result, 'contentinfo', false);
+     } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_7
+     *
+     * @desc Each page may have only one contentinfo landmark
+     *
+     */
+    { rule_id             : 'LANDMARK_7',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.1',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateNoMoreThanOne(dom_cache, rule_result, 'contentinfo');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_8
+     *
+     * @desc banner landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_8',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      required            : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'banner');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_9
+     *
+     * @desc Banner landmark should only contain only region, navigation and search landmarks
+     */
+    { rule_id             : 'LANDMARK_9',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+       validateLandmarkDescendants(dom_cache, rule_result, 'banner', ['navigation', 'region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_10
+     *
+     * @desc Navigation landmark should only contain only region and search landmarks
+     */
+    { rule_id             : 'LANDMARK_10',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['nav', '[role="naviation"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'navigation', ['region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_11
+     *
+     * @desc Main landmark must be a top level lanmark
+     */
+    { rule_id             : 'LANDMARK_11',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', '[role="main"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'main');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_12
+     *
+     * @desc Contentinfo landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_12',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['footer', '[role="contentinfo"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'contentinfo');
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_13
+     *
+     * @desc Contentinfo landmark should only contain only search, region and navigation landmarks
+     */
+    { rule_id             : 'LANDMARK_13',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['header', '[role="banner"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'contentinfo', ['navigation', 'region', 'search']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_14
+     *
+     * @desc Search landmark should only contain only region landmarks
+     */
+    { rule_id             : 'LANDMARK_14',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'search', ['region']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_15
+     *
+     * @desc Form landmark should only contain only region landmarks
+     */
+    { rule_id             : 'LANDMARK_15',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="form"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateLandmarkDescendants(dom_cache, rule_result, 'form', ['region']);
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_16
+     *
+     * @desc Elements with the role=region must have accessible name to be considered a landmark
+     */
+    { rule_id             : 'LANDMARK_16',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['[role="region"]'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.allDomElements.forEach( de => {
+          if (de.hasRole && de.role === 'region') {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name.length) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_17
+     *
+     * @desc Landmark must have unique labels
+     */
+
+    { rule_id             : 'LANDMARK_17',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        const landmarkRoles = ['banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region', 'search'];
+        landmarkRoles.forEach( role => {
+          validateUniqueAccessibleNames(dom_cache, rule_result, role);
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_18
+     *
+     * @desc Landmark must identify content regions
+     */
+
+    { rule_id             : 'LANDMARK_18',
+      last_updated        : '2015-08-07',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['main', 'nav', 'header', 'footer', 'section', 'aside', '[role="application"]','[role="banner"]', '[role="complementary"]','[role="contentinfo"]','[role="form"]','[role="main"]','[role="navigation"]','[role="region"]','[role="search"]'],
+      validate            : function (dom_cache, rule_result) {
+        const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+        allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role, de.accName.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role]);
+          }
+        });
+      } // end validate function
+    },
+
+    /**
+     * @object LANDMARK_19
+     *
+     * @desc Complementary landmark must be a top level landmark
+     */
+    { rule_id             : 'LANDMARK_19',
+      last_updated        : '2022-05-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LANDMARKS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : ['2.4.1', '2.4.6', '2.4.10'],
+      target_resources    : ['aside', '[role="complementary"]'],
+      validate            : function (dom_cache, rule_result) {
+        validateTopLevelLandmark(dom_cache, rule_result, 'complementary');
+      } // end validate function
+    }
+  ];
+
+  /* Helper Functions for Landmarks */
+
+
+  /**
+   * @function validateTopLevelLandmark
+   *
+   * @desc Evaluate if a landmark role is top level (e.g. not contained in other landmarks)
+   *
+   * @param  {DOMCache}    dom_cache   - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result - RuleResult object
+   * @param  {String}      role        - Landmark role to check
+   */
+
+  function validateTopLevelLandmark(dom_cache, rule_result, role) {
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+
+          if (de.parentInfo.landmarkElement === null) {
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', []);
+            }
+          }
+          else {
+            // Check to see if the two elements with the role share the same DOM (e.g. iframe check)
+            // If in a different DOM, allow it to be the top level in that DOM
+            const de1 = de.parentInfo.landmarkElement.domElement;
+
+            if (de1 && (de.parentInfo.document !== de1.parentInfo.document)) {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.tagName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', []);
+              }
+            }
+            else {
+              // Fails if they are in the same DOM
+              const landmarkRole = de.parentInfo.landmarkElement.domElement.role;
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, landmarkRole]);
+              } else  {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [landmarkRole]);
+              }
+            }
+          }
+        }
+        else {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * @function validateAtLeastOne
+   *
+   * @desc Evaluate if the the landmark region role exists in the page.
+   *       The required parameter determines if the landamrk is missing whether
+   *       a failure or manual check is required
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark role
+   * @oaram  {Boolean}     roleRequired - Is the landamrk region role required
+   */
+
+  function validateAtLeastOne(dom_cache, rule_result, role, roleRequired) {
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let roleCount = 0;
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+          }
+          roleCount += 1;
+        }
+        else {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          } else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+          }
+        }
+      }
+    });
+
+    if (roleCount === 0) {
+      if (roleRequired) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+      }
+      else {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      }
+    } else {
+      if (roleCount === 1) {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+      } else {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', [roleCount]);
+      }
+    }
+  }
+
+
+  /**
+   * @function validateNoMoreThanOne
+   *
+   * @desc Evaluate if the the landmark region role exists more than once on the page.
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark region role
+   */
+
+  function validateNoMoreThanOne(dom_cache, rule_result, role) {
+
+    const landmarkElementsByDoc = dom_cache.structureInfo.landmarkElementsByDoc;
+    let totalRoleCount = 0;
+    let anyMoreThanOne = false;
+
+    landmarkElementsByDoc.forEach( les => {
+      let visibleDomElements = [];
+      if (Array.isArray(les)) {
+        les.forEach( le => {
+          const de = le.domElement;
+          if (de.role === role) {
+            if (de.visibility.isVisibleToAT) {
+              visibleDomElements.push(de);
+              totalRoleCount += 1;
+            }
+            else {
+              if (de.hasRole) {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', []);
+              }
+            }
+          }
+        });
+
+        visibleDomElements.forEach( de => {
+          if (visibleDomElements.length === 1) {
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+            }
+          } else {
+            anyMoreThanOne = true;
+            if (de.hasRole) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+            }
+          }
+        });
+      }
+    });
+
+    if (totalRoleCount > 0) {
+      if (anyMoreThanOne) {
+        rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', [totalRoleCount]);
+      }
+      else {
+        rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+      }
+    }
+  }
+
+  /**
+   * @function validateLandmarkDescendants
+   *
+   * @desc Evaluate if the descendant landmark roles are a certain type
+   *
+   * @param  {DOMCache}    dom_cache             - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result           - RuleResult object
+   * @param  {String}      role                  - Landmark region role
+   * @param  {Array}       allowedLandmarkRoles  - An array of allowed descendant roles
+   */
+
+  function validateLandmarkDescendants(dom_cache, rule_result, role, allowedLandmarkRoles) {
+
+    function checkForDescendantLandmarks(landmarkElement) {
+      const result = {
+        failedCount: 0,
+        failedRoles : [],
+        passedCount: 0,
+        passedRoles : []
+      };
+
+      landmarkElement.descendantLandmarkElements.forEach( le => {
+        const de   = le.domElement;
+        const role = de.role;
+
+        if (de.visibility.isVisibleToAT) {
+          if (allowedLandmarkRoles.includes(role)) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [role]);
+            result.passedCount += 1;
+            result.passedRoles.push(role);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [role]);
+            result.failedCount += 1;
+            result.failedRoles.push(role);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, role]);
+        }
+      });
+
+      return result;
+    }
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let visibleLandmarkElements = [];
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          visibleLandmarkElements.push(le);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+      }
+    });
+
+    visibleLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      const result = checkForDescendantLandmarks(le);
+      const failedRoles = result.failedRoles.join(', ');
+      const passedRoles = result.passedRoles.join(', ');
+
+      if (result.failedCount === 1) {
+        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [failedRoles]);
+      } else {
+        if (result.failedCount > 1) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [result.failedCount, failedRoles]);
+        }
+        else {
+          if (result.passedCount === 0) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+          }
+          else {
+            if (result.passedCount === 1) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [passedRoles]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [result.passedCount, passedRoles]);
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * @function validateUniqueAccessibleNames
+   *
+   * @desc Evaluate if the accessible names for the landmark role are unique.
+   *
+   * @param  {DOMCache}    dom_cache    - DOMCache object being used in the evaluation
+   * @param  {RuleResult}  rule_result  - RuleResult object
+   * @param  {String}      role         - Landmark region role
+   */
+
+  function validateUniqueAccessibleNames(dom_cache, rule_result, role) {
+
+    const allLandmarkElements = dom_cache.structureInfo.allLandmarkElements;
+    let visibleDomElements = [];
+
+    allLandmarkElements.forEach( le => {
+      const de = le.domElement;
+      if (de.role === role) {
+        if (de.visibility.isVisibleToAT) {
+          visibleDomElements.push(de);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+        }
+      }
+    });
+
+    if (visibleDomElements.length > 1) {
+      visibleDomElements.forEach( (de1, index1) => {
+        let duplicate = false;
+        visibleDomElements.forEach( (de2, index2) => {
+          if ((index1 !== index2) &&
+              (accNamesTheSame(de1.accName, de2.accName))) {
+            duplicate = true;
+          }
+        });
+        if (duplicate) {
+          rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.accName.name, role]);
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', [role]);
+        }
+      });
+    }
+  }
+
+  /* languageRules.js */
+
+  /* Constants */
+  const debug$s = new DebugLogging('Language Rules', false);
+  debug$s.flag = false;
+
+  const LANGUAGE_CODES = {
+    subtags : "aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik in io is it iu iw ja ji jv jw ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mo mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg sh si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu aaa aab aac aad aae aaf aag aah aai aak aal aam aan aao aap aaq aas aat aau aav aaw aax aaz aba abb abc abd abe abf abg abh abi abj abl abm abn abo abp abq abr abs abt abu abv abw abx aby abz aca acb acd ace acf ach aci ack acl acm acn acp acq acr acs act acu acv acw acx acy acz ada adb add ade adf adg adh adi adj adl adn ado adp adq adr ads adt adu adw adx ady adz aea aeb aec aed aee aek ael aem aen aeq aer aes aeu aew aey aez afa afb afd afe afg afh afi afk afn afo afp afs aft afu afz aga agb agc agd age agf agg agh agi agj agk agl agm agn ago agp agq agr ags agt agu agv agw agx agy agz aha ahb ahg ahh ahi ahk ahl ahm ahn aho ahp ahr ahs aht aia aib aic aid aie aif aig aih aii aij aik ail aim ain aio aip aiq air ais ait aiw aix aiy aja ajg aji ajn ajp ajt aju ajw ajz akb akc akd ake akf akg akh aki akj akk akl akm ako akp akq akr aks akt aku akv akw akx aky akz ala alc ald ale alf alg alh ali alj alk all alm aln alo alp alq alr als alt alu alv alw alx aly alz ama amb amc ame amf amg ami amj amk aml amm amn amo amp amq amr ams amt amu amv amw amx amy amz ana anb anc and ane anf ang anh ani anj ank anl anm ann ano anp anq anr ans ant anu anv anw anx any anz aoa aob aoc aod aoe aof aog aoh aoi aoj aok aol aom aon aor aos aot aou aox aoz apa apb apc apd ape apf apg aph api apj apk apl apm apn apo app apq apr aps apt apu apv apw apx apy apz aqa aqc aqd aqg aql aqm aqn aqp aqr aqz arb arc ard are arh ari arj ark arl arn aro arp arq arr ars art aru arv arw arx ary arz asa asb asc asd ase asf asg ash asi asj ask asl asn aso asp asq asr ass ast asu asv asw asx asy asz ata atb atc atd ate atg ath ati atj atk atl atm atn ato atp atq atr ats att atu atv atw atx aty atz aua aub auc aud aue auf aug auh aui auj auk aul aum aun auo aup auq aur aus aut auu auw aux auy auz avb avd avi avk avl avm avn avo avs avt avu avv awa awb awc awd awe awg awh awi awk awm awn awo awr aws awt awu awv aww awx awy axb axe axg axk axl axm axx aya ayb ayc ayd aye ayg ayh ayi ayk ayl ayn ayo ayp ayq ayr ays ayt ayu ayx ayy ayz aza azb azc azd azg azj azm azn azo azt azz baa bab bac bad bae baf bag bah bai baj bal ban bao bap bar bas bat bau bav baw bax bay baz bba bbb bbc bbd bbe bbf bbg bbh bbi bbj bbk bbl bbm bbn bbo bbp bbq bbr bbs bbt bbu bbv bbw bbx bby bbz bca bcb bcc bcd bce bcf bcg bch bci bcj bck bcl bcm bcn bco bcp bcq bcr bcs bct bcu bcv bcw bcy bcz bda bdb bdc bdd bde bdf bdg bdh bdi bdj bdk bdl bdm bdn bdo bdp bdq bdr bds bdt bdu bdv bdw bdx bdy bdz bea beb bec bed bee bef beg beh bei bej bek bem beo bep beq ber bes bet beu bev bew bex bey bez bfa bfb bfc bfd bfe bff bfg bfh bfi bfj bfk bfl bfm bfn bfo bfp bfq bfr bfs bft bfu bfw bfx bfy bfz bga bgb bgc bgd bge bgf bgg bgi bgj bgk bgl bgm bgn bgo bgp bgq bgr bgs bgt bgu bgv bgw bgx bgy bgz bha bhb bhc bhd bhe bhf bhg bhh bhi bhj bhk bhl bhm bhn bho bhp bhq bhr bhs bht bhu bhv bhw bhx bhy bhz bia bib bic bid bie bif big bij bik bil bim bin bio bip biq bir bit biu biv biw bix biy biz bja bjb bjc bjd bje bjf bjg bjh bji bjj bjk bjl bjm bjn bjo bjp bjq bjr bjs bjt bju bjv bjw bjx bjy bjz bka bkb bkc bkd bkf bkg bkh bki bkj bkk bkl bkm bkn bko bkp bkq bkr bks bkt bku bkv bkw bkx bky bkz bla blb blc bld ble blf blg blh bli blj blk bll blm bln blo blp blq blr bls blt blv blw blx bly blz bma bmb bmc bmd bme bmf bmg bmh bmi bmj bmk bml bmm bmn bmo bmp bmq bmr bms bmt bmu bmv bmw bmx bmy bmz bna bnb bnc bnd bne bnf bng bni bnj bnk bnl bnm bnn bno bnp bnq bnr bns bnt bnu bnv bnw bnx bny bnz boa bob boe bof bog boh boi boj bok bol bom bon boo bop boq bor bot bou bov bow box boy boz bpa bpb bpd bpg bph bpi bpj bpk bpl bpm bpn bpo bpp bpq bpr bps bpt bpu bpv bpw bpx bpy bpz bqa bqb bqc bqd bqf bqg bqh bqi bqj bqk bql bqm bqn bqo bqp bqq bqr bqs bqt bqu bqv bqw bqx bqy bqz bra brb brc brd brf brg brh bri brj brk brl brm brn bro brp brq brr brs brt bru brv brw brx bry brz bsa bsb bsc bse bsf bsg bsh bsi bsj bsk bsl bsm bsn bso bsp bsq bsr bss bst bsu bsv bsw bsx bsy bta btb btc btd bte btf btg bth bti btj btk btl btm btn bto btp btq btr bts btt btu btv btw btx bty btz bua bub buc bud bue buf bug buh bui buj buk bum bun buo bup buq bus but buu buv buw bux buy buz bva bvb bvc bvd bve bvf bvg bvh bvi bvj bvk bvl bvm bvn bvo bvp bvq bvr bvt bvu bvv bvw bvx bvy bvz bwa bwb bwc bwd bwe bwf bwg bwh bwi bwj bwk bwl bwm bwn bwo bwp bwq bwr bws bwt bwu bww bwx bwy bwz bxa bxb bxc bxd bxe bxf bxg bxh bxi bxj bxk bxl bxm bxn bxo bxp bxq bxr bxs bxu bxv bxw bxx bxz bya byb byc byd bye byf byg byh byi byj byk byl bym byn byo byp byq byr bys byt byv byw byx byy byz bza bzb bzc bzd bze bzf bzg bzh bzi bzj bzk bzl bzm bzn bzo bzp bzq bzr bzs bzt bzu bzv bzw bzx bzy bzz caa cab cac cad cae caf cag cah cai caj cak cal cam can cao cap caq car cas cau cav caw cax cay caz cba cbb cbc cbd cbe cbg cbh cbi cbj cbk cbl cbn cbo cbr cbs cbt cbu cbv cbw cby cca ccc ccd cce ccg cch ccj ccl ccm ccn cco ccp ccq ccr ccs cda cdc cdd cde cdf cdg cdh cdi cdj cdm cdn cdo cdr cds cdy cdz cea ceb ceg cek cel cen cet cfa cfd cfg cfm cga cgc cgg cgk chb chc chd chf chg chh chj chk chl chm chn cho chp chq chr cht chw chx chy chz cia cib cic cid cie cih cik cim cin cip cir ciw ciy cja cje cjh cji cjk cjm cjn cjo cjp cjr cjs cjv cjy cka ckb ckh ckl ckn cko ckq ckr cks ckt cku ckv ckx cky ckz cla clc cld cle clh cli clj clk cll clm clo clt clu clw cly cma cmc cme cmg cmi cmk cml cmm cmn cmo cmr cms cmt cna cnb cnc cng cnh cni cnk cnl cno cns cnt cnu cnw cnx coa cob coc cod coe cof cog coh coj cok col com con coo cop coq cot cou cov cow cox coy coz cpa cpb cpc cpe cpf cpg cpi cpn cpo cpp cps cpu cpx cpy cqd cqu cra crb crc crd crf crg crh cri crj crk crl crm crn cro crp crq crr crs crt crv crw crx cry crz csa csb csc csd cse csf csg csh csi csj csk csl csm csn cso csq csr css cst csu csv csw csy csz cta ctc ctd cte ctg cth ctl ctm ctn cto ctp cts ctt ctu ctz cua cub cuc cug cuh cui cuj cuk cul cum cuo cup cuq cur cus cut cuu cuv cuw cux cvg cvn cwa cwb cwd cwe cwg cwt cya cyb cyo czh czk czn czo czt daa dac dad dae daf dag dah dai daj dak dal dam dao dap daq dar das dau dav daw dax day daz dba dbb dbd dbe dbf dbg dbi dbj dbl dbm dbn dbo dbp dbq dbr dbt dbu dbv dbw dby dcc dcr dda ddd dde ddg ddi ddj ddn ddo ddr dds ddw dec ded dee def deg deh dei dek del dem den dep deq der des dev dez dga dgb dgc dgd dge dgg dgh dgi dgk dgl dgn dgo dgr dgs dgt dgu dgw dgx dgz dha dhd dhg dhi dhl dhm dhn dho dhr dhs dhu dhv dhw dhx dia dib dic did dif dig dih dii dij dik dil dim din dio dip diq dir dis dit diu diw dix diy diz dja djb djc djd dje djf dji djj djk djl djm djn djo djr dju djw dka dkk dkl dkr dks dkx dlg dlk dlm dln dma dmb dmc dmd dme dmg dmk dml dmm dmn dmo dmr dms dmu dmv dmw dmx dmy dna dnd dne dng dni dnj dnk dnn dnr dnt dnu dnv dnw dny doa dob doc doe dof doh doi dok dol don doo dop doq dor dos dot dov dow dox doy doz dpp dra drb drc drd dre drg drh dri drl drn dro drq drr drs drt dru drw dry dsb dse dsh dsi dsl dsn dso dsq dta dtb dtd dth dti dtk dtm dto dtp dtr dts dtt dtu dty dua dub duc dud due duf dug duh dui duj duk dul dum dun duo dup duq dur dus duu duv duw dux duy duz dva dwa dwl dwr dws dww dya dyb dyd dyg dyi dym dyn dyo dyu dyy dza dzd dze dzg dzl dzn eaa ebg ebk ebo ebr ebu ecr ecs ecy eee efa efe efi ega egl ego egx egy ehu eip eit eiv eja eka ekc eke ekg eki ekk ekl ekm eko ekp ekr eky ele elh eli elk elm elo elp elu elx ema emb eme emg emi emk emm emn emo emp ems emu emw emx emy ena enb enc end enf enh enm enn eno enq enr enu env enw eot epi era erg erh eri erk ero err ers ert erw ese esh esi esk esl esm esn eso esq ess esu esx etb etc eth etn eto etr ets ett etu etx etz euq eve evh evn ewo ext eya eyo eza eze faa fab fad faf fag fah fai faj fak fal fam fan fap far fat fau fax fay faz fbl fcs fer ffi ffm fgr fia fie fil fip fir fit fiu fiw fkk fkv fla flh fli fll fln flr fly fmp fmu fng fni fod foi fom fon for fos fox fpe fqs frc frd frk frm fro frp frq frr frs frt fse fsl fss fub fuc fud fue fuf fuh fui fuj fum fun fuq fur fut fuu fuv fuy fvr fwa fwe gaa gab gac gad gae gaf gag gah gai gaj gak gal gam gan gao gap gaq gar gas gat gau gav gaw gax gay gaz gba gbb gbc gbd gbe gbf gbg gbh gbi gbj gbk gbl gbm gbn gbo gbp gbq gbr gbs gbu gbv gbw gbx gby gbz gcc gcd gce gcf gcl gcn gcr gct gda gdb gdc gdd gde gdf gdg gdh gdi gdj gdk gdl gdm gdn gdo gdq gdr gds gdt gdu gdx gea geb gec ged geg geh gei gej gek gel gem geq ges gew gex gey gez gfk gft gfx gga ggb ggd gge ggg ggk ggl ggn ggo ggr ggt ggu ggw gha ghc ghe ghh ghk ghl ghn gho ghr ghs ght gia gib gic gid gig gih gil gim gin gio gip giq gir gis git giu giw gix giy giz gji gjk gjm gjn gju gka gke gkn gko gkp glc gld glh gli glj glk gll glo glr glu glw gly gma gmb gmd gme gmh gml gmm gmn gmq gmu gmv gmw gmx gmy gmz gna gnb gnc gnd gne gng gnh gni gnk gnl gnm gnn gno gnq gnr gnt gnu gnw gnz goa gob goc god goe gof gog goh goi goj gok gol gom gon goo gop goq gor gos got gou gow gox goy goz gpa gpe gpn gqa gqi gqn gqr gqu gra grb grc grd grg grh gri grj grk grm gro grq grr grs grt gru grv grw grx gry grz gse gsg gsl gsm gsn gso gsp gss gsw gta gti gtu gua gub guc gud gue guf gug guh gui guk gul gum gun guo gup guq gur gus gut guu guv guw gux guz gva gvc gve gvf gvj gvl gvm gvn gvo gvp gvr gvs gvy gwa gwb gwc gwd gwe gwf gwg gwi gwj gwm gwn gwr gwt gwu gww gwx gxx gya gyb gyd gye gyf gyg gyi gyl gym gyn gyr gyy gza gzi gzn haa hab hac had hae haf hag hah hai haj hak hal ham han hao hap haq har has hav haw hax hay haz hba hbb hbn hbo hbu hca hch hdn hds hdy hea hed heg heh hei hem hgm hgw hhi hhr hhy hia hib hid hif hig hih hii hij hik hil him hio hir hit hiw hix hji hka hke hkk hks hla hlb hld hle hlt hlu hma hmb hmc hmd hme hmf hmg hmh hmi hmj hmk hml hmm hmn hmp hmq hmr hms hmt hmu hmv hmw hmx hmy hmz hna hnd hne hnh hni hnj hnn hno hns hnu hoa hob hoc hod hoe hoh hoi hoj hok hol hom hoo hop hor hos hot hov how hoy hoz hpo hps hra hrc hre hrk hrm hro hrp hrr hrt hru hrw hrx hrz hsb hsh hsl hsn hss hti hto hts htu htx hub huc hud hue huf hug huh hui huj huk hul hum huo hup huq hur hus hut huu huv huw hux huy huz hvc hve hvk hvn hvv hwa hwc hwo hya hyx iai ian iap iar iba ibb ibd ibe ibg ibi ibl ibm ibn ibr ibu iby ica ich icl icr ida idb idc idd ide idi idr ids idt idu ifa ifb ife iff ifk ifm ifu ify igb ige igg igl igm ign igo igs igw ihb ihi ihp ihw iin iir ijc ije ijj ijn ijo ijs ike iki ikk ikl iko ikp ikr ikt ikv ikw ikx ikz ila ilb ilg ili ilk ill ilo ils ilu ilv ilw ima ime imi iml imn imo imr ims imy inb inc ine ing inh inj inl inm inn ino inp ins int inz ior iou iow ipi ipo iqu iqw ira ire irh iri irk irn iro irr iru irx iry isa isc isd ise isg ish isi isk ism isn iso isr ist isu itb itc ite iti itk itl itm ito itr its itt itv itw itx ity itz ium ivb ivv iwk iwm iwo iws ixc ixl iya iyo iyx izh izi izr izz jaa jab jac jad jae jaf jah jaj jak jal jam jan jao jaq jar jas jat jau jax jay jaz jbe jbi jbj jbk jbn jbo jbr jbt jbu jbw jcs jct jda jdg jdt jeb jee jeg jeh jei jek jel jen jer jet jeu jgb jge jgk jgo jhi jhs jia jib jic jid jie jig jih jii jil jim jio jiq jit jiu jiv jiy jjr jkm jko jkp jkr jku jle jls jma jmb jmc jmd jmi jml jmn jmr jms jmw jmx jna jnd jng jni jnj jnl jns job jod jor jos jow jpa jpr jpx jqr jra jrb jrr jrt jru jsl jua jub juc jud juh jui juk jul jum jun juo jup jur jus jut juu juw juy jvd jvn jwi jya jye jyy kaa kab kac kad kae kaf kag kah kai kaj kak kam kao kap kaq kar kav kaw kax kay kba kbb kbc kbd kbe kbf kbg kbh kbi kbj kbk kbl kbm kbn kbo kbp kbq kbr kbs kbt kbu kbv kbw kbx kby kbz kca kcb kcc kcd kce kcf kcg kch kci kcj kck kcl kcm kcn kco kcp kcq kcr kcs kct kcu kcv kcw kcx kcy kcz kda kdc kdd kde kdf kdg kdh kdi kdj kdk kdl kdm kdn kdo kdp kdq kdr kdt kdu kdv kdw kdx kdy kdz kea keb kec ked kee kef keg keh kei kej kek kel kem ken keo kep keq ker kes ket keu kev kew kex key kez kfa kfb kfc kfd kfe kff kfg kfh kfi kfj kfk kfl kfm kfn kfo kfp kfq kfr kfs kft kfu kfv kfw kfx kfy kfz kga kgb kgc kgd kge kgf kgg kgh kgi kgj kgk kgl kgm kgn kgo kgp kgq kgr kgs kgt kgu kgv kgw kgx kgy kha khb khc khd khe khf khg khh khi khj khk khl khn kho khp khq khr khs kht khu khv khw khx khy khz kia kib kic kid kie kif kig kih kii kij kil kim kio kip kiq kis kit kiu kiv kiw kix kiy kiz kja kjb kjc kjd kje kjf kjg kjh kji kjj kjk kjl kjm kjn kjo kjp kjq kjr kjs kjt kju kjx kjy kjz kka kkb kkc kkd kke kkf kkg kkh kki kkj kkk kkl kkm kkn kko kkp kkq kkr kks kkt kku kkv kkw kkx kky kkz kla klb klc kld kle klf klg klh kli klj klk kll klm kln klo klp klq klr kls klt klu klv klw klx kly klz kma kmb kmc kmd kme kmf kmg kmh kmi kmj kmk kml kmm kmn kmo kmp kmq kmr kms kmt kmu kmv kmw kmx kmy kmz kna knb knc knd kne knf kng kni knj knk knl knm knn kno knp knq knr kns knt knu knv knw knx kny knz koa koc kod koe kof kog koh koi koj kok kol koo kop koq kos kot kou kov kow kox koy koz kpa kpb kpc kpd kpe kpf kpg kph kpi kpj kpk kpl kpm kpn kpo kpp kpq kpr kps kpt kpu kpv kpw kpx kpy kpz kqa kqb kqc kqd kqe kqf kqg kqh kqi kqj kqk kql kqm kqn kqo kqp kqq kqr kqs kqt kqu kqv kqw kqx kqy kqz kra krb krc krd kre krf krh kri krj krk krl krm krn kro krp krr krs krt kru krv krw krx kry krz ksa ksb ksc ksd kse ksf ksg ksh ksi ksj ksk ksl ksm ksn kso ksp ksq ksr kss kst ksu ksv ksw ksx ksy ksz kta ktb ktc ktd kte ktf ktg kth kti ktj ktk ktl ktm ktn kto ktp ktq ktr kts ktt ktu ktv ktw ktx kty ktz kub kuc kud kue kuf kug kuh kui kuj kuk kul kum kun kuo kup kuq kus kut kuu kuv kuw kux kuy kuz kva kvb kvc kvd kve kvf kvg kvh kvi kvj kvk kvl kvm kvn kvo kvp kvq kvr kvs kvt kvu kvv kvw kvx kvy kvz kwa kwb kwc kwd kwe kwf kwg kwh kwi kwj kwk kwl kwm kwn kwo kwp kwq kwr kws kwt kwu kwv kww kwx kwy kwz kxa kxb kxc kxd kxe kxf kxh kxi kxj kxk kxl kxm kxn kxo kxp kxq kxr kxs kxt kxu kxv kxw kxx kxy kxz kya kyb kyc kyd kye kyf kyg kyh kyi kyj kyk kyl kym kyn kyo kyp kyq kyr kys kyt kyu kyv kyw kyx kyy kyz kza kzb kzc kzd kze kzf kzg kzh kzi kzj kzk kzl kzm kzn kzo kzp kzq kzr kzs kzt kzu kzv kzw kzx kzy kzz laa lab lac lad lae laf lag lah lai laj lak lal lam lan lap laq lar las lau law lax lay laz lba lbb lbc lbe lbf lbg lbi lbj lbk lbl lbm lbn lbo lbq lbr lbs lbt lbu lbv lbw lbx lby lbz lcc lcd lce lcf lch lcl lcm lcp lcq lcs lda ldb ldd ldg ldh ldi ldj ldk ldl ldm ldn ldo ldp ldq lea leb lec led lee lef leg leh lei lej lek lel lem len leo lep leq ler les let leu lev lew lex ley lez lfa lfn lga lgb lgg lgh lgi lgk lgl lgm lgn lgq lgr lgt lgu lgz lha lhh lhi lhl lhm lhn lhp lhs lht lhu lia lib lic lid lie lif lig lih lii lij lik lil lio lip liq lir lis liu liv liw lix liy liz lja lje lji ljl ljp ljw ljx lka lkb lkc lkd lke lkh lki lkj lkl lkm lkn lko lkr lks lkt lku lky lla llb llc lld lle llf llg llh lli llj llk lll llm lln llo llp llq lls llu llx lma lmb lmc lmd lme lmf lmg lmh lmi lmj lmk lml lmm lmn lmo lmp lmq lmr lmu lmv lmw lmx lmy lmz lna lnb lnd lng lnh lni lnj lnl lnm lnn lno lns lnu lnw lnz loa lob loc loe lof log loh loi loj lok lol lom lon loo lop loq lor los lot lou lov low lox loy loz lpa lpe lpn lpo lpx lra lrc lre lrg lri lrk lrl lrm lrn lro lrr lrt lrv lrz lsa lsd lse lsg lsh lsi lsl lsm lso lsp lsr lss lst lsy ltc ltg lti ltn lto lts ltu lua luc lud lue luf lui luj luk lul lum lun luo lup luq lur lus lut luu luv luw luy luz lva lvk lvs lvu lwa lwe lwg lwh lwl lwm lwo lwt lwu lww lya lyg lyn lzh lzl lzn lzz maa mab mad mae maf mag mai maj mak mam man map maq mas mat mau mav maw max maz mba mbb mbc mbd mbe mbf mbh mbi mbj mbk mbl mbm mbn mbo mbp mbq mbr mbs mbt mbu mbv mbw mbx mby mbz mca mcb mcc mcd mce mcf mcg mch mci mcj mck mcl mcm mcn mco mcp mcq mcr mcs mct mcu mcv mcw mcx mcy mcz mda mdb mdc mdd mde mdf mdg mdh mdi mdj mdk mdl mdm mdn mdp mdq mdr mds mdt mdu mdv mdw mdx mdy mdz mea meb mec med mee mef meg meh mei mej mek mel mem men meo mep meq mer mes met meu mev mew mey mez mfa mfb mfc mfd mfe mff mfg mfh mfi mfj mfk mfl mfm mfn mfo mfp mfq mfr mfs mft mfu mfv mfw mfx mfy mfz mga mgb mgc mgd mge mgf mgg mgh mgi mgj mgk mgl mgm mgn mgo mgp mgq mgr mgs mgt mgu mgv mgw mgx mgy mgz mha mhb mhc mhd mhe mhf mhg mhh mhi mhj mhk mhl mhm mhn mho mhp mhq mhr mhs mht mhu mhw mhx mhy mhz mia mib mic mid mie mif mig mih mii mij mik mil mim min mio mip miq mir mis mit miu miw mix miy miz mja mjc mjd mje mjg mjh mji mjj mjk mjl mjm mjn mjo mjp mjq mjr mjs mjt mju mjv mjw mjx mjy mjz mka mkb mkc mke mkf mkg mkh mki mkj mkk mkl mkm mkn mko mkp mkq mkr mks mkt mku mkv mkw mkx mky mkz mla mlb mlc mld mle mlf mlh mli mlj mlk mll mlm mln mlo mlp mlq mlr mls mlu mlv mlw mlx mlz mma mmb mmc mmd mme mmf mmg mmh mmi mmj mmk mml mmm mmn mmo mmp mmq mmr mmt mmu mmv mmw mmx mmy mmz mna mnb mnc mnd mne mnf mng mnh mni mnj mnk mnl mnm mnn mno mnp mnq mnr mns mnt mnu mnv mnw mnx mny mnz moa moc mod moe mof mog moh moi moj mok mom moo mop moq mor mos mot mou mov mow mox moy moz mpa mpb mpc mpd mpe mpg mph mpi mpj mpk mpl mpm mpn mpo mpp mpq mpr mps mpt mpu mpv mpw mpx mpy mpz mqa mqb mqc mqe mqf mqg mqh mqi mqj mqk mql mqm mqn mqo mqp mqq mqr mqs mqt mqu mqv mqw mqx mqy mqz mra mrb mrc mrd mre mrf mrg mrh mrj mrk mrl mrm mrn mro mrp mrq mrr mrs mrt mru mrv mrw mrx mry mrz msb msc msd mse msf msg msh msi msj msk msl msm msn mso msp msq msr mss mst msu msv msw msx msy msz mta mtb mtc mtd mte mtf mtg mth mti mtj mtk mtl mtm mtn mto mtp mtq mtr mts mtt mtu mtv mtw mtx mty mua mub muc mud mue mug muh mui muj muk mul mum mun muo mup muq mur mus mut muu muv mux muy muz mva mvb mvd mve mvf mvg mvh mvi mvk mvl mvm mvn mvo mvp mvq mvr mvs mvt mvu mvv mvw mvx mvy mvz mwa mwb mwc mwd mwe mwf mwg mwh mwi mwj mwk mwl mwm mwn mwo mwp mwq mwr mws mwt mwu mwv mww mwx mwy mwz mxa mxb mxc mxd mxe mxf mxg mxh mxi mxj mxk mxl mxm mxn mxo mxp mxq mxr mxs mxt mxu mxv mxw mxx mxy mxz myb myc myd mye myf myg myh myi myj myk myl mym myn myo myp myq myr mys myt myu myv myw myx myy myz mza mzb mzc mzd mze mzg mzh mzi mzj mzk mzl mzm mzn mzo mzp mzq mzr mzs mzt mzu mzv mzw mzx mzy mzz naa nab nac nad nae naf nag nah nai naj nak nal nam nan nao nap naq nar nas nat naw nax nay naz nba nbb nbc nbd nbe nbf nbg nbh nbi nbj nbk nbm nbn nbo nbp nbq nbr nbs nbt nbu nbv nbw nbx nby nca ncb ncc ncd nce ncf ncg nch nci ncj nck ncl ncm ncn nco ncp ncr ncs nct ncu ncx ncz nda ndb ndc ndd ndf ndg ndh ndi ndj ndk ndl ndm ndn ndp ndq ndr nds ndt ndu ndv ndw ndx ndy ndz nea neb nec ned nee nef neg neh nei nej nek nem nen neo neq ner nes net neu nev new nex ney nez nfa nfd nfl nfr nfu nga ngb ngc ngd nge ngf ngg ngh ngi ngj ngk ngl ngm ngn ngo ngp ngq ngr ngs ngt ngu ngv ngw ngx ngy ngz nha nhb nhc nhd nhe nhf nhg nhh nhi nhk nhm nhn nho nhp nhq nhr nht nhu nhv nhw nhx nhy nhz nia nib nic nid nie nif nig nih nii nij nik nil nim nin nio niq nir nis nit niu niv niw nix niy niz nja njb njd njh nji njj njl njm njn njo njr njs njt nju njx njy njz nka nkb nkc nkd nke nkf nkg nkh nki nkj nkk nkm nkn nko nkp nkq nkr nks nkt nku nkv nkw nkx nkz nla nlc nle nlg nli nlj nlk nll nln nlo nlq nlr nlu nlv nlw nlx nly nlz nma nmb nmc nmd nme nmf nmg nmh nmi nmj nmk nml nmm nmn nmo nmp nmq nmr nms nmt nmu nmv nmw nmx nmy nmz nna nnb nnc nnd nne nnf nng nnh nni nnj nnk nnl nnm nnn nnp nnq nnr nns nnt nnu nnv nnw nnx nny nnz noa noc nod noe nof nog noh noi noj nok nol nom non noo nop noq nos not nou nov now noy noz npa npb npg nph npi npl npn npo nps npu npy nqg nqk nqm nqn nqo nqq nqy nra nrb nrc nre nrg nri nrk nrl nrm nrn nrp nrr nrt nru nrx nrz nsa nsc nsd nse nsf nsg nsh nsi nsk nsl nsm nsn nso nsp nsq nsr nss nst nsu nsv nsw nsx nsy nsz nte ntg nti ntj ntk ntm nto ntp ntr nts ntu ntw ntx nty ntz nua nub nuc nud nue nuf nug nuh nui nuj nuk nul num nun nuo nup nuq nur nus nut nuu nuv nuw nux nuy nuz nvh nvm nvo nwa nwb nwc nwe nwg nwi nwm nwo nwr nwx nwy nxa nxd nxe nxg nxi nxk nxl nxm nxn nxq nxr nxu nxx nyb nyc nyd nye nyf nyg nyh nyi nyj nyk nyl nym nyn nyo nyp nyq nyr nys nyt nyu nyv nyw nyx nyy nza nzb nzi nzk nzm nzs nzu nzy nzz oaa oac oar oav obi obk obl obm obo obr obt obu oca och oco ocu oda odk odt odu ofo ofs ofu ogb ogc oge ogg ogo ogu oht ohu oia oin ojb ojc ojg ojp ojs ojv ojw oka okb okd oke okg okh oki okj okk okl okm okn oko okr oks oku okv okx ola old ole olk olm olo olr oma omb omc ome omg omi omk oml omn omo omp omq omr omt omu omv omw omx ona onb one ong oni onj onk onn ono onp onr ons ont onu onw onx ood oog oon oor oos opa opk opm opo opt opy ora orc ore org orh orn oro orr ors ort oru orv orw orx ory orz osa osc osi oso osp ost osu osx ota otb otd ote oti otk otl otm otn oto otq otr ots ott otu otw otx oty otz oua oub oue oui oum oun owi owl oyb oyd oym oyy ozm paa pab pac pad pae paf pag pah pai pak pal pam pao pap paq par pas pat pau pav paw pax pay paz pbb pbc pbe pbf pbg pbh pbi pbl pbn pbo pbp pbr pbs pbt pbu pbv pby pbz pca pcb pcc pcd pce pcf pcg pch pci pcj pck pcl pcm pcn pcp pcr pcw pda pdc pdi pdn pdo pdt pdu pea peb ped pee pef peg peh pei pej pek pel pem peo pep peq pes pev pex pey pez pfa pfe pfl pga pgg pgi pgk pgl pgn pgs pgu pgy pha phd phg phh phi phk phl phm phn pho phq phr pht phu phv phw pia pib pic pid pie pif pig pih pii pij pil pim pin pio pip pir pis pit piu piv piw pix piy piz pjt pka pkb pkc pkg pkh pkn pko pkp pkr pks pkt pku pla plb plc pld ple plf plg plh plj plk pll pln plo plp plq plr pls plt plu plv plw ply plz pma pmb pmc pmd pme pmf pmh pmi pmj pmk pml pmm pmn pmo pmq pmr pms pmt pmu pmw pmx pmy pmz pna pnb pnc pne png pnh pni pnj pnk pnl pnm pnn pno pnp pnq pnr pns pnt pnu pnv pnw pnx pny pnz poc pod poe pof pog poh poi pok pom pon poo pop poq pos pot pov pow pox poy poz ppa ppe ppi ppk ppl ppm ppn ppo ppp ppq ppr pps ppt ppu pqa pqe pqm pqw pra prb prc prd pre prf prg prh pri prk prl prm prn pro prp prq prr prs prt pru prw prx pry prz psa psc psd pse psg psh psi psl psm psn pso psp psq psr pss pst psu psw psy pta pth pti ptn pto ptp ptr ptt ptu ptv ptw pty pua pub puc pud pue puf pug pui puj puk pum puo pup puq pur put puu puw pux puy puz pwa pwb pwg pwi pwm pwn pwo pwr pww pxm pye pym pyn pys pyu pyx pyy pzn qaa..qtz qua qub quc qud quf qug quh qui quk qul qum qun qup quq qur qus quv quw qux quy quz qva qvc qve qvh qvi qvj qvl qvm qvn qvo qvp qvs qvw qvy qvz qwa qwc qwe qwh qwm qws qwt qxa qxc qxh qxl qxn qxo qxp qxq qxr qxs qxt qxu qxw qya qyp raa rab rac rad raf rag rah rai raj rak ral ram ran rao rap raq rar ras rat rau rav raw rax ray raz rbb rbk rbl rbp rcf rdb rea reb ree reg rei rej rel rem ren rer res ret rey rga rge rgk rgn rgr rgs rgu rhg rhp ria rie rif ril rim rin rir rit riu rjg rji rjs rka rkb rkh rki rkm rkt rkw rma rmb rmc rmd rme rmf rmg rmh rmi rmk rml rmm rmn rmo rmp rmq rmr rms rmt rmu rmv rmw rmx rmy rmz rna rnd rng rnl rnn rnp rnr rnw roa rob roc rod roe rof rog rol rom roo rop ror rou row rpn rpt rri rro rrt rsb rsi rsl rtc rth rtm rtw rub ruc rue ruf rug ruh rui ruk ruo rup ruq rut ruu ruy ruz rwa rwk rwm rwo rwr rxd rxw ryn rys ryu saa sab sac sad sae saf sah sai saj sak sal sam sao sap saq sar sas sat sau sav saw sax say saz sba sbb sbc sbd sbe sbf sbg sbh sbi sbj sbk sbl sbm sbn sbo sbp sbq sbr sbs sbt sbu sbv sbw sbx sby sbz sca scb sce scf scg sch sci sck scl scn sco scp scq scs scu scv scw scx sda sdb sdc sde sdf sdg sdh sdj sdk sdl sdm sdn sdo sdp sdr sds sdt sdu sdv sdx sdz sea seb sec sed see sef seg seh sei sej sek sel sem sen seo sep seq ser ses set seu sev sew sey sez sfb sfe sfm sfs sfw sga sgb sgc sgd sge sgg sgh sgi sgj sgk sgl sgm sgn sgo sgp sgr sgs sgt sgu sgw sgx sgy sgz sha shb shc shd she shg shh shi shj shk shl shm shn sho shp shq shr shs sht shu shv shw shx shy shz sia sib sid sie sif sig sih sii sij sik sil sim sio sip siq sir sis sit siu siv siw six siy siz sja sjb sjd sje sjg sjk sjl sjm sjn sjo sjp sjr sjs sjt sju sjw ska skb skc skd ske skf skg skh ski skj skk skm skn sko skp skq skr sks skt sku skv skw skx sky skz sla slc sld sle slf slg slh sli slj sll slm sln slp slq slr sls slt slu slw slx sly slz sma smb smc smd smf smg smh smi smj smk sml smm smn smp smq smr sms smt smu smv smw smx smy smz snb snc sne snf sng snh sni snj snk snl snm snn sno snp snq snr sns snu snv snw snx sny snz soa sob soc sod soe sog soh soi soj sok sol son soo sop soq sor sos sou sov sow sox soy soz spb spc spd spe spg spi spk spl spm spo spp spq spr sps spt spu spv spx spy sqa sqh sqj sqk sqm sqn sqo sqq sqr sqs sqt squ sra srb src sre srf srg srh sri srk srl srm srn sro srq srr srs srt sru srv srw srx sry srz ssa ssb ssc ssd sse ssf ssg ssh ssi ssj ssk ssl ssm ssn sso ssp ssq ssr sss sst ssu ssv ssx ssy ssz sta stb std ste stf stg sth sti stj stk stl stm stn sto stp stq str sts stt stu stv stw sty sua sub suc sue sug sui suj suk sul sum suq sur sus sut suv suw sux suy suz sva svb svc sve svk svm svr svs svx swb swc swf swg swh swi swj swk swl swm swn swo swp swq swr sws swt swu swv sww swx swy sxb sxc sxe sxg sxk sxl sxm sxn sxo sxr sxs sxu sxw sya syb syc syd syi syk syl sym syn syo syr sys syw syy sza szb szc szd sze szg szl szn szp szv szw taa tab tac tad tae taf tag tai taj tak tal tan tao tap taq tar tas tau tav taw tax tay taz tba tbb tbc tbd tbe tbf tbg tbh tbi tbj tbk tbl tbm tbn tbo tbp tbq tbr tbs tbt tbu tbv tbw tbx tby tbz tca tcb tcc tcd tce tcf tcg tch tci tck tcl tcm tcn tco tcp tcq tcs tct tcu tcw tcx tcy tcz tda tdb tdc tdd tde tdf tdg tdh tdi tdj tdk tdl tdn tdo tdq tdr tds tdt tdu tdv tdx tdy tea teb tec ted tee tef teg teh tei tek tem ten teo tep teq ter tes tet teu tev tew tex tey tfi tfn tfo tfr tft tga tgb tgc tgd tge tgf tgg tgh tgi tgj tgn tgo tgp tgq tgr tgs tgt tgu tgv tgw tgx tgy tgz thc thd the thf thh thi thk thl thm thn thp thq thr ths tht thu thv thw thx thy thz tia tic tid tie tif tig tih tii tij tik til tim tin tio tip tiq tis tit tiu tiv tiw tix tiy tiz tja tjg tji tjl tjm tjn tjo tjs tju tjw tka tkb tkd tke tkf tkg tkk tkl tkm tkn tkp tkq tkr tks tkt tku tkw tkx tkz tla tlb tlc tld tlf tlg tlh tli tlj tlk tll tlm tln tlo tlp tlq tlr tls tlt tlu tlv tlw tlx tly tma tmb tmc tmd tme tmf tmg tmh tmi tmj tmk tml tmm tmn tmo tmp tmq tmr tms tmt tmu tmv tmw tmy tmz tna tnb tnc tnd tne tnf tng tnh tni tnk tnl tnm tnn tno tnp tnq tnr tns tnt tnu tnv tnw tnx tny tnz tob toc tod toe tof tog toh toi toj tol tom too top toq tor tos tou tov tow tox toy toz tpa tpc tpe tpf tpg tpi tpj tpk tpl tpm tpn tpo tpp tpq tpr tpt tpu tpv tpw tpx tpy tpz tqb tql tqm tqn tqo tqp tqq tqr tqt tqu tqw tra trb trc trd tre trf trg trh tri trj trk trl trm trn tro trp trq trr trs trt tru trv trw trx try trz tsa tsb tsc tsd tse tsf tsg tsh tsi tsj tsk tsl tsm tsp tsq tsr tss tst tsu tsv tsw tsx tsy tsz tta ttb ttc ttd tte ttf ttg tth tti ttj ttk ttl ttm ttn tto ttp ttq ttr tts ttt ttu ttv ttw tty ttz tua tub tuc tud tue tuf tug tuh tui tuj tul tum tun tuo tup tuq tus tut tuu tuv tuw tux tuy tuz tva tvd tve tvk tvl tvm tvn tvo tvs tvt tvu tvw tvy twa twb twc twd twe twf twg twh twl twm twn two twp twq twr twt twu tww twx twy txa txb txc txe txg txh txi txm txn txo txq txr txs txt txu txx txy tya tye tyh tyi tyj tyl tyn typ tyr tys tyt tyu tyv tyx tyz tza tzh tzj tzl tzm tzn tzo tzx uam uan uar uba ubi ubl ubr ubu uby uda ude udg udi udj udl udm udu ues ufi uga ugb uge ugn ugo ugy uha uhn uis uiv uji uka ukg ukh ukl ukp ukq uks uku ukw uky ula ulb ulc ule ulf uli ulk ull ulm uln ulu ulw uma umb umc umd umg umi umm umn umo ump umr ums umu una und une ung unk unm unn unp unr unu unx unz uok upi upv ura urb urc ure urf urg urh uri urj urk url urm urn uro urp urr urt uru urv urw urx ury urz usa ush usi usk usp usu uta ute utp utr utu uum uun uur uuu uve uvh uvl uwa uya uzn uzs vaa vae vaf vag vah vai vaj val vam van vao vap var vas vau vav vay vbb vbk vec ved vel vem veo vep ver vgr vgt vic vid vif vig vil vin vis vit viv vka vki vkj vkk vkl vkm vko vkp vkt vku vlp vls vma vmb vmc vmd vme vmf vmg vmh vmi vmj vmk vml vmm vmp vmq vmr vms vmu vmv vmw vmx vmy vmz vnk vnm vnp vor vot vra vro vrs vrt vsi vsl vsv vto vum vun vut vwa waa wab wac wad wae waf wag wah wai waj wak wal wam wan wao wap waq war was wat wau wav waw wax way waz wba wbb wbe wbf wbh wbi wbj wbk wbl wbm wbp wbq wbr wbt wbv wbw wca wci wdd wdg wdj wdk wdu wdy wea wec wed weg weh wei wem wen weo wep wer wes wet weu wew wfg wga wgb wgg wgi wgo wgu wgw wgy wha whg whk whu wib wic wie wif wig wih wii wij wik wil wim win wir wit wiu wiv wiw wiy wja wji wka wkb wkd wkl wku wkw wky wla wlc wle wlg wli wlk wll wlm wlo wlr wls wlu wlv wlw wlx wly wma wmb wmc wmd wme wmh wmi wmm wmn wmo wms wmt wmw wmx wnb wnc wnd wne wng wni wnk wnm wnn wno wnp wnu wnw wny woa wob woc wod woe wof wog woi wok wom won woo wor wos wow woy wpc wra wrb wrd wrg wrh wri wrk wrl wrm wrn wro wrp wrr wrs wru wrv wrw wrx wry wrz wsa wsi wsk wsr wss wsu wsv wtf wth wti wtk wtm wtw wua wub wud wuh wul wum wun wur wut wuu wuv wux wuy wwa wwb wwo wwr www wxa wxw wya wyb wyi wym wyr wyy xaa xab xac xad xae xag xai xal xam xan xao xap xaq xar xas xat xau xav xaw xay xba xbb xbc xbd xbe xbg xbi xbj xbm xbn xbo xbp xbr xbw xbx xby xcb xcc xce xcg xch xcl xcm xcn xco xcr xct xcu xcv xcw xcy xda xdc xdk xdm xdy xeb xed xeg xel xem xep xer xes xet xeu xfa xga xgb xgd xgf xgg xgi xgl xgm xgn xgr xgu xgw xha xhc xhd xhe xhr xht xhu xhv xia xib xii xil xin xip xir xiv xiy xjb xjt xka xkb xkc xkd xke xkf xkg xkh xki xkj xkk xkl xkn xko xkp xkq xkr xks xkt xku xkv xkw xkx xky xkz xla xlb xlc xld xle xlg xli xln xlo xlp xls xlu xly xma xmb xmc xmd xme xmf xmg xmh xmj xmk xml xmm xmn xmo xmp xmq xmr xms xmt xmu xmv xmw xmx xmy xmz xna xnb xnd xng xnh xni xnk xnn xno xnr xns xnt xnu xny xnz xoc xod xog xoi xok xom xon xoo xop xor xow xpa xpc xpe xpg xpi xpj xpk xpm xpn xpo xpp xpq xpr xps xpt xpu xpy xqa xqt xra xrb xrd xre xrg xri xrm xrn xrq xrr xrt xru xrw xsa xsb xsc xsd xse xsh xsi xsj xsl xsm xsn xso xsp xsq xsr xss xsu xsv xsy xta xtb xtc xtd xte xtg xth xti xtj xtl xtm xtn xto xtp xtq xtr xts xtt xtu xtv xtw xty xtz xua xub xud xug xuj xul xum xun xuo xup xur xut xuu xve xvi xvn xvo xvs xwa xwc xwd xwe xwg xwj xwk xwl xwo xwr xwt xww xxb xxk xxm xxr xxt xya xyb xyj xyk xyl xyt xyy xzh xzm xzp yaa yab yac yad yae yaf yag yah yai yaj yak yal yam yan yao yap yaq yar yas yat yau yav yaw yax yay yaz yba ybb ybd ybe ybh ybi ybj ybk ybl ybm ybn ybo ybx yby ych ycl ycn ycp yda ydd yde ydg ydk yds yea yec yee yei yej yel yen yer yes yet yeu yev yey yga ygi ygl ygm ygp ygr ygu ygw yha yhd yhl yia yif yig yih yii yij yik yil yim yin yip yiq yir yis yit yiu yiv yix yiy yiz yka ykg yki ykk ykl ykm ykn yko ykr ykt yku yky yla ylb yle ylg yli yll ylm yln ylo ylr ylu yly yma ymb ymc ymd yme ymg ymh ymi ymk yml ymm ymn ymo ymp ymq ymr yms ymt ymx ymz yna ynd yne yng ynh ynk ynl ynn yno ynq yns ynu yob yog yoi yok yol yom yon yos yot yox yoy ypa ypb ypg yph ypk ypm ypn ypo ypp ypz yra yrb yre yri yrk yrl yrm yrn yrs yrw yry ysc ysd ysg ysl ysn yso ysp ysr yss ysy yta ytl ytp ytw yty yua yub yuc yud yue yuf yug yui yuj yuk yul yum yun yup yuq yur yut yuu yuw yux yuy yuz yva yvt ywa ywg ywl ywn ywq ywr ywt ywu yww yxa yxg yxl yxm yxu yxy yyr yyu yyz yzg yzk zaa zab zac zad zae zaf zag zah zai zaj zak zal zam zao zap zaq zar zas zat zau zav zaw zax zay zaz zbc zbe zbl zbt zbw zca zch zdj zea zeg zeh zen zga zgb zgh zgm zgn zgr zhb zhd zhi zhn zhw zhx zia zib zik zil zim zin zir ziw ziz zka zkb zkd zkg zkh zkk zkn zko zkp zkr zkt zku zkv zkz zle zlj zlm zln zlq zls zlw zma zmb zmc zmd zme zmf zmg zmh zmi zmj zmk zml zmm zmn zmo zmp zmq zmr zms zmt zmu zmv zmw zmx zmy zmz zna znd zne zng znk zns zoc zoh zom zoo zoq zor zos zpa zpb zpc zpd zpe zpf zpg zph zpi zpj zpk zpl zpm zpn zpo zpp zpq zpr zps zpt zpu zpv zpw zpx zpy zpz zqe zra zrg zrn zro zrp zrs zsa zsk zsl zsm zsr zsu zte ztg ztl ztm ztn ztp ztq zts ztt ztu ztx zty zua zuh zum zun zuy zwa zxx zyb zyg zyj zyn zyp zza zzj aao abh abv acm acq acw acx acy adf ads aeb aec aed aen afb afg ajp apc apd arb arq ars ary arz ase asf asp asq asw auz avl ayh ayl ayn ayp bbz bfi bfk bjn bog bqn bqy btj bve bvl bvu bzs cdo cds cjy cmn coa cpx csc csd cse csf csg csl csn csq csr czh czo doq dse dsl dup ecs esl esn eso eth fcs fse fsl fss gan gds gom gse gsg gsm gss gus hab haf hak hds hji hks hos hps hsh hsl hsn icl ils inl ins ise isg isr jak jax jcs jhs jls jos jsl jus kgi knn kvb kvk kvr kxd lbs lce lcf liw lls lsg lsl lso lsp lst lsy ltg lvs lzh max mdl meo mfa mfb mfs min mnp mqg mre msd msi msr mui mzc mzg mzy nan nbs ncs nsi nsl nsp nsr nzs okl orn ors pel pga pks prl prz psc psd pse psg psl pso psp psr pys rms rsi rsl sdl sfb sfs sgg sgx shu slf sls sqk sqs ssh ssp ssr svk swc swh swl syy tmw tse tsm tsq tss tsy tza ugn ugy ukl uks urk uzn uzs vgt vkk vkt vsi vsl vsv wuu xki xml xmm xms yds ysl yue zib zlm zmi zsl zsm afak aghb arab armi armn avst bali bamu bass batk beng blis bopo brah brai bugi buhd cakm cans cari cham cher cirt copt cprt cyrl cyrs deva dsrt dupl egyd egyh egyp elba ethi geok geor glag goth gran grek gujr guru hang hani hano hans hant hebr hira hluw hmng hrkt hung inds ital java jpan jurc kali kana khar khmr khoj knda kore kpel kthi lana laoo latf latg latn lepc limb lina linb lisu loma lyci lydi mahj mand mani maya mend merc mero mlym mong moon mroo mtei mymr narb nbat nkgb nkoo nshu ogam olck orkh orya osma palm perm phag phli phlp phlv phnx plrd prti qaaa..qabx rjng roro runr samr sara sarb saur sgnw shaw shrd sind sinh sora sund sylo syrc syre syrj syrn tagb takr tale talu taml tang tavt telu teng tfng tglg thaa thai tibt tirh ugar vaii visp wara wole xpeo xsux yiii zinh zmth zsym zxxx zyyy zzzz aa ac ad ae af ag ai al am an ao aq ar as at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bu bv bw by bz ca cc cd cf cg ch ci ck cl cm cn co cp cr cs cu cv cw cx cy cz dd de dg dj dk dm do dz ea ec ee eg eh er es et eu fi fj fk fm fo fr fx ga gb gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nt nu nz om pa pe pf pg ph pk pl pm pn pr ps pt pw py qa qm..qz re ro rs ru rw sa sb sc sd se sg sh si sj sk sl sm sn so sr ss st su sv sx sy sz ta tc td tf tg th tj tk tl tm tn to tp tr tt tv tw tz ua ug um us uy uz va vc ve vg vi vn vu wf ws xa..xz yd ye yt yu za zm zr zw zz 001 002 003 005 009 011 013 014 015 017 018 019 021 029 030 034 035 039 053 054 057 061 142 143 145 150 151 154 155 419 1606nict 1694acad 1901 1959acad 1994 1996 alalc97 aluku arevela arevmda baku1926 bauddha biscayan biske bohoric boont dajnko emodeng fonipa fonupa fonxsamp hepburn heploc hognorsk itihasa jauer jyutping kkcor kscor laukika lipaw luna1918 metelko monoton ndyuka nedis njiva nulik osojs pamaka petr1708 pinyin polyton puter rigik rozaj rumgr scotland scouse solba surmiran sursilv sutsilv tarask uccor ucrcor ulster unifon vaidika valencia vallader wadegile ",
+    tags : "art-lojban cel-gaulish en-gb-oed i-ami i-bnn i-default i-enochian i-hak i-klingon i-lux i-mingo i-navajo i-pwn i-tao i-tay i-tsu no-bok no-nyn sgn-be-fr sgn-be-nl sgn-ch-de zh-guoyu zh-hakka zh-min zh-min-nan zh-xiang az-arab az-cyrl az-latn be-latn bs-cyrl bs-latn de-1901 de-1996 de-at-1901 de-at-1996 de-ch-1901 de-ch-1996 de-de-1901 de-de-1996 en-boont en-scouse es-419 iu-cans iu-latn mn-cyrl mn-mong sgn-br sgn-co sgn-de sgn-dk sgn-es sgn-fr sgn-gb sgn-gr sgn-ie sgn-it sgn-jp sgn-mx sgn-ni sgn-nl sgn-no sgn-pt sgn-se sgn-us sgn-za sl-nedis sl-rozaj sr-cyrl sr-latn tg-arab tg-cyrl uz-cyrl uz-latn yi-latn zh-cmn zh-cmn-hans zh-cmn-hant zh-gan zh-hans zh-hans-cn zh-hans-hk zh-hans-mo zh-hans-sg zh-hans-tw zh-hant zh-hant-cn zh-hant-hk zh-hant-mo zh-hant-sg zh-hant-tw zh-wuu zh-yue "
+  };
+
+  /* shared functions */
+
+  /**
+   * @function validLanguageCode
+   *
+   * @memberOf OpenAjax.a11y.util
+   *
+   * @desc Identifies if a language code is valid
+   *
+   * @param  {String}  language code -  INAN language code
+   *
+   * @return {Boolean}  If a valid language code return true, otherwsie false
+   */
+
+   function validLanguageCode(code) {
+
+    code = code.toLowerCase();
+
+    if ((typeof code === 'string') || code.length) {
+
+      const parts = code.split("-");
+
+      if (parts.length > 1) {
+        for (let i = 0; i < parts.length; i += 1) {
+          if (LANGUAGE_CODES.subtags.indexOf(parts[i]) < 0) return false;
+        }
+        return true;
+      }
+      else {
+        if (LANGUAGE_CODES.subtags.indexOf(code) >= 0) return true;
+        if (LANGUAGE_CODES.tags.indexOf(code) >= 0) return true;
+      }
+    }
+    return false;
+  }
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Language Rules
+   */
+
+  const languageRules = [
+
+    /**
+     * @object LANGUAGE_1
+     *
+     * @desc HTML element must have a lang attribute
+     */
+
+    { rule_id             : 'LANGUAGE_1',
+      last_updated        : '2023-09-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.1.1',
+      wcag_related_ids    : [],
+      target_resources    : ['html'],
+      validate            : function (dom_cache, rule_result) {
+        if (dom_cache.lang) {
+          if (validLanguageCode(dom_cache.lang)) {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', [dom_cache.lang]);
+          }
+          else {
+            rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', [dom_cache.lang]);
+          }
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        }
+      } // end validation function
+    },
+
+    /**
+     * @object LANGUAGE_2
+     *
+     * @desc Identify the elements on the page where the text content is different language from the primary content
+     */
+
+    { rule_id             : 'LANGUAGE_2',
+      last_updated        : '2023-09-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.1.2',
+      wcag_related_ids    : ['3.1.1'],
+      target_resources    : ['[lang]'],
+      validate            : function (dom_cache, rule_result) {
+
+        let passCount = 0;
+        let failCount = 0;
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.lang) {
+            if (de.visibility.isVisibleToAT) {
+              if (validLanguageCode(de.lang)) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.lang]);
+                passCount += 1;
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, de.lang]);
+                failCount += 1;
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+
+        if (failCount === 1) rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        else if (failCount > 1) rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', [failCount]);
+        else if (passCount === 1) rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        else if (passCount > 1) rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', [passCount]);
+        else rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_3', []);
+
+      } // end validation function
+    }
+
+  ];
+
+  /* layoutRules.js */
+
+  /* Constants */
+
+
+  const debug$r = new DebugLogging('Layout Rules', false);
+  debug$r.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Layout Rules
+   */
+
+  const layoutRules = [
+
+    /**
+     * @object LAYOUT_1
+     *
+     * @desc     Make sure content is in a meaningful sequence
+     *           tables used for layout must be checked for
+     *           maintaining meaningful sequence
+     */
+    { rule_id             : 'LAYOUT_1',
+      last_updated        : '2023-09-06',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.2',
+      wcag_related_ids    : ['1.3.1'],
+      target_resources    : ['Page', 'table'],
+      validate            : function (dom_cache, rule_result) {
+
+        let layoutPass = 0;
+        let layoutManualCheck = 0;
+
+        dom_cache.tableInfo.allTableElements.forEach( te => {
+          const de = te.domElement;
+
+          if (te.tableType === TABLE_TYPE.LAYOUT) {
+            if (de.visibility.isVisibleToAT) {
+              if (te.colCount === 1)  {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                layoutPass += 1;
+              }
+              else {
+                if (te.nestinglevel === 0) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [te.rowCount, te.colCount]);
+                  layoutManualCheck += 1;
+                }
+                else {
+                   rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [te.nestingLevel]);
+                   layoutManualCheck += 1;
+                }
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+        if (layoutManualCheck) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [layoutManualCheck]);
+        }
+        else {
+          if (layoutPass) {
+            rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+          }
+        }
+      }  // end validation function
+    },
+
+    /**
+     * @object LAYOUT_2
+     *
+     * @desc     Do not use nested tables more than 1 column wide for positioning content
+     *           Fails with one or more one levels of nesting.
+     */
+    { rule_id             : 'LAYOUT_2',
+      last_updated        : '2023-09-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.2',
+      wcag_related_ids    : [],
+      target_resources    : ['table'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.tableInfo.allTableElements.forEach( te => {
+          const de = te.domElement;
+
+          if (te.tableType === TABLE_TYPE.LAYOUT) {
+            if (de.visibility.isVisibleToAT) {
+
+              if (te.colCount > 1) {
+                if (te.nestingLevel > 0) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [te.rowCount, te.colCount, te.nestingLevel]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', []);
+              }
+            }
+            else {
+             rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          }
+        });
+
+      } // end validation function
+    },
+
+    /**
+     * @object LAYOUT_3
+     *
+     * @desc    Verify if the aria-flow to property ordering makes sense to AT users.
+     */
+    { rule_id             : 'LAYOUT_3',
+      last_updated        : '2023-09-06',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.2',
+      wcag_related_ids    : [],
+      target_resources    : ['[aria_flowto]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+
+          if (de.ariaInfo.flowTo) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.flowTo]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.flowTo]);
+            }
+          }
+
+        });
+      } // end validation function
+    },
+
+    /**
+     * @object LAYOUT_4
+     *
+     * @desc    Verify if the page support both port
+     */
+    { rule_id             : 'LAYOUT_4',
+      last_updated        : '2023-09-14',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.4',
+      wcag_related_ids    : [],
+      target_resources    : ['page'],
+      validate          : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    }
+  ];
+
+  /* linkRules.js */
+
+  /* Constants */
+  const debug$q = new DebugLogging('Link Rules', false);
+  debug$q.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Link Rules
+   */
+
+  const linkRules = [
+
+    /**
+     * @object LINK_1
+     *
+     * @desc Link should describe the target of a link
+     */
+
+    { rule_id             : 'LINK_1',
+      last_updated        : '2022-05-23',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.4.4',
+      wcag_related_ids    : ['2.4.9'],
+      target_resources    : ['a', 'area', '[role=link]'],
+      validate            : function (dom_cache, rule_result) {
+        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
+          if (de.visibility.isVisibleToAT) {
+            const name = de.accName.name;
+            const desc = de.accDescription.name;
+            if (name.length) {
+              if (desc.length) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName, name, desc]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, name]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        });
+      } // end valifdation function
+    },
+
+    /**
+     * @object LINK_2
+     *
+     * @desc Links with the different HREFs should have the unique accessible names
+     */
+
+    { rule_id             : 'LINK_2',
+      last_updated        : '2022-05-23',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '2.4.4',
+      wcag_related_ids    : ['2.4.9'],
+      target_resources    : ['a', 'area', '[role=link]'],
+      validate            : function (dom_cache, rule_result) {
+
+        // array of visible DOM elements identified as links
+        const visibleLinks = [];
+
+        dom_cache.linkInfo.allLinkDomElements.forEach ( de => {
+          if (de.visibility.isVisibleToAT) {
+            visibleLinks.push(de);
+          }
+        });
+
+        visibleLinks.forEach( (de1, index1) => {
+          let differentHrefSameDescription      = 0;
+          let differentHrefDifferentDescription = 0;
+          let sameHref = 0;
+          visibleLinks.forEach( (de2, index2) => {
+            if (index1 !== index2) {
+              if (accNamesTheSame(de1.accName, de2.accName)) {
+                if (de1.node.href === de2.node.href) {
+                  sameHref += 1;
+                }
+                else {
+                  if (accNamesTheSame(de1.accDescription, de2.accDescription)) {
+                    differentHrefSameDescription += 1;
+                  }
+                  else {
+                    differentHrefDifferentDescription += 1;
+                  }
+                }
+              }
+            }
+          });
+
+          if (differentHrefSameDescription) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de1,  'ELEMENT_FAIL_1', [(differentHrefSameDescription + 1)]);
+          } else {
+            if (differentHrefDifferentDescription) {
+              if (differentHrefDifferentDescription === 1) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_3', []);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_4', [differentHrefDifferentDescription]);
+              }
+            } else {
+              if (sameHref) {
+                if (sameHref === 1) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de1,  'ELEMENT_PASS_2', [sameHref]);
+                }
+              }
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object LINK_3
+     *
+     * @desc Target of a link does not go to a page with popup windows
+     */
+
+    { rule_id             : 'LINK_3',
+      last_updated        : '2023-08-22',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.1',
+      wcag_related_ids    : ['2.1.1', '2.1.2',  '2.4.3', '2.4.7'],
+      target_resources    : ['a', 'area', 'select'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach (de => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+      } // end validation function
+    },
+
+    { rule_id             : 'LINK_4',
+      last_updated        : '2024-01-20',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.3',
+      wcag_related_ids    : [],
+      target_resources    : ["a", "[role=link]"],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+
+          if (de.accName.includesAlt) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            if (de.accName.includesAriaLabel) {
+              if (de.visibility.isVisibleToAT) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.elemName]);
+              }
+            }
+            else {
+              if (de.accName.nameIsNotVisible) {
+                if (de.visibility.isVisibleToAT) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_3', [de.elemName]);
+                }
+              }
+
+            }
+          }
+
+        });
+
+      } // end validation function
+    }
+  ];
+
+  /* listRules.js */
+
+  /* Constants */
+  const debug$p = new DebugLogging('List Rules', false);
+  debug$p.flag = false;
+
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: List Rules
+   */
+
+  const listRules = [
+
+    /**
+     * @object LIST_1
+     *
+     * @desc Verify list elements are used semantically
+    */
+
+    { rule_id             : 'LIST_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.1',
+      wcag_related_ids    : [],
+      target_resources    : ['ul', 'ol', 'li', '[role="list"]', '[role="listitem"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        let listCount = 0;
+
+        dom_cache.listInfo.allListElements.forEach ( le => {
+          const de = le.domElement;
+
+          if (de.role === 'list') {
+            if (de.visibility.isVisibleToAT) {
+              listCount += 1;
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+         if (de.role === 'listitem') {
+            if (de.visibility.isVisibleToAT) {
+              listCount += 1;
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+        });
+
+        if (listCount) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [listCount]);
+        }
+
+      } // end validate function
+    },
+    /**
+     * @object LIST_2
+     *
+     * @desc Verify list benefits from an accessible name
+    */
+
+    { rule_id             : 'LIST_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.6',
+      wcag_related_ids    : ['1.3.1'],
+      target_resources    : ['ul', 'ol', '[role="list"]'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.listInfo.allListElements.forEach ( le => {
+          const de = le.domElement;
+
+          if (de.role === 'list') {
+            if (de.visibility.isVisibleToAT) {
+              if (de.accName.name) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.accName.name]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+        });
+      } // end validate function
+    }
+  ];
+
+  /* liveRules.js */
+
+  /* Constants */
+  const debug$o = new DebugLogging('Live Region Rules', false);
+  debug$o.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Sensory Rules
+   */
+
+  const liveRules = [
+
+  /**
+   * @object LIVE_1
+   *
+   * @desc  Verify live regions are being used properly
+   */
+  { rule_id             : 'LIVE_1',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.PAGE,
+    rule_category       : RULE_CATEGORIES.TIMING_LIVE,
+    rule_required       : true,
+    wcag_primary_id     : '4.1.3',
+    wcag_related_ids    : [],
+    target_resources    : ['[role="alert"]','[role="log"]','[role="status"]','[aria-live]'],
+    validate          : function (dom_cache, rule_result) {
+
+      let liveCount = 0;
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isLive) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.ariaLive) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.ariaInfo.ariaLive]);
+            }
+            else {
+              if (de.role === 'alert') {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              }
+              else {
+                if (de.role === 'log') {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', []);
+                }
+                else {
+                  // Status role
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', []);
+                }
+              }
+            }
+          }
+          else {
+            if (de.ariaInfo.ariaLive) {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.ariaInfo.ariaLive]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName, de.role]);
+            }
+          }
+        }
+      });
+
+      if (dom_cache.hasScripting || liveCount) {
+        {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_2', []);
+        }
+      }
+    } // end validation function
+  }
+
+  ];
+
+  /* motionRules.js */
+
+  /* Constants */
+  const debug$n = new DebugLogging('Motion Rules', false);
+  debug$n.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Motion Rules
+   */
+
+  const motionRules = [
+
+    /**
+     * @object MOTION_1
+     *
+     * @desc
+    */
+
+    { rule_id             : 'MOTION_1',
+      last_updated        : '2023-12-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.4',
+      wcag_related_ids    : [],
+      target_resources    : ['page'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+     } // end validation function  }
+    }
+
+  ];
+
+  /* navigationRules.js */
+
+  /* Constants */
+  const debug$m = new DebugLogging('Navigation Rules', false);
+  debug$m.flag = false;
+
+
+  /* Helper Functions */
+
+  function isHeadingLevelOne (domElement) {
+    return ((domElement.tagName == 'h1')  ||
+            ((domElement.role='heading') &&
+            (domElement.ariaInfo.ariaLevel === 1)));
+  }
+
+  function isHeadingLevelTwo (domElement) {
+    return ((domElement.tagName == 'h2')  ||
+            ((domElement.role='heading') &&
+            (domElement.ariaInfo.ariaLevel === 2)));
+  }
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: List Rules
+   */
+
+  const navigationRules = [
+
+    /**
+     * @object NAVIGATION_1
+     *
+     * @desc Page has at least two of the following resources: table of contents, site map,
+     *       search, navigation links, sand trail
+     */
+
+    { rule_id             : 'NAVIGATION_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.4.5',
+      wcag_related_ids    : [],
+      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\''],
+      validate            : function (dom_cache, rule_result) {
+
+        let navigationCount = 0;
+        let searchCount = 0;
+
+        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (de.role === 'navigation') {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              navigationCount += 1;
+            }
+          }
+
+          if (de.role === 'search') {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              searchCount += 1;
+            }
+          }
+        });
+
+        if ((navigationCount > 0) && (searchCount > 0)) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
+        }
+        else {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_2', []);
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_2
+     *
+     * @desc  Landmarks are in the same relative order when used to identify sections of web pages within the same website
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.3',
+      wcag_related_ids    : ['3.2.4'],
+      target_resources    : ['Website', 'role=\'main\'', 'role=\'navigation\'', 'role=\'banner\'', 'role=\'contentinfo\'','role=\'search\''],
+      validate            : function (dom_cache, rule_result) {
+
+        const landmarkRoles = [
+          'banner',
+          'complementary',
+          'contentinfo',
+          'main',
+          'navigation',
+          'search'];
+
+        let landmarks = [];
+
+        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (landmarkRoles.includes(de.role)) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+              landmarks.push(de.role);
+            }
+          }
+        });
+
+        if ((landmarks.length > 0)) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', [landmarks.join(', ')]);
+        }
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_3
+     *
+     * @desc  h2 elements are in the same relative order when used to identify sections of web pages within the same website
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_3',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.3',
+      wcag_related_ids    : ['3.2.4'],
+      target_resources    : ['Website', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        let headingCount = 0;
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.visibility.isVisibleToAT) {
+            if (isHeadingLevelOne(de)) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              headingCount += 1;
+            }
+
+            if (isHeadingLevelTwo(de)) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              headingCount += 1;
+            }
+          }
+        });
+
+        if ((headingCount > 0)) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
+        }
+        else {
+          rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_4
+     *
+     * @desc  landmarks identifying the same sections in a website have the same accessible name
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_4',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.4',
+      wcag_related_ids    : ['3.2.3'],
+      target_resources    : ['Website', 'role=\'search\'', 'role=\'navigation\'', 'role=\'main\'', 'role=\'banner\'', 'role=\'contentinfo\'', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        const landmarkRoles = [
+          'banner',
+          'complementary',
+          'contentinfo',
+          'main',
+          'navigation',
+          'search'];
+
+        let landmarks = [];
+
+        dom_cache.structureInfo.allLandmarkElements.forEach( le => {
+          const de = le.domElement;
+          if (landmarkRoles.includes(de.role)) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+              landmarks.push(de.role);
+            }
+          }
+        });
+
+        if ((landmarks.length > 0)) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', [landmarks.join(', ')]);
+        }
+
+      } // end validation function
+    },
+
+    /**
+     * @object NAVIGATION_5
+     *
+     * @desc  h2 elements used to identify sections of web pages within the same accessible name
+     *
+     */
+
+    { rule_id             : 'NAVIGATION_5',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.WEBSITE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '3.2.4',
+      wcag_related_ids    : ['3.2.3'],
+      target_resources    : ['Website', 'h2'],
+      validate            : function (dom_cache, rule_result) {
+
+        let headingCount = 0;
+
+        dom_cache.structureInfo.allHeadingDomElements.forEach( de => {
+          if (de.visibility.isVisibleToAT) {
+            if (isHeadingLevelOne(de)) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+              headingCount += 1;
+            }
+
+            if (isHeadingLevelTwo(de)) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', []);
+              headingCount += 1;
+            }
+          }
+        });
+
+        if ((headingCount > 0)) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'WEBSITE_MC_1', []);
+        }
+        else {
+          rule_result.addWebsiteResult(TEST_RESULT.FAIL, dom_cache, 'WEBSITE_FAIL_1', []);
+        }
+
+      } // end validation function
+    }
+  ];
+
+  /* pointerRules.js */
+
+  /* Constants */
+  const debug$l = new DebugLogging('Pointer Rules', false);
+  debug$l.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Pointer Rules
+   */
+
+  const pointerRules = [
+
+    /**
+     * @object POINTER_1
+     *
+     * @desc
+    */
+
+    { rule_id             : 'POINTER_1',
+      last_updated        : '2023-12-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.1',
+      wcag_related_ids    : [],
+      target_resources    : ['widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+     } // end validation function  }
+    },
+
+    /**
+     * @object POINTER_2
+     *
+     * @desc Pointer Cancellation
+    */
+
+    { rule_id             : 'POINTER_2',
+      last_updated        : '2023-12-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.2',
+      wcag_related_ids    : [],
+      target_resources    : ['widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+     } // end validation function  }
+    },
+
+    /**
+     * @object POINTER_3
+     *
+     * @desc Dragging Movements
+    */
+
+    { rule_id             : 'POINTER_3',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.7',
+      wcag_related_ids    : [],
+      target_resources    : ['widgets'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+     } // end validation function  }
+    }
+
+  ];
+
+  /* readingOrderRules.js */
+
+  /* Constants */
+  const debug$k = new DebugLogging('Reading Order Rules', false);
+  debug$k.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Reading Order Rules
+   */
+
+  const readingOrderRules = [
+
+      /**
+       * @object ORDER_1
+       *
+       * @desc Reading order is meaningful when content is positioned using CSS
+       */
+
+    { rule_id             : 'ORDER_1',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.2',
+      wcag_related_ids    : [],
+      target_resources    : [],
+      validate          : function (dom_cache, rule_result) {
+
+        const positionValues = [
+          'absolute',
+          'relative',
+          'fixed'];
+
+        dom_cache.allDomElements.forEach( de => {
+          if (positionValues.includes(de.cssPosition)) {
+            if (de.visibility.isVisibleToAT) {
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName, de.cssPosition]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName, de.cssPosition]);
+            }
+          }
+        });
+      } // end validate function
+    }
+  ];
+
+  /* resizeRules.js */
+
+  /* Constants */
+  const debug$j = new DebugLogging('Resize Rules', false);
+  debug$j.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Resize Rules
+   */
+
+  const resizeRules = [
+
+    /**
+     * @object RESIZE_1
+     *
+     * @desc Resize content
+     */
+
+    { rule_id             : 'RESIZE_1',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.4',
+      wcag_related_ids    : [],
+      target_resources    : ['content'],
+      validate          : function (dom_cache, rule_result) {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      } // end validate function
+    },
+
+   /**
+     * @object RESIZE_1
+     *
+     * @desc Resize content
+     */
+
+    { rule_id             : 'RESIZE_2',
+      last_updated        : '2023-09-19',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.10',
+      wcag_related_ids    : [],
+      target_resources    : ['content'],
+      validate          : function (dom_cache, rule_result) {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      } // end validate function
+    }
+
+  ];
+
+  /* sensoryRules.js */
+
+  /* Constants */
+  const debug$i = new DebugLogging('Sensory Rules', false);
+  debug$i.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Sensory Rules
+   */
+
+  const sensoryRules = [
+
+      /**
+       * @object SENSORY_1
+       *
+       * @desc Content does not rely solely on sensory characteristics
+       */
+
+    { rule_id             : 'SENSORY_1',
+      last_updated        : '2023-08-25',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.3.3',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'link'],
+      validate          : function (dom_cache, rule_result) {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      } // end validate function
+    }
+
+  ];
+
+  /* shortcutRules.js */
+
+  /* Constants */
+  const debug$h = new DebugLogging('Shortcut Rules', false);
+  debug$h.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Shortcut Rules
+   */
+
+  const shortcutRules = [
+
+    /**
+     * @object SHORTCUT_1
+     *
+     * @desc Ability to adjust author defined keyboard shortcuts if they exist
+    */
+
+    { rule_id             : 'SHORTCUT_1',
+      last_updated        : '2023-12-03',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.1.4',
+      wcag_related_ids    : [],
+      target_resources    : ['page'],
+      validate            : function (dom_cache, rule_result) {
+
+        if (dom_cache.hasScripting) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+     } // end validation function  }
+    },
+
+    /**
+     * @object SHORTCUT_2
+     *
+     * @desc Avoid using accesskey attribute
+    */
+
+    { rule_id             : 'SHORTCUT_2',
+      last_updated        : '2023-12-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.KEYBOARD_SUPPORT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.1.4',
+      wcag_related_ids    : [],
+      target_resources    : ['a', 'input', 'output', 'select', 'textarea'],
+      validate            : function (dom_cache, rule_result) {
+
+        dom_cache.allDomElements.forEach( de => {
+          if (de.accesskey) {
+            if (de.visibility.isVisibleToAT) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.accesskey]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.accesskey]);
+            }
+          }
+        });
+
+     } // end validation function  }
+    }
+
+  ];
+
+  /* spacingRules.js */
+
+  /* Constants */
+  const debug$g = new DebugLogging('Spacing Rules', false);
+  debug$g.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Spacing Rules
+   */
+
+  const spacingRules = [
+
+    /**
+     * @object SPACING_1
+     *
+     * @desc Text Spacing
+     */
+
+    { rule_id             : 'SPACING_1',
+      last_updated        : '2023-12-16',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.COLOR_CONTENT,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.4.12',
+      wcag_related_ids    : [],
+      target_resources    : ['text'],
+      validate          : function (dom_cache, rule_result) {
+
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+
+      } // end validate function
+    }
+  ];
+
+  /* tableRules.js */
+
+  /* Constants */
+  const debug$f = new DebugLogging('Table Rules', false);
+  debug$f.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Table Rules
+   */
+
+  const tableRules = [
+
+  /**
+   * @object TABLE_1
+   *
+   * @desc If a table is a data table, if each data cell has headers
+   */
+  { rule_id             : 'TABLE_1',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        te.cells.forEach( cell => {
+          const de = cell.domElement;
+          if ((de.role === 'cell') || (de.role === 'gridcell')) {
+            if (de.visibility.isVisibleToAT) {
+              if (cell.isHeader) {
+                if (!de.accName.name) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+                }
+              }
+              else {
+                if (de.accName.name) {
+                  const headerCount = cell.headers.length;
+                  const headerStr = cell.headers.join (' | ');
+                  if (headerCount) {
+                    if (cell.headerSource === HEADER_SOURCE.ROW_COLUMN) {
+                      if (headerCount === 1) {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, headerStr]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, headerCount, headerStr]);
+                      }
+                    }
+                    else {
+                      if (headerCount === 1) {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName, headerStr]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName, headerCount, headerStr]);
+                      }
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        });
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_2
+   *
+   * @desc Data table have an accessible name
+   */
+  { rule_id             : 'TABLE_2',
+    last_updated        : '2023-05-03',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1'],
+    target_resources    : ['table', 'caption'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if ((te.tableType === TABLE_TYPE.DATA) ||
+              (te.tableType === TABLE_TYPE.COMPLEX)) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.accName.source]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_3
+   *
+   * @desc  Complex data tables should have a text description or summary of data in the table
+   */
+
+  { rule_id             : 'TABLE_3',
+    last_updated        : '2023-05-03',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if ((te.tableType === TABLE_TYPE.DATA) || (te.tableType === TABLE_TYPE.COMPLEX)) {
+            if (de.accDescription.name) {
+              if (de.accDescription.source === 'aria-describedby') {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+              }
+            }
+            else {
+              if (te.tableType === TABLE_TYPE.DATA){
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+              }
+            }
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_4
+   *
+   * @desc   Data tables with accessible names must be unique
+   */
+
+  { rule_id             : 'TABLE_4',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      const visibleDataTables = [];
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          if (te.tableType > TABLE_TYPE.LAYOUT) {
+            visibleDataTables.push(te);
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+
+      visibleDataTables.forEach(te1 => {
+        let count = 0;
+        const de = te1.domElement;
+        const accName1 = te1.domElement.accName.name;
+        if (accName1) {
+          visibleDataTables.forEach(te2 => {
+            if (te1 !== te2) {
+              const accName2 = te2.domElement.accName.name;
+              if (accName2) {
+                if (accName1.toLowerCase() === accName2.toLowerCase()) {
+                  count += 1;
+                }
+              }
+            }
+          });
+          if (count) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [accName1, de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [accName1, de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object TABLE_5
+   *
+   * @desc  Identifies a table is being used for layout or tabular data, or cannot be determined form markup
+   */
+
+   { rule_id             : 'TABLE_5',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['table'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          switch (te.tableType) {
+            case TABLE_TYPE.LAYOUT:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, de.role]);
+              break;
+
+            case TABLE_TYPE.DATA:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.COMPLEX:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_TABLE:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_GRID:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.elemName]);
+              break;
+
+            case TABLE_TYPE.ARIA_TREEGRID:
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_6', [de.elemName]);
+              break;
+
+            default:
+
+              if (te.rowCount === 1) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+              }
+              else {
+                if (te.colCount === 1) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+                }
+              }
+              break;
+          }
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+   },
+
+  /**
+   * @object TABLE_6
+   *
+   * @desc    Tests if table headers use TH elements instead of TD with SCOPE
+   */
+
+  { rule_id             : 'TABLE_6',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : false,
+    first_step          : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td[scope]'],
+    validate          : function (dom_cache, rule_result) {
+
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (de.visibility.isVisibleToAT) {
+          te.cells.forEach( cell => {
+            const cde = cell.domElement;
+            if (cde.visibility.isVisibleToAT) {
+              if (cell.isHeader) {
+                if (cde.tagName === 'td') {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cde.elemName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
+            }
+          });
+        }
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object TABLE_7
+   *
+   * @desc  Spanned data cells in complex table must use headers attributes
+   */
+
+  { rule_id             : 'TABLE_7',
+    last_updated        : '2023-05-08',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['td'],
+    validate          : function (dom_cache, rule_result) {
+      dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+          if (te.tableType > TABLE_TYPE.DATA) {
+            if (de.visibility.isVisibleToAT) {
+              te.cells.forEach( cell => {
+                const cde = cell.domElement;
+                if (cde.visibility.isVisibleToAT) {
+                  if (!cell.isHeader &&
+                     ((cell.rowSpan > 1) || (cell.columnSpan > 1))) {
+                    if (cell.headerSource === HEADER_SOURCE.HEADERS_ATTR) {
+                      if (cell.headers.length == 1) {
+                        rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_1', [cell.headers[0]]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.PASS, cde, 'ELEMENT_PASS_2', [cell.headers.length, cell.headers.join(' | ')]);
+                      }
+                    }
+                    else {
+                      if (cell.hasContent) {
+                        rule_result.addElementResult(TEST_RESULT.FAIL, cde, 'ELEMENT_FAIL_1', [cde.elemName]);
+                      }
+                    }
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.HIDDEN, cde, 'ELEMENT_HIDDEN_2', [cde.elemName]);
+                }
+              });
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+      });
+    }
+  },
+
+  /**
+   * @object TABLE_8
+   *
+   * @desc  Accessible name and description must be different, description longer than name
+   */
+
+  { rule_id             : 'TABLE_8',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.TABLES_LAYOUT,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '1.3.1',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : ['caption', 'table[aria-label]', 'table[aria-labelledby]', 'table[aria-describedby]', 'table[title]'],
+    validate          : function (dom_cache, rule_result) {
+
+     dom_cache.tableInfo.allTableElements.forEach(te => {
+        const de = te.domElement;
+        if (te.tableType >= TABLE_TYPE.DATA) {
+          if (de.visibility.isVisibleToAT) {
+            const de = te.domElement;
+            if (de.accName.name && de.accDescription.name) {
+              if (de.accName.name.toLowerCase() ===  de.accDescription.name.toLowerCase()) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+              }
+              else {
+                if (de.accName.name.length < de.accDescription.name.length) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+                }
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  }
+  ];
+
+  /* targetSizeRules.js */
+
+  /* Constants */
+  const debug$e = new DebugLogging('Size', false);
+  debug$e.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Target Size Rules
+   */
+
+  const targetSizeRules = [
+
+    /**
+     * @object TARGET_SIZE_1
+     *
+     * @desc Link target size minimum
+     */
+
+    { rule_id             : 'TARGET_SIZE_1',
+      last_updated        : '2023-10-26',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['links'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+          const h = de.height;
+          const w = de.width;
+
+          if (!de.parentInfo.inParagraph && de.authorSizing) {
+            if ((w < 24) || (h < 24)) {
+              if (de.visibility.isVisibleOnScreen) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_2
+     *
+     * @desc Link target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_2',
+      last_updated        : '2023-10-26',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.LINKS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['links'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.linkInfo.allLinkDomElements.forEach( de => {
+          const h = de.height;
+          const w = de.width;
+          if (!de.parentInfo.inParagraph && de.authorSizing) {
+            if ((w < 44) || (h < 44)) {
+              if (de.visibility.isVisibleOnScreen) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [h, w]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [h, w]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_3
+     *
+     * @desc button target size minimum
+     */
+
+    { rule_id             : 'TARGET_SIZE_3',
+      last_updated        : '2023-10-29',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allButtonElements.forEach( be => {
+          const de = be.domElement;
+          const h = de.height;
+          const w = de.width;
+          if ((w < 24) || (h < 24)) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object TARGET_SIZE_4
+     *
+     * @desc Button target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_4',
+      last_updated        : '2023-10-29',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['button', 'input[type=button]', 'input[type=image]', 'input[type=reset]', 'input[type=submit]', '[role=button]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allButtonElements.forEach( be => {
+          const de = be.domElement;
+          const h = de.height;
+          const w = de.width;
+
+          if (debug$e.flag) {
+            debug$e.log(`[${de.accName.name}] h: ${h}  w: ${w}`);
+            debug$e.log(`[       width]: ${de.authorWidth}`);
+            debug$e.log(`[      height]: ${de.authorHeight}`);
+            debug$e.log(`[      inLink]: ${de.parentInfo.inLink}`);
+            debug$e.log(`[      inPara]: ${de.parentInfo.inParagraph}`);
+            debug$e.log(`[authorSizing]: ${de.authorSizing}`);
+            debug$e.log(`[     top]: ${de.authorTop}`);
+            debug$e.log(`[  bottom]: ${de.authorBottom}`);
+            debug$e.log(`[    left]: ${de.authorLeft}`);
+            debug$e.log(`[   right]: ${de.authorRight}`);
+            debug$e.log(`[ display]: ${de.authorDisplay}`);
+            debug$e.log(`[position]: ${de.authorPosition}`);
+          }
+
+          if ((w < 44) || (h < 44)) {
+            if (de.visibility.isVisibleOnScreen) {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.eleName, h, w]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+          }
+        });
+
+      } // end validate function
+    },
+
+   /**
+     * @object TARGET_SIZE_5
+     *
+     * @desc Checkbox and radio button target size minimum
+     */
+
+    { rule_id             : 'TARGET_SIZE_5',
+      last_updated        : '2023-11-17',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.5.8',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+
+          if (de.role === 'radio' || de.role === 'checkbox') {
+            if (de.visibility.isVisibleOnScreen) {
+              let h = de.height;
+              let w = de.width;
+              if (( h < 24) || ( w < 24)) {
+                if (ce.hasLabel) {
+                  h = ce.labelHeight;
+                  w = ce.labelWidth;
+                  if (( h < 24) || (w < 24)) {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+
+        });
+
+      } // end validate function
+    },
+
+   /**
+     * @object TARGET_SIZE_6
+     *
+     * @desc Checkbox and radio button target size enhanced
+     */
+
+    { rule_id             : 'TARGET_SIZE_6',
+      last_updated        : '2023-11-17',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.FORMS,
+      rule_required       : false,
+      first_step          : false,
+      wcag_primary_id     : '2.5.5',
+      wcag_related_ids    : [],
+      target_resources    : ['input[type=checkbox]', 'input[type=radio]', '[role=radio]', '[role=checkbox]]'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.controlInfo.allControlElements.forEach( ce => {
+          const de = ce.domElement;
+
+          if (de.role === 'radio' || de.role === 'checkbox') {
+            if (de.visibility.isVisibleOnScreen) {
+              let h = de.height;
+              let w = de.width;
+              if (( h < 44) || ( w < 44)) {
+                if (ce.hasLabel) {
+                  h = ce.labelHeight;
+                  w = ce.labelWidth;
+                  if (( h < 44) || (w < 44)) {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [h, w]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [h, w]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, h, w]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, h, w]);
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+
+
+        });
+
+      } // end validate function
+    }
+
+
+
+  ];
+
+  /* timingRules.js */
+
+  /* Constants */
+  const debug$d = new DebugLogging('Timing Rules', false);
+  debug$d.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Timing Rules
+   */
+
+  const timingRules = [
+
+    /**
+     * @object TIMING_1
+     *
+     * @desc Timing adjustable for pages with interactive elements
+     */
+
+    { rule_id             : 'TIMING_1',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '2.2.1',
+      wcag_related_ids    : [],
+      target_resources    : ['a', 'input', 'button', 'wdiget'],
+      validate          : function (dom_cache, rule_result) {
+
+      if (dom_cache.controlInfo.allControlElements.length) {
+        rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+      }
+
+      } // end validate function
+    },
+
+    /**
+     * @object TIMING_2
+     *
+     * @desc Stop, pause or hide content that is moving, scrolling, flashing or auto updating
+     */
+
+    { rule_id             : 'TIMING_2',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.2.2',
+      wcag_related_ids    : [],
+      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.timingInfo.allTimingDomElements.forEach( de => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+
+        if (dom_cache.timingInfo.allTimingDomElements.length > 0) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object TIMING_3
+     *
+     * @desc Web pages do not contain anything that flashes more than three times in any one second period
+     */
+
+    { rule_id             : 'TIMING_3',
+      last_updated        : '2023-08-24',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.TIMING_LIVE,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.3.1',
+      wcag_related_ids    : [],
+      target_resources    : ['canvas', 'embed', 'img', 'object', 'svg'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.timingInfo.allTimingDomElements.forEach( de => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        });
+
+        if (dom_cache.timingInfo.allTimingDomElements.length > 0) {
+          rule_result.addWebsiteResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+        }
+
+      } // end validate function
+    }
+  ];
+
+  /* titleRules.js */
+
+  /* Constants */
+  const debug$c = new DebugLogging('Title Rules', false);
+  debug$c.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Title Rules
+   */
+
+  const titleRules = [
+
+    /**
+     * @object TITLE_1
+     *
+     * @desc the title element text content must describe the purpose or content of the page
+     */
+
+    { rule_id             : 'TITLE_1',
+      last_updated        : '2023-09-04',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.2',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['Page', 'title'],
+      validate            : function (dom_cache, rule_result) {
+        if (dom_cache.hasTitle) {
+          rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', [dom_cache.title]);
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        }
+      } // end validate function
+    },
+
+    /**
+     * @object TITLE_2
+     *
+     * @desc The words in the @h1@ content must be part of the title element text content.
+     *
+     */
+
+    { rule_id             : 'TITLE_2',
+      last_updated        : '2023-09-04',
+      rule_scope          : RULE_SCOPE.PAGE,
+      rule_category       : RULE_CATEGORIES.SITE_NAVIGATION,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '2.4.2',
+      wcag_related_ids    : ['1.3.1', '2.4.6'],
+      target_resources    : ['Page', 'title', 'h1'],
+      validate            : function (dom_cache, rule_result) {
+
+        function similiarContent (title, h1) {
+          if (typeof title !== 'string') {
+            title = '';
+          }
+          if (typeof h1 !== 'string') {
+            h1 = '';
+          }
+          // Replace special characters and '_' with spaces
+          title = title.toLowerCase().replace(/\W+/g, ' ').replace('_', ' ');
+          h1 = h1.toLowerCase().replace(/\W+/g, ' ').replace('_', ' ');
+
+          const wordsTitle = title.split(' ');
+          const wordsH1 = h1.split(' ');
+
+          let count = 0;
+          wordsH1.forEach( word => {
+            if (wordsTitle.includes(word)) {
+              count += 1;
+            }
+          });
+
+          return count > ((wordsH1.length * 8) / 10);
+        }
+
+        const visibleH1Elements = [];
+        let passedH1Count = 0;
+
+        if (dom_cache.hasTitle) {
+
+          // Get h1s visible to AT
+          dom_cache.structureInfo.allH1DomElements.forEach( de => {
+            if (de.visibility.isVisibleToAT) {
+              visibleH1Elements.push(de);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
+            }
+          });
+
+          const visibleH1Count = visibleH1Elements.length;
+
+          visibleH1Elements.forEach( de => {
+            if (de.accName.name) {
+              if (similiarContent(dom_cache.title, de.accName.name)) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', []);
+                passedH1Count += 1;
+              }
+              else {
+                if (visibleH1Count > 2) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', []);
+            }
+          });
+
+          if (visibleH1Count === 0) {
+            rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_2', []);
+          }
+          else {
+            if (visibleH1Count > 2) {
+              rule_result.addPageResult(TEST_RESULT.MANUAL_CHECK, dom_cache, 'PAGE_MC_1', []);
+            }
+            else {
+              if (visibleH1Count !== passedH1Count) {
+                rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_4', []);
+              }
+              else {
+                if (visibleH1Count === 1) {
+                  rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_1', []);
+                }
+                else {
+                  rule_result.addPageResult(TEST_RESULT.PASS, dom_cache, 'PAGE_PASS_2', []);
+                }
+              }
+            }
+          }
+        }
+        else {
+          rule_result.addPageResult(TEST_RESULT.FAIL, dom_cache, 'PAGE_FAIL_1', []);
+        }
+
+      } // end validate function
+    }
+  ];
+
+  /* videoRules.js */
+
+  /* Constants */
+  const debug$b = new DebugLogging('Audio Rules', false);
+  debug$b.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Video Rules
+   */
+
+  const videoRules = [
+
+    /**
+     * @object VIDEO_1
+     *
+     * @desc Pre-recorded video only must have description
+     */
+
+    { rule_id             : 'VIDEO_1',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.2.1',
+      wcag_related_ids    : ['1.2.2', '1.2.4'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                  }
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_4', [de.tagName]);
+                  }
+                }
+                else {
+                  if (de.accDescription.name) {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_5', [de.tagName]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_6', [de.tagName]);
+                  }
+                }
+
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object VIDEO_2
+     *
+     * @desc Prerecorded video with synchronized audio (i.e. movie, lecture) must have captions
+     */
+
+    { rule_id             : 'VIDEO_2',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : true,
+      wcag_primary_id     : '1.2.2',
+      wcag_related_ids    : ['1.2.4'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasCaptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object VIDEO_3
+     *
+     * @desc Prerecorded video with synchronized audio (i.e. movie) using the video element must have audio description
+     */
+
+    { rule_id             : 'VIDEO_3',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.2.3',
+      wcag_related_ids    : ['1.2.5'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
+      validate          : function (dom_cache, rule_result) {
+
+         dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object VIDEO_4
+     *
+     * @desc Captions (Live)
+     */
+
+    { rule_id             : 'VIDEO_4',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.2.4',
+      wcag_related_ids    : ['1.2.2'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
+      validate          : function (dom_cache, rule_result) {
+
+        dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasCaptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+      } // end validate function
+    },
+
+    /**
+     * @object VIDEO_5
+     *
+     * @desc Audio Description (Prerecorded)
+     */
+
+    { rule_id             : 'VIDEO_5',
+      last_updated        : '2024-01-04',
+      rule_scope          : RULE_SCOPE.ELEMENT,
+      rule_category       : RULE_CATEGORIES.AUDIO_VIDEO,
+      rule_required       : true,
+      first_step          : false,
+      wcag_primary_id     : '1.2.5',
+      wcag_related_ids    : ['1.2.3'],
+      target_resources    : ['embed', 'object', 'track', 'video'],
+      validate          : function (dom_cache, rule_result) {
+
+         dom_cache.mediaInfo.allMediaElements.forEach( me => {
+          if (me.isVideo || !me.isAudio) {
+            const de = me.domElement;
+            if (de.visibility.isVisibleToAT || me.hasAutoPlay) {
+              if (me.allowsTracks) {
+                if (me.hasDescriptionTrack) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+                }
+              }
+              else {
+                if (me.isVideo) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_3', [de.tagName]);
+                }
+              }
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            }
+          }
+        });
+
+      } // end validate function
+    }
+  ];
+
+  /* widgetRules.js */
+
+  /* Constants */
+  const debug$a = new DebugLogging('Widget Rules', false);
+  debug$a.flag = false;
+
+  /*
+   * OpenA11y Rules
+   * Rule Category: Widget Rules
+   */
+
+  const widgetRules = [
+  /**
+   * @object WIDGET_1
+   *
+   * @desc ARIA Widgets must have accessible names
+   */
+
+  { rule_id             : 'WIDGET_1',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['ARIA Widget roles'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        const ai = de.ariaInfo;
+        // There are other rules that check for accessible name for labelable controls, landmarks, headings and links
+        // Ignore option role, since web developers are very sloppy about giving them content before they are made visible
+        if (ai.isWidget && !de.isLabelable && !de.isLink && (de.role !== 'option')) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role, de.accName.name]);
+            }
+            else {
+              if (ai.isNameRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);              
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }
+        }
+      });
+
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_2
+   *
+   * @desc Elements with onClick event handlers event handlers need role
+   */
+
+  { rule_id             : 'WIDGET_2',
+    last_updated        : '2022-08-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['Elements with onclick events'],
+    validate            : function (dom_cache, rule_result) {
+
+      function hasDecendantWidgetRole (domElement) {
+        for (let i = 0; i < domElement.children.length; i += 1) {
+          const cde = domElement.children[i];
+          if (cde.isDomElement) {
+            if (cde.ariaInfo.isWidget) {
+              return true;
+            }
+            if (hasDecendantWidgetRole(cde)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      dom_cache.allDomElements.forEach(de => {
+        if (de.eventInfo.hasClick) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.isWidget) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.tagName, de.role]);
+            }
+            else {
+              if (hasDecendantWidgetRole(de)) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.role]);
+              }
+              else {
+                if (de.hasRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.tagName, de.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.tagName]);
+                }
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_3
+   *
+   * @desc Elements with role values must have valid widget or landmark roles
+   */
+
+  { rule_id             : 'WIDGET_3',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        if (de.hasRole) {
+          if (de.visibility.isVisibleToAT) {
+            if (!de.ariaInfo.isValidRole) {
+              if (de.ariaInfo.isDPUBRole) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+              }
+            }
+            else {
+              if (de.ariaInfo.isAbstractRole) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [de.role]);
+              } else {
+                if (de.ariaInfo.isWidget) {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role]);
+                }
+                else {
+                  if (de.ariaInfo.isLandmark) {
+                    rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.role]);
+                  }
+                  else {
+                    if (de.ariaInfo.isLive) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.role]);
+                    }
+                    else {
+                      if (de.ariaInfo.isSection) {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_4', [de.role]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_5', [de.role]);
+                      }
+                    }
+                  }
+                }            
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName, de.role]);
+          }        
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_4
+   *
+   * @desc Elements with ARIA attributes have valid values
+   */
+
+  { rule_id             : 'WIDGET_4',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-atomic]',
+                           '[aria-autocomplete]',
+                           '[aria-busy]',
+                           '[aria-checked]',
+                           '[aria-colcount]',
+                           '[aria-colindex]',
+                           '[aria-colspan]',
+                           '[aria-current]',
+                           '[aria-disabled]',
+                           '[aria-dropeffect]',
+                           '[aria-expanded]',
+                           '[aria-grabbed]',
+                           '[aria-haspopup]',
+                           '[aria-hidden]',
+                           '[aria-invalid]',
+                           '[aria-label]',
+                           '[aria-labelledby]',
+                           '[aria-live]',
+                           '[aria-modal]',
+                           '[aria-multiline]',
+                           '[aria-multiselectable]',
+                           '[aria-orientation]',
+                           '[aria-pressed]',
+                           '[aria-readonly]',
+                           '[aria-relevant]',
+                           '[aria-required]',
+                           '[aria-rowcount]',
+                           '[aria-rowindex]',
+                           '[aria-rowspan]',
+                           '[aria-selected]',
+                           '[aria-sort]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        de.ariaInfo.validAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            const allowedValues = attr.values ? attr.values.join(' | ') : '';
+            if (de.ariaInfo.invalidAttrValues.includes(attr)) {
+              if (attr.type === 'nmtoken' || attr.type === 'boolean' || attr.type === 'tristate') {
+                if (attr.value === '') {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, allowedValues]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, attr.value, allowedValues]);
+                }
+              }
+              else {
+                if (attr.type === 'nmtokens') {
+                  if (attr.value === '') {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [attr.name, allowedValues]);
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [attr.name, attr.value, allowedValues]);
+                  }
+                }
+                else {
+                  if (attr.type === 'integer') {
+                    if (attr.value === '') {
+                      rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_5', [attr.name]);
+                    }
+                    else {
+                      if (attr.allowUndeterminedValue) {
+                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_6', [attr.name, attr.value]);
+                      }
+                      else {
+                        rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_7', [attr.name, attr.value]);
+                      }
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_8', [attr.name, attr.value, attr.type]);
+                  }  
+                }
+              }
+            }
+            else {
+              if (attr.type === 'boolean' || 
+                  attr.type === 'nmtoken' || 
+                  attr.type === 'nmtokens' || 
+                  attr.type === 'tristate') {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name, attr.value]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [attr.name, attr.value, attr.type]);
+              }
+            }
+          }
+          else {
+            if (attr.value === '') {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [attr.name, attr.value]);
+            }
+          }
+        });
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_5
+   *
+   * @desc ARIA attributes must be defined
+   */
+
+  { rule_id             : 'WIDGET_5',
+    last_updated        : '2022-08-15',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-atomic]',
+                           '[aria-autocomplete]',
+                           '[aria-busy]',
+                           '[aria-checked]',
+                           '[aria-controls]',
+                           '[aria-describedby]',
+                           '[aria-disabled]',
+                           '[aria-dropeffect]',
+                           '[aria-expanded]',
+                           '[aria-flowto]',
+                           '[aria-grabbed]',
+                           '[aria-haspopup]',
+                           '[aria-hidden]',
+                           '[aria-invalid]',
+                           '[aria-label]',
+                           '[aria-labelledby]',
+                           '[aria-level]',
+                           '[aria-live]',
+                           '[aria-multiline]',
+                           '[aria-multiselectable]',
+                           '[aria-orientation]',
+                           '[aria-owns]',
+                           '[aria-pressed]',
+                           '[aria-readonly]',
+                           '[aria-relevant]',
+                           '[aria-required]',
+                           '[aria-selected]',
+                           '[aria-sort]',
+                           '[aria-valuemax]',
+                           '[aria-valuemin]',
+                           '[aria-valuenow]',
+                           '[aria-valuetext]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach(de => {
+        de.ariaInfo.invalidAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+        de.ariaInfo.validAttrs.forEach( attr => {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [attr.name]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [attr.name]);
+          }
+        });
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_6
+   *
+   * @desc Widgets must have required properties
+   */
+
+  { rule_id             : 'WIDGET_6',
+    last_updated        : '2021-07-07',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[checkbox]',
+                           '[combobox]',
+                           '[menuitemcheckbox]',
+                           '[menuitemradio]',
+                           '[meter]',
+                           '[option]',
+                           '[separator]',
+                           '[scrollbar]',
+                           '[slider]',
+                           '[switch]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.controlInfo.allControlElements.forEach( ce => {
+        const de = ce.domElement;
+        de.ariaInfo.requiredAttrs.forEach( reqAttrInfo => {
+          if (de.visibility.isVisibleToAT) {
+            if (reqAttrInfo.isDefined) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, reqAttrInfo.name, reqAttrInfo.value]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, reqAttrInfo.name]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, reqAttrInfo.name]);
+          }
+        });
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_7
+   *
+   * @desc Widgets must have required owned elements
+   */
+
+  { rule_id             : 'WIDGET_7',
+    last_updated        : '2023-03-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[feed]',
+                           '[grid]',
+                           '[list]',
+                           '[listbox]',
+                           '[menu]',
+                           '[menubar]',
+                           '[radiogroup]',
+                           '[row]',
+                           '[rowgroup]',
+                           '[table]',
+                           '[tablist]',
+                           '[tree]',
+                           '[treegrid]'],
+    validate            : function (dom_cache, rule_result) {
+
+      function getRequiredChildrenCount(domElement, requiredChildren) {
+        let count = 0;
+        let i;
+        const ai = domElement.ariaInfo;
+        const cdes = domElement.children;
+        const odes = ai.ownedDomElements;
+        for(i = 0; i < cdes.length; i += 1) {
+          const cde = cdes[i];
+          if (cde.isDomElement) {
+            if (requiredChildren.includes(cde.role)) {
+              return 1;
+            }
+            count += getRequiredChildrenCount(cde, requiredChildren);
+          }
+        }
+
+        for(i = 0; i < odes.length; i += 1) {
+          const ode = odes[i];
+          if (requiredChildren.includes(ode.role)) {
+            return 1;
+          }
+          count += getRequiredChildrenCount(ode, requiredChildren);
+        }
+        return count;
+      }
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.hasRequiredChildren) {
+          const rc = de.ariaInfo.requiredChildren;
+          if (de.visibility.isVisibleToAT) {
+            if (de.ariaInfo.isBusy) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+            }
+            else {
+              const count = getRequiredChildrenCount(de, rc);
+              if (count > 0) {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, rc.join(', ')]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rc.join(', ')]);
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rc.join(', ')]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_8
+   *
+   * @desc Widgets must have required parent roles
+   */
+
+  { rule_id             : 'WIDGET_8',
+    last_updated        : '2023-03-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : [ "caption",
+                            "cell",
+                            "columnheader",
+                            "gridcell",
+                            "listitem",
+                            "menuitem",
+                            "menuitemcheckbox",
+                            "menuitemradio",
+                            "option",
+                            "row",
+                            "rowgroup",
+                            "rowheader",
+                            "tab",
+                            "treeitem"
+                        ],
+    validate            : function (dom_cache, rule_result) {
+
+
+      function checkForRequiredParent(domElement, requiredParents) {
+        if (!domElement || !domElement.ariaInfo) {
+          return '';
+        }
+        const ai = domElement.ariaInfo;
+        const obdes = ai.ownedByDomElements;
+        const pde = domElement.parentInfo.domElement;
+
+        // Check first for aria-owns relationships
+        for (let i = 0; i < obdes.length; i += 1) {
+          const obde = obdes[i];
+          if (requiredParents.includes(obde.role)) {
+            return obde.role;
+          }
+          else {
+            return checkForRequiredParent(obde.parentInfo.domElement, requiredParents);
+          }
+        }
+
+        // Check parent domElement
+        if (pde) {
+          if (requiredParents.includes(pde.role)) {
+            return pde.role;
+          }
+          else {
+            return checkForRequiredParent(pde, requiredParents);
+          }
+        }
+        return '';
+      }
+
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.hasRequiredParents) {
+          const rp = [...(de.ariaInfo.requiredParents)];
+          if (de.tagName === 'option') {
+            rp.push('combobox');
+          }
+          if (de.visibility.isVisibleToAT) {
+            const result = checkForRequiredParent(de, rp);
+            if (result) {
+              rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, result]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role, rp.join(', ')]);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.role, rp.join(', ')]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_9
+   *
+   * @desc Widgets cannot be owned by more than one widget
+   */
+
+  { rule_id             : 'WIDGET_9',
+    last_updated        : '2023-04-05',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[aria-owns]'],
+    validate            : function (dom_cache, rule_result) {
+
+      dom_cache.allDomElements.forEach( de => {
+        const ownedByCount = de.ariaInfo.ownedByDomElements.length;
+        if (ownedByCount > 0) {
+          if (ownedByCount === 1) {
+            rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, ownedByCount]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_10
+   *
+   * @desc Range widgets with aria-valuenow must be in range of aria-valuemin and aria-valuemax
+   */
+
+  { rule_id             : 'WIDGET_10',
+    last_updated        : '2023-04-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role="meter"]',
+                           '[role="progress"]',
+                           '[role="scrollbar"]',
+                           '[role="separator"][tabindex=0]',
+                           '[role="slider"]',
+                           '[role="spinbutton"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isRange) {
+          const ai = de.ariaInfo;
+          if (de.visibility.isVisibleToAT) {
+            const now  = ai.valueNow;
+            const min  = ai.valueMin;
+            const max  = ai.valueMax;
+            const text = ai.valueText;
+            if (ai.hasValueNow) {
+              if (ai.validValueNow) {
+                if (ai.validValueMin && ai.validValueMax) {
+                  if ((now >= min) && (now <= max)) {
+                    if (text) {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.elemName, text, now]);
+                    }
+                    else {
+                      rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_2', [de.elemName, now, min, max]);
+                    }
+                  }
+                  else {
+                    rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [now, min, max]);
+                  }
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [min, max]);
+                }
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [now]);
+              }
+            }
+            else {
+              if (ai.isValueNowRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_4', [de.elemName]);
+              } else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_3', [de.elemName]);
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+
+
+        }
+      });
+   } // end validation function
+  },
+
+  /**
+   * @object WIDGET_11
+   *
+   * @desc Verify range elements with aria-valuetext attribute
+   */
+
+  { rule_id             : 'WIDGET_11',
+    last_updated        : '2023-04-20',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[role="meter"]',
+                           '[role="progress"]',
+                           '[role="scrollbar"]',
+                           '[role="separator"][tabindex=0]',
+                           '[role="slider"]',
+                           '[role="spinbutton"]'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isRange && de.ariaInfo.valueText) {
+          const ai = de.ariaInfo;
+          if (de.visibility.isVisibleToAT) {
+            const now  = ai.valueNow;
+            const text = ai.valueText;
+            if (ai.hasValueNow) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [text, now]);
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    }
+  },
+  /**
+   * @object WIDGET_12
+   *
+   * @desc Element with widget role label should describe the purpose of the widget
+   *
+   */
+
+  { rule_id             : 'WIDGET_12',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : true,
+    wcag_primary_id     : '2.4.6',
+    wcag_related_ids    : ['1.3.1', '3.3.2'],
+    target_resources    : ['[ARIA widget roles'],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.ariaInfo.isWidget) {
+          if (de.visibility.isVisibleToAT) {
+            if (de.accName.name) {
+              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.accName.name, de.elemName]);
+            }
+            else {
+              if (de.ariaInfo.isNameRequired) {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName, de.role]);
+              }
+              else {
+               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.elemName, de.role]);
+
+              }
+            }
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_13
+   *
+   * @desc Roles that prohibit accessible names
+   */
+
+  { rule_id             : 'WIDGET_13',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['2.4.6'],
+    target_resources    : [ "caption",
+                            "code",
+                            "deletion",
+                            "emphasis",
+                            "generic",
+                            "insertion",
+                            "none",
+                            "paragraph",
+                            "none",
+                            "strong",
+                            "subscript",
+                            "superscript"],
+    validate            : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (!de.ariaInfo.isDPUBRole &&
+            de.ariaInfo.isNameProhibited &&
+            de.accName.name &&
+            de.accName.source.includes('aria-label')) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.elemName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+          }
+        }
+      });
+     } // end validation function
+  },
+
+  /**
+   * @object WIDGET_14
+   *
+   * @desc     Roles with unsupported or deprecated ARIA attributes
+   */
+  { rule_id             : 'WIDGET_14',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '4.1.1',
+    wcag_related_ids    : ['4.1.2'],
+    target_resources    : [
+          "alert",
+          "alertdialog",
+          "article",
+          "banner",
+          "blockquote",
+          "button",
+          "caption",
+          "cell",
+          "checkbox",
+          "code",
+          "command",
+          "complementary",
+          "composite",
+          "contentinfo",
+          "definition",
+          "deletion",
+          "dialog",
+          "directory",
+          "document",
+          "emphasis",
+          "feed",
+          "figure",
+          "form",
+          "generic",
+          "grid",
+          "group",
+          "heading",
+          "img",
+          "input",
+          "insertion",
+          "landmark",
+          "link",
+          "list",
+          "listbox",
+          "listitem",
+          "log",
+          "main",
+          "marquee",
+          "math",
+          "meter",
+          "menu",
+          "menubar",
+          "menuitem",
+          "menuitemcheckbox",
+          "menuitemradio",
+          "navigation",
+          "note",
+          "option",
+          "paragraph",
+          "none",
+          "progressbar",
+          "radio",
+          "radiogroup",
+          "range",
+          "region",
+          "row",
+          "rowgroup",
+          "scrollbar",
+          "search",
+          "section",
+          "sectionhead",
+          "select",
+          "separator",
+          "spinbutton",
+          "status",
+          "strong",
+          "structure",
+          "subscript",
+          "superscript",
+          "switch",
+          "tab",
+          "table",
+          "tablist",
+          "tabpanel",
+          "term",
+          "time",
+          "timer",
+          "toolbar",
+          "tooltip",
+          "tree",
+          "treegrid",
+          "treeitem",
+          "widget",
+          "window"
+      ],
+    validate : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (!de.ariaInfo.isDPUBRole) {
+          if (de.ariaInfo.deprecatedAttrs.length || de.ariaInfo.unsupportedAttrs.length) {
+            if (de.visibility.isVisibleToAT) {
+              de.ariaInfo.deprecatedAttrs.forEach( attr => {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [attr.name, de.elemName]);
+              });
+              de.ariaInfo.unsupportedAttrs.forEach( attr => {
+                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_2', [attr.name, de.elemName]);
+              });
+            }
+            else {
+              rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
+            }
+          }
+        }
+      });
+    } // end validation function
+  },
+
+  /**
+   * @object WIDGET_15
+   *
+   * @desc     Web components require manual check
+   */
+  { rule_id             : 'WIDGET_15',
+    last_updated        : '2023-04-21',
+    rule_scope          : RULE_SCOPE.ELEMENT,
+    rule_category       : RULE_CATEGORIES.WIDGETS_SCRIPTS,
+    rule_required       : true,
+    first_step          : false,
+    wcag_primary_id     : '2.1.1',
+    wcag_related_ids    : ['1.1.1','1.4.1','1.4.3','1.4.4','2.1.2','2.2.1','2.2.2', '2.4.7','2.4.3','2.4.7','3.3.2'],
+    target_resources    : ["Custom elements using web component APIs"],
+    validate          : function (dom_cache, rule_result) {
+      dom_cache.allDomElements.forEach( de => {
+        if (de.tagName.includes('-') && de.isShadowClosed) {
+          if (de.visibility.isVisibleToAT) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName]);
+          }
+          else {
+            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+          }
+        }
+      });
+    } // end validation function
+  }
+  ];
+
+  /* rule.js */
+
+  /* Constants */
+  const debug$9 = new DebugLogging('Rule', false);
+  debug$9.flag = false;
+
+  /* ----------------------------------------------------------------   */
+  /*                             Rule                                   */
+  /* ----------------------------------------------------------------   */
+
+  /**
+   * @constructor Rule
+   *
+   * @desc Creates and validates a rule used to evaluate an accessibility feature
+   *       of a document
+   *
+   * @param {Object}    rule_item          - Object containing rule information
+   */
+
+  class Rule {
+    constructor (rule_item) {
+
+      // Rule information that is NOT dependent on locale
+      this.rule_id             = rule_item.rule_id; // String
+      this.rule_required       = rule_item.rule_required; // Boolean
+      this.rule_scope_id       = rule_item.rule_scope; // Integer
+      this.rule_category_id    = rule_item.rule_category; // Integer
+      this.last_updated        = rule_item.last_updated; // String
+      this.target_resources    = rule_item.target_resources; // array of strings
+      this.first_step          = rule_item.first_step; // Boolean
+      this.wcag_primary_id     = rule_item.wcag_primary_id;  // String (P.G.SC)
+      this.wcag_related_ids    = rule_item.wcag_related_ids; // Array of Strings (P.G.SC)
+      this.wcag_guideline_id   = getGuidelineId(rule_item.wcag_primary_id); // Integer
+      this.validate            = rule_item.validate;  // function
+
+      // Rule information that is locale dependent
+      this.rule_category_info  = getRuleCategoryInfo(this.rule_category_id); // Object with keys to strings
+      this.guideline_info      = getGuidelineInfo(this.wcag_guideline_id); // Object with keys to strings
+      this.rule_scope          = getScope(this.rule_scope_id); // String
+      this.wcag_primary        = getSuccessCriterionInfo(this.wcag_primary_id);
+      this.wcag_related        = getSuccessCriteriaInfo(this.wcag_related_ids);
+      this.wcag_level          = getCommonMessage('level', this.wcag_primary.level);
+      this.wcag_version        = getWCAGVersion(this.wcag_primary_id);
+
+      this.rule_nls_id           = getRuleId(this.rule_id); // String
+      this.summary               = getRuleSummary(this.rule_id); // String
+      this.definition            = getRuleDefinition(this.rule_id); // String
+      this.target_resources_desc = getTargetResourcesDesc(this.rule_id); // String
+      this.purposes              = getPurposes(this.rule_id);  // Array of strings
+      this.techniques            = getTechniques(this.rule_id);  // Array of strings
+      this.manual_checks         = getManualChecks(this.rule_id);  // Array of strings
+      this.informational_links   = getInformationLinks(this.rule_id);  // Array of objects with keys to strings
+
+      // Localized messsages for evaluation results
+      this.rule_result_msgs = getRuleResultMessages(this.rule_id); // Object with keys to strings
+      this.base_result_msgs = getBaseResultMessages(this.rule_id); // Object with keys to strings
+
+      debug$9.flag && this.toJSON();
+    }
+
+    get isWCAG20 () {
+      return this.wcag_version === 'WCAG20';
+    }
+
+    get isWCAG21 () {
+      return this.isWCAG20 || this.wcag_version === 'WCAG21';
+    }
+
+    get isWCAG22 () {
+      return this.isWCAG20 || this.isWCAG21 || this.wcag_version === 'WCAG22';
+    }
+
+    get isLevelA () {
+      return this.wcag_level === 'A';
+    }
+
+    get isLevelAA () {
+      return this.wcag_level === 'AA';
+    }
+
+    get isLevelAAA () {
+      return this.wcag_level === 'AAA';
+    }
+
+    get isScopeElement () {
+      return this.rule_scope_id === RULE_SCOPE.ELEMENT;
+    }
+
+    get isScopePage () {
+      return this.rule_scope_id === RULE_SCOPE.PAGE;
+    }
+
+    get isScopeWebsite () {
+      return this.rule_scope_id === RULE_SCOPE.WEBSITE;
+    }
+
+    get isFirstStep () {
+      return this.first_step === true;
+    }
+
+    /**
+     * @method getId
+     *
+     * @desc Get the programmatic id that uniquely identifies the rule
+     *
+     * @return {String} The rule id
+     */
+
+    getId () {
+      return this.rule_id;
+    }
+
+    /**
+     * @method getIdNLS
+     *
+     * @desc Get a localized human readable id for uniquely identifying the rule
+     *
+     * @return {String} Localized string of the rule id
+     */
+
+    getIdNLS () {
+      return this.rule_nls_id;
+    }
+
+    /**
+     * @method getGuideline
+     *
+     * @desc Get number of the associated guideline
+     *
+     * @return  {Integer} see description
+     */
+
+    getGuideline () {
+     return this.wcag_guideline_id;
+    }
+
+    /**
+     * @method getGuidelineInfo
+     *
+     * @desc Get information about the WCAG Guideline associated with the rule
+     *
+     * @return  {GuidelineInfo}  see description
+     */
+
+    getGuidelineInfo () {
+     return this.guideline_info;
+    }
+
+    /**
+     * @method getCategoryInfo
+     *
+     * @desc Get a numerical constant representing the rule category
+     *
+     * @return {Integer}  see @desc
+     */
+
+    getCategory () {
+      return this.rule_category_id;
+    }
+
+    /**
+     * @method getCategoryInfo
+     *
+     * @desc Get a localized title, url and description of the rule category
+     *
+     * @return {RuleCategoryInfoItem}  see @desc
+     */
+
+    getCategoryInfo () {
+      return this.rule_category_info;
+    }
+
+    /**
+     * @method getScope
+     *
+     * @desc Get the rule scope constant of the rule
+     *
+     * @return {Integer} rule scope constant
+     */
+
+    getScope () {
+      return this.rule_scope_id;
+    }
+
+
+    /**
+     * @method getScopeNLS
+     *
+     * @desc Get a localized string of the rule scope (i.e. 'element' or 'page')
+     *
+     * @return {String} Localized string of the rule scope
+     */
+
+    getScopeNLS () {
+      return this.rule_scope;
+    }
+
+
+    /**
+     * @method getDefinition
+     *
+     * @desc Gets the definition of the rule
+     *
+     * @return {String} Localized string of the rule definition
+     */
+    getDefinition () {
+      return this.definition;
+    }
+
+    /**
+     * @method getSummary
+     *
+     * @desc Gets the summary of the rule
+     *
+     * @return {String} Localized string of the rule summary
+     */
+    getSummary () {
+      return this.summary;
+    }
+
+    /**
+     * @method getPurposes
+     *
+     * @desc Gets an array strings representing the purpose, basically
+     *       how does the rule help people with disabilities
+     *
+     * @return  {Array}  Returns an array of localized string describing the purpose
+     */
+
+    getPurposes () {
+      return this.purposes;
+    }
+
+    /**
+     * @method getTargetResourcesDescription
+     *
+     * @desc Get a description of the markup or page feature the rule is evaluates
+     *
+     * @return  {String}  Localized string representing the markup or page feature
+     *                    tested by the rule
+     */
+
+    getTargetResourcesDescription () {
+      return this.target_resources_desc;
+    }
+
+    /**
+     * @method getTargetResources
+     *
+     * @desc Returns an localized array strings representing target resources of
+     *       the rule
+     *
+     * @return  {Array}  Returns an array of strings identifying the elements and/or
+     *                    attributes that the rule evaluates
+     */
+
+    getTargetResources () {
+      return this.target_resources;
+    }
+
+    /**
+     * @method getTechniques
+     *
+     * @desc Get the techniques to implement the requirements of the rule
+     *
+     * @return  {Array}  Array of InformationalLinkInfo objects
+     */
+    getTechniques () {
+      return this.techniques;
+    }
+
+    /**
+     * @method getManualCheckProcedures
+     *
+     * @desc Gets manual checking procedures for evaluating the rule
+     *       requirements
+     *
+     * @return  {Array}  Array of InformationalLinkInfo objects
+     */
+
+    getManualCheckProcedures () {
+      return this.manual_checks;
+    }
+
+    /**
+     * @method getInformationalLinks
+     *
+     * @desc Get information links related to understanding or implementation of the rule
+     *
+     * @return  {Array}  Returns an array of InformationalLinkInfo objects
+     *
+     * @example
+     *
+     * var node_list = [];
+     * var info_links = rule.getInformationalLinks();
+     *
+     * for(var i = 0; i < info_links.length; i++) {
+     *   var info_link = info_links[i];
+     *
+     *   // Using object properties to create a link element
+     *   var node = document.createElement('a');
+     *   node.appendChild(document.createTextNode(info_link.title));
+     *   node.setAttribute('href',  info_link.url);
+     *   node.setAttribute('class', info_link.type_const.toString());
+     *
+     *   node_list.push(node);
+     * }
+     */
+
+    getInformationalLinks () {
+      return this.informational_links;
+    }
+
+    /**
+     * @method getPrimarySuccessCriterionId
+     *
+     * @desc Get id of the primary WCAG Success Criteria for the rule
+     *
+     * @return  {Integer}  see description
+     */
+
+    getPrimarySuccessCriterionId () {
+      return this.wcag_primary_id;
+    }
+
+    /**
+     * @method getPrimarySuccessCriterionInfo
+     *
+     * @desc Get information about primary WCAG Success Criteria for the rule
+     *
+     * @return  {SuccessCriterionInfo}  Object representing information about the SC
+     */
+
+    getPrimarySuccessCriterionInfo () {
+      return this.wcag_primary;
+    }
+
+    /**
+     * @method getRelatedSuccessCriteriaInfo
+     *
+     * @desc Get information about the related WCAG Success Criteria for the rule
+     *
+     * @return  {Array}  Array of SuccessCriterionInfo objects
+     */
+
+    getRelatedSuccessCriteriaInfo () {
+      return this.wcag_related;
+    }
+
+    /**
+     * @method getWCAGLevel
+     *
+     * @desc Get the string representation of the the WCAG Success Criterion Level
+     *       based on the primary id of the rule
+     *
+     * @return  {String}  String representing the WCAG success criterion level
+     *                    (i.e. A, AA or AAA)
+     */
+
+    getWCAGLevel () {
+      return this.wcag_level;
+    }
+
+    /**
+     * @method toJSON
+     *
+     * @desc Returns a JSON representation of the rule
+     *
+     * @return  {String}  Returns a JSON representation of the rule
+     */
+
+    toJSON () {
+
+      const ruleInfo = {
+        last_updated: this.last_updated,
+
+        rule_id:      this.rule_id,
+        rule_nls_id:  this.rule_nls_id,
+        summary:      this.summary,
+        definition:   this.definition,
+
+        rule_required:  this.rule_required,
+
+        target_resources_desc:  this.target_resources_desc,
+
+        rule_scope_id:  this.rule_scope_id,
+        rule_scope:     this.rule_scope,
+
+        rule_category_id:   this.rule_category_id,
+        rule_category_info: this.rule_category_info,
+        
+        wcag_guideline_id:  this.wcag_guideline_id,
+        guideline_info:     this.guideline_info,
+
+        target_resources:  this.target_resources,
+
+        wcag_primary_id:  this.wcag_primary_id,
+        wcag_primary:     this.wcag_primary,
+        wcag_level:       this.wcag_level,
+
+        wcag_related_ids: this.wcag_related_ids,
+        wcag_related:     this.wcag_related,
+
+        purposes:       this.purposes,
+        techniques:     this.techniques,
+        manual_checks:  this.manual_checks,
+
+        informational_links:    this.informational_links
+      };
+
+      const json = JSON.stringify(ruleInfo, null, '  ');
+      debug$9.flag && debug$9.log(`[JSON]: ${json}`);
+      return json;
+
+    }
+  }
+
+  /* allRules.js */
+
+  /* Constants */
+  const debug$8 = new DebugLogging('All Rules', false);
+
+  const allRules = [];
+
+  function addToArray (ruleArray) {
+    ruleArray.forEach( r => {
+      allRules.push(new Rule(r));
+    });
+  }
+
+  addToArray(audioRules);
+  addToArray(authorizationRules);
+  addToArray(bypassRules);
+  addToArray(colorRules);
+  addToArray(errorRules);
+  addToArray(frameRules);
+  addToArray(controlRules);
+  addToArray(headingRules);
+  addToArray(helpRules);
+  addToArray(htmlRules);
+  addToArray(imageRules);
+  addToArray(keyboardRules);
+  addToArray(landmarkRules);
+  addToArray(languageRules);
+  addToArray(layoutRules);
+  addToArray(linkRules);
+  addToArray(listRules);
+  addToArray(liveRules);
+  addToArray(motionRules);
+  addToArray(navigationRules);
+  addToArray(pointerRules);
+  addToArray(readingOrderRules);
+  addToArray(resizeRules);
+  addToArray(sensoryRules);
+  addToArray(shortcutRules);
+  addToArray(spacingRules);
+  addToArray(tableRules);
+  addToArray(targetSizeRules);
+  addToArray(titleRules);
+  addToArray(timingRules);
+  addToArray(videoRules);
+  addToArray(widgetRules);
+
+
+  if (debug$8.flag) {
+    console.log('All rules loaded');
+  }
+
   /* evaluationResult.js */
 
   /* Constants */
@@ -32486,39 +32968,72 @@
 
   }
 
-  function isFilter(ruleset, ruleFilter, ruleId) {
-    return (ruleset.toUpperCase() === 'FILTER') && ruleFilter.includes(ruleId);
-  }
+  /**
+   * @class EvaluateResult
+   *
+   * @desc Creates an evaluation result object
+   *
+   * @param  {Object} startingDoc  - A reference to a DOM element to start the evaluation
+   *                                 (typically body element)
+   * @param  {String} title        - A title of the evaluation
+   *                                 (typically the title of the document)
+   * @param  {String} url          - The URL to the document
+   *
+   * @return see @desc
+   */
 
   class EvaluationResult {
-    constructor (allRules, domCache, title, url, ruleset='WCAG21', level='AA', scopeFilter='ALL', ruleFilter=[]) {
+    constructor (startingDoc, title, url) {
 
-      this.title = title;
-      this.url = url;
-      this.ruleset = ruleset;
-      this.level = level;
+      this.startingDoc = startingDoc;
+      this.title       = title;
+      this.url         = url;
+      this.ruleset     = '';
+      this.level       = '';
+      this.scopeFilter = '';
+
+      this.date           = getFormattedDate();
+      this.version        = VERSION;
+      this.allDomElements = [];
+      this.allRuleResults = [];
+
+      debug$7.flag && debug$7.log(`[title]: ${this.title}`);
+      debug$7.flag && debug$7.log(`[  url]: ${this.url}`);
+
+    }
+
+    /**
+     * @method runWCAGRules
+     *
+     * @desc Updates rule results array with results from a WCAG features
+     *
+     * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
+     * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
+     * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
+     */
+
+    runWCAGRules (ruleset='WCAG21', level='AA', scopeFilter='ALL') {
+
+      const startTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][    ruleset]: ${ruleset}`);
+      debug$7.flag && debug$7.log(`[evaluateWCAG][      level]: ${level}`);
+      debug$7.flag && debug$7.log(`[evaluateWCAG][scopeFilter]: ${scopeFilter}`);
+
+      this.ruleset     = ruleset;
+      this.level       = level;
       this.scopeFilter = scopeFilter;
 
-      this.date = getFormattedDate();
-      this.version = VERSION;
+      const domCache      = new DOMCache(this.startingDoc);
       this.allDomElements = domCache.allDomElements;
       this.allRuleResults = [];
 
-      const startTime = new Date();
-      debug$7.flag && debug$7.log(`[    ruleset]: ${ruleset}`);
-      debug$7.flag && debug$7.log(`[      level]: ${level}`);
-      debug$7.flag && debug$7.log(`[scopeFilter]: ${scopeFilter}`);
-
       allRules.forEach (rule => {
-        debug$7.flag && debug$7.log(`[version]: ${rule.wcag_primary_id} ${rule.wcag_version} ${rule.isWCAG20} ${rule.isWCAG21} ${rule.isWCAG22}`);
 
-        if (isFilter(ruleset, ruleFilter, rule.getId()) ||
-            isWCAG(ruleset, level, rule)) {
+        if (isWCAG(ruleset, level, rule)) {
           if ((scopeFilter === 'ALL') ||
               ((scopeFilter === 'PAGE')    && rule.isScopePage) ||
               ((scopeFilter === 'WEBSITE') && rule.isScopeWebsite)) {
             const ruleResult = new RuleResult(rule);
-            debug$7.flag && debug$7.log(`[validate]: ${ruleResult.rule.getId()}`);
 
             ruleResult.validate(domCache);
             this.allRuleResults.push(ruleResult);
@@ -32526,15 +33041,71 @@
         }
       });
 
-      const json = this.toJSON(true);
-      debug$7.flag && debug$7.log(`[JSON]: ${json}`);
-
       const endTime = new Date();
-      debug$7.flag && debug$7.log(`[Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
-
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
 
     }
 
+    /**
+     * @method runRuleListRules
+     *
+     * @desc Updates rule results array with results from a specific set of rules
+     *
+     * @param  {Array}   ruleList  - Array of rule IDs to include in the evaluation
+     */
+
+    runRuleListRules (ruleList) {
+      const startTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateRuleList][ruleList]: ${ruleList}`);
+
+      this.ruleset     = 'RULELIST';
+
+      const domCache      = new DOMCache(this.startingDoc);
+      this.allDomElements = domCache.allDomElements;
+      this.allRuleResults = [];
+
+      allRules.forEach (rule => {
+
+        if (ruleList.includes(rule.getId())) {
+          const ruleResult = new RuleResult(rule);
+          ruleResult.validate(domCache);
+          this.allRuleResults.push(ruleResult);
+        }
+      });
+
+      const endTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+
+    }
+
+   /**
+     * @method runFirstStepRules
+     *
+     * @desc Updates rule results array with results first step rules
+     */
+
+    runFirstStepRules () {
+      const startTime = new Date();
+
+      this.ruleset     = 'FIRSTSTEP';
+
+      const domCache      = new DOMCache(this.startingDoc);
+      this.allDomElements = domCache.allDomElements;
+      this.allRuleResults = [];
+
+      allRules.forEach (rule => {
+
+        if (rule.isFirstStep) {
+          const ruleResult = new RuleResult(rule);
+          ruleResult.validate(domCache);
+          this.allRuleResults.push(ruleResult);
+        }
+      });
+
+      const endTime = new Date();
+      debug$7.flag && debug$7.log(`[evaluateWCAG][Run Time]: ${endTime.getTime() - startTime.getTime()} msecs`);
+
+    }
     /**
      * @method getTitle
      *
@@ -32710,16 +33281,19 @@
 
     getDataForJSON (flag=false) {
 
+      const thisRef = this;
+
       const data = {
-        eval_url: cleanForUTF8(this.url),
-        eval_url_encoded: encodeURI(this.url),
-        eval_title: cleanForUTF8(this.title),
+        eval_url: cleanForUTF8(thisRef.url),
+        eval_url_encoded: encodeURI(thisRef.url),
+        eval_title: cleanForUTF8(thisRef.title),
 
         // For compatibility with previous versions of the library
-        ruleset_id:     'ARIA_STRICT',
-        ruleset_title:  'HTML and ARIA Techniques',
-        ruleset_abbrev: 'HTML5+ARIA',
-        ruleset_version: VERSION,
+        ruleset:      thisRef.ruleset,
+        wcag_level:   thisRef.relevel,
+        scope_filter: thisRef.scopeFilter,
+        version:      thisRef.version,
+        date:         thisRef.date.toString(),
 
         rule_results: []
       };
@@ -32763,29 +33337,92 @@
    */
 
   class EvaluationLibrary {
-    constructor (codeTags = false) {
+    constructor () {
       this.constants = new Constants();
-      // setUseCodeTags sets if localized strings using the @ character to identify 
-      // code items in the string return <code> tags or capitalization  
-      setUseCodeTags(codeTags);
     }
 
     /**
-     * @method evaluate
+     * @method evaluateRuleList
+     *
+     * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
+     *
+     * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
+     * @param  {String}  title       - Title of document being analyzed
+     * @param  {String}  url         - URL of document being analyzed
+     * @param  {Array}   ruleList    - Array of rule id to include in the evaluation
+     */
+
+    evaluateRuleList (startingDoc, title='', url='',  ruleList = []) {
+
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.runRuleListRules(ruleList);
+
+      // Debug features
+      if (debug$6.flag) {
+        domCache.showDomElementTree();
+        domCache.controlInfo.showControlInfo();
+        domCache.iframeInfo.showIFrameInfo();
+        domCache.idInfo.showIdInfo();
+        domCache.imageInfo.showImageInfo();
+        domCache.linkInfo.showLinkInfo();
+        domCache.listInfo.showListInfo();
+        domCache.tableInfo.showTableInfo();
+        domCache.structureInfo.showStructureInfo();
+
+        debug$6.json && debug$6.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+      }
+      return evaluationResult;
+    }
+
+   /**
+     * @method evaluateRuleWCAG
      *
      * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
      *
      * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
      * @param  {String}  title       - Title of document being analyzed
      * @param  {String}  url         - url of document being analyzed
-     * @param  {String}  ruleset     - Set of rules to evaluate (values: "FIRST-STEP" | "A" | "AA" | "AAA")
+     * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
+     * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
      */
 
-    evaluate (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL', ruleFilter = []) {
+    evaluateWCAG (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL') {
 
-      let domCache = new DOMCache(startingDoc);
-      let evaluationResult = new EvaluationResult(allRules, domCache, title, url, ruleset, level, scopeFilter, ruleFilter);
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.runWCAGRules(ruleset, level, scopeFilter);
+
+      // Debug features
+      if (debug$6.flag) {
+        domCache.showDomElementTree();
+        domCache.controlInfo.showControlInfo();
+        domCache.iframeInfo.showIFrameInfo();
+        domCache.idInfo.showIdInfo();
+        domCache.imageInfo.showImageInfo();
+        domCache.linkInfo.showLinkInfo();
+        domCache.listInfo.showListInfo();
+        domCache.tableInfo.showTableInfo();
+        domCache.structureInfo.showStructureInfo();
+
+        debug$6.json && debug$6.log(`[evaluationResult][JSON]: ${evaluationResult.toJSON(true)}`);
+      }
+      return evaluationResult;
+    }
+
+   /**
+     * @method evaluateFirstStepRules
+     *
+     * @desc Evaluate a document using first step rules
+     *
+     * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
+     * @param  {String}  title       - Title of document being analyzed
+     * @param  {String}  url         - url of document being analyzed
+     */
+
+    evaluateFirstStepRules (startingDoc, title='', url='') {
+
+      const evaluationResult = new EvaluationResult(startingDoc, title, url);
+      evaluationResult.runFirstStepRules();
 
       // Debug features
       if (debug$6.flag) {
@@ -32835,6 +33472,17 @@
     }
 
     /**
+     * @method getRuleScopes
+     *
+     * @desc Provides access to the localized Rule Scopes object from evaluation library
+     */
+
+    get getRuleScopes () {
+      return getRuleScopes();
+    }
+
+
+    /**
      * @method getAllRules
      *
      * @desc Provides access to the rules in evaluation library
@@ -32874,6 +33522,7 @@
       ruleInfo.last_updated  = rule.last_updated;
 
       ruleInfo.rule_required    = rule.rule_required;
+      ruleInfo.first_step       = rule.first_step;
 
       ruleInfo.rule_scope       = rule.rule_scope;
       ruleInfo.rule_category    = getRuleCategoryInfo(rule.rule_category_id);
@@ -32881,16 +33530,23 @@
       ruleInfo.conformance      = rule.rule_required ? getCommonMessage('required') : getCommonMessage('recommended');
 
       ruleInfo.wcag_primary_id  = rule.wcag_primary_id;
+      ruleInfo.wcag_level       = getWCAGLevel(rule.wcag_primary_id);
       ruleInfo.wcag_primary     = getSuccessCriterionInfo(rule.wcag_primary_id);
       ruleInfo.wcag_related     = getSuccessCriteriaInfo(rule.wcag_related_ids);
+      ruleInfo.wcag_version     = getWCAGVersion(ruleInfo.wcag_primary_id);
+      ruleInfo.has_failures       = getHasFailures(id);
+      ruleInfo.has_hidden         = getHasHidden(id);
+      ruleInfo.has_manual_checks  = getHasManualChecks(id);
+      ruleInfo.has_pass           = getHasPass(id);
+      ruleInfo.mc_message         = getManualCheckMessage(id);
 
       ruleInfo.target_resources = rule.target_resources;
 
-      ruleInfo.definition = getRuleDefinition(id);
-      ruleInfo.summary    = getRuleSummary(id);
-      ruleInfo.purposes   = getPurposes(id);
+      ruleInfo.definition = getRuleDefinition(id, true);
+      ruleInfo.summary    = getRuleSummary(id, true);
+      ruleInfo.purposes   = getPurposes(id, true);
 
-      ruleInfo.techniques = getTechniques(id);
+      ruleInfo.techniques = getTechniques(id, true);
       ruleInfo.information_links = getInformationLinks(id);
 
       return ruleInfo;
@@ -32905,19 +33561,38 @@
   debug$5.flag = false;
 
 
-  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleFilter=[]) {
+  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleList=[]) {
 
     if (debug$5.flag) {
       debug$5.log(`[eveluate][    ruleset]: ${ruleset}`);
       debug$5.log(`[eveluate][      level]: ${level}`);
       debug$5.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
-      debug$5.log(`[evaluate][ ruleFilter]: ${ruleFilter}`);
+      debug$5.log(`[evaluate][ ruleFilter]: ${ruleList}`);
     }
 
     // evaluation script
-    let doc = window.document;
-    let evaluationLibrary = new EvaluationLibrary();
-    let evaluationResult  = evaluationLibrary.evaluate(doc, doc.title, doc.location.href, ruleset, level, scopeFilter, ruleFilter);
+    const doc = window.document;
+    const evaluationLibrary = new EvaluationLibrary();
+    let evaluationResult;
+
+    switch (ruleset) {
+
+      case 'WCAG20':
+      case 'WCAG21':
+      case 'WCAG22':
+        evaluationResult = evaluationLibrary.evaluateWCAG(doc, doc.title, doc.location.href, ruleset, level, scopeFilter);
+        break;
+
+      case 'LIST':
+        evaluationResult = evaluationLibrary.evaluateRuleList(doc, doc.title, doc.location.href, ruleList);
+        break;
+
+      case 'FIRSTSTEP':
+        evaluationResult = evaluationLibrary.evaluateFirstStepRules(doc, doc.title, doc.location.href);
+        break;
+
+    }
+
     return evaluationResult;
   }
 
@@ -33088,6 +33763,7 @@
       WCAG_GUIDELINE.G_2_2,
       WCAG_GUIDELINE.G_2_3,
       WCAG_GUIDELINE.G_2_4,
+      WCAG_GUIDELINE.G_2_5,
       WCAG_GUIDELINE.G_3_1,
       WCAG_GUIDELINE.G_3_2,
       WCAG_GUIDELINE.G_3_3,
@@ -33123,14 +33799,13 @@
   *   (1) Run evlauation library;
   *   (2) return result object for the all rules view in the sidebar;
   */
-  function getAllRulesInfo (ruleset, level, scopeFilter, firstStepRules) {
+  function getAllRulesInfo (ruleset, level, scopeFilter) {
 
     debug$4.flag && debug$4.log(`[    ruleset]: ${ruleset}`);
     debug$4.flag && debug$4.log(`[      level]: ${level}`);
     debug$4.flag && debug$4.log(`[scopeFilter]: ${scopeFilter}`);
-    debug$4.flag && debug$4.log(`[ ruleFilter]: ${firstStepRules}`);
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
     const ruleGroupResult   = evaluationResult.getRuleResultsAll();
     const ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
     const ruleResults       = ruleGroupResult.getRuleResultsArray();
@@ -33166,11 +33841,11 @@
   *   (1) Run evlauation library;
   *   (2) return result objec for the group view in the sidebar;
   */
-  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter, firstStepRules) {
+  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter) {
 
     let info = {};
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
     const ruleGroupResult = (groupType === 'gl') ?
                             evaluationResult.getRuleResultsByGuideline(groupId) :
                             (groupType === 'rc') ? evaluationResult.getRuleResultsByCategory(groupId) :
@@ -33919,7 +34594,6 @@
       debug.log(`[getEvaluationInfo][        ruleset]: ${aiInfo.ruleset}`);
       debug.log(`[getEvaluationInfo][          level]: ${aiInfo.level}`);
       debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
-      debug.log(`[getEvaluationInfo][ firstStepRules]: ${aiInfo.firstStepRules} (${aiInfo.firstStepRules.length})` );
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
       debug.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
       debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
@@ -33940,13 +34614,13 @@
     switch(aiInfo.view) {
       case viewId.allRules:
         clearHighlights();
-        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter);
         ruleResult = false;
         break;
 
       case viewId.ruleGroup:
         clearHighlights();
-        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter);
         ruleResult = false;
         break;
 
@@ -33959,7 +34633,7 @@
             info.infoHighlight = true;
           }
         } else {
-          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
           highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);

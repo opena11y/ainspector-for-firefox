@@ -1,0 +1,52 @@
+/* infoRulesets.css */
+
+h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.1em;
+}
+
+.desc {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-style: italic;
+}
+
+table.table,
+table.table th,
+table.table td {
+    border-collapse: collapse;
+    padding: 5px;
+    margin-bottom: 1em;
+}
+
+table.table thead th {
+  font-weight: bold;
+}
+
+table.table th,
+table.table td {
+  font-weight: normal;
+}
+
+table.table-striped tbody tr:nth-child(odd) {
+    background-color: #eee;
+}
+
+table.table .text-end {
+  text-align: right;
+}
+
+table.table .text-start {
+  text-align: left;
+}
+
+table.table .text-top {
+  vertical-align: top;
+}
+
+table.table .term {
+  font-style: italic;
+  font-isze: 1.1em;
+}

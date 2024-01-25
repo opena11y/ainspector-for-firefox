@@ -43,3 +43,9 @@
   margin-left:  1em;
   line-spacing: 1.25em;
 }
+
+code {
+  color: rgb(214, 51, 132);
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+

@@ -2,20 +2,37 @@
 
 ## Summary
 
-| Version      |    Date    | Notes |
-|--------------|:----------:|-----------------------------------------------------|
-| 2.99.5       |   11/17/23 | Fixed bugs and add target size rules
-| 2.99.0       |   9/7/23   | Updated to OpenA11y Evaluation Library 2.0 and some UI features
+| Version      |    Date     | Notes |
+|--------------|:-----------:|-----------------------------------------------------|
+| 3.0          |   1/25/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
+| 2.99.6       |   12/15/23  | Fixed bugs and add target size rules
+| 2.99.5       |   11/17/23  | Fixed bugs and add target size rules
+| 2.99.0       |   9/7/23    | Updated to OpenA11y Evaluation Library 2.0 and some UI features
 | 2.2.1        |   3/12/23   | Updated info icon labeling and activation feedback
 | 2.2.0        |   2/10/23   | Added information button and updated view labeling
 | 2.1.2        |   12/17/22  | Updated evaluation library to fix CCR bug
 | 2.1.1        |   11/21/22  | Fixed bug rerunning evaluations
 | 2.1.0        |   10/31/22  | Fixed bug in evaluations not completing and updated labeling of some user interface  components in the options panel
-| 2.0.0        |   3/30/22  | Rewrote code to use web components, added element result details view and export evaluation results
-| 1.1.3        |   10/7/21  | Updated references in documentation to use WCAG 2.1 for techniques
-| 1.1.2        |   9/20/21  | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
-| 1.1.1        |   9/16/21  | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
-| 0.96.0       |  10/30/19  | Fixes bug in highlight option not being remembered
+| 2.0.0        |   3/30/22   | Rewrote code to use web components, added element result details view and export evaluation results
+| 1.1.3        |   10/7/21   | Updated references in documentation to use WCAG 2.1 for techniques
+| 1.1.2        |   9/20/21   | Updated WIDGET 13 documentation and included secondary WCAG SC in rule details
+| 1.1.1        |   9/16/21   | Updated the extension to support ARIA 1.2 and ARIA in HTML requirements
+| 0.96.0       |  10/30/19   | Fixes bug in highlight option not being remembered
+
+### 3.0
+* Updated video and audio rules
+* Fixed some bugs in table rules
+* Added additional WCAG 2.1 and 2.2 rules
+
+### 2.99.6 (Beta of version 3.0)
+* Updated evaluation library to add addition WCAG 2.1 and 2.2 Level A rules
+  * 2.5.1 Pointer Gestures
+  * 2.5.2 Pointer Cancellation
+  * 2.5.3 Label in Name
+  * 2.5.4 Motion Actuation
+  * 2.1.4 Character Key Shortcuts
+  * 3.2.6 Consistent Help
+* Fixed some bugs in evaluation library
 
 ### 2.99.5 (Beta of version 3.0)
 * Fixed some bugs in color contrast calculation

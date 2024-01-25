@@ -70,7 +70,6 @@ export default class ScopeFilter extends HTMLElement {
   }
 
   onClick (event) {
-    console.log(`[scopeFilter][onclick]: ${typeof this.callBackFunction}`);
     if (this.callBackFunction) {
       this.callBackFunction(event);
     }

@@ -194,6 +194,11 @@
     "description": "Label for WCAG Guideline 2.4 view"
   },
 
+  "g2.5": {
+    "message": "2.5 Input Modalities",
+    "description": "Label for WCAG Guideline 2.5 view"
+  },
+
   "g3.1": {
     "message": "3.1 Readable",
     "description": "Label for WCAG Guideline 3.1 view"
@@ -1054,6 +1059,11 @@
   "csvSummary-g2.4": {
     "message": "Number of 2.4 Navigable rules with",
     "description": "CSV label for Guideline 2.4 Navigable guideline for number of rules with"
+  },
+
+  "csvSummary-g2.5": {
+    "message": "Number of 2.5 Input Modalities rules with",
+    "description": "CSV label for Guideline 2.5 INput Modalities guideline for number of rules with"
   },
 
   "csvSummary-g3.1": {

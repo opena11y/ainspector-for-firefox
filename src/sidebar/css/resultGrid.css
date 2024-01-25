@@ -182,4 +182,8 @@ table.show-selection tr:focus {
   outline: currentColor 2px solid;
 }
 
+table code {
+  color: rgb(214, 51, 132);
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
 

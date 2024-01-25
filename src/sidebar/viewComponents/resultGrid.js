@@ -1,5 +1,9 @@
 /* resultGrid.js */
 
+import {
+  addContentToElement
+} from '../utils.js';
+
 const template = document.createElement('template');
 template.innerHTML = `
   <section aria-labelledby="grid-label">
@@ -212,11 +216,10 @@ export default class ResultGrid extends HTMLElement {
     let span1, span2;
     let td = document.createElement('td');
     td.tabIndex = -1;
-
     if (accName) {
       // Hide the visually rendered text content from AT
       span1 = document.createElement('span');
-      span1.textContent = txt;
+      addContentToElement(span1, txt);
       span1.setAttribute('aria-hidden', 'true');
       td.appendChild(span1);
       // Hide the content available to AT from visual rendering
@@ -225,7 +228,7 @@ export default class ResultGrid extends HTMLElement {
       span2.className = 'sr-only';
       td.appendChild(span2);
     } else {
-      td.textContent = txt;
+      addContentToElement(td, txt);
     }
 
     if (cName) {
@@ -242,7 +245,7 @@ export default class ResultGrid extends HTMLElement {
 
   updateDataCell (row, pos, txt, name, cName, sortValue) {
     let cell = this.getCellByPosition(row, pos);
-    cell.textContent = txt;
+    addContentToElement(cell, txt, true);
     if (name) {
       cell.setAttribute('aria-label', name);
     }

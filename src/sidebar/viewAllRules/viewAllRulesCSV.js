@@ -20,6 +20,7 @@ const msg = {
   g2_2                : getMessage('g2.2'),
   g2_3                : getMessage('g2.3'),
   g2_4                : getMessage('g2.4'),
+  g2_5                : getMessage('g2.5'),
   g3_1                : getMessage('g3.1'),
   g3_2                : getMessage('g3.2'),
   g3_3                : getMessage('g3.3'),

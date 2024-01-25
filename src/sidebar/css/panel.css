@@ -150,3 +150,8 @@ button:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+code {
+  color: rgb(214, 51, 132);
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}

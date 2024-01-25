@@ -3,6 +3,20 @@
 import { getOptions, saveOptions, defaultOptions } from './storage.js';
 import { isCharacterAllowed, validatePrefix, validateShortcut } from './validate.js';
 
+// Information dialogs
+import InfoDialog from './info-dialog/infoDialog.js';
+customElements.define('info-dialog', InfoDialog);
+
+import InfoRulesets from './info-dialog/infoRulesets.js';
+customElements.define('info-rulesets', InfoRulesets);
+
+import InfoWCAGLevels from './info-dialog/infoWCAGLevels.js';
+customElements.define('info-wcag-levels', InfoWCAGLevels);
+
+import InfoScopes from './info-dialog/infoScopes.js';
+customElements.define('info-scopes', InfoScopes);
+
+
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
 const msg = {
@@ -52,18 +66,20 @@ const promptForDelay = document.querySelector('input[id="options-prompt-for-dela
 // const rulesetTrans   = document.querySelector('input[id="ARIA_TRANS"]');
 const inclPassNa     = document.querySelector('input[id="options-incl-pass-na"]');
 
-const rulesetRadioFilter  = document.querySelector('#options-ruleset-filter');
-const rulesetRadioWCAG20  = document.querySelector('#options-ruleset-wcag20');
-const rulesetRadioWCAG21  = document.querySelector('#options-ruleset-wcag21');
-const rulesetRadioWCAG22  = document.querySelector('#options-ruleset-wcag22');
+const rulesetRadioFirstStep  = document.querySelector('#options-ruleset-first-step');
+const rulesetRadioWCAG20     = document.querySelector('#options-ruleset-wcag20');
+const rulesetRadioWCAG21     = document.querySelector('#options-ruleset-wcag21');
+const rulesetRadioWCAG22     = document.querySelector('#options-ruleset-wcag22');
 
+const rulesetLevelFieldset  = document.querySelector('#options-levels-fieldset');
 const rulesetRadioLevelA    = document.querySelector('#options-ruleset-level-a');
 const rulesetRadioLevelAA   = document.querySelector('#options-ruleset-level-aa');
 const rulesetCheckboxColorEnhanced = document.querySelector('#options-ruleset-color-enhanced');
 
-const rulesetScopeAll     = document.querySelector('#options-scope-all');
-const rulesetScopePage    = document.querySelector('#options-scope-page');
-const rulesetScopeWebsite = document.querySelector('#options-scope-website');
+const rulesetScopeFieldset  = document.querySelector('#options-scope-fieldset');
+const rulesetScopeAll       = document.querySelector('#options-scope-all');
+const rulesetScopePage      = document.querySelector('#options-scope-page');
+const rulesetScopeWebsite   = document.querySelector('#options-scope-website');
 
 const exportPrompt     = document.querySelector('#options-export-prompt');
 const exportCSV        = document.querySelector('#options-export-csv');
@@ -158,8 +174,13 @@ function saveFormOptions (e) {
 
   let ruleset = 'WCAG21';
 
-  if (rulesetRadioFilter.checked) {
-    ruleset = rulesetRadioFilter.value;
+  rulesetLevelFieldset.disabled = false;
+  rulesetScopeFieldset.disabled = false;
+
+  if (rulesetRadioFirstStep.checked) {
+    ruleset = rulesetRadioFirstStep.value;
+    rulesetLevelFieldset.disabled = true;
+    rulesetScopeFieldset.disabled = true;
   }
   if (rulesetRadioWCAG20.checked) {
     ruleset = rulesetRadioWCAG20.value;
@@ -237,14 +258,15 @@ function updateForm (options) {
   inclWcagGl.checked     = options.viewsMenuIncludeGuidelines;
   noDelay.checked        = !options.rerunDelayEnabled;
   promptForDelay.checked = options.rerunDelayEnabled;
-//  rulesetStrict.checked  = options.rulesetId === 'ARIA_STRICT';
-//  rulesetTrans.checked   = options.rulesetId === 'ARIA_TRANS';
   inclPassNa.checked     = options.resultsIncludePassNa;
 
-  rulesetRadioFilter.checked = options.ruleset === rulesetRadioFilter.value;
-  rulesetRadioWCAG20.checked = options.ruleset === rulesetRadioWCAG20.value;
-  rulesetRadioWCAG21.checked = options.ruleset === rulesetRadioWCAG21.value;
-  rulesetRadioWCAG22.checked = options.ruleset === rulesetRadioWCAG22.value;
+  rulesetRadioFirstStep.checked = options.ruleset === rulesetRadioFirstStep.value;
+  rulesetLevelFieldset.disabled = options.ruleset === rulesetRadioFirstStep.value;
+  rulesetScopeFieldset.disabled = options.ruleset === rulesetRadioFirstStep.value;
+
+  rulesetRadioWCAG20.checked    = options.ruleset === rulesetRadioWCAG20.value;
+  rulesetRadioWCAG21.checked    = options.ruleset === rulesetRadioWCAG21.value;
+  rulesetRadioWCAG22.checked    = options.ruleset === rulesetRadioWCAG22.value;
 
   rulesetRadioLevelA.checked    = options.level === 'A';
   rulesetRadioLevelAA.checked    = (options.level === 'AA') || (options.level === 'AAA');
@@ -383,7 +405,7 @@ promptForDelay.addEventListener('change', saveFormOptions);
 // rulesetTrans.addEventListener('change', saveFormOptions);
 inclPassNa.addEventListener('change', saveFormOptions);
 
-rulesetRadioFilter.addEventListener('change', saveFormOptions);
+rulesetRadioFirstStep.addEventListener('change', saveFormOptions);
 rulesetRadioWCAG20.addEventListener('change', saveFormOptions);
 rulesetRadioWCAG21.addEventListener('change', saveFormOptions);
 rulesetRadioWCAG22.addEventListener('change', saveFormOptions);

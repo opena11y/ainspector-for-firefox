@@ -42,7 +42,15 @@
            aria-labelledby="tab-ruleset-options">
 
         <fieldset>
-          <legend id="options-ruleset-legend">Ruleset</legend>
+          <legend id="options-ruleset-legend">
+            Ruleset
+            <info-dialog
+              data-open-button-label="Ruleset Information"
+              data-more-button-label="More Ruleset Information"
+              data-more-info-url="https://opena11y.github.io/evaluation-library/rulesets.html">
+              <div slot="content"><info-rulesets></info-rulesets></div>
+            </info-dialog>
+           </legend>
 
           <label>
             <input type="radio" name="ruleset" value="WCAG22" id="options-ruleset-wcag22"/>
@@ -60,13 +68,21 @@
           </label>
 
           <label>
-            <input type="radio" name="ruleset" value="FILTER" id="options-ruleset-filter"/>
-            <span id="options-ruleset-filter-label">First Step rules</span>
+            <input type="radio" name="ruleset" value="FIRSTSTEP" id="options-ruleset-first-step"/>
+            <span id="options-ruleset-first-step-label">First Step Rules</span>
           </label>
         </fieldset>
 
-        <fieldset>
-          <legend id="options-ruleset-legend">WCAG Rule Levels</legend>
+        <fieldset id="options-levels-fieldset">
+          <legend id="options-levels-legend">
+            WCAG Rule Levels
+            <info-dialog
+              data-open-button-label="WCAG Level Information"
+              data-more-button-label="More Rule Scope Information"
+              data-more-info-url="https://www.w3.org/WAI/WCAG22/Understanding/conformance#levels">
+              <div slot="content"><info-wcag-levels></info-wcag-levels></div>
+            </info-dialog>
+          </legend>
 
           <label>
             <input type="radio" name="wcag-level" value="AA" id="options-ruleset-level-aa"/>
@@ -86,8 +102,16 @@
 
         </fieldset>
 
-        <fieldset>
-            <legend id="options-scope-legend">Rule Scope filter</legend>
+        <fieldset id="options-scope-fieldset">
+          <legend id="options-scope-legend">
+            Rule Scope filter
+            <info-dialog
+              data-open-button-label="Rule Scope Information"
+              data-more-button-label="More Rule Scope Information"
+              data-more-info-url="https://ainspector.disability.illinois.edu/concepts-and-terms/#scope">
+              <div slot="content"><info-scopes></info-scopes></div>
+            </info-dialog>
+          </legend>
 
           <label>
             <input type="radio" name="scope" value="ALL" checked id="options-scope-all"/>
