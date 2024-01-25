@@ -5,7 +5,7 @@
   },
 
   "extensionVersionName": {
-    "message": "3.0.0-beta",
+    "message": "3.0.0",
     "description": "Version of the extension"
   },
 
@@ -15,7 +15,7 @@
   },
 
   "extensionDescription": {
-    "message": "Analyze web pages for WCAG 2.1 level A and AA requirements using the OpenA11y evaluation library.",
+    "message": "Analyze web pages for WCAG 2.2 level A and AA requirements using the OpenA11y Evaluation Library 2.0.",
     "description": "Description of the extension"
   },
 
