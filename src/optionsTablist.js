@@ -1,5 +1,7 @@
 /* optionsTablist.js */
 
+const debug = false;
+
 class OptionsTablist {
   constructor () {
 
@@ -19,14 +21,14 @@ class OptionsTablist {
       if (id) {
         node = document.getElementById(id);
         if (node) {
-          console.log(`[id found]: ${id} ${node}`);
+          debug && console.log(`[id found]: ${id} ${node}`);
         }
         else {
-          console.log(`[id not found]: ${id}`);
+          debug && console.log(`[id not found]: ${id}`);
         }
       }
       else {
-        console.log(`[id]: none`);
+        debug && console.log(`[id]: none`);
       }
       this.tabpanels.push(node);
 
@@ -57,13 +59,13 @@ class OptionsTablist {
   }
 
   showTabpanel(showTab, focusFlag=true) {
-    console.log(`[showTabpanel]`);
+    debug && console.log(`[showTabpanel]`);
     for (let i = 0; i < this.tabs.length; i += 1) {
       const tab = this.tabs[i];
       const tabpanel = this.tabpanels[i];
 
-      console.log(`[showTabpanel][${i}][${tab === showTab}]`);
-      console.log(`[showTabpanel][${i}][${tabpanel.id}]`);
+      debug && console.log(`[showTabpanel][${i}][${tab === showTab}]`);
+      debug && console.log(`[showTabpanel][${i}][${tabpanel.id}]`);
 
       if (tab === showTab) {
         tabpanel.classList.remove('hide');
@@ -85,7 +87,7 @@ class OptionsTablist {
 
   handleTabClick(event) {
     const tgt = event.currentTarget;
-    console.log(`[handleTabClick]: ${tgt.id}`);
+    debug && console.log(`[handleTabClick]: ${tgt.id}`);
     this.showTabpanel(tgt, false);
     event.preventDefault();
     event.stopPropagation();

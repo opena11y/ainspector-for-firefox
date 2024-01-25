@@ -11948,10 +11948,10 @@
     rulesetLevelAA:  'Levels A and AA',
     rulesetLevelAAA: 'Levels A, AA and enhanced CCR',
 
-    rulesetFilter: 'First Step rules',
-    rulesetWCAG22: 'WCAG 2.2, ',
-    rulesetWCAG21: 'WCAG 2.1, ',
-    rulesetWCAG20: 'WCAG 2.0, ',
+    rulesetFirstStep: 'First Step Rules',
+    rulesetWCAG22:    'WCAG 2.2, ',
+    rulesetWCAG21:    'WCAG 2.1, ',
+    rulesetWCAG20:    'WCAG 2.0, ',
 
     scopeFilterElement: ', Element scope only',
     scopeFilterPage:    ', Page scope only',
@@ -21888,8 +21888,8 @@
 
       switch (rulesetId) {
 
-        case 'FILTER':
-          label = messages[locale].common.rulesetFilter;
+        case 'FIRSTSTEP':
+          label = messages[locale].common.rulesetFirstStep;
           break;
 
         case 'WCAG22':
@@ -32913,7 +32913,7 @@
 
   /* Constants */
   const debug$7 = new DebugLogging('EvaluationResult', false);
-  debug$7.flag = true;
+  debug$7.flag = false;
 
   /* helper functions */
 
@@ -33354,10 +33354,6 @@
 
     evaluateRuleList (startingDoc, title='', url='',  ruleList = []) {
 
-      debug$6.log(`[evaluateRuleList][startingDoc]: ${startingDoc}`);
-      debug$6.log(`[evaluateRuleList][      title]: ${title}`);
-      debug$6.log(`[evaluateRuleList][        url]: ${url}`);
-
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
       evaluationResult.runRuleListRules(ruleList);
 
@@ -33393,10 +33389,6 @@
 
     evaluateWCAG (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL') {
 
-      debug$6.log(`[evaluateWCAG][startingDoc]: ${startingDoc}`);
-      debug$6.log(`[evaluateWCAG][      title]: ${title}`);
-      debug$6.log(`[evaluateWCAG][        url]: ${url}`);
-
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
       evaluationResult.runWCAGRules(ruleset, level, scopeFilter);
 
@@ -33428,10 +33420,6 @@
      */
 
     evaluateFirstStepRules (startingDoc, title='', url='') {
-
-      debug$6.log(`[evaluateFirstStepRules][startingDoc]: ${startingDoc}`);
-      debug$6.log(`[evaluateFirstStepRules][      title]: ${title}`);
-      debug$6.log(`[evaluateFirstStepRules][        url]: ${url}`);
 
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
       evaluationResult.runFirstStepRules();
@@ -33534,6 +33522,7 @@
       ruleInfo.last_updated  = rule.last_updated;
 
       ruleInfo.rule_required    = rule.rule_required;
+      ruleInfo.first_step       = rule.first_step;
 
       ruleInfo.rule_scope       = rule.rule_scope;
       ruleInfo.rule_category    = getRuleCategoryInfo(rule.rule_category_id);
@@ -33810,14 +33799,13 @@
   *   (1) Run evlauation library;
   *   (2) return result object for the all rules view in the sidebar;
   */
-  function getAllRulesInfo (ruleset, level, scopeFilter, firstStepRules) {
+  function getAllRulesInfo (ruleset, level, scopeFilter) {
 
     debug$4.flag && debug$4.log(`[    ruleset]: ${ruleset}`);
     debug$4.flag && debug$4.log(`[      level]: ${level}`);
     debug$4.flag && debug$4.log(`[scopeFilter]: ${scopeFilter}`);
-    debug$4.flag && debug$4.log(`[ ruleFilter]: ${firstStepRules}`);
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
     const ruleGroupResult   = evaluationResult.getRuleResultsAll();
     const ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
     const ruleResults       = ruleGroupResult.getRuleResultsArray();
@@ -33853,11 +33841,11 @@
   *   (1) Run evlauation library;
   *   (2) return result objec for the group view in the sidebar;
   */
-  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter, firstStepRules) {
+  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter) {
 
     let info = {};
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter, firstStepRules);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
     const ruleGroupResult = (groupType === 'gl') ?
                             evaluationResult.getRuleResultsByGuideline(groupId) :
                             (groupType === 'rc') ? evaluationResult.getRuleResultsByCategory(groupId) :
@@ -34606,7 +34594,6 @@
       debug.log(`[getEvaluationInfo][        ruleset]: ${aiInfo.ruleset}`);
       debug.log(`[getEvaluationInfo][          level]: ${aiInfo.level}`);
       debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
-      debug.log(`[getEvaluationInfo][ firstStepRules]: ${aiInfo.firstStepRules} (${aiInfo.firstStepRules.length})` );
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
       debug.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
       debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
@@ -34627,13 +34614,13 @@
     switch(aiInfo.view) {
       case viewId.allRules:
         clearHighlights();
-        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter);
         ruleResult = false;
         break;
 
       case viewId.ruleGroup:
         clearHighlights();
-        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter);
         ruleResult = false;
         break;
 
@@ -34646,7 +34633,7 @@
             info.infoHighlight = true;
           }
         } else {
-          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter, aiInfo.firstStepRules);
+          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
           highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);

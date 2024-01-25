@@ -12,7 +12,6 @@ export const defaultOptions = {
   ruleset: 'WCAG21',
   level : 'AA',
   scopeFilter: 'ALL',
-  firstStepRules: [],  // Deprecated
   rerunDelayEnabled: true,
   rerunDelayValue: '5',
   resultsIncludePassNa: true,
