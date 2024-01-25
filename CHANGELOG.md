@@ -4,7 +4,7 @@
 
 | Version      |    Date     | Notes |
 |--------------|:-----------:|-----------------------------------------------------|
-| 3.0          |   1/xx/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
+| 3.0          |   1/25/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
 | 2.99.6       |   12/15/23  | Fixed bugs and add target size rules
 | 2.99.5       |   11/17/23  | Fixed bugs and add target size rules
 | 2.99.0       |   9/7/23    | Updated to OpenA11y Evaluation Library 2.0 and some UI features
