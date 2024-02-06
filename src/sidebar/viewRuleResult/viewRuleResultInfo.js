@@ -295,7 +295,8 @@ export default class ViewRuleResultInfo extends HTMLElement {
 
       case 'color':
       case 'background_color':
-        td = false;
+        td.appendChild(text);
+//      td = false;
         break;
 
       case 'font_weight':
