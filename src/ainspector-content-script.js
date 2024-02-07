@@ -29887,6 +29887,7 @@
           info.background_color_rgb   = cc.backgroundColor;
           info.background_color_hex   = '#' + cc.backgroundColorHex;
           info.background_transparent = cc.isTransparent;
+          info.is_positioned          = cc.isPositioned;
           info.font_family            = cc.fontFamily;
           info.font_size              = cc.fontSize;
           info.font_weight            = cc.fontWeight;
@@ -29894,7 +29895,6 @@
           info.background_image       = cc.backgroundImage;
           info.background_repeat      = cc.backgroundRepeat;
           info.background_position    = cc.backgroundPosition;
-          info.is_positioned          = cc.isPositioned;
         }
       }
       return info;
