@@ -28,6 +28,9 @@
 
 ## Version History
 
+### 3.01
+* Updated evaluation library to versino 2.0.2 with improved support of row role in table, grid and treegrid; and color contrast rule
+
 ### 3.00
 * Updated video and audio rules
 * Fixed some bugs in table rules
