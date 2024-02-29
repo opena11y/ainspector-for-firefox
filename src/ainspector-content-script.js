@@ -150,8 +150,7 @@
   /* Constants */
   const debug$17 = new DebugLogging('constants', false);
 
-  const VERSION = '2.0.beta3';
-
+  const VERSION = '2.0.3';
 
   /**
    * @constant RULESET
@@ -585,6 +584,7 @@
       this.RULE_CATEGORIES        = RULE_CATEGORIES;
       this.RULE_RESULT_VALUE      = RULE_RESULT_VALUE;
       this.RULE_SCOPE             = RULE_SCOPE;
+      this.VERSION                = VERSION;
       this.WCAG_GUIDELINE         = WCAG_GUIDELINE;
       this.WCAG_LEVEL             = WCAG_LEVEL;
       this.WCAG_PRINCIPLE         = WCAG_PRINCIPLE;
@@ -12313,6 +12313,7 @@
   /* Constants */
   const debug$14 = new DebugLogging('colorContrast', false);
   debug$14.flag = false;
+
   const defaultFontSize = 16;    // In pixels (px)
   const biggerFontSize  = 18.66; // In pixels (px)
   const largeFontSize   = 24;    // In pixels (px)
@@ -12346,9 +12347,6 @@
 
       return (0.2126 * R + 0.7152 * G + 0.0722 * B);
     }
-
-
-
 
   function computeCCR (hex1, hex2) {
       const L1 = getLuminance(hex1);
@@ -12401,8 +12399,13 @@
       this.isTransparent = this.isTransparent(this.backgroundColor);
 
       if (debug$14.flag) {
+
+        debug$14.log(`[               parent color]: ${parentColorContrast.color}`);
+        debug$14.log(`[    parent background color]: ${parentColorContrast.backgroundColor}`);
+
         debug$14.log(`[                      color]: ${this.color}`);
         debug$14.log(`[           background color]: ${this.backgroundColor}`);
+
         debug$14.log(`[                    opacity]: ${this.opacity}`);
         debug$14.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
         debug$14.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
@@ -20483,7 +20486,7 @@
           BASE_RESULT_MESSAGES: {
             ELEMENT_MC_1: 'Verify the image @alt@ text contains any text represented in the image.',
             ELEMENT_MC_2: 'Verify the @aria-label@ contains the same text associated the visually rendered label associated with the control.',
-            ELEMENT_MC_3: 'Verify the computed name of all the referenced content, contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_MC_3: 'Verify that the computed name of the referenced content includes any rendered text for the control.',
             ELEMENT_HIDDEN_1: 'The hidden control with an accessible name that includes image content was not tested.',
             ELEMENT_HIDDEN_2: 'The hidden control with an accessible name with @aria-label@ content was not tested.',
             ELEMENT_HIDDEN_3: 'The hidden control with an accessible name that includes references to hidden content was not tested.',
@@ -23889,9 +23892,9 @@
             HIDDEN_P:  '%N_H linkss with images, @aria-label@ and/or references were not tested because they are hidden from assistive technologies',
           },
           BASE_RESULT_MESSAGES: {
-            ELEMENT_MC_1: 'Verify the image @alt@ text contains any text represented in the image.',
-            ELEMENT_MC_2: 'Verify the @aria-label@ contains the same text associated the visually rendered label associated with the control.',
-            ELEMENT_MC_3: 'Verify the computed name of all the referenced content, contains the same text associated the visually rendered label associated with the control.',
+            ELEMENT_MC_1: 'Verify the @alt@ text of the image includes any text visually rendered by the image for use in the accessible name for the link.',
+            ELEMENT_MC_2: 'Verify the @aria-label@ contains the same text associated the visually rendered label associated with the link.',
+            ELEMENT_MC_3: 'Verify that the computed name of the referenced content includes the rendered text of the link.',
             ELEMENT_HIDDEN_1: 'The hidden control with an accessible name that includes image content was not tested.',
             ELEMENT_HIDDEN_2: 'The hidden control with an accessible name with @aria-label@ content was not tested.',
             ELEMENT_HIDDEN_3: 'The hidden control with an accessible name that includes references to hidden content was not tested.',
@@ -28778,6 +28781,7 @@
       this.resultsWarnings     = [];
       this.resultsManualChecks = [];
 
+      parentInfo.domElement = this.startingDomElement;
       this.transverseDOM(parentInfo, startingElement);
       this.computeAriaOwnsRefs();
       this.tableInfo.computeTableTypes();
@@ -32547,7 +32551,7 @@
       dom_cache.controlInfo.allControlElements.forEach( ce => {
         const de = ce.domElement;
 
-        if (ce.isInteractive) {
+        if (ce.isInteractive && !de.ariaInfo.isDPUBRole) {
           if (de.accName.includesAlt) {
             if (de.visibility.isVisibleToAT) {
               rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
@@ -35052,6 +35056,12 @@
         });
       } // end validation function
     },
+
+    /**
+     * @object LINK_4
+     *
+     * @desc Label in name for links
+     */
 
     { rule_id             : 'LINK_4',
       last_updated        : '2024-01-20',
@@ -39024,7 +39034,7 @@
     }
 
    /**
-     * @method evaluateRuleWCAG
+     * @method evaluateWCAG
      *
      * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
      *
