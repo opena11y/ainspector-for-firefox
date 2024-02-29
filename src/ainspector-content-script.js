@@ -150,8 +150,7 @@
   /* Constants */
   const debug$17 = new DebugLogging('constants', false);
 
-  const VERSION = '2.0.beta3';
-
+  const VERSION = '2.0.3';
 
   /**
    * @constant RULESET
@@ -585,6 +584,7 @@
       this.RULE_CATEGORIES        = RULE_CATEGORIES;
       this.RULE_RESULT_VALUE      = RULE_RESULT_VALUE;
       this.RULE_SCOPE             = RULE_SCOPE;
+      this.VERSION                = VERSION;
       this.WCAG_GUIDELINE         = WCAG_GUIDELINE;
       this.WCAG_LEVEL             = WCAG_LEVEL;
       this.WCAG_PRINCIPLE         = WCAG_PRINCIPLE;
@@ -12313,6 +12313,7 @@
   /* Constants */
   const debug$14 = new DebugLogging('colorContrast', false);
   debug$14.flag = false;
+
   const defaultFontSize = 16;    // In pixels (px)
   const biggerFontSize  = 18.66; // In pixels (px)
   const largeFontSize   = 24;    // In pixels (px)
@@ -12346,9 +12347,6 @@
 
       return (0.2126 * R + 0.7152 * G + 0.0722 * B);
     }
-
-
-
 
   function computeCCR (hex1, hex2) {
       const L1 = getLuminance(hex1);
@@ -12401,8 +12399,13 @@
       this.isTransparent = this.isTransparent(this.backgroundColor);
 
       if (debug$14.flag) {
+
+        debug$14.log(`[               parent color]: ${parentColorContrast.color}`);
+        debug$14.log(`[    parent background color]: ${parentColorContrast.backgroundColor}`);
+
         debug$14.log(`[                      color]: ${this.color}`);
         debug$14.log(`[           background color]: ${this.backgroundColor}`);
+
         debug$14.log(`[                    opacity]: ${this.opacity}`);
         debug$14.log(`[           Background Image]: ${this.backgroundImage} (${this.hasBackgroundImage})`);
         debug$14.log(`[ Family/Size/Weight/isLarge]: "${this.fontFamily}"/${this.fontSize}/${this.fontWeight}/${this.isLargeFont}`);
@@ -28778,6 +28781,7 @@
       this.resultsWarnings     = [];
       this.resultsManualChecks = [];
 
+      parentInfo.domElement = this.startingDomElement;
       this.transverseDOM(parentInfo, startingElement);
       this.computeAriaOwnsRefs();
       this.tableInfo.computeTableTypes();
@@ -39030,7 +39034,7 @@
     }
 
    /**
-     * @method evaluateRuleWCAG
+     * @method evaluateWCAG
      *
      * @desc Evaluate a document using the OpenA11y ruleset and return an evaluation object
      *

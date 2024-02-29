@@ -4,7 +4,7 @@
 
 | Version      |    Date     | Notes |
 |--------------|:-----------:|-----------------------------------------------------|
-| 3.0.2        |             | Updated evaluation library
+| 3.0.2        |   2/29/24   | Updated evaluation library
 | 3.0.1        |   2/7/24    | Updated evaluation library
 | 3.0          |   1/25/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
 | 2.99.6       |   12/15/23  | Fixed bugs and add target size rules
@@ -22,7 +22,7 @@
 | 0.96.0       |  10/30/19   | Fixes bug in highlight option not being remembered
 
 ### 3.02
-*
+* Includes fixed bug in color contrast calculation
 
 ### 3.01
 * Updated evaluation library to versino 2.0.2 with improved support of row role in table, grid and treegrid; and color contrast rule
