@@ -4,7 +4,7 @@
 
 | Version      |    Date     | Notes |
 |--------------|:-----------:|-----------------------------------------------------|
-| 3.0.3        |   3/4/24   | Updated evaluation library to version 2.0.4
+| 3.0.4        |   3/4/24   | Updated evaluation library to version 2.0.4
 | 3.0.2        |   2/29/24   | Updated evaluation library to version 2.0.3
 | 3.0.1        |   2/7/24    | Updated evaluation library
 | 3.0          |   1/25/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
@@ -23,7 +23,7 @@
 | 0.96.0       |  10/30/19   | Fixes bug in highlight option not being remembered
 
 =======
-### 3.03
+### 3.04
 * Evaluation library update fixes bug in widget rule for required parent roles
 
 ### 3.02
