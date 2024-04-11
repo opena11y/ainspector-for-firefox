@@ -23,6 +23,10 @@
 | 0.96.0       |  10/30/19   | Fixes bug in highlight option not being remembered
 
 =======
+
+### 3.05
+* Fixed bug with element result details showing another result for the same element
+
 ### 3.04
 * Evaluation library update fixes bug in widget rule for required parent roles
 
