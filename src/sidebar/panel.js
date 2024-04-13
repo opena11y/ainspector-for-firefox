@@ -112,7 +112,7 @@ var sidebarView      = viewId.allRules;  // default view when sidebar loads
 var sidebarGroupType = 'rc';  // options 'rc' or 'gl'
 var sidebarGroupId   = 1;  // numberical value
 var sidebarRuleId    = '';
-var sidebarElementPosition = 0;
+var sidebarResultId  = '';
 var sidebarHighlightOnly   = false;
 
 var pageTitle = '';
@@ -204,9 +204,10 @@ function onRerunEvaluation() {
   runContentScripts('onRerunEvaluation');
 }
 
-function onUpdateHighlight(position) {
+function onUpdateHighlight(resultId) {
+  console.log(`[onUpdateHighlight][resultId]: ${resultId}`);
   sidebarHighlightOnly = true;
-  sidebarElementPosition = position;
+  sidebarResultId = resultId;
   runContentScripts('onUpdateHighlight');
 }
 
@@ -713,9 +714,9 @@ function runContentScripts (callerfn) {
       contentCode += `  level: "${options.level}",`;
       contentCode += `  scopeFilter: "${options.scopeFilter}",`;
       contentCode += `  highlight: "${options.highlight}",`;
+      contentCode += `  resultId: "${sidebarResultId}",`;
       // note the following properties are number and boolean values
       contentCode += `  groupId: ${sidebarGroupId},`;
-      contentCode += `  position: ${sidebarElementPosition},`;
       contentCode += `  highlightOnly: ${sidebarHighlightOnly}`;
       contentCode += `};`;
 

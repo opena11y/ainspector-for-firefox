@@ -150,7 +150,7 @@
   /* Constants */
   const debug$17 = new DebugLogging('constants', false);
 
-  const VERSION = '2.0.4';
+  const VERSION = '2.0.5';
 
   /**
    * @constant RULESET
@@ -29476,40 +29476,37 @@
     /**
      * @getter isElementResult
      *
-     * @desc Returns true if the result type is element,
-     *       otherwise false
+     * @desc Returns false by default, override in ElementResult def
      *    
      * @return {Boolean} see @desc
      */
 
     get isElementResult () {
-      return this.result_type === RESULT_TYPE.ELEMENT;
+      return false;
     }
 
     /**
      * @getter isPageResult
      *
-     * @desc Returns true if the result type is page,
-     *       otherwise false
+     * @desc Returns false by default, override in PageResult def
      *
      * @return {Boolean} see @desc
      */
 
     get isPageResult () {
-      return this.result_type === RESULT_TYPE.PAGE;
+      return false;
     }
 
     /**
      * @getter isWebsiteResult
      *
-     * @desc Returns true if the result type is website,
-     *       otherwise false
+     * @desc Returns false by default, override in WebsiteResult def
      *
      * @return {Boolean} see @desc
      */
 
     get isWebsiteResult () {
-      return this.result_type === RESULT_TYPE.WEBSITE;
+      return false;
     }
 
     /**
@@ -29660,7 +29657,7 @@
    */
 
   class ElementResult extends BaseResult {
-    constructor (rule_result, result_value, domElement, message_id, message_arguments) {
+    constructor (rule_result, result_value, domElement, message_id, message_arguments, resultIndex) {
       super(rule_result,
             result_value,
             message_id,
@@ -29669,11 +29666,37 @@
 
       this.domElement = domElement;
       this.result_type    = RESULT_TYPE.ELEMENT;
+      this.resultId = 'er-' + resultIndex + '-' + this.domElement.ordinalPosition;
 
       if (debug$K.flag) {
         debug$K.log(`${this.result_value}: ${this.result_message}`);
       }
     }
+
+    /**
+     * @getter isElementResult
+     *
+     * @desc Returns true, overrides default value for BaseResult
+     *
+     * @return {Boolean} see @desc
+     */
+
+    get isElementResult () {
+      return true;
+    }
+
+    /**
+     * @method getResultId
+     *
+     * @desc A unique string ID for this element result that includes ordinal position information
+     *
+     * @return {String} see description
+     */
+
+    getResultId () {
+      return this.resultId;
+    }
+
     /**
      * @method getResultIdentifier
      *
@@ -30140,15 +30163,41 @@
    */
 
   class PageResult extends BaseResult {
-    constructor (rule_result, result_value, domCache, message_id, message_arguments) {
+    constructor (rule_result, result_value, domCache, message_id, message_arguments, resultIndex) {
       super(rule_result, result_value, message_id, message_arguments, 'page');
 
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.PAGE;
 
+      this.resultId = 'pr-' + resultIndex;
+
       if (debug$I.flag) {
         debug$I.log(`${this.result_value}: ${this.result_message}`);
       }
+    }
+
+    /**
+     * @getter isPageResult
+     *
+     * @desc Returns true, overrides default value for BaseResult
+     *
+     * @return {Boolean} see @desc
+     */
+
+    get isPageResult () {
+      return true;
+    }
+
+    /**
+     * @method getResultId
+     *
+     * @desc A unique string ID for this page result
+     *
+     * @return {String} see description
+     */
+
+    getResultId () {
+      return this.resultId;
     }
 
   }
@@ -30186,15 +30235,41 @@
    */
 
   class WebsiteResult extends BaseResult {
-    constructor (rule_result, result_value, domCache, message_id, message_arguments) {
+    constructor (rule_result, result_value, domCache, message_id, message_arguments, resultIndex) {
       super(rule_result, result_value, message_id, message_arguments, 'website');
 
       this.domCache     = domCache;
       this.result_type  = RESULT_TYPE.WEBSITE;
 
+      this.resultId = 'wr-' + resultIndex;
+
       if (debug$H.flag) {
         debug$H.log(`${this.result_value}: ${this.result_message}`);
       }
+    }
+
+    /**
+     * @getter isWebsiteResult
+     *
+     * @desc Returns true, overrides default value for BaseResult
+     *
+     * @return {Boolean} see @desc
+     */
+
+    get isWebsiteResult () {
+      return true;
+    }
+
+    /**
+     * @method getResultId
+     *
+     * @desc A unique string ID for this website result
+     *
+     * @return {String} see description
+     */
+
+    getResultId () {
+      return this.resultId;
     }
 
   }
@@ -30248,6 +30323,10 @@
       this.results_hidden         = [];
 
       this.results_summary = new ResultsSummary();
+
+      this.elemResultIndex = 0;
+      this.pageResultIndex = 0;
+      this.websiteResultIndex = 0;
     }
 
     /**
@@ -30579,8 +30658,8 @@
     addElementResult (test_result, dom_item, message_id, message_arguments) {
       const dom_element = dom_item.isDomText ? dom_item.parentDomElement : dom_item;
       const result_value = getResultValue(test_result, this.isRuleRequired());
-      const element_result = new ElementResult(this, result_value, dom_element, message_id, message_arguments);
-
+      const element_result = new ElementResult(this, result_value, dom_element, message_id, message_arguments, this.elemResultIndex);
+      this.elemResultIndex += 1;
       this.updateResults(result_value, element_result, dom_element);
     }
 
@@ -30597,7 +30676,8 @@
 
     addPageResult (test_result, dom_cache, message_id, message_arguments) {
       const result_value = getResultValue(test_result, this.isRuleRequired());
-      const page_result = new PageResult(this, result_value, dom_cache, message_id, message_arguments);
+      const page_result = new PageResult(this, result_value, dom_cache, message_id, message_arguments, this.pageResultIndex);
+      this.pageResultIndex += 1;
 
       this.updateResults(result_value, page_result, dom_cache);
     }
@@ -30615,7 +30695,8 @@
 
     addWebsiteResult (test_result, dom_cache, message_id, message_arguments) {
       const result_value = getResultValue(test_result, this.isRuleRequired());
-      const website_result = new WebsiteResult(this, result_value, dom_cache, message_id, message_arguments);
+      const website_result = new WebsiteResult(this, result_value, dom_cache, message_id, message_arguments, this.websiteResultIndex);
+      this.websiteResultIndex += 1;
 
       this.updateResults(result_value, website_result, dom_cache);
     }
@@ -39621,6 +39702,7 @@
 
 
       const item = {
+        'resultId'         : elementResult.getResultId(),
         'index'            : (index + 1).toString(),
         'tagName'          : elementResult.getTagName(),
         'id'               : elementResult.getId(),
@@ -39679,6 +39761,7 @@
       const result = allResults[i];
       if (!result.isElementResult) {
         return  {
+          'resultId'         : result.getResultId(),
           'otherName'        : result.getResultIdentifier(),
           'position'         : 0,
           'result'           : result.getResultValueNLS(),
@@ -39916,16 +39999,17 @@
    *
    *  @param  {Object}  allResuls  -  Array of results shown in the sidebar
    *  @param  {String}  option     -  Page highlighting option
-   *  @param  {String}  position   -  The ordinal position of the selected
-   *                                  element result
+   *  @param  {String}  resultId   -  Id of result object (e.g. elementResult,
+   *                                  pageResult, websitePage)
    */
 
-  function highlightResults (allResults, option, position) {
+  function highlightResults (allResults, option, resultId) {
+    console.log(`[highlightResults][resultId]: ${resultId}`);
     let count = 0;
     clearHighlights();
-    const pos = parseInt(position);
     allResults.forEach( r => {
       const resultValue = r.getResultValue();
+  //    console.log(`[${r.getNode().tagName}][${r.getResultValue()}]: ${r.getResultId()}`);
       if (r.isElementResult) {
         const node = r.getNode();
         // Use background colors from parent element for styling selected element
@@ -39935,7 +40019,7 @@
                    r.domElement.colorContrast;
 
         if (option === 'selected') {
-          if (r.getOrdinalPosition() === position) {
+          if (r.getResultId() === resultId) {
             highlightElement(node, resultValue);
             count += 1;
           }
@@ -39949,7 +40033,7 @@
             if ((option === 'vw') &&
                 ((resultValue === RESULT_VALUE.VIOLATION) ||
                  (resultValue === RESULT_VALUE.WARNING) ||
-                 (r.getOrdinalPosition() === pos))) {
+                 (r.getResultId() === resultId))) {
               highlightElement(node, resultValue);
               count += 1;
             }
@@ -39957,7 +40041,7 @@
         }
 
         // Highlight selected element
-        if (r.getOrdinalPosition() === pos) {
+        if (r.getResultId() === resultId) {
           // use the best contrast color for the outline of the selection
           const ccr1 = computeCCR(selectedColorDark, cc.backgroundColorHex);
           const ccr2 = computeCCR(selectedColorLight, cc.backgroundColorHex);
@@ -39970,35 +40054,31 @@
         }
       }
       else {
+        const highlightClass = r.isPageResult ? pageClass : websiteClass;
+
         if (r.isPageResult) {
-          if ((position === -1)) {
-            if (option !== 'none') {
-              highlightPage(resultValue, pageClass);
+          if (option === 'selected') {
+            if (r.getResultId() === resultId) {
+              highlightPage(resultValue, highlightClass);
+              highlightSelectedPage(selectedDark);
+              count += 1;
             }
-            highlightSelectedPage(selectedDark);
           }
           else {
-            if ((option === 'vw') &&
-                ((resultValue === RESULT_VALUE.VIOLATION) ||
-                 (resultValue === RESULT_VALUE.WARNING)) ||
-                (option === 'all')) {
-             highlightPage(resultValue, pageClass);
+            if (option === 'all') {
+              highlightPage(resultValue, highlightClass);
+              highlightSelectedPage(selectedDark);
+              count += 1;
             }
-          }
-        }
-        else {
-          if ((position === -1)) {
-            if (option !== 'none') {
-             highlightPage(resultValue, websiteClass);
-            }
-            highlightSelectedPage(selectedDark);
-          }
-          else {
-            if ((option === 'vw') &&
-                ((resultValue === RESULT_VALUE.VIOLATION) ||
-                 (resultValue === RESULT_VALUE.WARNING)) ||
-                (option === 'all')) {
-             highlightPage(resultValue, websiteClass);
+            else {
+              if ((option === 'vw') &&
+                  ((resultValue === RESULT_VALUE.VIOLATION) ||
+                   (resultValue === RESULT_VALUE.WARNING) ||
+                   (r.getResultId() === resultId))) {
+                highlightPage(resultValue, highlightClass);
+                highlightSelectedPage(selectedDark);
+                count += 1;
+              }
             }
           }
         }
@@ -40047,7 +40127,6 @@
     div.setAttribute(`${dataAttrSelected}`, style);
     document.body.appendChild(div);
     div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    console.log(style);
   }
 
   /*
@@ -40208,7 +40287,9 @@
   function clearHighlights () {
     const selector = `div.${highlightClass}`;
     const elements = document.querySelectorAll(selector);
+  //  console.log(`[clearHighlights]`);
     for (let i = 0; i < elements.length; i += 1) {
+  //    console.log(`[${elements[i].tagName}]: ${elements[i].className}`);
       document.body.removeChild(elements[i]);
     }
   }
@@ -40256,7 +40337,7 @@
       debug.log(`[getEvaluationInfo][          level]: ${aiInfo.level}`);
       debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
-      debug.log(`[getEvaluationInfo][       position]: ${aiInfo.position}`);
+      debug.log(`[getEvaluationInfo][       resultId]: ${aiInfo.resultId}`);
       debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
       debug.log(`[getEvaluationInfo][removeHighlight]: ${aiInfo.removeHighlight}`);
       debug.log(`[ainspectorSidebarRuleResult][ruleId]: ${(ruleResult && ruleResult.rule) ? ruleResult.rule.getId() : 'none'}`);
@@ -40290,14 +40371,14 @@
         clearHighlights();
         if (aiInfo.highlightOnly) {
           if (ruleResult && ruleResult.getAllResultsArray) {
-            highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
+            highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.resultId);
             info.infoHighlight = true;
           }
         } else {
           const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
-          highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.position);
+          highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.resultId);
         }
         break;
     }

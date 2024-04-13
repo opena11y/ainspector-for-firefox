@@ -114,10 +114,6 @@ export default class ViewRuleResult {
     return ['', 'H', 'P', 'MC', 'W', 'V'].indexOf(result);
   }
 
-  getRowId (position) {
-    return 'er-' + position;
-  }
-
   getResultAccessibleName (result) {
     let accName = msg.notApplicableLabel;
 
@@ -175,7 +171,8 @@ export default class ViewRuleResult {
           (options.resultsIncludePassNa ||
           (['', 'V', 'W', 'MC'].indexOf(or.result) > 0))) {
 
-          rowId = this.getRowId(or.otherName);
+//          rowId = this.getRowId(or.otherName);
+          rowId = or.resultId;
 
           // Save element result object
           this.elementResults[rowId] = or;
@@ -210,7 +207,8 @@ export default class ViewRuleResult {
         if (options.resultsIncludePassNa ||
             (['', 'V', 'W', 'MC'].indexOf(er.result) > 0)) {
 
-          rowId = this.getRowId(er.position);
+//          rowId = this.getRowId(er.position);
+          rowId = er.resultId;
 
           // convert JSON strings to objects
           if (er.accNameInfo) {
@@ -299,17 +297,18 @@ export default class ViewRuleResult {
     this.ruleResultInfo.clear(message1, message2);
   }
 
-  onRowSelectionCallback (id) {
-    if (id) {
-      this.ruleResultInfo.update(this.elementResults[id], this.ruleResult);
-      const position = parseInt(id.substring(3));
-      // if page or website result, send -1 instead of position
-      if (isNaN(position)) {
-        this.handleRowSelection(-1);
-      }
-      else {
-        this.handleRowSelection(position);
-      }
+  getPositionFromResultId(resultId) {
+    const parts = resultId.split('-');
+    if (parts.length === 3) {
+      return parseInt(parts[2]);
+    }
+    return '';
+  }
+
+  onRowSelectionCallback (resultId) {
+    if (resultId) {
+      this.ruleResultInfo.update(this.elementResults[resultId], this.ruleResult);
+      this.handleRowSelection(resultId);
     }
   }
 
