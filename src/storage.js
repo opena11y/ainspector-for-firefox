@@ -12,6 +12,7 @@ export const defaultOptions = {
   ruleset: 'WCAG21',
   level : 'AA',
   scopeFilter: 'ALL',
+  ariaVersion: 'ARIA12',
   rerunDelayEnabled: true,
   rerunDelayValue: '5',
   resultsIncludePassNa: true,

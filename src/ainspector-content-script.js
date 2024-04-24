@@ -985,6 +985,7 @@
 
       this.parentControlElement = parentControlElement;
       this.domElement = domElement;
+      domElement.controlElement = this;
       this.isGroup = domElement.role === 'group';
       this.isInputTypeText   = this.isInputType(node, 'date') ||
                                this.isInputType(node, 'number') ||
@@ -11891,11 +11892,12 @@
    * @param  {String}   defaultRole  - Default role of element if no role is defined
    * @param  {Object}   node         - dom element node
    * @param  {String}   ariaVersion  - Version of ARIA to use for roles, props and state info
+   *                                   (Values: "ARIA12" | "ARIA13")
    */
 
   class AriaInfo {
-    constructor (doc, hasRole, role, defaultRole, node, ariaVersion='1.2') {
-      if (ariaVersion === `1.3`) {
+    constructor (doc, hasRole, role, defaultRole, node, ariaVersion='ARIA12') {
+      if (ariaVersion === `ARIA13`) {
         propertyDataTypes = propertyDataTypes$1;
         designPatterns    = designPatterns$1;
       }
@@ -11935,7 +11937,8 @@
       }
 
       this.isValidRole  = typeof designPattern === 'object';
-      this.isDPUBRole = role.indexOf('doc-') >= 0;
+      this.isDPUBRole = role.includes('doc-');
+      this.isGraphicRole = role.includes('graphics-');
 
       this.isAbstractRole = false;
 
@@ -14159,7 +14162,7 @@
         anyRoleAllowed: true,
         id: 'sup'
       },
-      SVG: {
+      svg: {
         tagName: 'SVG',
         defaultRole: 'graphics-document',
         noRoleAllowed: false,
@@ -15650,6 +15653,7 @@
     includesAlt: false,
     includesAriaLabel: false,
     nameIsNotVisible: false,
+    cellHeaders: false
   };
 
   // These roles are based on the ARAI 1.2 specification
@@ -16053,7 +16057,7 @@
    */
 
   class DOMElement {
-    constructor (parentInfo, elementNode, ordinalPosition, ariaVersion='1.2') {
+    constructor (parentInfo, elementNode, ordinalPosition, ariaVersion='ARIA12') {
       const parentDomElement = parentInfo.domElement;
       const accNameDoc       = parentInfo.useParentDocForName ?
                                parentInfo.parentDocument :
@@ -16088,6 +16092,10 @@
       this.ariaInfo  = new AriaInfo(accNameDoc, this.hasRole, this.role, defaultRole, elementNode, ariaVersion);
       this.eventInfo = new EventInfo(elementNode);
 
+      this.tabIndex             = checkTabIndex(elementNode);
+      this.isTabStop            = checkIsTabStop(elementNode);
+      this.isInteractiveElement = checkForInteractiveElement(elementNode);
+
       this.accName        = getAccessibleName(accNameDoc, elementNode);
       this.accDescription = getAccessibleDesc(accNameDoc, elementNode, (this.accName.source !== 'title'));
       this.errMessage     = getErrMessage(accNameDoc, elementNode);
@@ -16104,9 +16112,6 @@
       this.hasContent = elementsWithContent.includes(this.tagName);
       this.mayHaveContent = elementsThatMayHaveContent.includes(this.tagName);
 
-      this.tabIndex             = checkTabIndex(elementNode);
-      this.isTabStop            = checkIsTabStop(elementNode);
-      this.isInteractiveElement = checkForInteractiveElement(elementNode);
 
       this.isLink      = this.role === 'link';
       this.isLandmark  = this.checkIsLandamrk();
@@ -16163,6 +16168,12 @@
 
       this.tableCell = null;
       this.tableElement = null;
+      this.ControlElement = null;
+
+      if (parentInfo.tableCell &&
+          this.isInteractiveElement) {
+        parentInfo.tableCell.interactiveDomElements.push(this);
+      }
 
     }
 
@@ -17528,6 +17539,7 @@
   /* common.js */
 
   const common = {
+    aria13: ' (ARIA 1.3)',
     level: ['undefined', 'AAA', 'AA', 'undefined', 'A'],
     baseResult: ['undefined','P','H','MC','W','V'],
     baseResultLong: ['undefined','Pass','Hidden','Manual Check','Warning','Violation'],
@@ -19678,6 +19690,8 @@
         RULE_RESULT_MESSAGES: {
           FAIL_S:   'Add a label to the form control element that is unlabelled.',
           FAIL_P:   'Add labels to the %N_F form control elements that are unlabelled.',
+          MANUAL_CHECK_S: 'Verify the visual rendering of the SVG content of the element with @role=button@ adapts to operating system and browser color and size settings.',
+          MANUAL_CHECK_P: 'Verify the visual rendering of the SVG content of the %N_MC elements with @role=button@ adapt to operating system and browser color and size settings.',
           NOT_APPLICABLE: 'No @input@, @select@, @textarea@, @progress@, @meter@ or @output@ elements on the page.',
           HIDDEN_S: 'One form control element that is hidden was not evaluated.',
           HIDDEN_P: '%N_H form control elements that are hidden were not evaluated.'
@@ -19685,6 +19699,7 @@
         BASE_RESULT_MESSAGES: {
           ELEMENT_PASS_1:   '@%1@ control has the label: "%2"',
           ELEMENT_FAIL_1:   'Add label to @%1@ control.',
+          ELEMENT_MC_1:     'Verify the table cell headers provide a descriptive label for the @%1@ control..',
           ELEMENT_HIDDEN_1: '@%1@ control was not tested because it is hidden from assistive technologies.'
         },
         PURPOSES: [
@@ -19692,10 +19707,11 @@
         ],
         TECHNIQUES: [
           'The preferred technique for labeling form controls is by reference: First, include an @id@ attribute on the form control to be labeled; then use the @label@ element with a @for@ attribute value that references the @id@ value of the control.',
-          '^NOTE:^ The alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
+          'NOTE: An alternative technique of using the @label@ element to encapsulate a the form control element does not fully support some assistve technologies, like speech input for activating the control.',
           'In special cases, the @aria-labelledby@ attribute can be used on the form control element to reference the id(s) of the elements on the page that describe its purpose.',
           'In special cases, the @aria-label@ attribute can be used on the form control element to provide an explicit text description of its purpose.',
-          'In special cases, the @title@ attribute on the form control element can be used to provide an explicit text description of its purpose.'
+          'In special cases, the @title@ attribute on the form control element can be used to provide an explicit text description of its purpose.',
+          'EXCEPTION: When form controls are in a @table@, @grid@ or @treegrid@ the row number and the header cells is a common practice to identify the purpose of the form control.  While this technique is widely used it has not been identified as a definitive way to meet WCAG labeling requirements.'
         ],
         MANUAL_CHECKS: [
           'Good labels are both concise and descriptive of the control elements purpose.',
@@ -20176,6 +20192,7 @@
           ELEMENT_FAIL_2: 'Change the accessible name of the @%1@ element, consider using @fieldset@ and @legend@ elements to provide grouping label or an ARIA technique to make the accessible name unique on the page.',
           ELEMENT_MC_1:   'Verify the accessible name of the @%1[role=%2]@ element accurately describes the action of the button, since it shares the same name as other buttons.',
           ELEMENT_MC_2:   'Verify the accessible name of the @%1@ element accurately describes the action of the button, since it shares the same name as other buttons',
+          ELEMENT_MC_3:   'Verify the cell headers of the cell containing the @%1@ element accurately describes the purpose of the control',
           ELEMENT_HIDDEN_1: '@%1[role=%2]@ control was not evaluated because it is hidden from assistive technologies.',
           ELEMENT_HIDDEN_2: '@%1@ control was not evaluated because it is hidden from assistive technologies.'
         },
@@ -20195,7 +20212,8 @@
           'For @input[type=image]@ the default label is defined using the @alt@ attribute.',
           'For @input[type=button]@ the default label is defined using the @value@ attribute.',
           'For the @button@ element, the child text content can be used to define its purpose.',
-          'For some ARIA widgets (e.g. @menuitem@, @tab@, @treeitem@), the child text content can be used to define its purpose.'
+          'For some ARIA widgets (e.g. @menuitem@, @tab@, @treeitem@), the child text content can be used to define its purpose.',
+          'EXCEPTION: When form controls are in a @table@, @grid@ or @treegrid@ the row number and the header cells is a common practice to identify the purpose of the form control.  While this technique is widely used it has not been identified as a definitive way to meet WCAG labeling requirements.'
         ],
         MANUAL_CHECKS: [
         ],
@@ -26541,6 +26559,7 @@
             ELEMENT_PASS_5:   '@%1@ is a valid ARIA role.',
             ELEMENT_FAIL_1:   '@%1@ is not a defined ARIA role, change the @role@ attribute value to an appropriate widget, landmark, section or live region role.',
             ELEMENT_FAIL_2:   '@%1@ is an abstract ARIA role, change the role attribute to a widget, landmark or live region role.',
+            ELEMENT_FAIL_3:   'The @%1@ role is a Graphic role associated with @svg@ elements, since these roles are not well supported use valid ARIA roles to identify the purpose of the graphic in the document.  Common ARIA roles used with @svg@ include @none@ and @img@.',
             ELEMENT_HIDDEN_1: '@role@ attribute value was not validated because the %1 element is hidden from assistive technologies and/or not visible on screen.'
           },
           PURPOSES: [
@@ -26565,6 +26584,10 @@
             { type: REFERENCES.SPECIFICATION,
               title: 'W3C Digital Publishing WAI-ARIA Module 1.1',
               url:   'https://www.w3.org/TR/dpub-aria-1.1/'
+            },
+            { type: REFERENCES.SPECIFICATION,
+              title: 'W3C WAI-ARIA Graphics Module (Working Draft)',
+              url:   'https://www.w3.org/TR/graphics-aria-1.0/'
             },
             { type: REFERENCES.WCAG_TECHNIQUE,
               title: 'G108: Using markup features to expose the name and role, allow user-settable properties to be directly set, and provide notification of changes',
@@ -27490,13 +27513,22 @@
    * @desc Retuns a localize string describing the options
    *       used in the evaluation
    *
-   * @param {String} rulesetId    - Used to identify the ruleset
-   * @param {String} level        - Used to identify the WCAG level
+   * @param {String} rulesetId      - Used to identify the ruleset
+   * @param {String} level          - Used to identify the WCAG level
+   * @param {String} ariaVersionId  - Used to identify the ARIA version
    *
    * @return {String}  see @desc
    */
 
-  function getRulesetLabel(rulesetId, level) {
+  function getRulesetLabel(rulesetId, level, ariaVersionId) {
+
+      function addAria () {
+        switch (ariaVersionId) {
+          case 'ARIA13':
+            return messages[locale].common.aria13;
+        }
+        return '';
+      }
 
       function addLevel () {
         switch (level) {
@@ -27517,19 +27549,19 @@
       switch (rulesetId) {
 
         case 'FIRSTSTEP':
-          label = messages[locale].common.rulesetFirstStep;
+          label = messages[locale].common.rulesetFirstStep + addAria();
           break;
 
         case 'WCAG22':
-          label = messages[locale].common.rulesetWCAG22 + addLevel();
+          label = messages[locale].common.rulesetWCAG22 + addLevel() + addAria();
           break;
 
         case 'WCAG21':
-          label = messages[locale].common.rulesetWCAG21 + addLevel();
+          label = messages[locale].common.rulesetWCAG21 + addLevel() + addAria();
           break;
 
         default:
-          label = messages[locale].common.rulesetWCAG20 + addLevel();
+          label = messages[locale].common.rulesetWCAG20 + addLevel() + addAria();
           break;
       }
 
@@ -28100,11 +28132,13 @@
         this.spannedDataCells += 1;
       }
 
-      return column;
+      return cell;
     }
 
-    updateColumnCount (col) {
-      this.colCount = Math.max(this.colCount, col);
+    updateColumnCount (endColumn) {
+      if (!isNaN(endColumn) && endColumn > 0) {
+        this.colCount = Math.max(this.colCount, endColumn-1);
+      }
     }
 
     getRow(rowNumber, domElement=null) {
@@ -28184,6 +28218,33 @@
               debug$Q.headerCalc && debug$Q.log(`${cell}`);
             }
           }
+          cell.interactiveDomElements.forEach( de => {
+            const isButtonOrLink = (de.role === 'button') || (de.role === 'link');
+
+            if (cell.headers.length) {
+              const accNameHeaders = {
+                name: cell.headers.join (' | ') + ` (row ${cell.startRow})`,
+                source: 'implied by cell headers',
+                includesAlt: false,
+                includesAriaLabel: false,
+                nameIsNotVisible: false,
+                cellHeaders: true
+              };
+
+              if (isButtonOrLink) {
+                if (!de.accDescription.name) {
+                  de.accDescription = accNameHeaders;
+                }
+              }
+              else {
+                if (!de.accName.name) {
+                  const ce = de.controlElement;
+                  de.accName = accNameHeaders;
+                  ce.nameForComparision = ce.getNameForComparison(de, ce.parentControlElement);
+                }
+              }
+            }
+          });
         });
       });
     }
@@ -28426,6 +28487,8 @@
 
       this.hasContent = (node.textContent.trim().length > 0) || (node.firstElementChild !== null);
 
+      this.interactiveDomElements = [];
+
     }
 
     get columnSpan () {
@@ -28474,6 +28537,7 @@
 
       let te = tableElement;
       let rg = rowGroup;
+      let tc = null;
 
       switch (domElement.tagName) {
 
@@ -28510,7 +28574,8 @@
         case 'th':
         case 'td':
           if (te) {
-            te.updateColumnCount(te.addCell(domElement));
+            tc = te.addCell(domElement);
+            te.updateColumnCount(tc.endColumn);
           }
           break;
 
@@ -28543,7 +28608,7 @@
             case 'cell':
             case 'gridcell':
               if (te) {
-                te.addCell(domElement);
+                tc = te.addCell(domElement);
               }
               break;
 
@@ -28551,7 +28616,7 @@
         break;
       }
 
-      return [te, rg];
+      return [te, rg, tc];
     }
 
     computeHeaders (domCache) {
@@ -28691,6 +28756,7 @@
       this.mediaElement    = null;
       this.tableElement    = null;
       this.tableRowGroup   = null;
+      this.tableCell       = null;
 
       this.inLink      = false;
       this.inParagraph = false;
@@ -28733,7 +28799,7 @@
    */
 
   class DOMCache {
-    constructor (startingDoc, startingElement, ariaVersion='1.2') {
+    constructor (startingDoc, startingElement, ariaVersion='ARIA12') {
       if (typeof startingElement !== 'object') {
         startingElement = startingDoc.body;
       }
@@ -28985,7 +29051,9 @@
       newParentInfo.listElement     = this.listInfo.update(listElement, domElement);
       newParentInfo.mediaElement    = this.mediaInfo.update(mediaElement, domElement);
       newParentInfo.landmarkElement = this.structureInfo.update(landmarkElement, domElement, documentIndex);
-      [newParentInfo.tableElement, newParentInfo.tableRowGroup] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
+      [newParentInfo.tableElement,
+       newParentInfo.tableRowGroup,
+       newParentInfo.tableCell] = this.tableInfo.update(tableElement, tableRowGroup, domElement);
 
       newParentInfo.inParagraph = domElement.tagName === 'p' ? true : parentInfo.inParagraph;
       newParentInfo.inDialog    = domElement.isInDialog;
@@ -29797,7 +29865,7 @@
           role += ' (in grid)';
         }
         if (this.domElement.ariaInfo.inTreegrid) {
-          role += ' (in treerid)';
+          role += ' (in treegrid)';
         }
       }
       return role;
@@ -31848,7 +31916,12 @@
           if (de.isLabelable) {
             if (de.visibility.isVisibleToAT) {
               if (de.accName.name) {
-                rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+                if (de.accName.cellHeaders) {
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.PASS, de, 'ELEMENT_PASS_1', [de.role, de.accName.name]);
+                }
               }
               else {
                 rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
@@ -32270,25 +32343,30 @@
               }
             });
             if (count === 0){
-              rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
+              if (de1.accName.cellHeaders) {
+                rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_3', [de1.elemName]);
+              }
+              else {
+                rule_result.addElementResult(TEST_RESULT.PASS, de1, 'ELEMENT_PASS_1', []);
+              }
             } 
             else {
-              // Since their ar often duplicate button on pages, when two or more buttons share the same
+              // Since their are often duplicate button on pages, when two or more buttons share the same
               // name it should be a manual check
               if (de1.role === 'button') {
                 if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.tagName, de1.role]);
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_1', [de1.elemName, de1.role]);
                 }
                 else {
-                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.tagName]);
+                  rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de1, 'ELEMENT_MC_2', [de1.elemName]);
                 }
               }
               else {
                 if (de1.hasRole) {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.tagName, de1.role]);
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_1', [de1.elemName, de1.role]);
                 }
                 else {
-                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.tagName]);
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de1, 'ELEMENT_FAIL_2', [de1.elemName]);
                 }
               }
             }
@@ -37363,14 +37441,19 @@
     validate            : function (dom_cache, rule_result) {
 
       dom_cache.allDomElements.forEach(de => {
-        if (de.hasRole) {
+        if (de.hasRole || de.role.includes('-')) {
           if (de.visibility.isVisibleToAT) {
             if (!de.ariaInfo.isValidRole) {
               if (de.ariaInfo.isDPUBRole) {
                 rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
               }
               else {
-                rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+                if (de.ariaInfo.isGraphicRole) {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_3', [de.role]);
+                }
+                else {
+                  rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', [de.role]);
+                }
               }
             }
             else {
@@ -38717,14 +38800,12 @@
    * @param  {String} title        - A title of the evaluation
    *                                 (typically the title of the document)
    * @param  {String} url          - The URL to the document
-   * @param  {String}  ariaVersion - Version of ARIA to use for roles,
-   *                                 props and state info
    *
    * @return see @desc
    */
 
   class EvaluationResult {
-    constructor (startingDoc, title, url, ariaVersion='1.2') {
+    constructor (startingDoc, title, url) {
 
       this.startingDoc = startingDoc;
       this.title       = title;
@@ -38732,7 +38813,7 @@
       this.ruleset     = '';
       this.level       = '';
       this.scopeFilter = '';
-      this.ariaVersion = ariaVersion;
+      this.ariaVersion = '1.2';
 
       this.date           = getFormattedDate();
       this.version        = VERSION;
@@ -38752,18 +38833,22 @@
      * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
      * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
+     * @param  {String}  ariaVersion - Version of ARIA used for validation rules
+     *                                 (values: 'ARIA12' | ARIA13")
      */
 
-    runWCAGRules (ruleset='WCAG21', level='AA', scopeFilter='ALL') {
+    runWCAGRules (ruleset='WCAG21', level='AA', scopeFilter='ALL', ariaVersion='AR!A12') {
 
       const startTime = new Date();
       debug$7.flag && debug$7.log(`[evaluateWCAG][    ruleset]: ${ruleset}`);
       debug$7.flag && debug$7.log(`[evaluateWCAG][      level]: ${level}`);
       debug$7.flag && debug$7.log(`[evaluateWCAG][scopeFilter]: ${scopeFilter}`);
+      debug$7.flag && debug$7.log(`[evaluateWCAG][ariaVersion]: ${ariaVersion}`);
 
       this.ruleset     = ruleset;
       this.level       = level;
       this.scopeFilter = scopeFilter;
+      this.ariaVersion = ariaVersion;
 
       const domCache      = new DOMCache(this.startingDoc, this.startingDoc.body, this.ariaVersion);
       this.allDomElements = domCache.allDomElements;
@@ -38796,13 +38881,14 @@
      * @param  {Array}   ruleList  - Array of rule IDs to include in the evaluation
      */
 
-    runRuleListRules (ruleList) {
+    runRuleListRules (ruleList, ariaVersion='AR!A12') {
       const startTime = new Date();
       debug$7.flag && debug$7.log(`[evaluateRuleList][ruleList]: ${ruleList}`);
 
       this.ruleset     = 'RULELIST';
+      this.ariaVersion = ariaVersion;
 
-      const domCache      = new DOMCache(this.startingDoc);
+      const domCache      = new DOMCache(this.startingDoc, ariaVersion);
       this.allDomElements = domCache.allDomElements;
       this.allRuleResults = [];
 
@@ -38826,12 +38912,13 @@
      * @desc Updates rule results array with results first step rules
      */
 
-    runFirstStepRules () {
+    runFirstStepRules (ariaVersion='AR!A12') {
       const startTime = new Date();
 
       this.ruleset     = 'FIRSTSTEP';
+      this.ariaVersion = ariaVersion;
 
-      const domCache      = new DOMCache(this.startingDoc);
+      const domCache      = new DOMCache(this.startingDoc, ariaVersion);
       this.allDomElements = domCache.allDomElements;
       this.allRuleResults = [];
 
@@ -39092,12 +39179,14 @@
      * @param  {String}  title       - Title of document being analyzed
      * @param  {String}  url         - URL of document being analyzed
      * @param  {Array}   ruleList    - Array of rule id to include in the evaluation
+     * @param  {String}  ariaVersion - Version of ARIA used for validation rules
+     *                                 Values: 'ARIA12' | 'ARIA13'
      */
 
-    evaluateRuleList (startingDoc, title='', url='',  ruleList = []) {
+    evaluateRuleList (startingDoc, title='', url='',  ruleList = [], ariaVersion='ARIA12') {
 
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
-      evaluationResult.runRuleListRules(ruleList);
+      evaluationResult.runRuleListRules(ruleList, ariaVersion);
 
       // Debug features
       if (debug$6.flag) {
@@ -39127,12 +39216,14 @@
      * @param  {String}  ruleset     - Set of rules to evaluate (values: A" | "AA" | "AAA")
      * @param  {String}  level       - WCAG Level (values: 'A', 'AA', 'AAA')
      * @param  {String}  scopeFilter - Filter rules by scope (values: "ALL" | "PAGE" | "WEBSITE")
-     */
+     * @param  {String}  ariaVersion - Version of ARIA used for validation rules
+     *                                 Values: 'ARIA12' | 'ARIA13'
+    */
 
-    evaluateWCAG (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL') {
+    evaluateWCAG (startingDoc, title='', url='', ruleset='WCAG22', level='AAA', scopeFilter='ALL', ariaVersion) {
 
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
-      evaluationResult.runWCAGRules(ruleset, level, scopeFilter);
+      evaluationResult.runWCAGRules(ruleset, level, scopeFilter, ariaVersion);
 
       // Debug features
       if (debug$6.flag) {
@@ -39159,12 +39250,14 @@
      * @param  {Object}  startingDoc - Browser document object model (DOM) to be evaluated
      * @param  {String}  title       - Title of document being analyzed
      * @param  {String}  url         - url of document being analyzed
-     */
+     * @param  {String}  ariaVersion - Version of ARIA used for validation rules
+     *                                 Values: 'ARIA12' | 'ARIA13'
+    */
 
-    evaluateFirstStepRules (startingDoc, title='', url='') {
+    evaluateFirstStepRules (startingDoc, title='', url='', ariaVersion) {
 
       const evaluationResult = new EvaluationResult(startingDoc, title, url);
-      evaluationResult.runFirstStepRules();
+      evaluationResult.runFirstStepRules(ariaVersion);
 
       // Debug features
       if (debug$6.flag) {
@@ -39303,13 +39396,13 @@
   debug$5.flag = false;
 
 
-  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ruleList=[]) {
+  function evaluate (ruleset="WCAG21", level="AA", scopeFilter="ALL", ariaVersion="ARIA12") {
 
     if (debug$5.flag) {
       debug$5.log(`[eveluate][    ruleset]: ${ruleset}`);
       debug$5.log(`[eveluate][      level]: ${level}`);
       debug$5.log(`[evaluate][scopeFilter]: ${scopeFilter}`);
-      debug$5.log(`[evaluate][ ruleFilter]: ${ruleList}`);
+      debug$5.log(`[evaluate][ariaVersion]: ${ariaVersion}`);
     }
 
     // evaluation script
@@ -39322,15 +39415,11 @@
       case 'WCAG20':
       case 'WCAG21':
       case 'WCAG22':
-        evaluationResult = evaluationLibrary.evaluateWCAG(doc, doc.title, doc.location.href, ruleset, level, scopeFilter);
-        break;
-
-      case 'LIST':
-        evaluationResult = evaluationLibrary.evaluateRuleList(doc, doc.title, doc.location.href, ruleList);
+        evaluationResult = evaluationLibrary.evaluateWCAG(doc, doc.title, doc.location.href, ruleset, level, scopeFilter, ariaVersion);
         break;
 
       case 'FIRSTSTEP':
-        evaluationResult = evaluationLibrary.evaluateFirstStepRules(doc, doc.title, doc.location.href);
+        evaluationResult = evaluationLibrary.evaluateFirstStepRules(doc, doc.title, doc.location.href, ariaVersion);
         break;
 
     }
@@ -39541,13 +39630,13 @@
   *   (1) Run evlauation library;
   *   (2) return result object for the all rules view in the sidebar;
   */
-  function getAllRulesInfo (ruleset, level, scopeFilter) {
+  function getAllRulesInfo (ruleset, level, scopeFilter, ariaVersion) {
 
     debug$4.flag && debug$4.log(`[    ruleset]: ${ruleset}`);
     debug$4.flag && debug$4.log(`[      level]: ${level}`);
     debug$4.flag && debug$4.log(`[scopeFilter]: ${scopeFilter}`);
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter, ariaVersion);
     const ruleGroupResult   = evaluationResult.getRuleResultsAll();
     const ruleSummaryResult = ruleGroupResult.getRuleResultsSummary();
     const ruleResults       = ruleGroupResult.getRuleResultsArray();
@@ -39583,11 +39672,11 @@
   *   (1) Run evlauation library;
   *   (2) return result objec for the group view in the sidebar;
   */
-  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter) {
+  function getRuleGroupInfo (groupType, groupId, ruleset, level, scopeFilter, ariaVersion) {
 
     let info = {};
 
-    const evaluationResult  = evaluate(ruleset, level, scopeFilter);
+    const evaluationResult  = evaluate(ruleset, level, scopeFilter, ariaVersion);
     const ruleGroupResult = (groupType === 'gl') ?
                             evaluationResult.getRuleResultsByGuideline(groupId) :
                             (groupType === 'rc') ? evaluationResult.getRuleResultsByCategory(groupId) :
@@ -40004,7 +40093,6 @@
    */
 
   function highlightResults (allResults, option, resultId) {
-    console.log(`[highlightResults][resultId]: ${resultId}`);
     let count = 0;
     clearHighlights();
     allResults.forEach( r => {
@@ -40336,6 +40424,7 @@
       debug.log(`[getEvaluationInfo][        ruleset]: ${aiInfo.ruleset}`);
       debug.log(`[getEvaluationInfo][          level]: ${aiInfo.level}`);
       debug.log(`[getEvaluationInfo][    scopeFilter]: ${aiInfo.scopeFilter}`);
+      debug.log(`[getEvaluationInfo][    ariaVersion]: ${aiInfo.ariaVersion}`);
       debug.log(`[getEvaluationInfo][      highlight]: ${aiInfo.highlight}`);
       debug.log(`[getEvaluationInfo][       resultId]: ${aiInfo.resultId}`);
       debug.log(`[getEvaluationInfo][  highlightOnly]: ${aiInfo.highlightOnly}`);
@@ -40351,18 +40440,18 @@
     info.ruleset     = aiInfo.ruleset;
     info.level       = aiInfo.level;
     info.scopeFilter = aiInfo.scopeFilter;
-    info.evaluationLabel = getRulesetLabel(aiInfo.ruleset, aiInfo.level);
+    info.evaluationLabel = getRulesetLabel(aiInfo.ruleset, aiInfo.level, aiInfo.ariaVersion);
 
     switch(aiInfo.view) {
       case viewId.allRules:
         clearHighlights();
-        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter);
+        info.infoAllRules = getAllRulesInfo(aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.ariaVersion);
         ruleResult = false;
         break;
 
       case viewId.ruleGroup:
         clearHighlights();
-        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter);
+        info.infoRuleGroup = getRuleGroupInfo(aiInfo.groupType, aiInfo.groupId, aiInfo.ruleset, info.level, aiInfo.scopeFilter, aiInfo.ariaVersion);
         ruleResult = false;
         break;
 
@@ -40375,7 +40464,7 @@
             info.infoHighlight = true;
           }
         } else {
-          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter);
+          const evaluationResult  = evaluate(aiInfo.ruleset, aiInfo.level, aiInfo.scopeFilter, aiInfo.ariaVersion);
           ruleResult = evaluationResult.getRuleResult(aiInfo.ruleId);
           info.infoRuleResult = getRuleResultInfo(ruleResult);
           highlightResults(ruleResult.getAllResultsArray(), aiInfo.highlight, aiInfo.resultId);

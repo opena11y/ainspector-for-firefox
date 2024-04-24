@@ -16,6 +16,9 @@ customElements.define('info-wcag-levels', InfoWCAGLevels);
 import InfoScopes from './info-dialog/infoScopes.js';
 customElements.define('info-scopes', InfoScopes);
 
+import InfoAriaVersions from './info-dialog/infoAriaVersions.js';
+customElements.define('info-aria-versions', InfoAriaVersions);
+
 
 // Get message strings from locale-specific messages.json file
 const getMessage = browser.i18n.getMessage;
@@ -80,6 +83,10 @@ const rulesetScopeFieldset  = document.querySelector('#options-scope-fieldset');
 const rulesetScopeAll       = document.querySelector('#options-scope-all');
 const rulesetScopePage      = document.querySelector('#options-scope-page');
 const rulesetScopeWebsite   = document.querySelector('#options-scope-website');
+
+const ariaVersionFieldset  = document.querySelector('#options-aria-versions');
+const aria12               = document.querySelector('#options-aria12');
+const aria13               = document.querySelector('#options-aria13');
 
 const exportPrompt     = document.querySelector('#options-export-prompt');
 const exportCSV        = document.querySelector('#options-export-csv');
@@ -224,6 +231,17 @@ function saveFormOptions (e) {
     scopeFilter = rulesetScopeWebsite.value;
   }
 
+  let ariaVersion = 'ARIA12';
+
+  if (aria12.checked) {
+    ariaVersion = 'ARIA12';
+  }
+
+  if (aria13.checked) {
+    ariaVersion = 'ARIA13';
+  }
+
+
   const options = {
   //  rulesetId: (rulesetStrict.checked ? 'ARIA_STRICT' : 'ARIA_TRANS'),
     viewsMenuIncludeGuidelines: inclWcagGl.checked,
@@ -233,6 +251,7 @@ function saveFormOptions (e) {
     ruleset: ruleset,
     level: level,
     scopeFilter: scopeFilter,
+    ariaVersion: ariaVersion,
     exportFormat: (exportCSV.checked ? 'CSV' : 'JSON'),
     filenamePrefix: validatePrefix(exportPrefix.value),
     includeDate:    exportDate.checked,
@@ -279,6 +298,9 @@ function updateForm (options) {
   rulesetScopeAll.checked     = options.scopeFilter === rulesetScopeAll.value;
   rulesetScopePage.checked    = options.scopeFilter === rulesetScopePage.value;
   rulesetScopeWebsite.checked = options.scopeFilter === rulesetScopeWebsite.value;
+
+  aria12.checked = options.ariaVersion === aria12.value;
+  aria13.checked = options.ariaVersion === aria13.value;
 
   exportPrompt.checked   = options.promptForExportOptions;
   exportCSV.checked      = options.exportFormat === 'CSV';
@@ -417,6 +439,9 @@ rulesetCheckboxColorEnhanced.addEventListener('change', saveFormOptions);
 rulesetScopeAll.addEventListener('change', saveFormOptions);
 rulesetScopePage.addEventListener('change', saveFormOptions);
 rulesetScopeWebsite.addEventListener('change', saveFormOptions);
+
+aria12.addEventListener('change', saveFormOptions);
+aria13.addEventListener('change', saveFormOptions);
 
 exportPrompt.addEventListener('change', saveFormOptions);
 exportCSV.addEventListener('change', saveFormOptions);

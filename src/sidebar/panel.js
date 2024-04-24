@@ -713,6 +713,7 @@ function runContentScripts (callerfn) {
       contentCode += `  ruleset: "${options.ruleset}",`;
       contentCode += `  level: "${options.level}",`;
       contentCode += `  scopeFilter: "${options.scopeFilter}",`;
+      contentCode += `  ariaVersion: "${options.ariaVersion}",`;
       contentCode += `  highlight: "${options.highlight}",`;
       contentCode += `  resultId: "${sidebarResultId}",`;
       // note the following properties are number and boolean values

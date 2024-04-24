@@ -129,6 +129,30 @@
             <span id="options-scope-website-label">Website scope rules only</span>
           </label>
         </fieldset>
+
+
+        <fieldset id="options-aria-versions">
+          <legend id="options-aria-versions-legend">
+            ARIA Version
+            <info-dialog
+              data-open-button-label="ARIA Version Information"
+              data-more-button-label="More ARIA Version Information"
+              data-more-info-url="https://ainspector.disability.illinois.edu/concepts-and-terms/#aria">
+              <div slot="content"><info-aria-versions></info-aria-versions></div>
+            </info-dialog>
+          </legend>
+
+          <label>
+            <input type="radio" name="aria" value="ARIA12" checked id="options-aria12"/>
+            <span id="options-aria12-label">ARIA 1.2 (Current Standard)</span>
+          </label>
+
+          <label>
+            <input type="radio" name="aria" value="ARIA13" id="options-aria13"/>
+            <span id="options-aria13-label">ARIA 1.3 (Working Draft)</span>
+          </label>
+        </fieldset>
+
       </div>
 
       <div class="tabpanel"
