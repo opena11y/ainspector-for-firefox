@@ -16161,8 +16161,8 @@
       // A name that can be used in rule results to identify the element
       this.elemName = this.tagName;
       this.elemName += elementNode.type ? `[type=${elementNode.type}]` : '';
-      this.elemName += this.id ? `#${this.id}` : '';
       this.elemName += this.hasRole ? `[role=${this.role}]` : '';
+      this.elemName += this.id ? `#${this.id}` : '';
 
       // Potential references to other cache objects
 
@@ -16809,6 +16809,7 @@
 
     isImage (domElement) {
       return (domElement.role === 'img') ||
+             (domElement.role === 'image') || // Support in ARIA 1.3
              (domElement.tagName === 'img');
     }
 
@@ -21359,10 +21360,8 @@
         NOT_APPLICABLE: 'No @img@ elements or elements with @[role="img"]@ on this page.'
       },
       BASE_RESULT_MESSAGES: {
-        ELEMENT_MC_1: 'Verify that the @img@ element is used only for decorative, spacing or styling purposes.',
-        ELEMENT_MC_2: 'Verify that the @%1[role=img]@ element is used only for decorative, spacing or styling purposes.',
-        ELEMENT_HIDDEN_1: '@img@ element was not evaluated because it is hidden from assistive technologies.',
-        ELEMENT_HIDDEN_2: '@%1[role=img]@ element was not evaluated because it is hidden from assistive technologies.'
+        ELEMENT_MC_1: 'Verify that the @%1@ element is used only for decorative, spacing or styling purposes.',
+        ELEMENT_HIDDEN_1: '@%1@ element was not evaluated because it is hidden from assistive technologies.',
       },
       PURPOSES: [
         'If an image is used purely for stylistic or decorative purposes, users of screen readers do not need to know that the image exists and no alternative is needed.',
@@ -21541,53 +21540,48 @@
     },
     IMAGE_8: {
       ID:         'Image 8',
-      DEFINITION: 'When an image is used to represent stylized text, replace the image with text content and use CSS to style text.',
-      SUMMARY:    'Images of text',
-      TARGET_RESOURCES_DESC: '@img@ and [role="img"]',
+      DEFINITION: '@svg@ element must define an appropriate ARIA role that describes it\'s purpose.',
+      SUMMARY:    'Add role to @svg@ element',
+      TARGET_RESOURCES_DESC: '@svg@',
       RULE_RESULT_MESSAGES: {
-        MANUAL_CHECK_S:   'If the image is used to stylize text, replace the image with text content styled with CSS.',
-        MANUAL_CHECK_P:   'If any of the %N_MC images are used to stylize text, replace the image with text content styled with CSS.',
-        HIDDEN_S: 'One image element with an accessible name was not evaluated.',
-        HIDDEN_P: '%N_H image elements with accessible names that are hidden were not evaluated.',
-        NOT_APPLICABLE: 'No @img@, @area@ or @[role="img"]@ elements found on this page.'
+        MANUAL_CHECK_S:   'Verify the ARIA role for the @svg@ element accurately identifies the purpose.',
+        MANUAL_CHECK_P:   'Verify the ARIA role for each of the %N_F @svg@ elements with a defined role accurately identifies their purpose.',
+        FAIL_S:   'An @svg@ element does not have a defined role attribute.',
+        FAIL_P:   'An %N_MC @svg@ elements do not have a defined role attribute.',
+        HIDDEN_S: 'The @svg@ element was not evaluated because it is hidden from assistive technologies.',
+        HIDDEN_P: 'The %N_H @svg@ elements were not evaluated because they are hidden from assistive technologies.',
       },
       BASE_RESULT_MESSAGES: {
-        ELEMENT_MC_1: 'If the image is used to represent stylized text, replace the image with text and use CSS to style text.',
-        ELEMENT_HIDDEN_1: '@%1@ element was not evaluated because it is hidden from assistive technologies.'
+        ELEMENT_FAIL_1: 'Add an appropriate ARIA role to the @svg@ element, most often @img@ for descriptive images or @none@ if the image is decorative images, other roles should be used if more appropriate for the svg content.',
+        ELEMENT_MC_1:   'Verify @%1@ role the @svg@ element has the @%1@ role.',
+        ELEMENT_HIDDEN_1: '@svg@ element was not evaluated because it is hidden from assistive technologies.'
       },
       PURPOSES: [
-        'To enable people with visual impairments who require a particular visual presentation of text to be able to adjust the text presentation as needed.',
-        'Adjustments include the use of a particular font size, foreground and background color, font family, line spacing or alignment.'
+        'An @svg@ element has the default role of @graphics-document@. The @graphics-*@ roles are not well implemented in browsers or assistive technologies at this time, so the role needs to be overrided by the author with a role that appropriately identifies the purpose of the @svg@ element.'
       ],
       TECHNIQUES: [
-        'Replace the image of text with text content that is styled using Cascading Style Sheets (CSS).'
+        'Add @role="img"@ attribute if the @svg@ element is a descriptive image (most likely).  When the @img@ role is used the svg @title@ element can be used to provide a text equivalent.',
+        'Add @role="none"@ attribute if the @svg@ element is a decorative image.',
+        'Add an appropriate ARIA role if the @svg@ is interactive or can be represented by some other document role.  For example a @table@ roles if the svg content represents tabular data.'
       ],
       MANUAL_CHECKS: [
       ],
       INFORMATIONAL_LINKS: [
         {type:  REFERENCES.SPECIFICATION,
-          title: 'W3C Understanding Images of Text',
-          url:   'https://www.w3.org/WAI/WCAG22/Understanding/images-of-text.html'
+          title: 'Scalable Vector Graphics (SVG) 2',
+          url:   'https://www.w3.org/TR/SVG/'
         },
         {type:  REFERENCES.SPECIFICATION,
-          title: 'W3C CSS Snapshot',
-          url:   'https://www.w3.org/TR/css/'
+          title: 'SVG Accessibility API Mappings',
+          url:   'https://www.w3.org/TR/svg-aam-1.0/'
         },
         {type:  REFERENCES.REFERENCE,
-          title: 'MDN Cascading Style Sheets',
-          url:   'https://developer.mozilla.org/en-US/docs/Web/CSS'
+          title: 'deque: Creating Accessible SVGs',
+          url:   'https://www.deque.com/blog/creating-accessible-svgs/'
         },
         {type:  REFERENCES.REFERENCE,
-          title: '22: Using CSS to control visual presentation of text',
-          url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C22'
-        },
-        {type:  REFERENCES.REFERENCE,
-          title: 'C30: Using CSS to replace text with images of text and providing user interface controls to switch',
-          url:   'https://www.w3.org/WAI/WCAG22/Techniques/css/C30'
-        },
-        {type:  REFERENCES.REFERENCE,
-          title: 'G140: Separating information and structure from presentation to enable different presentations',
-          url:   'https://www.w3.org/WAI/WCAG22/Techniques/general/G140'
+          title: 'A11Y-101: Accessible SVGs',
+          url:   'https://a11y-101.com/development/svg'
         }
       ]
     }
@@ -33496,20 +33490,10 @@
         const de = ie.domElement;
         if (de.visibility.isVisibleToAT) {
           if (de.accName.name.length === 0) {
-            if (de.tagName === 'img') {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', []);          
-            }
-            else {
-              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_2', [de.tagName]);          
-            }
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.elemName]);
           }
         } else {
-          if (de.tagName === 'img') {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', []);
-          }
-          else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_2', [de.tagName]);
-          }
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.elemName]);
         }
       });
     } // end validation function
@@ -33534,7 +33518,9 @@
         const de   = ie.domElement;
         const accName = de.accName;
         const accDesc = de.accDescription;
-        if (accName.name.length > 0) {
+        if ((accName.name.length > 0) &&
+            ((de.role !== 'none') && (de.role !== 'presentation'))) {
+
           if (de.visibility.isVisibleToAT) {
             if (accDesc.name.length) {
              rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [accDesc.source]);                    
@@ -33600,26 +33586,29 @@
    */
 
   { rule_id             : 'IMAGE_8',
-    last_updated        : '2023-10-17',
+    last_updated        : '2024-04-20',
     rule_scope          : RULE_SCOPE.ELEMENT,
     rule_category       : RULE_CATEGORIES.IMAGES,
     rule_required       : true,
     first_step          : false,
-    wcag_primary_id     : '1.4.5',
-    wcag_related_ids    : [],
-    target_resources    : ['img', 'area', '[role="img"]'],
+    wcag_primary_id     : '4.1.2',
+    wcag_related_ids    : ['1.1.1'],
+    target_resources    : ['svg'],
     validate            : function (dom_cache, rule_result) {
-      dom_cache.imageInfo.allImageElements.forEach(ie => {
-        const de = ie.domElement;
-        if (de.accName.name.length) {
-          if (de.visibility.isVisibleToAT) {
-            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.tagName, de.accName.source]);
-            }
+
+      dom_cache.imageInfo.allSVGDomElements.forEach( de => {
+        if (de.visibility.isVisibleToAT) {
+          if (de.hasRole) {
+            rule_result.addElementResult(TEST_RESULT.MANUAL_CHECK, de, 'ELEMENT_MC_1', [de.role]);
+          }
           else {
-            rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+            rule_result.addElementResult(TEST_RESULT.FAIL, de, 'ELEMENT_FAIL_1', []);
           }
         }
-      });
+        else {
+          rule_result.addElementResult(TEST_RESULT.HIDDEN, de, 'ELEMENT_HIDDEN_1', [de.tagName]);
+        }
+    });
     } // end validation function
   },
   ];
