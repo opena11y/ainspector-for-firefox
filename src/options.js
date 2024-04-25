@@ -55,9 +55,6 @@ const msg = {
   shortcutsNote                : getMessage('shortcutsNotes'),
   shortcutsTableAction         : getMessage('shortcutsTableAction'),
   shortcutsTableShortcut       : getMessage('shortcutsTableShortcut')
-//  optionsRulesetLegend         : getMessage('optionsRulesetLegend'),
-//  optionsRulesetStrictLabel    : getMessage('optionsRulesetStrictLabel'),
-//  optionsRulesetTransLabel     : getMessage('optionsRulesetTransLabel')
 };
 
 const debug = false;

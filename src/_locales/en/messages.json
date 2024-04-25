@@ -15,7 +15,7 @@
   },
 
   "extensionDescription": {
-    "message": "Analyze web pages for WCAG 2.2 level A and AA requirements using the OpenA11y Evaluation Library 2.0.",
+    "message": "Analyze web pages for WCAG 2.1 level A and AA requirements using the OpenA11y Evaluation Library 2.0.",
     "description": "Description of the extension"
   },
 
@@ -650,146 +650,6 @@
     "description": "Label for Concepts and Terms button in a dialog box"
   },
 
-  "optionsTitle": {
-    "message": "General",
-    "description": "Title for the options page"
-  },
-
-  "optionsViewsMenuLegend": {
-    "message": "Views menu",
-    "description": "Legend for view menu in the options page"
-  },
-
-  "optionsInclWcagGlLabel": {
-    "message": "Include WCAG Guidelines",
-    "description": "Label for checkbox to include WCAG Guidelines in views menu"
-  },
-
-  "optionsInclRuleScopeLabel": {
-    "message": "Include Rule Scope",
-    "description": "Label for checkbox to include Rule Scope options in views menu"
-  },
-
-  "optionsRerunEvaluationLegend": {
-    "message": "Rerun Evaluation button",
-    "description": "Legend for rerun evaluation section in the options page"
-  },
-
-  "optionsNoDelayLabel": {
-    "message": "Rerun with no delay",
-    "description": "Label for rerun with no delay checkbox in the options page"
-  },
-
-  "optionsPromptForDelayLabel": {
-    "message": "Prompt for delay setting",
-    "description": "Label for rerun with prompted delay checkbox in the options page"
-  },
-
-  "optionsEvaluationHeading": {
-    "message": "Evaluation",
-    "description": "Heading for the evaluation section of the options page"
-  },
-
-  "optionsRulesetLegend": {
-    "message": "Ruleset",
-    "description": "Legend for ruleset radio button group in the options page"
-  },
-
-  "optionsRulesetStrictLabel": {
-    "message": "HTML5 and ARIA Ruleset",
-    "description": "Label for strict ruleset checkbox on the options page"
-  },
-
-  "optionsRulesetTransLabel": {
-    "message": "HTML4 Legacy Techniques",
-    "description": "Label for transitional ruleset checkbox on the options page"
-  },
-
-  "optionsRuleResultsLegend": {
-    "message": "Rule Result Types filter",
-    "description": "Legend for the rule results section on the options page"
-  },
-
-  "optionsInclPassNaLabel": {
-    "message": "Include 'Passed' and 'Not Applicable' results",
-    "description": "Label for checkbox to include pass and n/a results in the options page"
-  },
-
-  "optionsResetDefaults": {
-    "message": "Reset Defaults",
-    "description": "Label for reset defaults in the options page"
-  },
-
-  "optionsExportHeading": {
-    "message": "Data Export",
-    "description": "Label for the data export section of the options page"
-  },
-
-  "optionsExportPrompt": {
-    "message": "Prompt for data export options",
-    "description": "Prompt for export options when the export button is pressed"
-  },
-
-  "optionsExportButtonLegend": {
-    "message": "Export Data button",
-    "description": "Legend for prompt for export options button"
-  },
-
-  "optionsExportFormatLegend": {
-    "message": "File Format",
-    "description": "Legend for the group of radio buttons for choosing an output format in the export section of the options page"
-  },
-
-  "optionsExportCSVLabel": {
-    "message": "CSV (e.g. spreadsheets)",
-    "description": "Label for the CSV radio button option in the export section of the options page"
-  },
-
-  "optionsExportJSONLabel": {
-    "message": "JSON (e.g. databases and applications)",
-    "description": "Label for the JSON radio button option in the export section of the options page"
-  },
-
-  "optionsExportFilenameLegend": {
-    "message": "Filename Options",
-    "description": "Legend for the filenaming options in export section of the options page"
-  },
-
-  "optionsExportPrefixLabel": {
-    "message": "Prefix for export file name (up to 16 characters long)",
-    "description": "Label for prefix string input in the export section of the options page"
-  },
-
-  "optionsExportPrefixDesc": {
-    "message": "Note: For operating system compatibility file name cannot contain any spaces or <>:\"/\\|?*[] characters.",
-    "description": "Label for prefix string input in the export section of the options page"
-  },
-
-  "optionsExportPrefixErrorToLong": {
-    "message": "Prefix can only be 16 characters long.",
-    "description": "Error feedback for prefix string being too long"
-  },
-
-  "optionsExportPrefixErrorCharNotAllowed": {
-    "message": "Prefix cannot contain the $key character.",
-    "description": "Error feedback on characters that cannot not be in prefix."
-  },
-
-  "optionsExportIncludeDate": {
-    "message": "Include date and time.",
-    "description": "Label for including date and time in the export export file name"
-  },
-
-  "optionsExportIncludeDateDesc": {
-    "message": "(e.g. yyyy-mm-dd-XXh-YYm-ZZs)",
-    "description": "Additional information on format for including date and time in the export export file name"
-  },
-
-  "optionsExportPromptForOptions": {
-    "message": "Do not prompt for data export options",
-    "description": "Label for disable prompting for export export file name options when activating the export button."
-  },
-
   "elementResultType": {
     "message": "Result Type",
     "description": "Result type heading in element, page or website results view."
@@ -1212,6 +1072,146 @@
   "resultsLegend": {
     "message": "Results Legend",
     "description": "Accessible description for get more information icon"
+  },
+
+  "optionsTitle": {
+    "message": "General",
+    "description": "Title for the options page"
+  },
+
+  "optionsViewsMenuLegend": {
+    "message": "Views menu",
+    "description": "Legend for view menu in the options page"
+  },
+
+  "optionsInclWcagGlLabel": {
+    "message": "Include WCAG Guidelines",
+    "description": "Label for checkbox to include WCAG Guidelines in views menu"
+  },
+
+  "optionsInclRuleScopeLabel": {
+    "message": "Include Rule Scope",
+    "description": "Label for checkbox to include Rule Scope options in views menu"
+  },
+
+  "optionsRerunEvaluationLegend": {
+    "message": "Rerun Evaluation button",
+    "description": "Legend for rerun evaluation section in the options page"
+  },
+
+  "optionsNoDelayLabel": {
+    "message": "Rerun with no delay",
+    "description": "Label for rerun with no delay checkbox in the options page"
+  },
+
+  "optionsPromptForDelayLabel": {
+    "message": "Prompt for delay setting",
+    "description": "Label for rerun with prompted delay checkbox in the options page"
+  },
+
+  "optionsEvaluationHeading": {
+    "message": "Evaluation",
+    "description": "Heading for the evaluation section of the options page"
+  },
+
+  "optionsRulesetLegend": {
+    "message": "Ruleset",
+    "description": "Legend for ruleset radio button group in the options page"
+  },
+
+  "optionsRulesetStrictLabel": {
+    "message": "HTML5 and ARIA Ruleset",
+    "description": "Label for strict ruleset checkbox on the options page"
+  },
+
+  "optionsRulesetTransLabel": {
+    "message": "HTML4 Legacy Techniques",
+    "description": "Label for transitional ruleset checkbox on the options page"
+  },
+
+  "optionsRuleResultsLegend": {
+    "message": "Rule Result Types filter",
+    "description": "Legend for the rule results section on the options page"
+  },
+
+  "optionsInclPassNaLabel": {
+    "message": "Include 'Passed' and 'Not Applicable' results",
+    "description": "Label for checkbox to include pass and n/a results in the options page"
+  },
+
+  "optionsResetDefaults": {
+    "message": "Reset Defaults",
+    "description": "Label for reset defaults in the options page"
+  },
+
+  "optionsExportHeading": {
+    "message": "Data Export",
+    "description": "Label for the data export section of the options page"
+  },
+
+  "optionsExportPrompt": {
+    "message": "Prompt for data export options",
+    "description": "Prompt for export options when the export button is pressed"
+  },
+
+  "optionsExportButtonLegend": {
+    "message": "Export Data button",
+    "description": "Legend for prompt for export options button"
+  },
+
+  "optionsExportFormatLegend": {
+    "message": "File Format",
+    "description": "Legend for the group of radio buttons for choosing an output format in the export section of the options page"
+  },
+
+  "optionsExportCSVLabel": {
+    "message": "CSV (e.g. spreadsheets)",
+    "description": "Label for the CSV radio button option in the export section of the options page"
+  },
+
+  "optionsExportJSONLabel": {
+    "message": "JSON (e.g. databases and applications)",
+    "description": "Label for the JSON radio button option in the export section of the options page"
+  },
+
+  "optionsExportFilenameLegend": {
+    "message": "Filename Options",
+    "description": "Legend for the filenaming options in export section of the options page"
+  },
+
+  "optionsExportPrefixLabel": {
+    "message": "Prefix for export file name (up to 16 characters long)",
+    "description": "Label for prefix string input in the export section of the options page"
+  },
+
+  "optionsExportPrefixDesc": {
+    "message": "Note: For operating system compatibility file name cannot contain any spaces or <>:\"/\\|?*[] characters.",
+    "description": "Label for prefix string input in the export section of the options page"
+  },
+
+  "optionsExportPrefixErrorToLong": {
+    "message": "Prefix can only be 16 characters long.",
+    "description": "Error feedback for prefix string being too long"
+  },
+
+  "optionsExportPrefixErrorCharNotAllowed": {
+    "message": "Prefix cannot contain the $key character.",
+    "description": "Error feedback on characters that cannot not be in prefix."
+  },
+
+  "optionsExportIncludeDate": {
+    "message": "Include date and time.",
+    "description": "Label for including date and time in the export export file name"
+  },
+
+  "optionsExportIncludeDateDesc": {
+    "message": "(e.g. yyyy-mm-dd-XXh-YYm-ZZs)",
+    "description": "Additional information on format for including date and time in the export export file name"
+  },
+
+  "optionsExportPromptForOptions": {
+    "message": "Do not prompt for data export options",
+    "description": "Label for disable prompting for export export file name options when activating the export button."
   }
 
 }
