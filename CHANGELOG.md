@@ -4,8 +4,8 @@
 
 | Version      |    Date     | Notes |
 |--------------|:-----------:|-----------------------------------------------------|
-| 3.1.         |   4/24/24   | Updated evaluation library to version 2.0.5 and added ARIA 1.3 option
-| 3.0.4        |   3/4/24   | Updated evaluation library to version 2.0.4
+| 3.1.         |   4/25/24   | Updated evaluation library to version 2.0.5 and added ARIA 1.3 option
+| 3.0.4        |   3/4/24    | Updated evaluation library to version 2.0.4
 | 3.0.2        |   2/29/24   | Updated evaluation library to version 2.0.3
 | 3.0.1        |   2/7/24    | Updated evaluation library
 | 3.0          |   1/25/24   | Fixed bugs and add additional WCGA 2.1 and 2.2 rules
@@ -27,8 +27,8 @@
 
 ### 3.1
 * Fixed bug with element result details showing another result for the same element
-* Updated evaluation library
-* Added option to use ARIA 1.3 requirements for validation
+* Updated evaluation library to version 2.05
+* Added option to use ARIA 1.3 requirements for ARIA validation
 
 ### 3.04
 * Evaluation library update fixes bug in widget rule for required parent roles
