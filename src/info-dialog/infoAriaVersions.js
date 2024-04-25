@@ -20,7 +20,7 @@ template.innerHTML = `
           ARIA 1.3
         </th>
         <td class="text-start">
-          The <a href="https://www.w3.org/TR/wai-aria-1.3/">Accessible Rich Internet Applications 1.3</a> is the current working draft under development by the <a href="https://www.w3.org/WAI/ARIA/">Accessible Rich Internet Applications (ARIA) Working Group</a> (<a href="https://www.w3.org/TR/wai-aria-1.3/#major-feature-in-this-release">major new features</a>).  New features of ARIA 1.3 have been implemented by some browsers. The specification is still under development so new features should be used with caution until it becomes as specification with wide spread implementation of features.
+          The <a href="https://www.w3.org/TR/wai-aria-1.3/">Accessible Rich Internet Applications 1.3</a> is the current working draft under development by the <a href="https://www.w3.org/WAI/ARIA/">Accessible Rich Internet Applications (ARIA) Working Group</a> (<a href="https://www.w3.org/TR/wai-aria-1.3/#major-feature-in-this-release">major new features</a>).  New features of ARIA 1.3 have been implemented by some browsers. The specification is still under development so new features should be used with caution until it becomes a specification with wide spread implementation of features.
         </td>
       </tr>
     </tbody>
