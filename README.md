@@ -1,8 +1,15 @@
-# AInspector 3.0
+# AInspector for WCAG Evaluation
 
-[AInspector](https://ainspector.disability.illinois.edu) uses the web extension APIs for the Firefox browser to create a sidebar for evaluating web accessibility and the user interface is based on [AInspector Sidebar](https://ainspector.github.io/) using XUL.  Firefox support for the sidebar API is ideal for allowing evaluation information to always be visible and updated as links are followed and new tabs and windows are opened.  AInspector is available from the Firefox add-ons page:
+The latest versions of AInspector for Chrome, Edge, Firefox and Opera are available from a the [AInspector for WCAG Evaluation](https://opena11y.github.io/ainspector/) documentation.
 
-[Install AInspector for Firefox](https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag)
+[Install AInspector for WCAG Evaluation for Firefox](https://addons.mozilla.org/en-US/firefox/addon/ainspector-wcag) (latest version)
+
+NOTE: The AInspector for Firefox project is not longer being developed.
+
+# Legacy information about AInspector 3.0
+
+ AInspector 3.0 uses the web extension APIs for the Firefox browser to create a sidebar for evaluating web accessibility and the user interface is based on AInspector Sidebar using XUL.  Firefox support for the sidebar API is ideal for allowing evaluation information to always be visible and updated as links are followed and new tabs and windows are opened.  AInspector is available from the Firefox add-ons page:
+
 
 ## Compatibility
 * Firefox Version 60 or newer
